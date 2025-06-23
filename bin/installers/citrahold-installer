@@ -1,0 +1,68 @@
+#!/bin/bash
+
+# Script para instalar/desinstalar Citra
+
+INSTALL_DIR="$HOME/.local/opt/citrahold"
+BIN_FILE="$INSTALL_DIR/bin"
+DESKTOP_FILE="$HOME/.local/share/applications/citrahold.desktop"
+
+install() {
+	local REPO REPLY DOWNLOAD_URL ZIP_LOCATION EXTRACTED_NAME
+	REPO="regimensocial/citraholdUI"
+	REPLY="$(curl -s "https://api.github.com/repos/$REPO/releases/latest")"
+	DOWNLOAD_URL="$(echo "$REPLY" | grep -oP 'zipball_url": "\K.*v[0-9]+\.[0-9]+\.[0-9]+')"
+	ZIP_LOCATION="/tmp/$(basename $REPO).zip"
+
+	mkdir -p "$INSTALL_DIR"
+
+	# Descargamos el zipball
+	curl -L "$DOWNLOAD_URL" -o "$ZIP_LOCATION" || exit
+	EXTRACTED_NAME="$(unzip -l "$ZIP_LOCATION" | grep -o "[[:alnum:]]*-citraholdUI-[[:alnum:]]*" | head -n1)"
+	rm -rf "/tmp/$EXTRACTED_NAME"
+	unzip -o "$ZIP_LOCATION" -d /tmp >/dev/null
+	rm "$ZIP_LOCATION"
+
+	# Compilamos e instalamos el programa
+	cd /tmp/"$EXTRACTED_NAME" || exit 1
+	qmake6
+	make
+	/usr/bin/install -m 755 ./Citrahold "$BIN_FILE"
+
+	# Descargamos el icono
+	curl -L "https://raw.githubusercontent.com/regimensocial/Citrahold-3DS/refs/heads/main/assets/icon.png" \
+		-o "$INSTALL_DIR/icon.png"
+
+	cat <<-EOF >"$DESKTOP_FILE"
+		[Desktop Entry]
+		Name=Citrahold
+		Comment=Sync 3DS saves between Citra emulator and console
+		Exec=$BIN_FILE %U
+		Icon=$INSTALL_DIR/icon.png
+		Terminal=false
+		Type=Application
+		Categories=Game;Utility;
+	EOF
+}
+
+uninstall() {
+	rm -f "$BIN_FILE"
+	rm -f "$DESKTOP_FILE"
+}
+
+clean() {
+	rm -rf "${XDG_CONFIG_HOME:-$HOME/.config}"/Citrahold
+}
+
+help_msg() {
+	echo "Uso:" >&2
+	echo "  $(basename "$0") [--install/--uninstall/--clean]" >&2
+	exit 1
+}
+
+# Manejo de argumentos
+case "$1" in
+--install) install ;;
+--uninstall) uninstall ;;
+--clean) clean ;;
+*) help_msg ;;
+esac

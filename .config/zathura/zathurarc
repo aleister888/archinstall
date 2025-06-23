@@ -1,0 +1,65 @@
+set window-title-basename "true"
+
+set selection-clipboard "clipboard"
+
+set first-page-column 0:1
+
+set synctex true
+set synctex-editor-command "nvim --headless -c \"VimtexInverseSearch %{line} '%{input}'\""
+
+set font "Iosevka SS05 14"
+
+set guioptions none
+set sandbox none
+set statusbar-h-padding 0
+set statusbar-v-padding 0
+set page-padding 2
+
+map w adjust_window width
+map [fullscreen] w adjust_window width
+
+map W adjust_window best-fit
+map [fullscreen] W adjust_window best-fit
+
+map f toggle_fullscreen
+map [fullscreen] f toggle_fullscreen
+map F toggle_fullscreen
+map [fullscreen] F toggle_fullscreen
+
+map b toggle_statusbar
+map [fullscreen] b toggle_statusbar
+
+set adjust-open width
+set recolor true
+
+set notification-error-bg       "#222222"
+set notification-error-fg       "#fb4934"
+set notification-warning-bg     "#222222"
+set notification-warning-fg     "#fabd2f"
+set notification-bg             "#222222"
+set notification-fg             "#b8bb26"
+
+set completion-bg               "#504945"
+set completion-fg               "#ebdbb2"
+set completion-group-bg         "#3c3836"
+set completion-group-fg         "#928374"
+set completion-highlight-bg     "#83a598"
+set completion-highlight-fg     "#504945"
+
+set index-bg                    "#222222"
+set index-fg                    "#ebdbb2"
+set index-active-bg             "#83a598"
+set index-active-fg             "#222222"
+
+set inputbar-bg                 "#504945"
+set inputbar-fg                 "#ebdbb2"
+set statusbar-bg                "#504945"
+set statusbar-fg                "#ebdbb2"
+
+set highlight-color             "rgba(69,133,136, 0.2)"
+set highlight-active-color      "rgba(69,133,136, 0.2)"
+
+set default-bg                  "#3C3836"
+set default-fg                  "#ebdbb2"
+set recolor-lightcolor          "#222222"
+set recolor-darkcolor           "#ebdbb2"

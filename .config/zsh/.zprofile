@@ -1,0 +1,1 @@
+/home/aleister/.dotfiles/assets/configs/.profile

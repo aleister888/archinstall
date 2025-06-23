@@ -1,0 +1,73 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 30,
+    "modules-left": ["hyprland/workspaces", "hyprland/window"],
+    "modules-center": ["custom/music-metadata"],
+    "modules-right": [
+        "battery",
+        "custom/disk",
+        "custom/kernel",
+        "pulseaudio",
+        "memory",
+        "custom/date",
+        "custom/time",
+        "tray"
+    ],
+    "hyprland/window": {
+        "max-length": 50
+    },
+    "custom/music-metadata": {
+        "max-length": 60,
+        "interval": 1,
+        "exec": "music-metadata -d",
+        "tooltip": false,
+        "on-click": "playerctl play-pause",
+        "on-scroll-up": "playerctl previous",
+        "on-scroll-down": "playerctl next"
+    },
+    "battery": {
+        "format": "{icon} {capacity}%",
+        "format-icons": [
+            "󰁺", "󰁻", "󰁽",
+            "󰁿", "󰂁", "󰁹"
+        ]
+    },
+    "custom/disk": {
+        "format": " {}",
+        "interval": 15,
+        "exec": "df -h /home | awk '/[0-9]/ {print $4}'",
+    },
+    "custom/kernel": {
+        "format": "󰣇 {}",
+        "interval": 0,
+        "exec": "uname -r | cut -d '-' -f 1",
+    },
+    "memory": {
+        "interval": 30,
+        "format": " {used:0.1f}G"
+    },
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-bluetooth": "{icon} {volume}%",
+        "format-muted": " {volume}%",
+        "format-icons": {
+            "default": ["", "", ""]
+        },
+        "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle"
+    },
+    "custom/date": {
+        "format": " {}",
+        "interval": 1,
+        "exec": "date +'%d/%m'",
+    },
+    "custom/time": {
+        "format": " {}",
+        "interval": 1,
+        "exec": "date +'%H:%M:%S'",
+    },
+    "tray": {
+        "icon-size": 24,
+        "spacing": 6
+    }
+}

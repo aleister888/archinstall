@@ -1,0 +1,105 @@
+#!/bin/bash
+
+# Script para instalar/desinstalar Citra
+
+INSTALL_DIR="$HOME/.local/opt/Azahar"
+RUN_SCRIPT="$HOME/.local/bin/azahar"
+DESKTOP_FILE="$HOME/.local/share/applications/azahar.desktop"
+DS_TOOL="$HOME/.local/bin/3dstool"
+
+install_3dstool() {
+	local REPO REPLY DOWNLOAD_URL FILENAME TAR_LOCATION
+	REPO="dnasdw/3dstool"
+	REPLY="$(curl -s "https://api.github.com/repos/$REPO/releases/latest")"
+	DOWNLOAD_URL="$(echo "$REPLY" | jq -r '.assets[] | select(.name | test(".*linux_x86_64\\.tar\\.gz$")) | .browser_download_url')"
+	FILENAME="$(basename "$DOWNLOAD_URL")"
+	TAR_LOCATION="/tmp/$FILENAME"
+
+	# Descargar y descomprimir el archivo
+	curl -L "$DOWNLOAD_URL" -o "$TAR_LOCATION" || exit
+	tar -xzf "$TAR_LOCATION" -C /tmp
+	rm "$TAR_LOCATION"
+
+	mv /tmp/3dstool "$DS_TOOL"
+}
+
+install() {
+	local REPO REPLY DOWNLOAD_URL FILENAME APPIMAGE_LOCATION SQUASH OFFSET
+	REPO="azahar-emu/azahar"
+	REPLY="$(curl -s "https://api.github.com/repos/$REPO/releases/latest")"
+	DOWNLOAD_URL="$(echo "$REPLY" | jq -r '.assets[] | select(.name | test("azahar\\.AppImage$")) | .browser_download_url')"
+	FILENAME="$(basename "$DOWNLOAD_URL")"
+	APPIMAGE_LOCATION="/tmp/$FILENAME"
+	SQUASH="$(echo "$APPIMAGE_LOCATION" | cut -d. -f1).squashfs"
+
+	# Descargamos el AppImage
+	curl -L "$DOWNLOAD_URL" -o "$APPIMAGE_LOCATION" || exit
+
+	# Obtenemos si offset y extraemos solo el squashfs
+	chmod +x "$APPIMAGE_LOCATION"
+	OFFSET=$("$APPIMAGE_LOCATION" --appimage-offset)
+	dd if="$APPIMAGE_LOCATION" of="$SQUASH" \
+		bs=4M skip="$OFFSET" iflag=skip_bytes status=progress
+	rm "$APPIMAGE_LOCATION"
+
+	# Extraemos los contenidos del AppImage
+	unsquashfs -d /tmp/extracted "$SQUASH"
+	rm "$SQUASH"
+	mv /tmp/extracted "$INSTALL_DIR"
+
+	# Instalamos utilidades que nos harán falta
+	yay -Sy --noconfirm --needed projectctr-makerom-bin ctrtool joycond-git joycond-cemuhook-git
+
+	# Crear script de inicio
+	cat <<-EOF >"$RUN_SCRIPT"
+		#!/bin/sh
+		$INSTALL_DIR/AppRun
+	EOF
+	chmod +x "$RUN_SCRIPT"
+
+	cat <<-EOF >"$DESKTOP_FILE"
+		[Desktop Entry]
+		Version=1.0
+		Type=Application
+		Name=Azahar
+		GenericName=3DS Emulator
+		GenericName[fr]=Émulateur 3DS
+		Comment=Nintendo 3DS video game console emulator
+		Comment[fr]=Émulateur de console de jeu Nintendo 3DS
+		Icon=$INSTALL_DIR/usr/share/icons/hicolor/scalable/apps/org.azahar_emu.Azahar.svg
+		TryExec=$RUN_SCRIPT
+		Exec=azahar %f
+		Categories=Game;Emulator;
+		MimeType=application/x-ctr-3dsx;application/x-ctr-cci;application/x-ctr-cia;application/x-ctr-cxi;
+		Keywords=3DS;Nintendo;
+	EOF
+
+	install_3dstool
+}
+
+uninstall() {
+	rm -rf "$INSTALL_DIR"
+	rm -f "$RUN_SCRIPT"
+	rm -f "$DS_TOOL"
+	rm -f "$DESKTOP_FILE"
+	yay --noconfirm -Rcns projectctr-makerom-bin ctrtool
+}
+
+clean() {
+	rm -rf "${XDG_CONFIG_HOME:-$HOME/.config}/azahar-emu"
+	rm -rf "${XDG_DATA_HOME:-$HOME/.local/share}/azahar-emu"
+}
+
+help_msg() {
+	echo "Uso:" >&2
+	echo "  $(basename "$0") [--install/--uninstall/--clean]" >&2
+	exit 1
+}
+
+# Manejo de argumentos
+case "$1" in
+--install) install ;;
+--uninstall) uninstall ;;
+--clean) clean ;;
+*) help_msg ;;
+esac

@@ -1,0 +1,66 @@
+* {
+  border: none;
+  border-radius: 0px;
+  font-family: "Iosevka Fixed SS05", "Symbols Nerd Font";
+  font-size: 22px;
+  min-height: 0;
+  color: #ebdbb2;
+  font-weight: 600;
+}
+
+window#waybar {
+  background: #1d2021;
+}
+
+#workspaces {
+  margin: 0 7.5px;
+  font-weight: normal;
+}
+
+#workspaces button.active {
+  background: #3c3836;
+}
+
+#custom-music-metadata {
+  color: #f7f3d6;
+  font-weight: 600;
+}
+
+#battery {
+  margin: 0 7.5px;
+  color: #689d6a;
+}
+
+#custom-disk {
+  margin: 0 7.5px;
+  color: #d79921;
+}
+
+#custom-kernel {
+  margin: 0 7.5px;
+  color: #458588;
+}
+
+#pulseaudio {
+  margin: 0 7.5px;
+  color: #b16286;
+}
+
+#memory {
+  margin: 0 7.5px;
+  color: #98971a;
+}
+
+#custom-date {
+  margin: 0 7.5px;
+  color: #d65d0e;
+}
+
+#custom-time {
+  margin: 0 7.5px;
+  color: #cc241d;
+}
+
+#tray {
+  margin: 0 7.5px;
+}

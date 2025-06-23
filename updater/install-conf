@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# Script para recompilar las aplicaciones suckless
+# - Invocado por /update.sh
+
+[ "$(id -u)" -eq 0 ] && exit 1
+
+########
+# UDEV #
+########
+
+# Permitir a Steam controlar mandos de PlayStation 4
+sudo cp -f "$HOME/.dotfiles/assets/system/udev/99-steam-controller-perms.rules" \
+	/usr/lib/udev/rules.d/
+
+# Permitir al usuario escanear redes Wi-Fi y cambiar ajustes de red
+id -nG "$USER" | grep network -q || sudo usermod -aG network "$USER"
+[ -e /sys/class/power_supply/BAT0 ] &&
+	sudo cp -f "$HOME/.dotfiles/assets/system/udev/50-org.freedesktop.NetworkManager.rules" \
+		/etc/polkit-1/rules.d/
+
+################
+# Aplicaciones #
+################
+
+# Configurar keepassxc para que siga el tema de QT (Si no está ya configurado)
+if [ ! -f "$HOME/.config/keepassxc/keepassxc.ini" ]; then
+	mkdir -p "$HOME/.config/keepassxc"
+	cp "$HOME/.dotfiles/assets/configs/apps/keepassxc/keepassxc.ini" \
+		"$HOME"/.config/keepassxc/
+fi
+
+##############
+# Miscelánea #
+##############
+
+# Desactivar el altavoz del PC
+echo "blacklist pcspkr" | sudo tee /etc/modprobe.d/nobeep.conf >/dev/null
+
+# Suspender de forma automática cuando la batería cae por debajo del 10%
+if [ -e /sys/class/power_supply/BAT0 ]; then
+	sudo install -m 755 \
+		"$HOME/.dotfiles/assets/system/services/auto-suspend/auto-suspend" \
+		/usr/local/bin/
+	sudo install -m 755 \
+		"$HOME/.dotfiles/assets/system/services/auto-suspend/auto-suspend-loop" \
+		/usr/local/bin/
+	sudo install -m 555 \
+		"$HOME/.dotfiles/assets/system/services/auto-suspend/systemd-service" \
+		/etc/systemd/system/auto-suspend.service
+	sudo systemctl enable auto-suspend
+fi

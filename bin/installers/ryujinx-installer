@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# Script para instalar/desinstalar Ryujinx
+
+INSTALL_DIR="$HOME/.local/opt/Ryujinx"
+RUN_SCRIPT="$HOME/.local/bin/ryujinx"
+DESKTOP_FILE="$HOME/.local/share/applications/ryujinx.desktop"
+
+install() {
+	local REPO REPLY DOWNLOAD_URL FILENAME TAR_LOCATION
+	REPLY="$(curl "https://git.ryujinx.app/api/v4/projects/ryubing%2Fryujinx/releases")"
+	DOWNLOAD_URL="$(echo "$REPLY" | jq -r '.[] | .assets.links[] | select(.name | test("linux_x64.tar.gz")) | .url' | sort -r | head -n1)"
+	FILENAME="$(basename "$DOWNLOAD_URL")"
+	TAR_LOCATION="/tmp/$FILENAME"
+
+	# Descargar y descomprimir el archivo
+	curl -L "$DOWNLOAD_URL" -o "$TAR_LOCATION" || exit
+	tar -xzf "$TAR_LOCATION" -C /tmp
+
+	# Instalarlo en $HOME
+	mkdir -p "$(dirname "$INSTALL_DIR")"
+	mv /tmp/publish "$INSTALL_DIR"
+
+	# Crear script de inicio
+	cat <<-EOF >"$RUN_SCRIPT"
+		#!/bin/sh
+		$INSTALL_DIR/Ryujinx.sh \$@
+	EOF
+	chmod +x "$RUN_SCRIPT"
+
+	curl -L "https://git.ryujinx.app/ryubing/ryujinx/-/raw/master/distribution/misc/Logo.svg?ref_type=heads&inline=false" \
+		-o "$INSTALL_DIR/Logo.svg"
+
+	cat <<-EOF >"$DESKTOP_FILE"
+		[Desktop Entry]
+		Version=1.0
+		Name=Ryujinx
+		Type=Application
+		Icon=$INSTALL_DIR/Logo.svg
+		Exec=$RUN_SCRIPT %f
+		Comment=A Nintendo Switch Emulator
+		GenericName=Nintendo Switch Emulator
+		Terminal=false
+		Categories=Game;Emulator;
+		MimeType=application/x-nx-nca;application/x-nx-nro;application/x-nx-nso;application/x-nx-nsp;application/x-nx-xci;
+		Keywords=Switch;Nintendo;Emulator;
+		StartupWMClass=Ryujinx
+		PrefersNonDefaultGPU=true
+	EOF
+}
+
+uninstall() {
+	rm -rf "$INSTALL_DIR"
+	rm -f "$RUN_SCRIPT"
+	rm -f "$DESKTOP_FILE"
+}
+
+clean() {
+	rm -rf "${XDG_CONFIG_HOME:-$HOME/.config}"/Ryujinx
+}
+
+help_msg() {
+	echo "Uso:" >&2
+	echo "  $(basename "$0") [--install/--uninstall/--clean]" >&2
+	exit 1
+}
+
+# Manejo de argumentos
+case "$1" in
+--install) install ;;
+--uninstall) uninstall ;;
+--clean) clean ;;
+*) help_msg ;;
+esac

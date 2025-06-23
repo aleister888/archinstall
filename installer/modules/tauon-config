@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# Script para auto-configurar TauonMusicBox
+# https://github.com/Taiko2k/TauonMusicBox
+
+[ "$(id -u)" -eq 0 ] && exit 1
+
+mkdir -p "$HOME"/.local/share
+rm "$HOME"/.local/share/TauonMusicBox/tauon.conf
+
+# Iniciamos tauon para que se cree el archivo de configuración
+timeout -k 1s 10s xvfb-run tauon >/dev/null &
+sleep 12
+
+# Extraemos los temas
+aunpack "$HOME/.dotfiles/assets/themes.tar.gz" \
+	-X "$HOME/.local/share/TauonMusicBox/theme/"
+
+# Archivo de configuración
+CONF="$HOME/.local/share/TauonMusicBox/tauon.conf"
+
+# Activar Opciones
+sed -i 's/auto-dl-artist-data = false/auto-dl-artist-data = true/g' "$CONF"
+sed -i 's/auto-update-playlists = false/auto-update-playlists = true/g' "$CONF"
+sed -i 's/auto-search-lyrics = false/auto-search-lyrics = true/g' "$CONF"
+
+# Desactivar el recordar la posición para hacer la aplicación mas amigable con DWM
+sed -i 's/restore-window-position = true/restore-window-position = false/g' "$CONF"
+
+# Establecer el tema
+sed -i 's/theme-name = ".*"/theme-name = "aleister-gruvbox"/g' "$CONF"
+
+# Cambiar las fuentes usadas
+sed -i 's/use-custom-fonts = false/use-custom-fonts = true/g' "$CONF"
+sed -i 's/font-main-standard = ".*"/font-main-standard = "Iosevka SS05"/g' "$CONF"
+sed -i 's/font-main-medium = ".*"/font-main-medium = "Iosevka SS05 Medium"/g' "$CONF"
+sed -i 's/font-main-bold = ".*"/font-main-bold = "Iosevka SS05 Bold"/g' "$CONF"
+sed -i 's/font-main-condensed = ".*"/font-main-condensed = "Iosevka SS05"/g' "$CONF"
+sed -i 's/font-main-condensed-bold = ".*"/font-main-condensed-bold = "Iosevka SS05 Bold"/g' "$CONF"

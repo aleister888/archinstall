@@ -1,0 +1,42 @@
+{
+  "general": [
+    "syncthing",
+    "timeshift"
+  ],
+  "audio": [
+    "alsa-firmware",
+    "alsa-plugins",
+    "alsa-tools",
+    "alsa-utils",
+    "lib32-libpipewire",
+    "lib32-pipewire",
+    "lib32-pipewire-jack",
+    "lib32-pipewire-v4l2",
+    "pipewire",
+    "pipewire-pulse",
+    "pipewire-v4l2",
+    "sof-firmware",
+    "wireplumber"
+  ],
+  "init": [
+    "earlyoom",
+    "tlp"
+  ],
+  "syslog-ng": [
+    "hiredis",
+    "libdbi",
+    "libesmtp",
+    "libmaxminddb",
+    "librabbitmq-c",
+    "librabbitmq-c",
+    "librdkafka",
+    "mongo-c-driver",
+    "net-snmp",
+    "syslog-ng"
+  ],
+  "fwupd": [
+    "gnome-firmware",
+    "fwupd",
+    "fwupd-efi"
+  ]
+}

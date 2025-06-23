@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Script para compilar e instalar yay
+
+[ "$(id -u)" -eq 0 ] && exit 1
+
+# Directorio temporal para clonar el repositorio de yay
+TMP_DIR="/tmp/yay_install_temp"
+
+# Crear el directorio temporal
+mkdir -p "$TMP_DIR"
+
+# Clonar el repositorio
+git clone --depth 1 https://aur.archlinux.org/yay.git "$TMP_DIR" >/dev/null
+
+# Construimos e instalamos yay
+sh -c "cd $TMP_DIR && makepkg -si --noconfirm"

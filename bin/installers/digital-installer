@@ -1,0 +1,70 @@
+#!/bin/bash
+
+# Script para instalar/desinstalar Digital
+
+INSTALL_DIR="$HOME/.local/opt/Digital"
+RUN_SCRIPT="$HOME/.local/bin/digital"
+DESKTOP_FILE="$HOME/.local/share/applications/digital.desktop"
+
+install() {
+	local REPO REPLY DOWNLOAD_URL FILENAME ZIP_LOCATION
+	REPO="hneemann/Digital"
+	REPLY="$(curl -s "https://api.github.com/repos/$REPO/releases/latest")"
+	DOWNLOAD_URL="$(echo "$REPLY" | jq -r '.assets[] | select(.name | test("Digital\\.zip$")) | .browser_download_url')"
+	FILENAME="$(basename "$DOWNLOAD_URL")"
+	ZIP_LOCATION="/tmp/$FILENAME"
+
+	# Descargar y descomprimir el archivo
+	curl -L "$DOWNLOAD_URL" -o "$ZIP_LOCATION" || exit
+	unzip "$ZIP_LOCATION" -d /tmp >/dev/null
+	rm "$ZIP_LOCATION"
+
+	# Instalarlo en $HOME
+	mkdir -p "$(dirname "$INSTALL_DIR")"
+	mv /tmp/Digital "$INSTALL_DIR"
+
+	# Crear script de inicio
+	cat <<-EOF >"$RUN_SCRIPT"
+		#!/bin/sh
+		$INSTALL_DIR/Digital.sh
+	EOF
+	chmod +x "$RUN_SCRIPT"
+
+	cat <<-EOF >"$DESKTOP_FILE"
+		[Desktop Entry]
+		Type=Application
+		Name=Digital
+		Comment=Easy-to-use digital logic designer and circuit simulator
+		Exec=$RUN_SCRIPT
+		Icon=$INSTALL_DIR/icon.svg
+		Categories=Education;Electronics;
+		MimeType=text/x-digital;
+		Terminal=false
+		Keywords=simulator;digital;circuits;
+	EOF
+
+}
+
+uninstall() {
+	rm -rf "$INSTALL_DIR"
+	rm -f "$RUN_SCRIPT"
+	rm -f "$DESKTOP_FILE"
+}
+
+clean() {
+	rm -rf "${XDG_CONFIG_HOME:-$HOME/.config}"/.digital.cfg
+}
+
+help_msg() {
+	echo "Uso:" >&2
+	echo "  $(basename "$0") [--install/--uninstall/--clean]" >&2
+	exit 1
+}
+
+# Manejo de argumentos
+case "$1" in
+--install) install ;;
+--uninstall) uninstall ;;
+--clean) clean ;;
+*) help_msg ;;
+esac

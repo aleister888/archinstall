@@ -1,0 +1,140 @@
+{
+  "general": [
+    "acpi",
+    "android-tools",
+    "dash",
+    "dashbinsh",
+    "fluidsynth",
+    "gnupg",
+    "kernel-modules-hook",
+    "lib32-gnutls",
+    "lib32-libjpeg-turbo",
+    "lib32-libjpeg6-turbo",
+    "libappimage",
+    "libcamera",
+    "libjpeg6-turbo",
+    "mailcap",
+    "man-db",
+    "net-tools",
+    "realtime-privileges",
+    "squashfs-tools",
+    "squashfuse"
+  ],
+  "kernel": [
+    "linux-lts",
+    "linux-lts-headers"
+  ],
+  "pacman": [
+    "downgrade",
+    "lostfiles",
+    "pacman-contrib",
+    "rebuild-detector"
+  ],
+  "mesa_video": [
+    "lib32-mesa",
+    "mesa",
+    "mesa-utils"
+  ],
+  "utilidades": [
+    "dosfstools",
+    "gawk",
+    "glow"
+  ],
+  "zsh": [
+    "zsh",
+    "zsh-autosuggestions",
+    "zsh-history-substring-search",
+    "zsh-syntax-highlighting"
+  ],
+  "vnc": [
+    "freerdp",
+    "gtk-vnc",
+    "libvncserver",
+    "remmina",
+    "tigervnc"
+  ],
+  "fuentes": [
+    "gnu-free-fonts",
+    "noto-fonts-cjk",
+    "noto-fonts-emoji",
+    "ttc-iosevka-ss05",
+    "ttf-dejavu",
+    "ttf-liberation",
+    "ttf-linux-libertine",
+    "ttf-nerd-fonts-symbols",
+    "ttf-nerd-fonts-symbols-mono",
+    "ttf-opensans",
+    "ttf-roboto"
+  ],
+  "archivos_comprimidos": [
+    "7zip",
+    "atool",
+    "gzip",
+    "lhasa",
+    "lrzip",
+    "lzip",
+    "lzop",
+    "tar",
+    "unarj",
+    "unrar",
+    "unzip",
+    "xarchiver",
+    "zip"
+  ],
+  "grub": [
+    "grub-btrfs",
+    "grub-hook",
+    "memtest86+-efi"
+  ],
+  "java": [
+    "java-environment-common",
+    "jdk-openjdk",
+    "jdk17-openjdk",
+    "jdk21-openjdk",
+    "maven"
+  ],
+  "x11": [
+    "libx11",
+    "libxft",
+    "libxinerama",
+    "xorg-bdftopcf",
+    "xorg-font-util",
+    "xorg-fonts-100dpi",
+    "xorg-fonts-75dpi",
+    "xorg-fonts-alias-100dpi",
+    "xorg-fonts-alias-75dpi",
+    "xorg-fonts-encodings",
+    "xorg-iceauth",
+    "xorg-mkfontscale",
+    "xorg-server",
+    "xorg-server-common",
+    "xorg-server-devel",
+    "xorg-server-xephyr",
+    "xorg-server-xnest",
+    "xorg-server-xvfb",
+    "xorg-sessreg",
+    "xorg-setxkbmap",
+    "xorg-twm",
+    "xorg-util-macros",
+    "xorg-xauth",
+    "xorg-xcursorgen",
+    "xorg-xdm",
+    "xorg-xdpyinfo",
+    "xorg-xev",
+    "xorg-xhost",
+    "xorg-xinit",
+    "xorg-xinput",
+    "xorg-xkbcomp",
+    "xorg-xkill",
+    "xorg-xmodmap",
+    "xorg-xprop",
+    "xorg-xrandr",
+    "xorg-xrdb",
+    "xorg-xrefresh",
+    "xorg-xset",
+    "xorg-xsetroot",
+    "xorg-xwayland",
+    "xorg-xwininfo",
+    "xorgproto"
+  ]
+}

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+printf '{"action": "remove", "identifier": "PREVIEW"}\n' >"$FIFO_UEBERZUG"

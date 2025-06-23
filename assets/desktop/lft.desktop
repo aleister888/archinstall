@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=lf Administrador de archivos
+Terminal=false
+Icon=utilities-terminal
+Categories=System;FileTools;FileManager
+GenericName=File Manager
+MimeType=inode/directory;

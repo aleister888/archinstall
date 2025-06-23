@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# Función para obtener y validar la hora
+obtener_hora() {
+	local HORA
+	HORA=$(printf "07:00\n12:00\n17:00\n22:00" | dmenu -p "Ingrese una hora (HH:MM):")
+
+	if [[ $HORA =~ ^([01][0-9]|2[0-3]):[0-5][0-9]$ ]]; then
+		echo "$HORA"
+	else
+		return 1
+	fi
+}
+
+# Define las opciones con iconos
+OPTIONS=(
+	" Bloquear"
+	" Suspender"
+	" Suspender hasta las..."
+	" Cerrar sesión"
+	" Reinciar"
+	" Apagar"
+	"󰤄 Hibernar"
+	" BIOS"
+)
+
+# Presenta las opciones usando dmenu
+CHOSEN=$(printf "%s\n" "${OPTIONS[@]}" | dmenu -c -l ${#OPTIONS[@]})
+
+# Maneja la opción elegida usando un caso
+case $CHOSEN in
+"${OPTIONS[0]}")
+	pactl set-sink-mute @DEFAULT_SINK@ 1
+	hyprlock
+	;;
+"${OPTIONS[1]}") systemctl suspend ;;
+"${OPTIONS[2]}")
+	HORA=$(obtener_hora)
+	if [ $? -eq 0 ]; then
+		sudo /usr/local/bin/wakeat "$HORA" now
+	fi
+	;;
+"${OPTIONS[3]}") pkill Hyprland ;;
+"${OPTIONS[4]}") sudo systemctl reboot ;;
+"${OPTIONS[5]}") sudo systemctl poweroff ;;
+"${OPTIONS[6]}") systemctl hibernate ;;
+"${OPTIONS[7]}") systemctl reboot --firmware-setup ;;
+esac

@@ -1,0 +1,42 @@
+#!/bin/bash
+
+[ "$(id -u)" -eq 0 ] && exit 1
+
+# Activar servicio
+service_add() {
+	if [ "$SERVICE" = "syslog-ng" ]; then
+		sudo systemctl enable "${SERVICE}@default.service"
+	else
+		sudo systemctl enable "$SERVICE"
+	fi
+}
+# Activar servicio para el usuario
+user_service_add() {
+	SERVICE="$1"
+	systemctl --user enable "$SERVICE"
+}
+
+[ "$(id -u)" -eq 0 ] && exit 1
+
+SERVICES=(
+	"earlyoom"
+	"fwupd"
+	"syslog-ng"
+	"tlp"
+)
+
+USER_SERVICES=(
+	"pipewire"
+	"pipewire-pulse"
+	"wireplumber"
+)
+
+# Activar los servicios del sistema del runlevel default
+for SERVICE in "${SERVICES[@]}"; do
+	service_add "$SERVICE" >/dev/null 2>&1
+done
+
+# Activar los servicios del usuario del runlevel default
+for USER_SERVICE in "${USER_SERVICES[@]}"; do
+	user_service_add "$USER_SERVICE" >/dev/null 2>&1
+done

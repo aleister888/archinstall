@@ -1,0 +1,22 @@
+{
+  "general": [
+    "bash-language-server",
+    "extra-cmake-modules",
+    "extra/github-cli",
+    "extra/libgit2",
+    "go",
+    "lua51",
+    "luarocks",
+    "nodejs-lts-jod",
+    "npm",
+    "time",
+    "yarn"
+  ],
+  "formateadores": [
+    "astyle",
+    "prettier",
+    "sassc",
+    "shfmt",
+    "stylua"
+  ]
+}

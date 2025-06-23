@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Script para establecer zsh como el shell de nuestro usuario e instalar los
+# archivos de configuración
+
+[ "$(id -u)" -eq 0 ] && exit 1
+
+# Crear la carpeta ~/.config
+mkdir -p "$HOME/.config"
+
+# Instalar los archivos de configuración
+"$HOME/.dotfiles/update.sh"
+
+# Selecciona zsh como el shell del usuario
+echo "ZDOTDIR=\$HOME/.config/zsh" | sudo tee /etc/zsh/zshenv
+sudo chsh -s /bin/zsh "$USER"

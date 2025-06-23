@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# Script para sustituir sudo por OpenDoas durante la instalación del SO
+
+[ "$(id -u)" -ne 0 ] && exit 1
+
+# Obtener el nombre de usuario con UID 1000 (generalmente el primer usuario no root)
+RUSER="$(getent passwd 1000 | cut -d: -f1)"
+if [ -z "$RUSER" ]; then
+	echo "Error: No se pudo encontrar un usuario con UID 1000." >&2
+	exit 1
+fi
+
+# Configurar OpenDoas
+echo "Configurando OpenDoas..."
+cat <<EOF >/etc/doas.conf
+permit nopass keepenv setenv { SUDO_USER SUDO_UID SUDO_GID DISPLAY XAUTHORITY LANG LC_ALL } :wheel
+EOF
+
+if [ $? -ne 0 ]; then
+	echo "Error: No se pudo crear el archivo /etc/doas.conf." >&2
+	exit 1
+fi
+
+chown root:root /etc/doas.conf
+chmod 0400 /etc/doas.conf
+mv /etc/sudoers /etc/sudoers.bak
+
+# Desinstalar sudo
+echo "Desinstalando sudo..."
+if command -v sudo &>/dev/null; then
+	pacman -Rcns sudo --noconfirm
+fi
+
+# Instalar doas-sudo-shim para que las aplicaciones que dependen
+# de sudo puedan seguir funcionando
+echo "Instalando doas-sudo-shim..."
+if command -v yay &>/dev/null; then
+	su "$RUSER" -c "yay -Sy --noconfirm --disable-download-timeout --needed \
+		doas-sudo-shim"
+else
+	echo "Error: yay no está instalado." >&2
+	exit 1
+fi
+
+# Mensaje final
+echo "Configuración completada. Ahora se está utilizando OpenDoas en lugar de sudo."

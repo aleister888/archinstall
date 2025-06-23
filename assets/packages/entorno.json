@@ -1,0 +1,88 @@
+{
+  "general": [
+    "extra/j4-dmenu-desktop",
+    "fastfetch",
+    "feh",
+    "grim",
+    "hyprland",
+    "hyprlock",
+    "hyprpolkitagent",
+    "mediainfo",
+    "slurp",
+    "swayidle",
+    "tk",
+    "uwsm",
+    "waybar",
+    "wl-clipboard",
+    "xdg-desktop-portal-hyprland",
+    "yad",
+    "yt-dlp",
+    "zenity"
+  ],
+  "musica": [
+    "atomicparsley",
+    "glyr",
+    "python-eyed3"
+  ],
+  "servicios": [
+    "gnome-keyring",
+    "mako",
+    "gammastep"
+  ],
+  "discos": [
+    "gnome-disk-utility",
+    "ntfs-3g",
+    "simple-mtpfs",
+    "udiskie",
+    "udisks2-btrfs"
+  ],
+  "funcionalidades": [
+    "desktop-file-utils",
+    "libqalculate",
+    "perl-file-mimeinfo",
+    "perl-image-exiftool",
+    "xdg-desktop-portal-gtk",
+    "xdg-user-dirs"
+  ],
+  "utilidades_cli": [
+    "bat",
+    "bc",
+    "cdrtools",
+    "chafa",
+    "csvkit",
+    "expac",
+    "eza",
+    "ffmpegthumbnailer",
+    "fzf",
+    "odt2txt",
+    "pamixer",
+    "parallel",
+    "pdftk",
+    "playerctl",
+    "ripgrep",
+    "shellcheck-bin",
+    "stow",
+    "tree"
+  ],
+  "gnuplot": [
+    "extra/gnuplot",
+    "extra/wxwidgets-common",
+    "extra/wxwidgets-gtk3"
+  ],
+  "bandeja_sistema": [
+    "network-manager-applet"
+  ],
+  "aplicaciones_gui": [
+    "hyprpaper",
+    "mpv",
+    "mpv-mpris",
+    "nsxiv",
+    "qalculate-gtk",
+    "sxiv",
+    "wl-color-picker"
+  ],
+  "aplicaciones_tui": [
+    "htop",
+    "pulsemixer"
+  ]
+}

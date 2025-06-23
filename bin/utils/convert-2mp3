@@ -1,0 +1,208 @@
+#!/bin/bash
+# shellcheck disable=SC2086
+# shellcheck disable=SC2155
+
+# Script para crear mirrors en formato .mp3 de una biblioteca de música.
+
+# por aleister888 <pacoe1000@gmail.com>
+# Licencia: GNU GPLv3
+
+export PARALLEL_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"/parallel
+
+# Función para verificar que las dependencias estan instaladas
+check_command() {
+	if ! command -v "$1" &>/dev/null; then
+		echo -e "El comando $1 no se encontró. Por favor, instálalo usando:\n"
+		echo "$2"
+		exit 1
+	fi
+}
+
+# Verificar que todas las dependencias están instaladas
+check_command "ffmpeg" "sudo pacman -S ffmpeg"
+check_command "glyrc" "sudo pacman -S glyrc"
+check_command "eyeD3" "yay -S python-eyed3"
+
+usage() {
+	echo -e "Uso: $0 [-plh] [Directorio original] [Directorio para la copia]\n"
+	printf "  -p: Convertir archivos en paralelo (Más rápido, pero consumirá más recursos)\n"
+	printf "  -l: Añadir letras (Más lento, requiere conexión a internet)\n"
+	printf "  -h: Mostrar este mensaje\n"
+	exit 1
+}
+
+# Verificar si no se han pasado argumentos
+if [ $# -eq 0 ]; then
+	usage
+fi
+
+# Obtener las flags
+PARALLEL=false
+LYRICS=false
+
+while getopts 'plh' FLAG; do
+	case "${FLAG}" in
+	p) PARALLEL=true ;;
+	l) LYRICS=true ;;
+	h) usage ;;
+	*) usage ;;
+	esac
+done
+
+shift $((OPTIND - 1))
+
+# Directorios
+OG_DIR="$1"
+BK_DIR="$2"
+TMP_DIR="/tmp"
+
+# Verificar que los directorios existan
+if [ ! -d "$OG_DIR" ] || [ ! -d "$BK_DIR" ]; then
+	echo "Error: Uno o ambos directorios no existen."
+	exit 1
+fi
+
+# Crear archivos temporales
+OG_TMP=$(mktemp "$TMP_DIR/OG_DIR.XXXXXX")
+BK_TMP=$(mktemp "$TMP_DIR/BK_DIR.XXXXXX")
+SYNC_DIFF=$(mktemp "$TMP_DIR/SYNC_DIFF.XXXXXX")
+
+echo "Buscando archivos desactualizados o sobrantes..."
+
+# Almacenar la lista de archivos en variables temporales
+find "$OG_DIR" -type f -printf '%P\n' | sed 's/\.[^.]*$//' >"$OG_TMP"
+find "$BK_DIR" -type f -printf '%P\n' | sed 's/\.[^.]*$//' >"$BK_TMP"
+
+# Crear un script para borrar los archivos que han sido eliminados en el directorio original
+grep -vFxf "$OG_TMP" "$BK_TMP" | uniq >"$SYNC_DIFF"
+sed -i -e "s|^|rm -rf \"$BK_DIR/|" -e 's|$|.mp3"|' -e '1i #!/bin/sh' "$SYNC_DIFF" >/dev/null 2>&1
+
+# Función para comparar y añadir archivos obsoletos al archivo SYNC_DIFF
+compare_and_append() {
+	while read -r FILE; do
+		local OG_FILE="$OG_DIR/$FILE"
+		local OG_TIME=$(date -r "$OG_FILE" +%Y%m%d%H%M%S 2>/dev/null)
+		local BK_FILE="$BK_DIR/${FILE%.*}.mp3"
+
+		if [ -e "$OG_FILE" ]; then
+			if [ -e "$BK_FILE" ]; then
+				BK_TIME=$(date -r "$BK_FILE" +%Y%m%d%H%M%S 2>/dev/null)
+				if [ "$OG_TIME" -gt "$BK_TIME" ]; then
+					echo "rm -rf \"$BK_FILE\"" >>"$SYNC_DIFF"
+				fi
+			fi
+		fi
+	done
+}
+
+# Buscamos que archivos estan desactualizados para borrarlos también
+find "$OG_DIR" -type f \
+	\( -name '*.mp3' -o -name '*.m4a' -o -name '*.amr' \
+	-o -name '*.aac' -o -name '*.wav' -o -name '*.flac' \) \
+	-printf '%P\n' | compare_and_append
+echo "Hecho!"
+
+# Borramos las pistas desactualizadas/sobrantes y los archivos temporales
+if [ -s "$SYNC_DIFF" ]; then
+	chmod +x "$SYNC_DIFF" && sed -i 's/\$/\\$/g' "$SYNC_DIFF"
+	echo "Borrando $(grep -vc '#!/bin/sh' "$SYNC_DIFF") archivos..."
+	sh "$SYNC_DIFF" && echo "Hecho!"
+	rm -f "$SYNC_DIFF" "$OG_TMP" "$BK_TMP"
+else # Si el script tiene tamaño 0, no se borra nada
+	echo "No hay archivos que borrar"
+	rm -f "$SYNC_DIFF" "$OG_TMP" "$BK_TMP"
+fi
+
+# Función para realizar la conversión de archivos
+convert_file() {
+	local FILE="$1"
+	local DEST_DIR="$2"
+	local OG_DIR="$3"
+	local DEST_FILE
+	local TMPLYRICS="/tmp/$RANDOM$RANDOM.txt" # Archivo temporal para las letras
+	local DEST_FILE="$DEST_DIR/${FILE%.*}.mp3"
+
+	# Función para borrar/sustituir caracteres conflictivos
+	clean_non_ascii() {
+		iconv -f UTF-8 -t ASCII//TRANSLIT
+	}
+
+	# Si no existe el archivo, convertir a .mp3
+	if [ ! -e "$DEST_FILE" ]; then
+
+		mkdir -p "$(dirname "$DEST_FILE")"
+		echo "Convirtiendo $FILE a MP3"
+
+		# Extraer metadatos y guardar en memoria
+		local METADATA=$(ffmpeg -nostdin -i "$OG_DIR/$FILE" -f ffmetadata - 2>&1)
+		local TITLE=$(echo "$METADATA" | awk -F '=' 'tolower($0) ~ /^title=/ {print $2}' | clean_non_ascii)
+		local ARTIST=$(echo "$METADATA" | awk -F '=' 'tolower($0) ~ /^artist=/ {print $2}' | clean_non_ascii)
+		local ALBUM_ARTIST=$(echo "$METADATA" | awk -F '=' 'tolower($0) ~ /^album_artist=/ {print $2}' | clean_non_ascii)
+		local ALBUM=$(echo "$METADATA" | awk -F '=' 'tolower($0) ~ /^album=/ {print $2}' | clean_non_ascii)
+		local TRACK=$(echo "$METADATA" | awk -F '=' 'tolower($0) ~ /^track=/ {print $2}' | sed 's|/.*||')
+		local DISC=$(echo "$METADATA" | awk -F '=' 'tolower($0) ~ /^disc=/ {print $2}' | sed 's|/.*||')
+		local DATE=$(echo "$METADATA" | awk -F '=' 'tolower($0) ~ /^date=/ {print $2}' | sed 's|-.*||')
+		[ -z "$DISC" ] && DISC=1
+		[ -z "$TRACK" ] && TRACK=1
+		[ -z "$DISC" ] && DISC=1
+
+		# Convertir a mp3
+		ffmpeg -nostdin -i "$OG_DIR/$FILE" \
+			-codec:a libmp3lame \
+			-field_order tt -r 1 \
+			-vcodec mjpeg \
+			-vf scale=480:480 \
+			-metadata:s:v title="Album cover" \
+			-metadata:s:v comment="Cover (front)" \
+			-map_metadata -1 \
+			-metadata artist="$ARTIST" \
+			-metadata title="$TITLE" \
+			-metadata album="$ALBUM" \
+			-metadata album_artist="$ALBUM_ARTIST" \
+			-metadata date="$DATE" \
+			-metadata track="$TRACK" \
+			-metadata disc="$DISC" \
+			"$DEST_FILE" >/dev/null 2>&1
+
+		# Añadir la letras (si se eligió así)
+		if [ "$4" = "true" ]; then
+			# Obtener la letra
+			glyrc lyrics -a "$ARTIST" -t "$TITLE" \
+				-l "en" --write "$TMPLYRICS" --from "chartlyrics;metallum" >/dev/null 2>&1
+			# Añadir letra, borrando/sustituyendo caracteres conflictivos (Si esta se encontró)
+			if [ -f "$TMPLYRICS" ]; then
+				iconv -f UTF-8 -t ASCII//TRANSLIT "$TMPLYRICS" -o "$TMPLYRICS"
+				atomicparsley "$DEST_FILE" --lyrics "$(cat $TMPLYRICS)" --overWrite >/dev/null 2>&1
+				rm -f "$TMPLYRICS"
+			fi
+		fi
+	fi
+}
+
+# Exportar la función "convert_file" para invocarla de forma paralela
+export -f convert_file
+
+# Convertir archivos de formatos compatibles
+if [ $PARALLEL = "true" ]; then
+	# Calcular el número máximo de descriptores de archivo que vamos a usar
+	FDS=$(($(ulimit -n) / 14))
+	# Convertir los archivos de forma paralela
+	find "$OG_DIR" -type f \
+		\( -name '*.mp3' -o -name '*.m4a' -o -name '*.amr' \
+		-o -name '*.aac' -o -name '*.wav' -o -name '*.flac' \) \
+		-printf '%P\n' |
+		parallel -j "$FDS" -P "$(nproc --ignore=$(($(nproc) / 3)))" \
+			--no-notice convert_file "{= s/\n/\\n/g =}" \'$BK_DIR\' \'$OG_DIR\' \'$LYRICS\'
+else
+	# Convertir los archivos de uno en uno
+	find "$OG_DIR" -type f \
+		\( -name '*.mp3' -o -name '*.m4a' -o -name '*.amr' \
+		-o -name '*.aac' -o -name '*.wav' -o -name '*.flac' \) \
+		-printf '%P\n' | while read -r FILE; do
+		convert_file "$FILE" "$BK_DIR" "$OG_DIR" "$LYRICS"
+	done
+fi
+
+# Borrar los directorios vacíos en la carpeta de destino
+echo "Se borraron $(find "$BK_DIR" -type d -empty -not -path "*/.stfolder" -delete -print 2>/dev/null | wc -l) carpetas vacias."
+echo "El script terminó de ejecutarse"

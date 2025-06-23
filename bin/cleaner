@@ -1,0 +1,76 @@
+#!/bin/bash -x
+
+# Hacer que npm user la especificación de directorios XDG
+npm_xdg() {
+	local CONFIG_DIR
+	CONFIG_DIR="$(dirname "$NPM_CONFIG_USERCONFIG")"
+	mkdir -p "$CONFIG_DIR"
+	cat <<-'EOF' | tee "$NPM_CONFIG_USERCONFIG"
+		prefix=${XDG_DATA_HOME}/npm
+		cache=${XDG_CACHE_HOME}/npm
+		init-module=${XDG_CONFIG_HOME}/npm/config/npm-init.js
+		tmp=${XDG_RUNTIME_DIR}/npm
+		logfile=${XDG_CACHE_HOME}/npm/logs/npm.log
+	EOF
+
+	mv "$HOME/.npm/_cacache" "$XDG_CACHE_HOME/npm" 2>/dev/null
+	mv "$HOME/.npm/_logs" "$XDG_CACHE_HOME/npm/logs" 2>/dev/null
+	rm -rf "$HOME/.npm"
+}
+
+merge_delete() {
+	local OG XDG
+	OG="$1"
+	XDG="$2"
+	if [ -d "$OG" ]; then
+		cp -r "$OG" "$XDG"
+		rm -rf "$OG"
+	fi
+}
+
+moveto_xdg() {
+	local OG XDG
+	OG="$1"
+	XDG="$2"
+	if [ -f "$OG" ]; then
+		mkdir "$(dirname "$XDG")"
+		mv -f "$OG" "$XDG"
+	fi
+}
+
+move_hardcoded_dir() {
+	local OG XDG
+	OG="$1"
+	XDG="$2"
+	if [[ ! -L "$OG" ]] && [ -d "$OG" ]; then
+		merge_delete "$OG" "$XDG"
+		ln -s "$XDG" "$OG"
+	fi
+}
+
+# Mover archivos según la especificación XDG
+
+[ -d "$HOME/.npm" ] && npm_xdg
+
+merge_delete "$HOME/.pki" "$XDG_DATA_HOME/pki/"
+merge_delete "$HOME/.gnupg" "$XDG_DATA_HOME/gnupg"
+merge_delete "$HOME/.cargo" "$XDG_DATA_HOME/cargo"
+merge_delete "$HOME/go" "$XDG_DATA_HOME/go"
+
+moveto_xdg "$HOME/.pulse-cookie" "$XDG_CONFIG_HOME/pulse/cookie"
+moveto_xdg "$HOME/.gitconfig" "$XDG_CONFIG_HOME/git/config"
+
+move_hardcoded_dir "$HOME/.java" "$XDG_CONFIG_HOME/java"
+move_hardcoded_dir "$HOME/.codetogether" "$HOME/.config/codetogether"
+move_hardcoded_dir "$HOME/.webclipse" "$HOME/.config/webclipse"
+
+# Borrar archivos
+rm -f "$HOME/.wget-hsts"
+rm -rf \
+	"$HOME/Escritorio" \
+	"$HOME/.wine" \
+	"$HOME/.xsession-errors" \
+	"$HOME/.yarnrc" \
+	"$XDG_CONFIG_HOME/menus" \
+	"$XDG_DATA_HOME/desktop-directories" \
+	"$XDG_DATA_HOME/applications/wine"*

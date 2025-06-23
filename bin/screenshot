@@ -1,0 +1,46 @@
+#!/bin/sh
+
+makoctl dismiss -a
+
+NAME="$(date +"%Y-%m-%d_%H-%M-%S").png"
+SCRENDIR="$HOME/Imágenes/Screenshots"
+FILE="$SCRENDIR/$NAME"
+TMP="/tmp/screenshot.png"
+SOUND="/usr/share/sounds/freedesktop/stereo/camera-shutter.oga"
+
+mkdir -p "$SCRENDIR"
+
+capture() {
+	MODE=$1
+	DESTINATION=$2
+
+	if [ "$MODE" = "all" ]; then
+		grim "$DESTINATION"
+	else
+		# Selección con slurp para área
+		grim -g "$(slurp)" "$DESTINATION"
+	fi
+
+	if [ "$DESTINATION" = "$TMP" ]; then
+		# Copiar al portapapeles con wl-copy (imagen PNG)
+		wl-copy <"$TMP"
+		notify-send -i "$TMP" 'Captura copiada al Portapapeles'
+		rm "$TMP"
+	else
+		notify-send -i "$FILE" "$NAME"
+	fi
+
+	pw-play "$SOUND"
+}
+
+pkill unclutter
+
+case "$1" in
+all_clip) capture all "$TMP" ;;
+selection_clip) capture selection "$TMP" ;;
+all_save) capture all "$FILE" ;;
+selection_save) capture selection "$FILE" ;;
+*) echo "Uso: $0 {all_clip|selection_clip|all_save|selection_save}" ;;
+esac
+
+exec unclutter --start-hidden --timeout 2

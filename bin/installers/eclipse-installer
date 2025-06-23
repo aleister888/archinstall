@@ -1,0 +1,88 @@
+#!/bin/bash
+
+# Script para instalar/desinstalar Eclipse IDE
+
+INSTALL_DIR="$HOME/.local/opt/eclipse"
+RUN_SCRIPT="$HOME/.local/bin/eclipse"
+DESKTOP_FILE="$HOME/.local/share/applications/eclipse.desktop"
+
+install() {
+	VERSION_URL="https://www.eclipse.org/downloads/packages/"
+	# Obtener la última versión de Eclipse desde el sitio web
+	BASE_URL=$(
+		curl -s "$VERSION_URL" |
+			grep -oP '/technology/epp/downloads/release/[0-9]{4}-[0-9]{2}/R/eclipse-rcp-[0-9]{4}-[0-9]{2}-R-linux-gtk-x86_64.tar.gz' |
+			sort | tail -n 1
+	)
+	DOWNLOAD_URL="https://ftp.halifax.rwth-aachen.de/eclipse/$BASE_URL"
+	FILENAME="$(echo "$DOWNLOAD_URL" | grep -o "eclipse-rcp-.*")"
+
+	if [ -z "$DOWNLOAD_URL" ]; then
+		echo "No se pudo obtener la versión de Eclipse."
+		exit 1
+	fi
+
+	# Definir la URL y el archivo correspondiente a la última versión
+	TAR_LOCATION="/tmp/$FILENAME"
+
+	# Descargar y descomprimir el archivo
+	curl -L "$DOWNLOAD_URL" -o "$TAR_LOCATION" || exit
+	tar -xzf "$TAR_LOCATION" -C /tmp
+
+	# Instalarlo en $HOME
+	mkdir -p "$(dirname "$INSTALL_DIR")"
+	mv /tmp/eclipse "$INSTALL_DIR"
+
+	# Configurar el workspace por defecto
+	sed -i 's|@user.home/eclipse-workspace|@user.home/.local/share/eclipse-workspace|' \
+		"$INSTALL_DIR/eclipse.ini"
+
+	# Crear script de inicio
+	cat <<-EOF >"$RUN_SCRIPT"
+		#!/bin/sh
+		export GTK_THEME=Adwaita:dark
+		$INSTALL_DIR/eclipse
+		rm -rf $HOME/.p2
+	EOF
+	chmod +x "$RUN_SCRIPT"
+
+	cat <<-EOF >"$DESKTOP_FILE"
+		[Desktop Entry]
+		Name=Eclipse IDE
+		Type=Application
+		Exec=$RUN_SCRIPT
+		Terminal=false
+		Icon=$INSTALL_DIR/icon.xpm
+		Comment=Integrated Development Environment
+		Categories=Development;IDE;
+		StartupWMClass=Eclipse
+	EOF
+
+}
+
+uninstall() {
+	rm -rf "$INSTALL_DIR"
+	rm -f "$RUN_SCRIPT"
+	rm -f "$DESKTOP_FILE"
+}
+
+clean() {
+	rm -rf "${XDG_CACHE_HOME:-$HOME/.cache}"/Eclipse
+	rm -rf "${XDG_DATA_HOME:-$HOME/.local/share}"/Eclipse
+	rm -rf "${XDG_DATA_HOME:-$HOME/.local/share}"/eclipse-workspace
+	rm -rf ~/.m2
+}
+
+help_msg() {
+	echo "Uso:" >&2
+	echo "  $(basename "$0") [--install/--uninstall/--clean]" >&2
+	exit 1
+}
+
+# Manejo de argumentos
+case "$1" in
+--install) install ;;
+--uninstall) uninstall ;;
+--clean) clean ;;
+*) help_msg ;;
+esac

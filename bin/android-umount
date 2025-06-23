@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Script para desmontar dispositivos android
+
+# Elegir que dispositivo Android desmontar
+CHOSEN="$(
+	awk '/simple-mtpfs/ {print $2}' /etc/mtab |
+		dmenu -p "Que dispositivo desmontar?"
+)" || exit 1
+
+# Verificar si se seleccionó un dispositivo
+[ -z "$CHOSEN" ] && exit
+
+# Intentar desmontar el dispositivo seleccionado
+if sudo umount -l "$CHOSEN"; then
+	notify-send "🤖 Dispositivo Android $CHOSEN desmontado"
+else
+	notify-send "🤖 Hubo un error al desmontar $CHOSEN"
+fi

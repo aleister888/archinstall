@@ -1,0 +1,61 @@
+#!/bin/bash
+
+DIRECTION=$1 # "next" o "prev"
+
+# Obtenemos los workspaces con ID >= 0
+mapfile -t WORKSPACES < <(hyprctl workspaces -j | jq -r '.[] | select(.id >= 0) | .id' | sort -n)
+
+# Obtenemos el workspace actual
+CURRENT=$(hyprctl activeworkspace | head -n1 | awk '{print $3}')
+
+# Intentamos encontrar el índice exacto del workspace actual
+# (Podriamos estar en un workspace sin ventanas activas que no esta en el array)
+CURRENT_INDEX=""
+for i in "${!WORKSPACES[@]}"; do
+	if [[ "${WORKSPACES[$i]}" == "$CURRENT" ]]; then
+		CURRENT_INDEX=$i
+		break
+	fi
+done
+
+# Contamos los workspace activos
+TOTAL=${#WORKSPACES[@]}
+
+# Si el workspace actual no tiene ventanas, buscamos su posición lógica en la lista ordenada
+if [[ -z "$CURRENT_INDEX" ]]; then
+	for i in "${!WORKSPACES[@]}"; do
+		if ((CURRENT < WORKSPACES[i])); then
+			CURRENT_INDEX=$i
+			break
+		fi
+	done
+
+	# Si es mayor que todos, va al final
+	if [[ -z "$CURRENT_INDEX" ]]; then
+		CURRENT_INDEX=$TOTAL
+	fi
+
+	# Si queremos avanzar, el indice se ha igualado con el del primer workspace
+	# mayor, así que no debemos sumar para avanzar
+	if [[ "$DIRECTION" == "next" ]]; then
+		TARGET_INDEX=$((CURRENT_INDEX % TOTAL))
+	# Si queremos retroceder debemos retroceder 1 en la lista
+	elif [[ "$DIRECTION" == "prev" ]]; then
+		TARGET_INDEX=$(((CURRENT_INDEX - 1 + TOTAL) % TOTAL))
+	else
+		exit 1
+	fi
+else
+	# Si el workspace actual está en la lista, usamos su índice real
+	if [[ "$DIRECTION" == "next" ]]; then
+		TARGET_INDEX=$(((CURRENT_INDEX + 1) % TOTAL))
+	elif [[ "$DIRECTION" == "prev" ]]; then
+		TARGET_INDEX=$(((CURRENT_INDEX - 1 + TOTAL) % TOTAL))
+	else
+		exit 1
+	fi
+fi
+
+# Cambiar al workspace de destino
+TARGET_WS=${WORKSPACES[$TARGET_INDEX]}
+hyprctl dispatch workspace "$TARGET_WS"
