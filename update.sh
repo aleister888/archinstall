@@ -87,8 +87,8 @@ wait
 #######################################
 
 # Instalar archivos de configuración y scripts
-sh -c "cd $REPO_DIR && stow --target=${HOME}/.local/bin/ bin/" >/dev/null &
-sh -c "cd $REPO_DIR && stow --target=${HOME}/.config/ .config/" >/dev/null &
+sh -c "cd $REPO_DIR && stow --adopt --target=${HOME}/.local/bin/ bin/" >/dev/null &
+sh -c "cd $REPO_DIR && stow --adopt --target=${HOME}/.config/ .config/" >/dev/null &
 
 ln -sf "$REPO_DIR/assets/configs/.profile" "$HOME/.profile"
 ln -sf "$REPO_DIR/assets/configs/.profile" "$CONF_DIR/zsh/.zprofile"
