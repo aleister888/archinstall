@@ -25,7 +25,7 @@ alias lostfiles='sudo lostfiles | grep -iv "Theme\|opt\|Font"'
 # Detectar que paquetes del AUR necesitan recompilarse
 alias rebuild-detector="checkrebuild -v"
 # Para pasar el output de un comando al portapeles con: comando | clipboard
-alias clipboard="xclip -selection clipboard"
+alias clipboard="wl-copy"
 
 alias webcam="ffplay /dev/video0"
 
@@ -37,12 +37,12 @@ filetype() {
 
 # Para reinciar pipewire
 pw_restart() {
-	rc-service wireplumber stop -U
-	rc-service pipewire-pulse stop -U
-	rc-service pipewire stop -U
-	rc-service pipewire start -U
-	rc-service pipewire-pulse start -U
-	rc-service wireplumber start -U
+	systemctl --user stop wireplumber
+	systemctl --user stop pipewire-pulse
+	systemctl --user stop pipewire
+	systemctl --user start pipewire
+	systemctl --user start pipewire-pulse
+	systemctl --user start wireplumber
 }
 
 # Limpiar dependencias innecesarias
@@ -72,27 +72,12 @@ reinstall() {
 # Función para restaurar los paquetes
 # instalados explícitamente como tales
 reexplicit() {
-	for PACK in $(yay -Qq); do
+	for PACKAGE in $(yay -Qq); do
 		if grep -E "\[ALPM\] installed" /var/log/pacman.log |
-			grep "$PACK" >/dev/null 2>&1; then
-			sudo pacman -D --asexplicit "$PACK"
+			grep "$PACKAGE" >/dev/null 2>&1; then
+			sudo pacman -D --asexplicit "$PACKAGE"
 		fi
 	done
-}
-
-# Imprimir instancia, clase y título de la ventana seleccionada
-xprop_wininfo() {
-	xprop | awk '
-	/^WM_CLASS/ {
-		sub(/^.* = /, "instance:");
-		sub(/,/, "\nclass:");
-		print
-	}
-	/^WM_NAME/ {
-		sub(/^.* = /, "title:");
-		print
-	}
-	'
 }
 
 # Borrar entornos de un código laTeX
@@ -110,21 +95,8 @@ screenrecord() {
 		return 1
 	fi
 	# Detectar resolución de pantalla
-	RESOLUTION=$(xrandr | grep '\*' | awk '{print $1}')
-	# Definir dispositivos de audio
-	MICROPHONE=$(pactl list sources | grep -oP "Name: \K.*input.*" | head -n 1)
-	APPLICATIONS=$(pactl list sources | grep -oP "Name: \K.*output.*" | head -n 1)
-	ffmpeg \
-		-video_size "$RESOLUTION" \
-		-framerate 30 \
-		-f x11grab -i :0.0 \
-		-f pulse -i "$MICROPHONE" \
-		-f pulse -i "$APPLICATIONS" \
-		-filter_complex "[1:a][2:a]amerge=inputs=2[audio]" \
-		-map 0:v -map "[audio]" \
-		-c:v libx264 -preset ultrafast -crf 18 \
-		-c:a aac -b:a 192k \
-		"$1"
+	RESOLUTION=$(hyprctl monitors | grep -v "availableModes" | grep -oP "\d+x\d+(?=@)" | head -n1)
+	wf-recorder -g "$RESOLUTION" -a -f "$1"
 }
 
 yabridgectl_dirs() {
@@ -177,38 +149,6 @@ indent_check() {
 			if (spaces % n != 0) print NR, "Indentación incorrecta:", spaces, "espacios ->", $0
 		}
 	}' "$2"
-}
-
-# Función para ver el historial de commits
-git_view_commits() {
-	git log --oneline --graph --decorate | nvim -
-}
-# Función para restaurar con git reset --hard origin
-git_reset_hard() {
-	unset RESPUESTA
-	echo "¿Estás seguro? Se perderán los cambios locales (s/N)"
-	read -r RESPUESTA
-	if [ "$RESPUESTA" = "s" ] || [ "$RESPUESTA" = "S" ]; then
-		git reset --hard origin
-	else
-		echo "Operación cancelada."
-	fi
-}
-# Función para hacer reset a un commit específico
-git_reset_to_commit() {
-	unset COMMIT_HASH
-	unset ANS
-	echo "Por favor, introduce el hash del commit:"
-	read -r COMMIT_HASH
-	# Confirmar antes de hacer el reset
-	echo "¿Estás seguro de que quieres retroceder al commit $COMMIT_HASH? (s/N)"
-	read -r ANS
-	if [ "$ANS" = "s" ] || [ "$ANS" = "S" ]; then
-		# Realizar el reset al commit seleccionado
-		git reset --hard "$COMMIT_HASH"
-	else
-		echo "Operación cancelada."
-	fi
 }
 
 code_format() {

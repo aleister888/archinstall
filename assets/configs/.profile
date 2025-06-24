@@ -15,6 +15,9 @@ fi
 [ -d "$HOME/.local/bin/utils" ] && PATH="$HOME/.local/bin/utils:$PATH"
 [ -d "$HOME/.local/bin/installers/" ] && PATH="$HOME/.local/bin/installers:$PATH"
 
+# Directorio con los iconos (notificaciones)
+export NOTIFY_ICON_PATH="/usr/share/icons/Papirus-Dark/128x128/apps"
+
 # Definir cursor usado por X11
 export XCURSOR_PATH="/usr/share/icons:${XDG_DATA_HOME}/icons"
 export XCURSOR_PATH=/usr/share/icons/

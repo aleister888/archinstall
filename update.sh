@@ -118,20 +118,14 @@ fi &
 # Configurar GTK y QT #
 #######################
 
-if [ ! -f "$CONF_DIR/gtk-3.0/bookmarks" ]; then
-	HAD_BOOKMARKS="false"
-else
-	HAD_BOOKMARKS="true"
-	TMP_BOOKMARKS="/tmp/bookmarks"
-	cp -f "$CONF_DIR/gtk-3.0/bookmarks" "$TMP_BOOKMARKS"
+if [ ! -e "$HOME/.local/share/nwg-look/gsettings" ]; then
+	mkdir -p "$HOME/.local/share/nwg-look"
+	cp "$ASSETDIR/gtk/gsettings" "$HOME/.local/share/nwg-look/gsettings"
+	nwg-look -a
+	nwg-look -x
 fi
 
-# Copiar la configuración de GTK
-rm -rf ~/.config/gtk-[3-4].0
-cp -rf "$ASSETDIR/gtk/gtk-3.0" ~/.config/gtk-3.0
-cp -rf "$ASSETDIR/gtk/gtk-4.0" ~/.config/gtk-4.0
-
-if [ "$HAD_BOOKMARKS" = "false" ]; then
+if [ ! -f "$CONF_DIR/gtk-3.0/bookmarks" ]; then
 	# Definimos nuestros directorios anclados
 	cat <<-EOF >"$CONF_DIR/gtk-3.0/bookmarks"
 		file://$HOME
@@ -141,8 +135,6 @@ if [ "$HAD_BOOKMARKS" = "false" ]; then
 		file://$HOME/Vídeos
 		file://$HOME/Música
 	EOF
-elif [ "$HAD_BOOKMARKS" = "true" ]; then
-	mv "$TMP_BOOKMARKS" "$CONF_DIR/gtk-3.0/bookmarks"
 fi
 
 sudo sh -c "

@@ -129,9 +129,8 @@ cmd cdterm &{{
 
 # Enviar una notificación con el tamaño del ítem seleccionado
 cmd size &{{
-	dunstctl close-all
-	notify-send -i system-file-manager \
-	"El tamaño es de $(/usr/bin/du -chs $fx | grep total | awk {'print $1'})"
+	notify-send -i "$NOTIFY_ICON_PATH/system-file-manager.svg" \
+		"El tamaño es de $(/usr/bin/du -chs $fx | grep total | awk '{print $1}')"
 }}
 
 # Renombrar el contenido de un directorio con nvim
@@ -213,9 +212,14 @@ cmd paste &{{
 			stdbuf -i0 -o0 -e0 tr '\r' '\n' |
 			while IFS= read -r line; do
 				/usr/bin/lf -remote "send $id echo $line"
-			done && notify-send -i copyq "Archivo(s) copiados." >/dev/null
+			done &&
+				notify-send -i "$NOTIFY_ICON_PATH/copyq.svg" \
+					"Archivo(s) copiados."
 			;;
-		move) mv -n -- "$@" . && notify-send -i copyq "Archivo(s) movidos."
+		move)
+			mv -n -- "$@" . &&
+				notify-send -i "$NOTIFY_ICON_PATH/copyq.svg" \
+				"Archivo(s) movidos."
 		;;
 	esac
 	rm ~/.local/share/lf/files
@@ -329,8 +333,10 @@ map m push %mkdir<space>
 
 # Copiar el directorio del archivo actual al portapapeles
 map Y ${{
-	printf '"%s"' "$(dirname "$fx")" | xclip -selection clipboard
-	notify-send -i gpaste "Ruta copiada al portapapeles"
+	printf '"%s"' "$(dirname "$fx")" | wl-copy
+	notify-send -i "$NOTIFY_ICON_PATH/gpaste.svg" \
+		"Ruta copiada al portapapeles" \
+		"$(dirname "$fx")"
 }}
 
 # Salir del programa

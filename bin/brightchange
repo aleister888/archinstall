@@ -63,4 +63,4 @@ echo "$NEXT" | sudo tee $BRIGHT_DEV/brightness
 
 pw-play $SOUND
 
-notify-send -i brightness "Brillo: $(((INDEX + 1) * 100 / LEVELS))%" -t 500
+notify-send -i "$NOTIFY_ICON_PATH/brightness.svg" "Brillo: $(((INDEX + 1) * 100 / LEVELS))%" -t 500

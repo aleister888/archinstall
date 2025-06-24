@@ -8,7 +8,8 @@
   ],
   "iconos_temas_y_cursores": [
     "capitaine-cursors",
-    "tela-circle-icon-theme-standard",
-    "gruvbox-dark-gtk"
+    "gruvbox-dark-gtk",
+    "papirus-icon-theme",
+    "tela-circle-icon-theme-standard"
   ]
 }
