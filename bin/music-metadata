@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Número máximo de caracteres del output
-[ -z "$FACT" ] && FACT=38
+[ -z "$FACT" ] && FACT=30
 [ -z "$ALTFACT" ] && ALTFACT=12
 
 # Establecemos el reproductor
@@ -10,7 +10,7 @@ PLAYER="$(music-priority)"
 makesafe() {
 	if [ "${#1}" -gt "$FACT" ]; then
 		local CROPPED="${1:0:$((FACT - 3))}"
-		echo "${CROPPED% }..."
+		echo "${CROPPED% }… "
 	else
 		[ -z "$1" ] || echo "$1"
 	fi
