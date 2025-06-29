@@ -13,7 +13,7 @@ window#waybar {
 }
 
 #workspaces {
-  margin: 0 7.5px;
+  padding: 0 7.5px;
   font-weight: normal;
 }
 
@@ -22,45 +22,46 @@ window#waybar {
 }
 
 #custom-music-metadata {
+  padding: 0 7.5px;
   color: #f7f3d6;
   font-weight: 600;
 }
 
-#battery {
-  margin: 0 7.5px;
+#custom-battery {
+  padding: 0 7.5px;
   color: #689d6a;
 }
 
 #custom-disk {
-  margin: 0 7.5px;
+  padding: 0 7.5px;
   color: #d79921;
 }
 
 #custom-kernel {
-  margin: 0 7.5px;
+  padding: 0 7.5px;
   color: #458588;
 }
 
 #pulseaudio {
-  margin: 0 7.5px;
+  padding: 0 7.5px;
   color: #b16286;
 }
 
 #memory {
-  margin: 0 7.5px;
+  padding: 0 7.5px;
   color: #98971a;
 }
 
 #custom-date {
-  margin: 0 7.5px;
+  padding: 0 7.5px;
   color: #d65d0e;
 }
 
 #custom-time {
-  margin: 0 7.5px;
+  padding: 0 7.5px;
   color: #cc241d;
 }
 
 #tray {
-  margin: 0 7.5px;
+  padding: 0 7.5px;
 }

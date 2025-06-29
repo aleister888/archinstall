@@ -5,7 +5,7 @@
     "modules-left": ["hyprland/workspaces", "hyprland/window"],
     "modules-center": ["custom/music-metadata"],
     "modules-right": [
-        "battery",
+        "custom/battery",
         "custom/disk",
         "custom/kernel",
         "pulseaudio",
@@ -22,16 +22,13 @@
         "interval": 1,
         "exec": "music-metadata -d",
         "tooltip": false,
-        "on-click": "playerctl play-pause",
-        "on-scroll-up": "playerctl previous",
-        "on-scroll-down": "playerctl next"
+        "on-click": "music-control play-pause",
+        "on-scroll-up": "music-control previous",
+        "on-scroll-down": "music-control next"
     },
-    "battery": {
-        "format": "{icon} {capacity}%",
-        "format-icons": [
-            "󰁺", "󰁻", "󰁽",
-            "󰁿", "󰂁", "󰁹"
-        ],
+    "custom/battery": {
+        "interval": 1,
+        "exec": "~/.dotfiles/bin/sb/sb-bat",
         "on-click": "~/.dotfiles/bin/sb/sb-bat-info"
     },
     "custom/disk": {
@@ -71,7 +68,7 @@
         "exec": "date +'%H:%M'",
     },
     "tray": {
-        "icon-size": 24,
-        "spacing": 6
+        "icon-size": 20,
+        "spacing": 8
     }
 }
