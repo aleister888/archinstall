@@ -1,7 +1,7 @@
 font=Iosevka Term SS05 14
 sort=-time
 layer=overlay
-anchor=top-right
+anchor=top-left
 background-color=#1d2021
 text-color=#bbbbbb
 height=130
