@@ -72,8 +72,6 @@ fi
 # Añade integración con dbus para lf
 "$HOME"/.dotfiles/updater/lf-dbus &
 wait
-# Compilar aplicaciones suckless
-"$HOME"/.dotfiles/updater/suckless-compile &
 
 ############################
 # Aplicaciones por defecto #
@@ -118,7 +116,7 @@ fi &
 # Configurar GTK y QT #
 #######################
 
-if [ ! -e "$HOME/.local/share/nwg-look/gsettings" ]; then
+if [ ! -e "$HOME/.config/gtk-4.0/settings.ini" ]; then
 	mkdir -p "$HOME/.local/share/nwg-look"
 	cp "$ASSETDIR/gtk/gsettings" "$HOME/.local/share/nwg-look/gsettings"
 	nwg-look -a
@@ -136,16 +134,6 @@ if [ ! -f "$CONF_DIR/gtk-3.0/bookmarks" ]; then
 		file://$HOME/Música
 	EOF
 fi
-
-sudo sh -c "
-	if [ ! -e /root/.gtkrc-2.0 ]; then
-		mkdir -p /root/.config
-		rm -rf /root/.gtkrc-2.0 /root/.config/gtk-3.0 /root/.config/gtk-4.0
-		cp -f  \"$ASSETDIR/gtk/gtk-2.0/gtkrc\" /root/.gtkrc-2.0
-		cp -rf \"$ASSETDIR/gtk/gtk-3.0\"    /root/.config/gtk-3.0/
-		cp -rf \"$ASSETDIR/gtk/gtk-4.0\"    /root/.config/gtk-4.0/
-	fi
-" &
 
 # Instalamos el tema de GTK4
 if [ ! -d /usr/share/themes/Gruvbox-Dark ]; then

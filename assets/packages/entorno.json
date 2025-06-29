@@ -1,12 +1,12 @@
 {
   "general": [
-    "extra/j4-dmenu-desktop",
     "fastfetch",
     "feh",
     "grim",
     "hyprland",
     "hyprlock",
     "hyprpolkitagent",
+    "kitty",
     "mediainfo",
     "nwg-look",
     "slurp",
@@ -15,6 +15,7 @@
     "uwsm",
     "waybar",
     "wl-clipboard",
+    "wofi",
     "xdg-desktop-portal-hyprland",
     "yad",
     "yt-dlp",

@@ -54,7 +54,6 @@
     "inkscape",
     "lf",
     "rsync",
-    "trash-cli",
-    "ueberzug"
+    "trash-cli"
   ]
 }

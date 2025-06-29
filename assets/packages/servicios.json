@@ -1,5 +1,6 @@
 {
   "general": [
+    "geoclue",
     "syncthing",
     "timeshift"
   ],

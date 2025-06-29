@@ -19,12 +19,12 @@ update-mime-database ~/.local/share/mime
 
 cp -f "$REPO_DIR/assets/desktop/lft.desktop" \
 	"$DATA_DIR/applications/file.desktop" 2>/dev/null
-echo "Exec=${TERMINAL:-st} ${TERMEXEC:-} lf %F" | tee -a \
+echo "Exec=${TERMINAL:-kitty} ${TERMEXEC:-} lf %F" | tee -a \
 	"$DATA_DIR/applications/file.desktop" >/dev/null
 
 cp -f "$REPO_DIR/assets/desktop/nvimt.desktop" \
 	"$DATA_DIR/applications/text.desktop" 2>/dev/null
-echo "Exec=${TERMINAL:-st} ${TERMEXEC:-} nvim %F" | tee -a \
+echo "Exec=${TERMINAL:-kitty} ${TERMEXEC:-} nvim %F" | tee -a \
 	"$DATA_DIR/applications/text.desktop" >/dev/null
 
 # Visor de imágenes

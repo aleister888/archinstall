@@ -1,0 +1,35 @@
+window {
+  margin: 0px;
+  border: 2px solid #b8bb26;
+  border-radius: 12px;
+  background-color: #1d2021;
+  font-family: "Iosevka Fixed SS05", "Symbols Nerd Font";
+  font-size: 18px;
+}
+
+#input {
+  margin: 5px;
+  color: #ebdbb2;
+  background-color: #282828;
+}
+
+#inner-box {
+  margin: 5px;
+}
+
+#outer-box {
+  margin: 5px;
+}
+
+#scroll {
+  margin: 0px;
+}
+
+#text {
+  margin: 5px;
+  color: #ebdbb2;
+}
+
+#entry:selected {
+  background-color: #3c3836;
+}

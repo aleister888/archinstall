@@ -1,4 +1,8 @@
 #!/bin/bash
+# shellcheck disable=SC2086
+
+DMENU="wofi --show dmenu -W 700"
+LINE_FLAG="-L"
 
 # Script para vincular (dispositivos de entrada)|(aplicaciones) a un micrófono virtual para compartir audio
 
@@ -61,7 +65,7 @@ sink_edit() {
 
 	# Elegir el sink con dmenu mostrando solo la información esencial
 	DMENU_SELECTED=$(echo "$SINKS" | sed 's/:.*//g' | sort -u |
-		dmenu -c -l 10)
+		eval $DMENU $LINE_FLAG 10)
 	if [ -z "$DMENU_SELECTED" ]; then
 		# Salir del script si no se eligió ninguna opción
 		exit
@@ -88,7 +92,7 @@ sink_edit() {
 # Elegir si vincular o desvincular sinks
 ADD="Añadir sink al micrófono virtual"
 DEL="Quitar sink del micrófono virtual"
-CHOSEN=$(echo -e "$ADD\n$DEL" | dmenu -c -l 10)
+CHOSEN=$(echo -e "$ADD\n$DEL" | eval $DMENU $LINE_FLAG 4)
 if [ "$CHOSEN" = "$ADD" ]; then
 	[ -z "$DEVICES" ] &&
 		notify-send -i $ICON "No hay sinks que añadir" && exit

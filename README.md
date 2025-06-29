@@ -1,6 +1,6 @@
 # ✨ Arch < dotfiles
 
-🛠️ **Auto-instalador para Arch Linux** con `Hyprland`, `st`, `dmenu` y mi configuración personal.
+🛠️ **Auto-instalador para Arch Linux** con `Hyprland` y mi configuración personal.
 
 <p float="center">
 <img src="https://raw.githubusercontent.com/aleister888/archinstall/refs/heads/main/assets/screenshots/screenshot1.png" width="49%" />

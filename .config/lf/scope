@@ -11,14 +11,13 @@ IFS="${IFS%_}"
 
 # Función para mostrar imágenes con ueberzug
 image() {
-	X=$4
-	Y=$5
-	MW=$(($2 - 1))
-	MH=$(($3 - 1)) # Variables de posición y geometría
+	W="$2"
+	H="$3"
+	X="$4"
+	Y="$5"
 
-	if [ -f "$1" ] && [ -n "$DISPLAY" ] && command -V ueberzug >/dev/null 2>&1; then
-		printf '{"action": "add", "identifier": "PREVIEW", "x": "%s", "y": "%s", "width": "%s", "height": "%s", "scaler": "contain", "path": "%s"}\n' \
-			"$X" "$Y" "$MW" "$MH" "$1" >"$FIFO_UEBERZUG"
+	if [ -f "$1" ] && [ -n "$WAYLAND_DISPLAY" ]; then
+		kitten icat --stdin no --transfer-mode memory --place "${W}x${H}@${X}x${Y}" "$1" </dev/null >/dev/tty
 	else
 		mediainfo "$6"
 	fi

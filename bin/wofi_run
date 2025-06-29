@@ -1,0 +1,14 @@
+#!/bin/bash
+# shellcheck disable=SC2046
+
+export PARALLEL_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"/parallel
+
+set -euo pipefail
+
+# Export PATH split into lines for parallel
+IFS=':' read -ra PATH_DIRS <<<"$PATH"
+
+# Run find in parallel over each PATH directory
+printf '%s\n' "${PATH_DIRS[@]}" | parallel --no-notice -j$(nproc) \
+	'find {} -maxdepth 1 -type f -executable -printf "%f\n"' |
+	sort -u | wofi -i --show dmenu | ${SHELL:-/bin/sh} >/dev/null 2>&1 &
