@@ -12,49 +12,53 @@ window#waybar {
   background: #1d2021;
 }
 
+#workspaces {
+  padding: 0 7.5px;
+}
+
 #workspaces button.active {
   background: #3c3836;
 }
 
 #custom-music-metadata {
-  padding: 7.5px;
+  padding: 0 7.5px;
 }
 
 #custom-battery {
-  padding: 7.5px;
+  padding: 0 7.5px;
   color: #689d6a;
 }
 
 #custom-disk {
-  padding: 7.5px;
+  padding: 0 7.5px;
   color: #d79921;
 }
 
 #custom-kernel {
-  padding: 7.5px;
+  padding: 0 7.5px;
   color: #458588;
 }
 
 #pulseaudio {
-  padding: 7.5px;
+  padding: 0 7.5px;
   color: #b16286;
 }
 
 #memory {
-  padding: 7.5px;
+  padding: 0 7.5px;
   color: #98971a;
 }
 
 #custom-date {
-  padding: 7.5px;
+  padding: 0 7.5px;
   color: #d65d0e;
 }
 
 #custom-time {
-  padding: 7.5px;
+  padding: 0 7.5px;
   color: #cc241d;
 }
 
 #tray {
-  padding: 7.5px;
+  padding: 0 7.5px;
 }
