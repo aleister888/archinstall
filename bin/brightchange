@@ -63,4 +63,6 @@ echo "$NEXT" | sudo tee $BRIGHT_DEV/brightness
 
 pw-play $SOUND
 
-notify-send -i "$NOTIFY_ICON_PATH/brightness.svg" "Brillo: $(((INDEX + 1) * 100 / LEVELS))%" -t 500
+makoctl dismiss -a
+notify-send -i "$NOTIFY_ICON_PATH/brightness.svg" \
+	"Brillo: $(((INDEX + 1) * 100 / LEVELS))%" -t 500

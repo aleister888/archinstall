@@ -67,10 +67,12 @@ move_hardcoded_dir "$HOME/.webclipse" "$HOME/.config/webclipse"
 # Borrar archivos
 rm -f "$HOME/.wget-hsts"
 rm -rf \
-	"$HOME/Escritorio" \
+	"$HOME/.gtkrc-2.0" \
 	"$HOME/.wine" \
 	"$HOME/.xsession-errors" \
 	"$HOME/.yarnrc" \
+	"$HOME/Escritorio" \
+	"$HOME/steam.desktop" \
 	"$XDG_CONFIG_HOME/menus" \
-	"$XDG_DATA_HOME/desktop-directories" \
-	"$XDG_DATA_HOME/applications/wine"*
+	"$XDG_DATA_HOME/applications/wine"* \
+	"$XDG_DATA_HOME/desktop-directories"
