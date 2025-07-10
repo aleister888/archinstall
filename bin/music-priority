@@ -5,8 +5,8 @@
 
 # Aquí se establece la prioridad de los reproductores:
 PRIORITY=(
-	"$BROWSER"
 	"tauon"
+	"$BROWSER"
 )
 
 # Lista de dominios permitidos para el navegador

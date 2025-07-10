@@ -44,7 +44,7 @@ cmd open ${{
 			HASH="$(stat --printf '%n\0%i\0%F\0%s\0%W\0%Y' -- "$(readlink -f "$f")" | sha256sum | awk '{print $1}')"
 			CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/lf/thumb.$HASH"
 			[ ! -f "$CACHE.jpg" ] && gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -r300 -dEPSCrop -sOutputFile="$CACHE.jpg" "$f" >/dev/null 2>&1
-			setsid -f nsxiv "$CACHE.jpg" 2>/dev/null
+			nsxiv "$CACHE.jpg" 2>/dev/null
 			;;
 		image/*)
 			BASE="$(basename "$f")"
@@ -52,7 +52,7 @@ cmd open ${{
 			awk -v BASE="$BASE" \
 			'BEGIN { lines = ""; m = 0; } { if ($0 == BASE) { m = 1; } } { if (!m) { if (lines) { lines = lines"\n"; } lines = lines""$0; } else { print $0; } } END { print lines; }' |
 			grep -iE '.+\.(jpg|jpeg|png|gif|bmp|tiff|ppm|svg|webp|xpm)' |
-			setsid -f nsxiv -aio 2>/dev/null | while read -r file; do
+			nsxiv -aio 2>/dev/null | while read -r file; do
 				[ -z "$file" ] && continue
 				lf -remote "send select \"$file\""
 				lf -remote "send toggle"
