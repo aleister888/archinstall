@@ -21,6 +21,7 @@ capture() {
 		grim -g "$(slurp)" "$DESTINATION"
 	fi
 
+	# TODO: Check if image was saved correctly
 	if [ "$DESTINATION" = "$TMP" ]; then
 		# Copiar al portapapeles con wl-copy (imagen PNG)
 		wl-copy <"$TMP"

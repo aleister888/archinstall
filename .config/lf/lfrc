@@ -61,7 +61,7 @@ cmd open ${{
 		audio/*)
 			mpv --audio-display=no "$f" ;;
 		video/*)
-			vlc "$f" 2>/dev/null ;;
+			mpv "$f" 2>/dev/null ;;
 		*/x-keepass2)
 			setsid -f keepassxc "$f" 2>/dev/null ;;
 		*/x-reaper-*)

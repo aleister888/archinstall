@@ -8,6 +8,7 @@
     "hyprpolkitagent",
     "kitty",
     "mediainfo",
+    "menu-qalc-wayland-git",
     "nwg-look",
     "slurp",
     "swayidle",
@@ -41,6 +42,7 @@
   "funcionalidades": [
     "desktop-file-utils",
     "libqalculate",
+    "pavucontrol",
     "perl-file-mimeinfo",
     "perl-image-exiftool",
     "xdg-desktop-portal-gtk",
@@ -84,7 +86,6 @@
     "wl-color-picker"
   ],
   "aplicaciones_tui": [
-    "htop",
-    "pulsemixer"
+    "htop"
   ]
 }

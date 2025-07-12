@@ -14,6 +14,9 @@
         "custom/time",
         "tray"
     ],
+    "hyprland/workspaces": {
+        "show-special": true
+    },
     "hyprland/window": {
         "max-length": 50
     },

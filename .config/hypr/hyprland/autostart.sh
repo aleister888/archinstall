@@ -66,7 +66,10 @@ if [ -e /sys/class/power_supply/BAT0 ]; then
 	MIC=$(pactl list short sources |
 		grep -E "alsa_input.pci-[0-9]*_[0-9]*_[0-9].\.[0-9].analog-stereo" |
 		awk '{print $1}')
-	pactl set-source-volume "$MIC" 25%
+	while true; do
+		pactl set-source-volume "$MIC" 20%
+		sleep 0.5
+	done
 fi &
 
 # Iniciar hydroxide si está instalado

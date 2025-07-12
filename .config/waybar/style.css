@@ -12,6 +12,10 @@ window#waybar {
   background: #1d2021;
 }
 
+#window {
+  padding: 0 5px;
+}
+
 #workspaces {
   padding: 0 7.5px;
 }
