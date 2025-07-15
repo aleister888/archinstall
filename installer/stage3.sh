@@ -61,7 +61,6 @@ driver_add() {
 			"lib32-vulkan-virtio"
 			"vulkan-virtio"
 			"xf86-input-vmmouse"
-			"xf86-video-vmware"
 		)
 		;;
 

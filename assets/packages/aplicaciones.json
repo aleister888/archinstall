@@ -33,8 +33,7 @@
     "ca-certificates",
     "ca-certificates-mozilla",
     "firefox",
-    "thunderbird",
-    "thunderbird-dark-reader"
+    "thunderbird"
   ],
   "tauon": [
     "python-pypresence",
