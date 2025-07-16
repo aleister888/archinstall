@@ -6,7 +6,7 @@ FILENAME="$(date +"%Y-%m-%d_%H-%M-%S").png"
 SCRENSHOTS_DIR="$HOME/Imágenes/Screenshots"
 FILEPATH="$SCRENSHOTS_DIR/$FILENAME"
 SOUND="/usr/share/sounds/freedesktop/stereo/camera-shutter.oga"
-TMP="/tmp/screenshot.jpg"
+TMP="/tmp/screenshot.png"
 
 mkdir -p "$SCRENDIR"
 
@@ -27,7 +27,8 @@ capture() {
 			notify-send -i "$TMP" 'Captura copiada al Portapapeles'
 			rm "$TMP"
 		else
-			notify-send -i "$FILE" "$NAME"
+			mv "$TMP" "$FILEPATH"
+			notify-send -i "$FILEPATH" "$FILENAME"
 		fi
 	else
 		notify-send -i "$NOTIFY_ICON_PATH/system-error.svg" 'Error al capturar'
