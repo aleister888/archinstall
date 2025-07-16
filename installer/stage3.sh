@@ -205,6 +205,9 @@ WINEPREFIX="$HOME/.config/wineprefixes" winetricks -q mfc42
 rm "$HOME"/.bash* 2>/dev/null
 rm "$HOME"/.wget-hsts 2>/dev/null
 
+# Cambiamos el layout de teclado de la tty a español
+echo "KEYMAP=es" | doas tee -a /etc/vconsole.conf
+
 mkdir -p "$HOME"/.local/share/gnupg
 
 toilet "Instalación terminada"

@@ -254,44 +254,6 @@ basestrap_install() {
 	done
 }
 
-# Elegimos distribución de teclado
-kb_layout_select() {
-	KEY_LAYOUTS=$(
-		find /usr/share/X11/xkb/symbols/ -mindepth 1 -type f \
-			-printf "%f\n" | sort -u | grep -v '...'
-	)
-
-	# Array con las diferentes distribuciones de teclado posibles
-	KEYBOARD_ARRAY=()
-	for KEY_LAYOUT in $KEY_LAYOUTS; do
-		KEYBOARD_ARRAY+=("$KEY_LAYOUT" "$KEY_LAYOUT")
-	done
-
-	# Elegimos nuestro layout
-	FINAL_LAYOUT=$(
-		whip_menu "Teclado" \
-			"Por favor, elige una distribucion de teclado:" \
-			${KEYBOARD_ARRAY[@]}
-	)
-}
-
-kb_layout_conf() {
-	mkdir -p /mnt/etc/X11/xorg.conf.d/ # X11
-	cat <<-EOF >/mnt/etc/X11/xorg.conf.d/00-keyboard.conf
-		Section "InputClass"
-		    Identifier "system-keyboard"
-		    MatchIsKeyboard "on"
-		    Option "XkbLayout" "$FINAL_LAYOUT"
-		    Option "XkbModel" "pc105"
-		    Option "XkbOptions" "terminate:ctrl_alt_bksp"
-		EndSection
-	EOF
-	# Si elegimos español, configurar el layout de la tty en español también
-	if [ "$FINAL_LAYOUT" == "es" ]; then
-		echo "KEYMAP=es" | sudo tee -a /etc/vconsole.conf
-	fi
-}
-
 # Calcular el DPI
 calculate_dpi() {
 	local RESOLUTION SIZE WIDTH HEIGHT FACT DISPLAY_DPI
@@ -519,10 +481,6 @@ scheme_setup
 
 # Formateamos, creamos la swap y montamos los discos
 disk_setup
-
-# Elegimos y establecemos la distribución de teclado
-kb_layout_select
-kb_layout_conf
 
 # Calculamos el DPI
 calculate_dpi
