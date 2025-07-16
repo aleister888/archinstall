@@ -115,13 +115,34 @@ driver_add
 xresources_make
 
 # Antes de instalar los paquetes, configurar makepkg para
-# usar todos los núcleos durante la compliación
+# usar todos los núcleos durante la compilación
 sudo sed -i "s/-j2/-j$(nproc)/;/^#MAKEFLAGS/s/^#//" /etc/makepkg.conf
 
 # Instalamos todos los paquetes a la vez
 while true; do
-	yayinstall "${PACKAGES[@]}" &&
-		break
+	yayinstall "${PACKAGES[@]}" && break
+
+	echo
+	echo "La instalación de los paquetes falló. Por favor revisa tu conexión."
+	echo
+
+	# Preguntamos al usuario como continuar si hubo un fallo
+	while true; do
+		read -p "¿Deseas intentar la instalación nuevamente? [s/n]: " RESPUESTA_INSTALACION
+		case "$RESPUESTA_INSTALACION" in
+		[sS])
+			echo "Reintentando instalación..."
+			break
+			;;
+		[nN])
+			echo "Instalación cancelada por el usuario."
+			exit 1
+			;;
+		*)
+			echo "Respuesta no válida. Por favor escribe 's' para sí o 'n' para no."
+			;;
+		esac
+	done
 done
 
 # Crear directorio para montar dispositivos android
@@ -185,3 +206,6 @@ rm "$HOME"/.bash* 2>/dev/null
 rm "$HOME"/.wget-hsts 2>/dev/null
 
 mkdir -p "$HOME"/.local/share/gnupg
+
+toilet "Instalación terminada"
+echo "La instalación ha terminado. Reinicia tu ordenador cuando estés listo"

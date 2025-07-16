@@ -6,7 +6,10 @@ export REPO_NAME="archinstall"
 export REPO_URL="https://github.com/aleister888/$REPO_NAME"
 REPO_DIR="/tmp/archinstall"
 
-[ ! -d /sys/firmware/efi ] && exit 1
+if [ ! -d /sys/firmware/efi ]; then
+	echo "El instalador solo soporta sistemas UEFI" >&2
+	exit 1
+fi
 
 # Configuramos el servidor de claves y actualizamos las claves
 grep ubuntu /etc/pacman.d/gnupg/gpg.conf ||

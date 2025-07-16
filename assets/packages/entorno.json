@@ -66,6 +66,7 @@
     "ripgrep",
     "shellcheck-bin",
     "stow",
+    "toilet",
     "tree"
   ],
   "gnuplot": [
