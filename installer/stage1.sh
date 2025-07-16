@@ -48,6 +48,10 @@ echo_msg() {
 	sleep 1
 }
 
+cancel_installation() {
+	whip_yes "Cancelar" "¿Deseas cancelar la instalación?" && exit 1
+}
+
 # Muestra como quedarían las particiones de nuestra instalación para confirmar
 # los cambios. También prepara las variables para formatear los discos
 scheme_show() {
@@ -83,8 +87,7 @@ scheme_show() {
 		--backtitle "$REPO_URL" \
 		--title "Confirmar particionado" \
 		--yesno "$SCHEME" 15 60; then
-		whip_yes "Salir" "¿Desea cancelar la instalación?" &&
-			exit 1
+		cancel_installation
 	fi
 }
 
@@ -259,22 +262,40 @@ calculate_dpi() {
 	local RESOLUTION SIZE WIDTH HEIGHT FACT DISPLAY_DPI
 
 	# Selección de resolución del monitor
-	RESOLUTION=$(
-		whip_menu "Resolucion del Monitor" \
-			"Seleccione la resolucion de su monitor:" \
-			"720p" "HD" "1080p" "Full-HD" "1440p" "QHD" "2160p" "4K"
-	)
+	while true; do
+		RESOLUTION=$(
+			whip_menu "Resolucion del Monitor" \
+				"Seleccione la resolucion de su monitor:" \
+				"720p" "HD" "1080p" "Full-HD" "1440p" "QHD" "2160p" "4K"
+		)
+
+		# Si se cancela o está vacío, preguntar si quiere salir
+		if [ -z "$RESOLUTION" ]; then
+			cancel_installation
+		else
+			break
+		fi
+	done
 
 	# Selección del tamaño del monitor en pulgadas (diagonal)
-	SIZE=$(
-		whip_menu "Tamaño del Monitor" \
-			"Seleccione el tamaño de su monitor (en pulgadas):" \
-			"14" "Portatil" \
-			"15.6" "Portatil" \
-			"17" "Portatil" \
-			"24" "Escritorio" \
-			"27" "Escritorio"
-	)
+	while true; do
+		SIZE=$(
+			whip_menu "Tamaño del Monitor" \
+				"Seleccione el tamaño de su monitor (en pulgadas):" \
+				"14" "Portatil" \
+				"15.6" "Portatil" \
+				"17" "Portatil" \
+				"24" "Escritorio" \
+				"27" "Escritorio"
+		)
+
+		# Si se cancela o está vacío, preguntar si quiere salir
+		if [ -z "$SIZE" ]; then
+			cancel_installation
+		else
+			break
+		fi
+	done
 
 	# Definimos la resolución elegida
 	case $RESOLUTION in
@@ -350,12 +371,11 @@ get_password() {
 
 # Establecer zona horaria
 timezone_set() {
-
 	while true; do
 		# Obtener la lista de regiones disponibles
 		REGIONS=$(
 			find /usr/share/zoneinfo -mindepth 1 -type d \
-				-printf "%f\n" | sort -u
+				-printf "%f\n" | grep -v '^[a-z]\|Etc' | sort -u
 		)
 
 		# Crear un array con las regiones
@@ -365,11 +385,20 @@ timezone_set() {
 		done
 
 		# Elegir la región
-		REGION=$(
-			whip_menu "Selecciona una región" \
-				"Por favor, elige una región" \
-				${REGIONS_ARRAY[@]}
-		)
+		while true; do
+			REGION=$(
+				whip_menu "Selecciona una región" \
+					"Por favor, elige una región" \
+					${REGIONS_ARRAY[@]}
+			)
+
+			# Si se cancela o está vacío, preguntar si quiere salir
+			if [ -z "$REGION" ]; then
+				cancel_installation
+			else
+				break
+			fi
+		done
 
 		# Obtener la lista de zonas horarias de la región seleccionada
 		TIMEZONES=$(
@@ -384,15 +413,23 @@ timezone_set() {
 		done
 
 		# Elegir la zona horaria dentro de la región seleccionada
-		TIMEZONE=$(
-			whip_menu "Selecciona una zona horaria en $REGION" \
-				"Por favor, elige una zona horaria en $REGION:" \
-				${TIMEZONES_ARRAY[@]}
-		)
+		while true; do
+			TIMEZONE=$(
+				whip_menu "Selecciona una zona horaria en $REGION" \
+					"Por favor, elige una zona horaria en $REGION:" \
+					${TIMEZONES_ARRAY[@]}
+			)
+
+			# Si se cancela o está vacío, preguntar si quiere salir
+			if [ -z "$TIMEZONE" ]; then
+				cancel_installation
+			else
+				break
+			fi
+		done
 
 		# Verificar si la zona horaria seleccionada es válida
-		if [ -f "/usr/share/zoneinfo/$REGION/$TIMEZONE" ] &&
-			[ -n "$REGION" ] && [ -n "$TIMEZONE" ]; then
+		if [ -f "/usr/share/zoneinfo/$REGION/$TIMEZONE" ]; then
 			break
 		else
 			whip_msg "Zona horaria no valida" \
@@ -400,7 +437,7 @@ timezone_set() {
 		fi
 	done
 
-	echo "/usr/share/zoneinfo/$REGION/$TIMEZONE"
+	SYSTEM_TIMEZONE="/usr/share/zoneinfo/$REGION/$TIMEZONE"
 }
 
 # Elegimos el driver de vídeo
@@ -413,15 +450,24 @@ driver_choose() {
 	)
 
 	# Elegimos nuestra tarjeta gráfica
-	GRAPHIC_DRIVER=$(
-		whip_menu "Selecciona tu tarjeta grafica" "Elige una opcion:" \
-			${DRIVER_OPTIONS[@]}
-	)
+	while true; do
+		GRAPHIC_DRIVER=$(
+			whip_menu "Selecciona tu tarjeta grafica" "Elige una opcion:" \
+				${DRIVER_OPTIONS[@]}
+		)
+
+		# Si se cancela o está vacío, preguntar si quiere salir
+		if [ -z "$GRAPHIC_DRIVER" ]; then
+			cancel_installation
+		else
+			break
+		fi
+	done
+
 }
 
 packages_choose() {
 	while true; do
-
 		VARIABLES=(
 			"CHOSEN_AUDIO_PROD"
 			"CHOSEN_LATEX"
@@ -491,11 +537,20 @@ ROOT_PASSWORD=$(
 		"Re-introduce la contraseña del superusuario:"
 )
 
-USERNAME="$(
-	whiptail --backtitle "$REPO_URL" \
-		--inputbox "Por favor, ingresa el nombre del usuario:" \
-		10 60 3>&1 1>&2 2>&3
-)"
+while true; do
+	USERNAME=$(
+		whiptail --backtitle "$REPO_URL" \
+			--inputbox "Por favor, ingresa el nombre del usuario:" \
+			10 60 3>&1 1>&2 2>&3
+	)
+
+	# Si se cancela o está vacío, preguntar si quiere salir
+	if [ -z "$USERNAME" ]; then
+		cancel_installation
+	else
+		break
+	fi
+done
 
 USER_PASSWORD=$(
 	get_password "Entrada de contraseña" "Confirmación de contraseña" \
@@ -503,12 +558,21 @@ USER_PASSWORD=$(
 		"Re-introduce la contraseña del usuario $USERNAME:"
 )
 
-SYSTEM_TIMEZONE=$(timezone_set)
+timezone_set
 
-HOSTNAME=$(
-	whip_input "Configuracion de hostname" \
-		"Por favor, introduce el nombre que deseas darle al equipo:"
-)
+while true; do
+	HOSTNAME=$(
+		whip_input "Configuracion de hostname" \
+			"Por favor, introduce el nombre que deseas darle al equipo:"
+	)
+
+	# Si se cancela o está vacío, preguntar si quiere salir
+	if [ -z "$HOSTNAME" ]; then
+		cancel_installation
+	else
+		break
+	fi
+done
 
 # Elegimos el driver de video y lo guardamos en la variable $GRAPHIC_DRIVER
 driver_choose
