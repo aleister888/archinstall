@@ -117,11 +117,20 @@ while [[ "$#" -gt 0 ]]; do
 		exit
 		;;
 	-c)
+		[ -z "$PLAYER" ] && exit 1
 		COVER=$(playerctl --player="$PLAYER" metadata mpris:artUrl)
-		if [ -z "$PLAYER" ] || [ -z "$COVER" ]; then
-			echo "$XDG_CONFIG_HOME/eww/placeholder.png"
+		if [ -z "$COVER" ]; then
+			echo "$HOME/.dotfiles/bin/music-control_placeholder.png"
 		else
-			echo "${COVER#file://}"
+			if [ "$PLAYER" == "tauon" ]; then
+				echo "${COVER#file://}"
+			elif [[ $COVER =~ ^https:// ]]; then
+				TMP_COVER="/tmp/music-metadata"
+				wget "$COVER" -O "$TMP_COVER"
+				echo "$TMP_COVER"
+			else
+				echo "$COVER"
+			fi
 		fi
 		exit
 		;;

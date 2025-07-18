@@ -5,6 +5,7 @@
 
 # Aquí se establece la prioridad de los reproductores:
 PRIORITY=(
+	"spotify"
 	"tauon"
 	"$BROWSER"
 )
