@@ -116,12 +116,12 @@ fi &
 # Configurar GTK y QT #
 #######################
 
-if [ ! -e "$HOME/.config/gtk-4.0/settings.ini" ]; then
-	mkdir -p "$HOME/.local/share/nwg-look"
-	cp "$ASSETDIR/gtk/gsettings" "$HOME/.local/share/nwg-look/gsettings"
-	nwg-look -a
-	nwg-look -x
-fi
+rm -rf ~/.config/gtk-4.0/* ~/.config/gtk-3.0/settings.ini
+mkdir -p "$HOME/.local/share/nwg-look" "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0"
+cp "$ASSETDIR/gtk/gsettings" "$HOME/.local/share/nwg-look/gsettings"
+dconf write /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
+nwg-look -a
+nwg-look -x
 
 if [ ! -f "$CONF_DIR/gtk-3.0/bookmarks" ]; then
 	# Definimos nuestros directorios anclados

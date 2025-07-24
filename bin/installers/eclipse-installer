@@ -40,7 +40,6 @@ install() {
 	# Crear script de inicio
 	cat <<-EOF >"$RUN_SCRIPT"
 		#!/bin/sh
-		export GTK_THEME=Adwaita:dark
 		$INSTALL_DIR/eclipse
 		rm -rf $HOME/.p2
 	EOF
