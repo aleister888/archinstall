@@ -147,21 +147,18 @@ if [ ! -d /usr/share/themes/Gruvbox-Dark ]; then
 fi &
 
 # Configuramos QT
-if [ ! -e "$CONF_DIR/qt5ct/qt5ct.conf" ] ||
-	[ ! -e "$CONF_DIR/qt6ct/qt6ct.conf" ]; then
-	mkdir -p "$CONF_DIR/qt5ct" "$CONF_DIR/qt6ct"
-	cat <<-EOF | tee "$CONF_DIR/qt5ct/qt5ct.conf" "$CONF_DIR/qt6ct/qt6ct.conf" >/dev/null
-		[Appearance]
-		color_scheme_path=$REPO_DIR/assets/qt-colors/Gruvbox.conf
-		custom_palette=true
-		icon_theme=Papirus-Dark
-		style=Fusion
+mkdir -p "$CONF_DIR/qt5ct" "$CONF_DIR/qt6ct"
+cat <<-EOF | tee "$CONF_DIR/qt5ct/qt5ct.conf" "$CONF_DIR/qt6ct/qt6ct.conf" >/dev/null
+	[Appearance]
+	color_scheme_path=$REPO_DIR/assets/qt-colors/Gruvbox.conf
+	custom_palette=true
+	icon_theme=Papirus-Dark
+	style=Fusion
 
-		[Fonts]
-		fixed="Iosevka Fixed SS05,12,0,0,0,0,0,0,0,0,Bold"
-		general="Iosevka Fixed SS05 Semibold,12,0,0,0,0,0,0,0,0,Regular"
-	EOF
-fi
+	[Fonts]
+	fixed="Iosevka Fixed SS05,12,0,0,0,0,0,0,0,0,Bold"
+	general="Iosevka Fixed SS05 Semibold,12,0,0,0,0,0,0,0,0,Regular"
+EOF
 
 #####################
 # Archivos .desktop #

@@ -23,7 +23,6 @@ export XCURSOR_PATH="/usr/share/icons:${XDG_DATA_HOME}/icons"
 export XCURSOR_PATH=/usr/share/icons/
 export XCURSOR_THEME=capitaine-cursors
 export XCURSOR_SIZE=64
-export HYPRCURSOR_SIZE=64
 
 # Usar el filechooser del portal GTK
 export GDK_SCALE=1

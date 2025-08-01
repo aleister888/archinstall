@@ -66,8 +66,8 @@ cmd open ${{
 			setsid -f keepassxc "$f" 2>/dev/null ;;
 		*/x-reaper-*)
 			setsid -f reaper "$f" 2>/dev/null ;;
-		*/x-tuxguitar | application/gpx+xml | application/x-gnuplot | application/x-gtp)
-			setsid -f tuxguitar-bin "$fx" 2>/dev/null ;;
+		*/x-tuxguitar | */gpx+xml | */x-gnuplot | */x-gtp)
+			setsid -f tuxguitar "$fx" 2>/dev/null ;;
 		# Si no tenemos configurada una forma de abrirlo, usamos xdg-open
 		*) for f in $fx; do setsid -f $OPENER $f >/dev/null 2>&1; done ;;
 	esac

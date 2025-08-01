@@ -30,6 +30,13 @@ if [ ! -f "$HOME/.config/keepassxc/keepassxc.ini" ]; then
 		"$HOME"/.config/keepassxc/
 fi
 
+# Arreglar escalado de KeepasXC
+cat <<-EOF >~/.local/bin/keepassxc
+	#!/bin/sh
+	XDG_SESSION_TYPE=x11 /usr/bin/keepassxc
+EOF
+chmod +x ~/.local/bin/keepassxc
+
 ##############
 # Miscelánea #
 ##############

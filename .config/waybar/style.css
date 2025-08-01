@@ -5,7 +5,7 @@
   font-size: 22px;
   min-height: 0;
   color: #f7f3d6;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 window#waybar {
@@ -17,7 +17,7 @@ window#waybar {
 }
 
 #workspaces {
-  padding: 0 7.5px;
+  padding: 0 15px;
 }
 
 #workspaces button.active {
@@ -64,5 +64,5 @@ window#waybar {
 }
 
 #tray {
-  padding: 0 7.5px;
+  padding: 0 15px 0 7.5px;
 }

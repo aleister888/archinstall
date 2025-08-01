@@ -30,7 +30,7 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 -- json
 vim.api.nvim_create_autocmd("FileType", {
-	pattern = "json",
+	pattern = "json*",
 	callback = function()
 		local opt = vim.opt_local
 		opt.smartindent = true
