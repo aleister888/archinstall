@@ -15,7 +15,7 @@
         "tray"
     ],
     "hyprland/workspaces": {
-        "show-special": true
+        "show-special": false
     },
     "hyprland/window": {
         "max-length": 50

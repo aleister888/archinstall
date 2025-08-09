@@ -1,15 +1,28 @@
 #!/bin/bash
 # shellcheck disable=SC2155
+# TODO: Desktop entry
 set -euo pipefail
 
-INPUT_FILE=$1
-TARGET_MACROS=$2
-DIRECTORY=$(dirname "$1")
+CACHE_FILE="$XDG_CACHE_HOME/plot-macros"
+
+if [ -f "$CACHE_FILE" ]; then
+	INPUT_FILE=$(head -n1 <"$CACHE_FILE")
+	TARGET_MACROS=$(tail -n1 <"$CACHE_FILE")
+else
+	INPUT_FILE=$1
+	TARGET_MACROS=$2
+	echo "$INPUT_FILE" >"$CACHE_FILE"
+	echo "$TARGET_MACROS" >>"$CACHE_FILE"
+fi
+
+DIRECTORY=$(dirname "$INPUT_FILE")
 TMP_DIR="/tmp"
 PROCESSED_MACROS="${DIRECTORY}/processed_macros.csv"
 
-[[ ! -f "$INPUT_FILE" ]] && exit 1
-[[ ! -f "$TARGET_MACROS" ]] && exit 1
+if [ ! -f "$INPUT_FILE" ] || [ ! -f "$TARGET_MACROS" ]; then
+
+	exit 1
+fi
 
 read -r CAL_TARGET FAT_TARGET CARB_TARGET PROT_TARGET < <(tail -n +2 "$TARGET_MACROS" | head -1 |
 	awk -F',' '{gsub(/g/, "", $2); gsub(/g/, "", $3); gsub(/g/, "", $4); print $1,$2,$3,$4}')

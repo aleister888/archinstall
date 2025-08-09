@@ -1,10 +1,18 @@
 #!/bin/bash
 # shellcheck disable=SC2155
-
+# TODO: Desktop entry
 #fecha_Y-m-d,total_kg,reps,rpe,status,note
 
+CACHE_FILE="$XDG_CACHE_HOME/plot-training"
+
+if [ -f "$CACHE_FILE" ]; then
+	export INPUT_DIR=$(cat "$CACHE_FILE")
+else
+	export INPUT_DIR=${1:-$(pwd)}
+	echo "$INPUT_DIR" >"$CACHE_FILE"
+fi
+
 # Parámetros del script
-export INPUT_DIR=${1:-$(pwd)}
 export DATA_DIR="$INPUT_DIR/data"
 export WEIGHT_DIR="$INPUT_DIR/weight"
 export VOLUME_DIR="$INPUT_DIR/volume"
@@ -54,6 +62,7 @@ process_csv() {
 		# Nos saltamos las entradas que no tienen anotado el peso o las repeticiones
 		[[ -z "$W" || -z "$R" ]] && continue
 		[[ -n "$W" && -n "$R" ]] && VOLUME=$(echo "scale=0; $W * $R / 1" | bc) || VOLUME=0
+		W=$(echo "$W" | bc)
 
 		# Si no hay RPE, asignamos el valor por defecto
 		RPE="${RPE:-$DEFAULT_RPE}"

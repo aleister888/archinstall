@@ -24,7 +24,7 @@ fi
 
 notify() {
 	su "$REGULARUSER" -c \
-		"notify-send -u critical -i system-error \"$1\""
+		"notify-send -u critical -i $NOTIFY_ICON_PATH/system-error.svg \"$1\""
 }
 
 tosleep() {
