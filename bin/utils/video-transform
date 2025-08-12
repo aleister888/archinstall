@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Recodifíca videos a h.264 (1440p máx.) con la opción de rotarlos
+
+FILE=$1
+ROTATION=$2
+
+FILENAME="${FILE%.*}"
+EXTENSION="${FILE##*.}"
+FILE_RECODED="${FILENAME}_recoded.${EXTENSION}"
+
+# Verificar que el archivo existe
+[ ! -e "$FILE" ] && exit 1
+
+# Detectar altura del video
+HEIGHT=$(
+	ffprobe -v error -select_streams v:0 \
+		-show_entries stream=height \
+		-of default=nokey=1:noprint_wrappers=1 "$FILE"
+)
+
+# Elegir filtro según rotación
+case "$ROTATION" in
+0) ROTATE="" ;;
+90) ROTATE="transpose=1" ;;
+180) ROTATE="transpose=1,transpose=1" ;;
+270) ROTATE="transpose=2" ;;
+*) ROTATE="" ;;
+esac
+
+FILTER=""
+[ "$HEIGHT" -ge 1440 ] && FILTER+="scale=-2:1440,"
+[ -n "$ROTATE" ] && FILTER+="$ROTATE,"
+
+ffmpeg -hwaccel vaapi -hwaccel_output_format vaapi -i "$FILE" \
+	-vf "hwdownload,format=nv12,${FILTER}format=nv12,hwupload" \
+	-c:v hevc_vaapi -c:a copy "$FILE_RECODED"
+
+mkdir -p /tmp/video-transform
+mv $FILE /tmp/video-transform/$FILENAME.$EXTENSION
+mv "$FILE_RECODED" $FILE

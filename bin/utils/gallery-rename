@@ -24,29 +24,37 @@ renombrar_archivo() {
 
 	# FORMATO: YEAR-MONTH-DAY_HOUR-MINUTE-SECOND.*\.EXTENSION"
 
-	# Fotos (Android)
-	if [[ $NOMBRE_ARCHIVO =~ IMG_(20[0-9]{2})([0-1][0-9])([0-3][0-9])_([0-2][0-9])([0-6][0-9])([0-6][0-9])_([0-9]{3})\..* ]]; then
-		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}_${BASH_REMATCH[7]}.${EXTENSION}"
+	# Fotos Cámara (Android)
+	if [[ $NOMBRE_ARCHIVO =~ IMG_(20[0-9]{2})([0-1][0-9])([0-3][0-9])_([0-2][0-9])([0-6][0-9])([0-6][0-9])_([0-9]{3})(.*)\..* ]]; then
+		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}_${BASH_REMATCH[7]}${BASH_REMATCH[8]}.${EXTENSION}"
 		TIPO="image"
+		# Fotos Cámara (Google Pixel)
+	elif [[ $NOMBRE_ARCHIVO =~ PXL_(20[0-9]{2})([0-1][0-9])([0-3][0-9])_([0-2][0-9])([0-6][0-9])([0-6][0-9])([0-9]{3})(.*)\.jpg ]]; then
+		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}_${BASH_REMATCH[7]}${BASH_REMATCH[8]}.${EXTENSION}"
+		TIPO="image"
+		# Videos Cámara (Android)
+	elif [[ $NOMBRE_ARCHIVO =~ VID_(20[0-9]{2})([0-1][0-9])([0-3][0-9])_([0-2][0-9])([0-6][0-9])([0-6][0-9])(.*)\..* ]]; then
+		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}${BASH_REMATCH[7]}.${EXTENSION}"
+		TIPO="video"
+		# Videos Cámara (Google Pixel)
+	elif [[ $NOMBRE_ARCHIVO =~ PXL_(20[0-9]{2})([0-1][0-9])([0-3][0-9])_([0-2][0-9])([0-6][0-9])([0-6][0-9])([0-9]{3})(.*)\.mp4 ]]; then
+		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}_${BASH_REMATCH[7]}${BASH_REMATCH[8]}.${EXTENSION}"
+		TIPO="video"
+		# Videos (Android)
+	elif [[ $NOMBRE_ARCHIVO =~ video_(20[0-9]{2})-([0-1][0-9])-([0-3][0-9])_([0-2][0-9])-([0-6][0-9])-([0-6][0-9])(.*)\..* ]]; then
+		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}${BASH_REMATCH[7]}.${EXTENSION}"
+		TIPO="video"
 	# Capturas de pantalla (Android)
-	elif [[ $NOMBRE_ARCHIVO =~ Screenshot_(20[0-9]{2})([0-1][0-9])([0-3][0-9])-([0-2][0-9])([0-6][0-9])([0-6][0-9])_(.*)\..* ]]; then
+	elif [[ $NOMBRE_ARCHIVO =~ Screenshot_(20[0-9]{2})([0-1][0-9])([0-3][0-9])-([0-2][0-9])([0-6][0-9])([0-6][0-9])(.*)\..* ]]; then
 		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}_${BASH_REMATCH[7]}.${EXTENSION}"
 		TIPO="image"
-	# Videos (Android)
-	elif [[ $NOMBRE_ARCHIVO =~ video_(20[0-9]{2})-([0-1][0-9])-([0-3][0-9])_([0-2][0-9])-([0-6][0-9])-([0-6][0-9])\..* ]]; then
-		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}.${EXTENSION}"
-		TIPO="video"
-	# Videos grabados (Android)
-	elif [[ $NOMBRE_ARCHIVO =~ VID_(20[0-9]{2})([0-1][0-9])([0-3][0-9])_([0-2][0-9])([0-6][0-9])([0-6][0-9])_.* ]]; then
-		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}.${EXTENSION}"
-		TIPO="video"
-	# Fotos (Cámara de Samsung)
-	elif [[ $NOMBRE_ARCHIVO =~ (20[0-9]{2})([0-1][0-9])([0-3][0-9])_([0-2][0-9])([0-6][0-9])([0-6][0-9]).* ]]; then
-		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}.${EXTENSION}"
+		# Fotos Cámara (Samsung)
+	elif [[ $NOMBRE_ARCHIVO =~ (20[0-9]{2})([0-1][0-9])([0-3][0-9])_([0-2][0-9])([0-6][0-9])([0-6][0-9])(.*)\..* ]]; then
+		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}${BASH_REMATCH[7]}.${EXTENSION}"
 		TIPO="image"
-	# Fotos de Telegram (App PC)
-	elif [[ $NOMBRE_ARCHIVO =~ photo_(20[0-9]{2})-([0-3][0-9])-([0-1][0-9])_([0-2][0-9])-([0-6][0-9])-([0-6][0-9]).* ]]; then
-		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}.${EXTENSION}"
+		# Fotos Telegram (App PC)
+	elif [[ $NOMBRE_ARCHIVO =~ photo_(20[0-9]{2})-([0-3][0-9])-([0-1][0-9])_([0-2][0-9])-([0-6][0-9])-([0-6][0-9])(.*)\..* ]]; then
+		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}${BASH_REMATCH[7]}.${EXTENSION}"
 		TIPO="image"
 	else
 		return
