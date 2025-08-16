@@ -21,21 +21,35 @@ HEIGHT=$(
 
 # Elegir filtro según rotación
 case "$ROTATION" in
-0) ROTATE="" ;;
 90) ROTATE="transpose=1" ;;
 180) ROTATE="transpose=1,transpose=1" ;;
 270) ROTATE="transpose=2" ;;
 *) ROTATE="" ;;
 esac
 
+# Construir cadena de filtros
 FILTER=""
 [ "$HEIGHT" -ge 1440 ] && FILTER+="scale=-2:1440,"
 [ -n "$ROTATE" ] && FILTER+="$ROTATE,"
+FILTER=${FILTER%,} # Eliminar la coma final si existe
 
-ffmpeg -hwaccel vaapi -hwaccel_output_format vaapi -i "$FILE" \
-	-vf "hwdownload,format=nv12,${FILTER}format=nv12,hwupload" \
-	-c:v hevc_vaapi -c:a copy "$FILE_RECODED"
+if lspci | grep -qi nvidia; then
+	# Configuración para NVIDIA NVENC
+	ffmpeg -hwaccel nvdec -i "$FILE" \
+		-vf "$FILTER" \
+		-c:v hevc_nvenc -preset p7 -tune hq -cq 18 \
+		-c:a copy "$FILE_RECODED"
+else
+	# Configuración para VAAPI
+	ffmpeg -hwaccel vaapi -hwaccel_output_format vaapi -i "$FILE" \
+		-vf "hwdownload,format=nv12,${FILTER}format=nv12,hwupload" \
+		-c:v hevc_vaapi \
+		-c:a copy "$FILE_RECODED"
+fi || {
+	rm -f "$FILE_RECODED"
+	exit 1
+}
 
 mkdir -p /tmp/video-transform
-mv $FILE /tmp/video-transform/$FILENAME.$EXTENSION
-mv "$FILE_RECODED" $FILE
+mv "$FILE" "/tmp/video-transform/$FILENAME.$EXTENSION"
+mv "$FILE_RECODED" "$FILE"

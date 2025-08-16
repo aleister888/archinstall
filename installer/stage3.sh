@@ -38,7 +38,7 @@ driver_add() {
 			"dkms"
 			"lib32-nvidia-utils"
 			"libva-mesa-driver"
-			"libva-vdpau-driver"
+			"libva-nvidia-driver"
 			"nvidia-dkms"
 			"nvidia-prime"
 			"nvidia-utils"

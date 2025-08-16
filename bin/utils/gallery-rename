@@ -26,36 +26,44 @@ renombrar_archivo() {
 
 	# Fotos Cámara (Android)
 	if [[ $NOMBRE_ARCHIVO =~ IMG_(20[0-9]{2})([0-1][0-9])([0-3][0-9])_([0-2][0-9])([0-6][0-9])([0-6][0-9])_([0-9]{3})(.*)\..* ]]; then
-		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}_${BASH_REMATCH[7]}${BASH_REMATCH[8]}.${EXTENSION}"
+		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}${BASH_REMATCH[7]}${BASH_REMATCH[8]}.${EXTENSION}"
 		TIPO="image"
-		# Fotos Cámara (Google Pixel)
+	# Fotos Cámara (Google Pixel)
 	elif [[ $NOMBRE_ARCHIVO =~ PXL_(20[0-9]{2})([0-1][0-9])([0-3][0-9])_([0-2][0-9])([0-6][0-9])([0-6][0-9])([0-9]{3})(.*)\.jpg ]]; then
-		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}_${BASH_REMATCH[7]}${BASH_REMATCH[8]}.${EXTENSION}"
+		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}${BASH_REMATCH[7]}${BASH_REMATCH[8]}.${EXTENSION}"
 		TIPO="image"
-		# Videos Cámara (Android)
+	# Videos Cámara (Android)
 	elif [[ $NOMBRE_ARCHIVO =~ VID_(20[0-9]{2})([0-1][0-9])([0-3][0-9])_([0-2][0-9])([0-6][0-9])([0-6][0-9])(.*)\..* ]]; then
 		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}${BASH_REMATCH[7]}.${EXTENSION}"
 		TIPO="video"
-		# Videos Cámara (Google Pixel)
+	# Videos Cámara (Google Pixel)
 	elif [[ $NOMBRE_ARCHIVO =~ PXL_(20[0-9]{2})([0-1][0-9])([0-3][0-9])_([0-2][0-9])([0-6][0-9])([0-6][0-9])([0-9]{3})(.*)\.mp4 ]]; then
-		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}_${BASH_REMATCH[7]}${BASH_REMATCH[8]}.${EXTENSION}"
+		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}${BASH_REMATCH[7]}${BASH_REMATCH[8]}.${EXTENSION}"
 		TIPO="video"
-		# Videos (Android)
+	# Videos (Android)
 	elif [[ $NOMBRE_ARCHIVO =~ video_(20[0-9]{2})-([0-1][0-9])-([0-3][0-9])_([0-2][0-9])-([0-6][0-9])-([0-6][0-9])(.*)\..* ]]; then
 		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}${BASH_REMATCH[7]}.${EXTENSION}"
 		TIPO="video"
 	# Capturas de pantalla (Android)
 	elif [[ $NOMBRE_ARCHIVO =~ Screenshot_(20[0-9]{2})([0-1][0-9])([0-3][0-9])-([0-2][0-9])([0-6][0-9])([0-6][0-9])(.*)\..* ]]; then
-		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}_${BASH_REMATCH[7]}.${EXTENSION}"
+		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}${BASH_REMATCH[7]}.${EXTENSION}"
 		TIPO="image"
-		# Fotos Cámara (Samsung)
+	# Fotos Cámara (Samsung)
 	elif [[ $NOMBRE_ARCHIVO =~ (20[0-9]{2})([0-1][0-9])([0-3][0-9])_([0-2][0-9])([0-6][0-9])([0-6][0-9])(.*)\..* ]]; then
 		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}${BASH_REMATCH[7]}.${EXTENSION}"
 		TIPO="image"
-		# Fotos Telegram (App PC)
+	# Fotos Telegram (App PC)
 	elif [[ $NOMBRE_ARCHIVO =~ photo_(20[0-9]{2})-([0-3][0-9])-([0-1][0-9])_([0-2][0-9])-([0-6][0-9])-([0-6][0-9])(.*)\..* ]]; then
 		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}${BASH_REMATCH[7]}.${EXTENSION}"
 		TIPO="image"
+	# Fotos Whatsapp
+	elif [[ $NOMBRE_ARCHIVO =~ WhatsApp\ Image\ (20[0-9]{2})-([0-3][0-9])-([0-1][0-9])\ at\ ([0-9]{1,2})\.([0-6][0-9])\.([0-6][0-9])(.*)\.jpeg ]]; then
+		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}${BASH_REMATCH[7]}.${EXTENSION}"
+		TIPO="image"
+	# Videos Whatsapp
+	elif [[ $NOMBRE_ARCHIVO =~ WhatsApp\ Video\ (20[0-9]{2})-([0-3][0-9])-([0-1][0-9])\ at\ ([0-9]{1,2})\.([0-6][0-9])\.([0-6][0-9])(.*)\.mp4 ]]; then
+		NUEVO_NOMBRE="${BASH_REMATCH[1]}-${BASH_REMATCH[2]}-${BASH_REMATCH[3]}_${BASH_REMATCH[4]}-${BASH_REMATCH[5]}-${BASH_REMATCH[6]}${BASH_REMATCH[7]}.${EXTENSION}"
+		TIPO="video"
 	else
 		return
 	fi
