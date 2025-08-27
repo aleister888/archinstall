@@ -19,6 +19,7 @@ return {
 			"css",
 			"csv",
 			"diff",
+			"gitattributes",
 			"gitcommit",
 			"json",
 			"latex",

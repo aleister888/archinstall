@@ -31,7 +31,7 @@ capture() {
 			notify-send -i "$FILEPATH" "$FILENAME"
 		fi
 	else
-		notify-send -i "$NOTIFY_ICON_PATH/system-error.svg" 'Error al capturar'
+		notify-send -i system-error 'Error al capturar'
 	fi
 
 	pw-play "$SOUND"

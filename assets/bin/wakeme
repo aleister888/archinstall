@@ -16,8 +16,8 @@ help_msg() {
 	echo "  -h: Mostrar este mensaje"
 }
 
-use_og_output=false
-include_weekends=false
+USE_OG_OUTPUT=false
+INCLUDE_WEEKENDS=false
 
 if echo "$@" | grep "\-h" >/dev/null; then
 	help_msg
@@ -26,10 +26,10 @@ fi
 
 while [[ "$#" -gt 1 ]]; do
 	case "$1" in
-	-o) use_og_output=true ;;
-	-f) include_weekends=true ;;
+	-o) USE_OG_OUTPUT=true ;;
+	-f) INCLUDE_WEEKENDS=true ;;
 	-s)
-		use_og_output=false
+		USE_OG_OUTPUT=false
 		shift
 		# Si se da el sink con su ID numérica, usar el ID mismo
 		if [[ "$1" =~ ^[0-9]+$ ]]; then
@@ -50,7 +50,7 @@ while [[ "$#" -gt 1 ]]; do
 	shift
 done
 
-if [ "$include_weekends" == "false" ]; then
+if [ "$INCLUDE_WEEKENDS" == "false" ]; then
 	DAY=$(date +%A)
 	if [ "$DAY" == "Saturday" ] || [ "$DAY" == "Sunday" ]; then
 		echo "Es $DAY ¡Hora de descansar!"
@@ -108,7 +108,7 @@ OG_SINK="$(pactl get-default-sink)"
 # Si el sink de audio no es el de la placa base, cambiar a este para la alarma.
 if [ -n "$OVER_SINK" ] &&
 	[ "$(pactl get-default-sink)" != "$OVER_SINK" ] &&
-	[ "$use_og_output" = "false" ]; then
+	[ "$USE_OG_OUTPUT" = "false" ]; then
 	# Cambiamos a altavoces
 	pactl set-default-sink "$OVER_SINK"
 	# Hacer sonar la alarma

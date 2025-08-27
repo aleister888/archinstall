@@ -3,8 +3,8 @@
 🛠️ **Auto-instalador para Arch Linux** con `Hyprland` y mi configuración personal.
 
 <p float="center">
-<img src="https://raw.githubusercontent.com/aleister888/archinstall/refs/heads/main/assets/screenshots/screenshot1.png" width="49%" />
-<img src="https://raw.githubusercontent.com/aleister888/archinstall/refs/heads/main/assets/screenshots/screenshot2.png" width="49%" />
+<img src="https://raw.githubusercontent.com/aleister888/archinstall/refs/heads/main/assets/images/screenshot1.png" width="49%" />
+<img src="https://raw.githubusercontent.com/aleister888/archinstall/refs/heads/main/assets/images/screenshot2.png" width="49%" />
 </p>
 
 ---

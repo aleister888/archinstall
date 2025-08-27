@@ -62,7 +62,7 @@ sharp corners
 
 \pagestyle{empty}
 \vspace*{.3\textheight}
-{\hfill\Huge\itshape\textcolor{mycolor}{\textbf{Artix Linux}}\par}
+{\hfill\Huge\itshape\textcolor{mycolor}{\textbf{Arch Linux}}\par}
 
 {\hfill\Large Información útil\par}
 
@@ -70,10 +70,10 @@ sharp corners
 
 \section{Compartir audio}
 
-Al iniciar sesión se crea un \emph{micrófono virtual} con el que podemos combinar el audio de nuestro micrófono con el audio de las aplicaciones. De esta forma podemos compartir junto con nuestra pantalla, el audio de dicha retransmisión en aplicaciones que no tienen dicha funcionalidad.
+Al iniciar Hyprland se crea un \emph{micrófono virtual}, que podemos enlazar con el audio de cualquier dispositivo o aplicación. Podemos así, compartir el audio de las aplicaciones junto con nuestra voz. Útil para aplicaciones que no tienen implementada esta funcionalidad.
 
 \medskip
-\noindent Para esto tendremos que elegir \emph{my-virtualmic} como nuestro micrófono predeterminado. Podemos añadir el audio de nuestro micrófono real y nuestras aplicaiones mediante el script \texttt{pipewire-virtualmic-select}.
+\noindent Para esto tendremos que elegir \emph{my-virtualmic} como nuestro micrófono predeterminado. Y añadir el audio de nuestro micrófono real y nuestras aplicaiones mediante el script \texttt{pipewire-virtualmic-select (Alt+F11)}.
 
 \section{Cronie y scripts útiles}
 
@@ -81,7 +81,7 @@ El repositorio incluye una variedad de scripts para automatizar tareas. Por defe
 
 \subsection{convert-2m4a y convert-2mp3}
 
-Estos scripts convierten toda la música del directorio que damos como primer argumento a formato \emph{.m4a} o \emph{.mp3} en un mirror que replica al estructura de los archivos en el directorio original.
+Estos scripts convierten toda la música del directorio que damos como primer argumento a formato \emph{.m4a} o \emph{.mp3} en un mirror que replica al estructura del directorio original.
 
 \medskip
 \noindent Si ejecutamos:
@@ -300,14 +300,12 @@ Para usar looking glass sin tener dos monitores, necesitamos un \href{https://ww
 \medskip
 Looking Glass nos muestra una el output de nuestra gráfica con una latencia muy baja. Logra esto mandando la información a través de un archivo compartido entre máquina virtual y host.
 
-Necesitamos instalar y configurar \emph{tmpfilesd} para que cada vez que iniciamos el sistema, se cree el archivo que compartido que Looking Glass necesita. Para eso ejecutamos los siguientes comandos:
+\medskip
+Necesitamos configurar \emph{tmpfilesd} para que cada vez que iniciamos el sistema, se cree el archivo que compartido que Looking Glass necesita. Para eso ejecutamos los siguientes comandos:
 
 \begin{verbatim}
 echo "f /dev/shm/looking-glass 0660 $USER kvm -" | \
 sudo tee -a /etc/tmpfiles.d/looking-glass.conf
-\end{verbatim}
-\begin{verbatim}
-sudo pacman -Sy --noconfirm etmpfiles
 \end{verbatim}
 
 \subsection{Añadir Gráfica y Looking Glass en el Guest}
@@ -500,7 +498,7 @@ Sustituye \emph{usuario} por el usuario de tu máquina, y \emph{255.255.255.255}
 Para instalar el firewall ejecuta:
 
 \begin{verbatim}
-sudo sh -c 'pacman -Sy ufw-openrc; rc-update add ufw default; ufw enable'
+sudo sh -c 'pacman -Sy ufw; systemctl enable ufw'
 \end{verbatim}
 
 Podemos añadir unas reglas muy básicas a nuestro firewall \emph{(que se aplicarán cuando reiniciemos nuestro equipo)} con:
@@ -512,40 +510,10 @@ sudo ufw default deny incoming; sudo ufw default allow outgoing
 \end{verbatim}
 
 \begin{mybox}{Nota}
-	Si configuraste ssh con \emph{ssh-configure} el firewall ya se configuró automáticamente
+	Si configuraste ssh con el script \texttt{bin/utils/ssh-configure} el firewall ya se configuró automáticamente
 \end{mybox}
 
-\section{Monitores de altas tasas de refresco}
-
-Por defecto dwm actualiza el movimiento de las ventanas a 60 FPS. Si tienes un monitor de mas de 60 Hz esto puede hacer la experiencia de usar dwm insatisfactoria. Para cambiar este comportamiento, debes editar el archivo \emph{dwm.c}. En el encontrarás varias funciones con esta misma linea de código:
-
-\begin{verbatim}
-if ((ev.xmotion.time - lasttime) <= (1000 / 60))
-\end{verbatim}
-
-Deberás modificar el código según la tasa de refresco de tu monitor en cada aparición de esta linea. Por ejemplo, para un monitor de \emph{144 Hz}, la líneas a cambiar deberían verse así:
-
-\begin{verbatim}
-if ((ev.xmotion.time - lasttime) <= (1000 / 144))
-\end{verbatim}
-
-\section{Miscelánea}
-
-\subsection*{Configuraciones locales}
-
-Nuestra configuración de \texttt{zsh} tiene varios \emph{alias} configurados en:
-
-\begin{center}
-	\path{~/.config/zsh/aliasrc}
-\end{center}
-
-Para añadir alias fuera de la estructura del repositorio, de manera personal podemos crear un archivo con más funciones y abreviaciones en:
-
-\begin{center}
-	\path{~/.config/useralias}
-\end{center}
-
-\subsection*{Aviso de Uso}
+\subsection*{\centering Aviso de Uso}
 
 Este proyecto es para uso personal. Se comparte con la intención de que pueda ser útil para otros, pero se proporciona tal cual, sin ninguna garantía. No se asume responsabilidad por ninguna pérdida de datos o problemas que puedan surgir del uso de este proyecto.
 

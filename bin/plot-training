@@ -1,6 +1,12 @@
 #!/bin/bash
 # shellcheck disable=SC2155
-# TODO: Desktop entry
+
+# TODO: Solo procesar las entradas del último dia de entrenamiento, dando la
+# opción de procesar todas con un flag
+
+# TODO: Reescribir el script para que sea mas eficiente o directamente usar
+# algo mas apropiado que bash
+
 #fecha_Y-m-d,total_kg,reps,rpe,status,note
 
 CACHE_FILE="$XDG_CACHE_HOME/plot-training"

@@ -9,14 +9,13 @@ export XDG_RUNTIME_DIR=/run/user/1000
 WAIT_MINS=10
 
 # Comprobaciones:
-
 # Verifica que el script se ejecuta como root
 if [ "$(id -u)" -ne 0 ]; then
 	echo "Error: Este script debe ejecutarse como root." >&2
 	exit 1
 fi
 
-# Comprueba que el usuario regular existe
+# Comprueba que el usuario normal existe
 if [ -z "$REGULARUSER" ]; then
 	echo "Error: No se encontró un usuario regular." >&2
 	exit 1
@@ -24,7 +23,7 @@ fi
 
 notify() {
 	su "$REGULARUSER" -c \
-		"notify-send -u critical -i $NOTIFY_ICON_PATH/system-error.svg \"$1\""
+		"notify-send -u critical -i system-error \"$1\" \"$2\""
 }
 
 tosleep() {
@@ -40,9 +39,13 @@ tosleep() {
 		WAKE_TIME="$WAKE_TIME_TODAY"
 	fi
 
-	if ! rtcwake -m mem -l -t "$WAKE_TIME"; then
-		notify "Error al programar la suspensión"
-		exit 1
+	# Limpiamos cualquier alarma anterior
+	echo 0 >/sys/class/rtc/rtc0/wakealarm 2>/dev/null
+	if echo "$WAKE_TIME" >/sys/class/rtc/rtc0/wakealarm; then
+		systemctl suspend
+	else
+		notify "Error al programar la suspensión" "Fallo al poner al alarma"
+		echo 0 >/sys/class/rtc/rtc0/wakealarm 2>/dev/null
 	fi
 }
 
