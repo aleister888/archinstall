@@ -9,7 +9,6 @@ window {
   margin: 12px 12px 0px 12px;
   color: #ebdbb2;
   background-color: #282828;
-  border: 3px solid #b8bb26;
 }
 
 #inner-box {
@@ -17,7 +16,6 @@ window {
 }
 
 #outer-box {
-  border: 3px solid #b8bb26;
   background-color: #1d2021;
   border-radius: 12px;
 }
@@ -28,5 +26,5 @@ window {
 }
 
 #entry:selected {
-  background-color: #3c3836;
+  background-color: #282828;
 }
