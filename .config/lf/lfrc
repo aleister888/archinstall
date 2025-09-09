@@ -20,7 +20,7 @@ set cleaner '~/.config/lf/cleaner'
 set previewer '~/.config/lf/scope'
 set ratios 3:5:4
 set autoquit true
-set hiddenfiles ".*:*.aux:*.toc:*.sty:*.out:*.log:*.bbl:*.blg:*.synctex.gz:_minted:*.bcf:*.nav:*.run.xml:*.snm:*.xwm"
+set hiddenfiles ".*:*.aux:*.toc:*.sty:*.out:*.log:*.bbl:*.blg:*.synctex.gz:_minted:*.bcf:*.nav:*.run.xml:*.snm:*.xwm:*.lrc"
 
 ######################
 # Comandos/Funciones #
@@ -129,7 +129,7 @@ cmd cdterm &{{
 
 # Enviar una notificación con el tamaño del ítem seleccionado
 cmd size &{{
-	notify-send -i "$NOTIFY_ICON_PATH/system-file-manager.svg" \
+	notify-send -i system-file-manager \
 		"El tamaño es de $(/usr/bin/du -chs $fx | grep total | awk '{print $1}')"
 }}
 
@@ -213,12 +213,12 @@ cmd paste &{{
 			while IFS= read -r line; do
 				/usr/bin/lf -remote "send $id echo $line"
 			done &&
-				notify-send -i "$NOTIFY_ICON_PATH/copyq.svg" \
+				notify-send -i copyq \
 					"Archivo(s) copiados."
 			;;
 		move)
 			mv -n -- "$@" . &&
-				notify-send -i "$NOTIFY_ICON_PATH/copyq.svg" \
+				notify-send -i copyq \
 				"Archivo(s) movidos."
 		;;
 	esac
@@ -234,9 +234,7 @@ cmd trash ${{
 	printf "¿Mover archivo(s) a la papelera? [s/N] "
 	read ans
 	[ $ans = "s" ] && trash-put $fx &&
-	notify-send -i \
-	/usr/share/icons/Papirus-Dark/128x128/places/user-trash.svg \
-	"Archivo(s) movido(s) a la papelera"
+	notify-send -i user-trash "Archivo(s) movido(s) a la papelera"
 	clear
 }}
 
@@ -249,9 +247,7 @@ cmd clean-trash ${{
 	printf "¿Vaciar papelera? [s/N] "
 	read ans
 	[ $ans = "s" ] && trash-empty -f && \
-	notify-send -i \
-	/usr/share/icons/Papirus-Dark/128x128/places/user-trash.svg \
-	"Archivo(s) borrados"
+	notify-send -i user-trash.svg "Archivo(s) borrados"
 	clear
 }}
 
@@ -264,9 +260,7 @@ cmd restore-trash ${{
 		--yesno "¿Restaurar los archivos eliminados?" 10 60; then
 		clear
 		trash-restore
-		notify-send -i \
-			/usr/share/icons/Papirus-Dark/128x128/places/user-trash.svg \
-			"Archivo(s) restaurado(s)"
+		notify-send -i user-trash.svg "Archivo(s) restaurado(s)"
 	fi
 	clear
 }}
@@ -334,9 +328,7 @@ map m push %mkdir<space>
 # Copiar el directorio del archivo actual al portapapeles
 map Y ${{
 	printf '"%s"' "$(dirname "$fx")" | wl-copy
-	notify-send -i "$NOTIFY_ICON_PATH/gpaste.svg" \
-		"Ruta copiada al portapapeles" \
-		"$(dirname "$fx")"
+	notify-send -i gpaste.svg "Ruta copiada al portapapeles" "$(dirname "$fx")"
 }}
 
 # Salir del programa

@@ -120,7 +120,7 @@ while [[ "$#" -gt 0 ]]; do
 		[ -z "$PLAYER" ] && exit 1
 		COVER=$(playerctl --player="$PLAYER" metadata mpris:artUrl)
 		if [ -z "$COVER" ]; then
-			echo "$HOME/.dotfiles/bin/music-control_placeholder.png"
+			echo "$HOME/.dotfiles/assets/images/music-control_placeholder.png"
 		else
 			if [ "$PLAYER" == "tauon" ]; then
 				echo "${COVER#file://}"

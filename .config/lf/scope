@@ -55,7 +55,8 @@ thumbnail_resize() {
 # un mismo archivo que esta en múltiples directorios solo generará un archivo en cache.
 
 # Crear preview en función del tipo de archivo
-case "$(xdg-mime query filetype "$1")" in
+FILETYPE="$(xdg-mime query filetype "$1")"
+case $FILETYPE in
 
 # Imprimir los manuales con man
 text/troff) man ./ "$1" | col -b ;;
@@ -118,8 +119,10 @@ audio/flac | audio/mpeg | audio/x-m4a | audio/mp4)
 	{
 		# Determinamos el número de saltos de línea necesarios teniendo en
 		# cuenta que las carátulas tienen un ratio de aspecto de 1:1
-		COUNT=$(echo "$4 / 5 + 1" | bc)
+		COUNT=$(echo "$4 / 5 + 2" | bc)
 		printf '\n%.0s' $(seq "$COUNT")
+		[ "$FILETYPE" = "audio/flac" ] &&
+			mediainfo --Inform="Audio;%BitDepth% bit / %SamplingRate% Hz" "$1"
 		grep -ivE "(comment|encoder|ffmetadata1)" "$METADATA"
 	}
 	exit 1

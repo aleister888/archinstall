@@ -68,7 +68,7 @@
     "custom/time": {
         "format": " {}",
         "interval": 1,
-        "exec": "date +'%H:%M'",
+        "exec": "date +'%H:%M:%S'",
     },
     "tray": {
         "icon-size": 20,

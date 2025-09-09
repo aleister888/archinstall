@@ -39,23 +39,3 @@ qt6ct.conf
 .stfolder
 
 .zcompdump
-
-drw.o
-util.o
-config.h
-stest
-stest.o
-
-suckless/dmenu/dmenu
-suckless/dmenu/dmenu.o
-
-suckless/dwmblocks/blocks.h
-suckless/dwmblocks/dwmblocks
-
-suckless/dwm/dwm
-suckless/dwm/dwm.o
-
-suckless/st/hb.o
-suckless/st/st.o
-suckless/st/st
-suckless/st/x.o

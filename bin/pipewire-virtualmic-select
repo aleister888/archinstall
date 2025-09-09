@@ -10,7 +10,7 @@ SINK_L=my-combined-sink:playback_FL
 SINK_R=my-combined-sink:playback_FR
 
 # Icono para las notificaciones
-ICON="$NOTIFY_ICON_PATH/bridge-constructor.svg"
+ICON="bridge-constructor"
 
 # Excluiremos los sinks cuyo nombre contenga alguno de estos patrones
 EXCLUDE_PATTERN="my-combined-sink\|my-virtualmic\|PulseAudio\|Midi\|v4l2\|WEBRTC\|Chromium"
@@ -78,9 +78,9 @@ sink_edit() {
 		sink_match "$1"
 		# Comprobar que los dispositivos/aplicaciones se añadieron correctamente
 		if pw-link -l | grep "my-combined-sink" -A 1 | grep "$DMENU_SELECTED" >/dev/null; then
-			notify-send -i "$ICON" "Sink vinculado correctamente"
+			notify-send -i $ICON "Sink vinculado correctamente"
 		else
-			notify-send -i "$ICON" "Hubo un fallo al añadir el sink"
+			notify-send -i $ICON "Hubo un fallo al añadir el sink"
 		fi
 	elif [ "$1" = "del" ]; then # Desvincular dispositivos/aplicaciones
 		sink_match "$1" && notify-send -i $ICON "Sink borrado"

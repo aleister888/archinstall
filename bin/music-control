@@ -13,5 +13,5 @@ if [ "$1" != "play-pause" ]; then
 	makoctl dismiss -a
 	notify-send -i "$(music-metadata -c)" \
 		"$(music-metadata -t)" \
-		"$(music-metadata -S -a) | $(music-metadata -S -A)"
+		"$(music-metadata -S -a) - $(music-metadata -S -A)"
 fi
