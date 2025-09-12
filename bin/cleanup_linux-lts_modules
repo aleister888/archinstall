@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 pgrep yay >/dev/null && exit 1
 pgrep pacman >/dev/null && exit 1
@@ -6,9 +6,9 @@ pgrep pacman >/dev/null && exit 1
 if uname -r | grep -q "lts$"; then
 	for MODULE in $(
 		# Listamos todos los modulos del kernel lts
-		/usr/bin/ls /usr/lib/modules | grep "lts$"
-		# Excluimos el kernel más reciente y el que se está usando
-		head -n -1 | grep -v "$(uname -r)"
+		/usr/bin/ls /usr/lib/modules | grep "lts$" |
+			# Excluimos el kernel más reciente y el que se está usando
+			head -n -1 | grep -v "$(uname -r)"
 	); do
 		sudo rm -rf "/usr/lib/modules/$MODULE"
 	done
