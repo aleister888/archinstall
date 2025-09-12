@@ -23,27 +23,27 @@ for ((i = 1; i <= NUM_BATERIAS; i++)); do
 	echo "$OUT" | sed "${i}q;d" | grep Charging >/dev/null && CHARGING=true
 done
 
-ICON="󰂄 "
+ICON="  "
 # Definimos el icono en función del estado de la batería
-if ! $CHARGING; then
-	# Calculamos la media
-	AVERAGE=$((SUM / NUM_BATERIAS))
-	case $AVERAGE in
-	[0-9]) ICON=" " ;;
-	1[0-9]) ICON=" " ;;
-	2[0-4]) ICON=" " ;;
-	2[5-9]) ICON=" " ;;
-	3[0-9]) ICON=" " ;;
-	4[0-9]) ICON=" " ;;
-	5[0-9]) ICON=" " ;;
-	6[0-9]) ICON=" " ;;
-	7[0-4]) ICON=" " ;;
-	7[5-9]) ICON=" " ;;
-	8[0-9]) ICON=" " ;;
-	9[0-9]) ICON=" " ;;
-	*) ICON=" " ;;
-	esac
-fi
+# Calculamos la media
+AVERAGE=$((SUM / NUM_BATERIAS))
+case $AVERAGE in
+[0-9]) ICON=" " ;;
+1[0-9]) ICON=" " ;;
+2[0-4]) ICON=" " ;;
+2[5-9]) ICON=" " ;;
+3[0-9]) ICON=" " ;;
+4[0-9]) ICON=" " ;;
+5[0-9]) ICON=" " ;;
+6[0-9]) ICON=" " ;;
+7[0-4]) ICON=" " ;;
+7[5-9]) ICON=" " ;;
+8[0-9]) ICON=" " ;;
+9[0-9]) ICON=" " ;;
+*) ICON=" " ;;
+esac
+
+$CHARGING && ICON=" $ICON"
 
 # Imprimos el icono, las secuencias de colores y el % de cada batería
 IFS=' '

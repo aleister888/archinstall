@@ -59,6 +59,6 @@
     },
     "tray": {
         "icon-size": 20,
-        "spacing": 8
+        "spacing": 6
     }
 }

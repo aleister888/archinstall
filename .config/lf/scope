@@ -119,7 +119,7 @@ audio/flac | audio/mpeg | audio/x-m4a | audio/mp4)
 	{
 		# Determinamos el número de saltos de línea necesarios teniendo en
 		# cuenta que las carátulas tienen un ratio de aspecto de 1:1
-		COUNT=$(echo "$4 / 5 + 5" | bc)
+		COUNT=$(echo "$4 / 4 + 1" | bc)
 		printf '\n%.0s' $(seq "$COUNT")
 		[ "$FILETYPE" = "audio/flac" ] &&
 			mediainfo --Inform="Audio;%BitDepth% bit / %SamplingRate% Hz" "$1"
@@ -183,9 +183,9 @@ video/*)
 		# Determinamos el número de saltos de línea en
 		# función de si el vídeo está rotado o no
 		if [ "$ROTATION" = "90" ] || [ "$ROTATION" = "270" ]; then
-			COUNT=$(echo "scale=2; (${4}/5) * $RATIO + 4" | bc | cut -d. -f1)
+			COUNT=$(echo "scale=2; (${4}/4) * $RATIO + 1" | bc | cut -d. -f1)
 		else
-			COUNT=$(echo "scale=2; (${4}/5) / $RATIO + 4" | bc | cut -d. -f1)
+			COUNT=$(echo "scale=2; (${4}/4) / $RATIO + 1" | bc | cut -d. -f1)
 		fi
 		printf '\n%.0s' $(seq "$COUNT")
 		cat "$METADATA"

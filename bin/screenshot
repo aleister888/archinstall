@@ -30,11 +30,11 @@ capture() {
 			mv "$TMP" "$FILEPATH"
 			notify-send -i "$FILEPATH" "$FILENAME"
 		fi
+		pw-play "$SOUND"
 	else
 		notify-send -i system-error 'Error al capturar'
 	fi
 
-	pw-play "$SOUND"
 }
 
 case "$1" in
