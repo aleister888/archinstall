@@ -156,8 +156,8 @@ cat <<-EOF | tee "$CONF_DIR/qt5ct/qt5ct.conf" "$CONF_DIR/qt6ct/qt6ct.conf" >/dev
 	style=Fusion
 
 	[Fonts]
-	fixed="Iosevka Fixed SS05,12,0,0,0,0,0,0,0,0,Bold"
-	general="Iosevka Fixed SS05 Semibold,12,0,0,0,0,0,0,0,0,Regular"
+	fixed="Inconsolata Nerd Font Mono,12,0,0,0,0,0,0,0,0,Bold"
+	general="Inconsolata Nerd Font,12,0,0,0,0,0,0,0,0,Bold"
 EOF
 
 #####################

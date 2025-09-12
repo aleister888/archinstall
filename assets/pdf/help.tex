@@ -1,6 +1,7 @@
 % arara: xelatex
+% arara: xelatex
 
-\documentclass[11pt]{article}
+\documentclass[12pt]{article}
 \synctex=1
 
 \usepackage{listings}
@@ -32,12 +33,13 @@
 
 \setmainfont[
 Path = /usr/share/fonts/TTF/,
-ItalicFont = DejaVuSerif-Italic.ttf,
-BoldFont = RobotoCondensed-Bold.ttf,
-BoldItalicFont = RobotoCondensed-BoldItalic.ttf
+UprightFont = FiraSans-Book.ttf,
+ItalicFont = FiraSans-BookItalic.ttf,
+BoldFont = FiraSans-Bold.ttf,
+BoldItalicFont = FiraSans-BoldItalic.ttf
 ]{DejaVuMathTeXGyre.ttf}
 
-\setmonofont{Iosevka Fixed SS05}
+\setmonofont{Inconsolata Nerd Font}
 
 \usepackage[spanish]{babel}
 
@@ -247,13 +249,15 @@ Asignamos la memoria RAM \emph{(8GB como mínimo)} a nuestra máquina virtual. Y
 
 \begin{figure}[h]
 	\centering
-	\begin{minipage}[b]{0.4\textwidth}
-		\includegraphics[width=0.9\textwidth]{images/vm-memory-setup.png}
+	\begin{minipage}[b]{0.27\textwidth}
+		\includegraphics[width=1\textwidth]{images/vm-memory-setup.png}
 	\end{minipage}
-	\begin{minipage}[b]{0.4\textwidth}
-		\includegraphics[width=0.9\textwidth]{images/vm-name.png}
+	\begin{minipage}[b]{0.27\textwidth}
+		\includegraphics[width=1\textwidth]{images/vm-name.png}
 	\end{minipage}
 \end{figure}
+
+\clearpage
 
 Ahora deberás hacer las siguientes modificaciones:
 
@@ -268,8 +272,6 @@ Ahora deberás hacer las siguientes modificaciones:
 	\item Cambiar el modelo del \emph{NIC} a \emph{virtio}
 	\item Añadir el ISO con los drivers virtio.
 \end{itemize}
-
-\clearpage
 
 \begin{figure}[h!]
 	\centering

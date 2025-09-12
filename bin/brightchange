@@ -64,4 +64,5 @@ echo "$NEXT" | sudo tee $BRIGHT_DEV/brightness
 pw-play $SOUND
 
 makoctl dismiss -a
-notify-send -i brightness "Brillo: $(((INDEX + 1) * 100 / LEVELS))%" -t 500
+PERC=$(((INDEX + 1) * 100 / LEVELS))
+notify-send -i brightness "Brillo: $PERC%" -t 500 --hint=INT:value:$PERC

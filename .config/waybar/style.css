@@ -1,11 +1,11 @@
 * {
   border: none;
   border-radius: 0px;
-  font-family: "Iosevka Fixed SS05", "Symbols Nerd Font";
+  font-family: "Symbols Nerd Font", "Inconsolata Nerd Font Mono";
   font-size: 20px;
   min-height: 0;
   color: #ebdbb2;
-  font-weight: 400;
+  font-weight: 600;
 }
 
 window#waybar {
@@ -13,56 +13,50 @@ window#waybar {
 }
 
 #window {
-  padding: 0 5px;
+  padding: 0px 5px;
+}
+
+#workspaces button {
+  padding: 0px 7.5px 0px 7.5px;
 }
 
 #workspaces button.active {
-  background: #8f3f71;
+  background: #98971a;
 }
 
 #window {
-  padding: 0 12.5px;
+  padding: 0px 12.5px;
 }
 
 #custom-music-metadata {
-  padding: 0 15px;
+  padding: 0px 15px;
 }
 
 #custom-battery {
-  padding: 0 7.5px;
   color: #689d6a;
+  padding: 0px 7.5px;
 }
 
 #custom-disk {
-  padding: 0 7.5px;
   color: #d79921;
-}
-
-#custom-kernel {
-  padding: 0 7.5px;
-  color: #458588;
+  padding: 0px 7.5px;
 }
 
 #pulseaudio {
-  padding: 0 7.5px;
-  color: #b16286;
-}
-
-#memory {
-  padding: 0 7.5px;
-  color: #98971a;
+  color: #458588;
+  padding: 0px 7.5px;
 }
 
 #custom-date {
-  padding: 0 7.5px;
-  color: #d65d0e;
+  color: #b16286;
+  padding: 0px 7.5px;
 }
 
 #custom-time {
-  padding: 0 7.5px;
-  color: #cc241d;
+  color: #d65d0e;
+  padding: 0px 7.5px;
 }
 
 #tray {
-  padding: 0 15px 0 7.5px;
+  padding: 0px 7.5px 0px 7.5px;
 }

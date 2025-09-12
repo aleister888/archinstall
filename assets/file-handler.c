@@ -35,6 +35,11 @@ char* url_decode(const char* src) {
   return dst;
 }
 
+// Función para verificar si una URL es del tipo file://
+int is_file_url(const char* url) {
+  return strncmp(url, "file://", 7) == 0 || strncmp(url, "file:/", 6) == 0;
+}
+
 static void show_items(DBusMessage* message) {
   const char* term = getenv("TERMINAL");
   if (!term) term = "xterm";  // Fallback
@@ -48,19 +53,22 @@ static void show_items(DBusMessage* message) {
     const char* item;
     dbus_message_iter_get_basic(&array, &item);
 
-    const char* raw_path = item;
-    if (strncmp(item, "file:///", 8) == 0) {
-      raw_path = item + 7;
-    } else if (strncmp(item, "file:/", 6) == 0) {
-      raw_path = item + 5;
-    }
+    // Verificar si es una URL file:// antes de procesar
+    if (is_file_url(item)) {
+      const char* raw_path = item;
+      if (strncmp(item, "file:///", 8) == 0) {
+        raw_path = item + 7;
+      } else if (strncmp(item, "file:/", 6) == 0) {
+        raw_path = item + 5;
+      }
 
-    char* path = url_decode(raw_path);
-    char* cmd;
-    asprintf(&cmd, "%s -e lf '%s' &", term, path);
-    system(cmd);
-    free(cmd);
-    free(path);
+      char* path = url_decode(raw_path);
+      char* cmd;
+      asprintf(&cmd, "%s -e lf '%s' &", term, path);
+      system(cmd);
+      free(cmd);
+      free(path);
+    }
 
     dbus_message_iter_next(&array);
   }
