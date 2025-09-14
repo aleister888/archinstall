@@ -21,6 +21,8 @@ export XCURSOR_PATH=/usr/share/icons/
 export XCURSOR_THEME=capitaine-cursors
 export XCURSOR_SIZE=64
 
+export GAMMASTEP_CMD="gammastep -t 3700:2600 -b 1:0.8 -l manual:lat=40.42:lon=3.70"
+
 # Usar el filechooser del portal GTK
 export GDK_SCALE=1
 export GTK_USE_PORTAL=1

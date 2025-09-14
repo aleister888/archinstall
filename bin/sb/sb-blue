@@ -1,0 +1,11 @@
+#!/bin/sh
+
+if pgrep gammastep >/dev/null; then
+	# Filtro activado
+	ICON="󰹏"
+else
+	# Filtro desactivado
+	ICON="󰌵"
+fi
+
+echo "$ICON"

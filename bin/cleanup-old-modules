@@ -1,0 +1,28 @@
+#!/bin/bash -x
+
+# Si pacman o yay se están ejecutando (p.e. se están actualizando paquetes)
+# el script se detiene
+pgrep yay >/dev/null && exit 1
+pgrep pacman >/dev/null && exit 1
+
+KERNELS=()
+
+# Comprobamos solo para los kernels que están instalados
+pacman -Q linux-lts >/dev/null 2>&1 && KERNELS+=("lts")
+pacman -Q linux-zen >/dev/null 2>&1 && KERNELS+=("zen")
+
+# Si solo esta instalado el kernel por defecto detenemos la ejecución
+[ ${#KERNELS[@]} -eq 0 ] && exit 1
+
+MODULE_LIST=$(/usr/bin/ls /usr/lib/modules)
+
+for KERNEL in "${KERNELS[@]}"; do
+	for MODULE in $(
+		# Listamos todos los modulos del kernel correspondiente
+		echo "$MODULE_LIST" | grep "$KERNEL$" |
+			# Excluimos el kernel más reciente y el que se está usando
+			head -n -1 | grep -v "$(uname -r)"
+	); do
+		sudo rm -rf "/usr/lib/modules/$MODULE"
+	done
+done

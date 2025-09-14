@@ -89,6 +89,7 @@ sh -c "cd $REPO_DIR && stow --adopt --target=${HOME}/.local/bin/ bin/" >/dev/nul
 sh -c "cd $REPO_DIR && stow --adopt --target=${HOME}/.config/ .config/" >/dev/null &
 
 ln -sf "$REPO_DIR/assets/configs/.profile" "$HOME/.profile"
+ln -sf "$REPO_DIR/assets/configs/.profile" "$HOME/.bash_profile"
 ln -sf "$REPO_DIR/assets/configs/.profile" "$CONF_DIR/zsh/.zprofile"
 
 # Borrar enlaces rotos
@@ -118,7 +119,7 @@ fi &
 
 rm -rf ~/.config/gtk-4.0/* ~/.config/gtk-3.0/settings.ini
 mkdir -p "$HOME/.local/share/nwg-look" "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0"
-cp "$ASSETDIR/gtk/gsettings" "$HOME/.local/share/nwg-look/gsettings"
+install "$ASSETDIR/gtk/gsettings" "$HOME/.local/share/nwg-look/gsettings"
 dconf write /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
 nwg-look -a
 nwg-look -x
@@ -135,15 +136,14 @@ if [ ! -f "$CONF_DIR/gtk-3.0/bookmarks" ]; then
 	EOF
 fi
 
-# Instalamos el tema de GTK4
+# Instalamos el tema de GTK
 if [ ! -d /usr/share/themes/Gruvbox-Dark ]; then
-	REPO_URL="https://github.com/Fausto-Korpsvart/Gruvbox-GTK-Theme"
-	# Descargamos el tema
-	wget "$REPO_URL/archive/refs/heads/master.zip" -q -O \
-		/tmp/Gruvbox-Dark.zip
-	unzip /tmp/Gruvbox-Dark.zip -d /tmp/
-	# Lo instalamos
-	sudo bash /tmp/Gruvbox-GTK-Theme-master/themes/install.sh
+	# https://www.pling.com/p/1681313/
+	unzip "$ASSETDIR/gtk/Gruvbox-Dark-BL-LB.zip" -d /tmp/
+	sudo rm -rf /usr/share/themes/Gruvbox-*
+	sudo cp -rf /tmp/Gruvbox-Dark/ /usr/share/themes/
+	sudo cp -rf /tmp/Gruvbox-Dark-hdpi /usr/share/themes/
+	sudo cp -rf /tmp/Gruvbox-Dark-xhdpi /usr/share/themes/
 fi &
 
 # Configuramos QT

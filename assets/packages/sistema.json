@@ -18,11 +18,13 @@
     "net-tools",
     "realtime-privileges",
     "squashfs-tools",
-    "squashfuse"
+    "squashfuse",
+    "uwsm",
+    "wl-clip-persist"
   ],
   "kernel": [
-    "linux-lts",
-    "linux-lts-headers"
+    "linux-zen",
+    "linux-zen-headers"
   ],
   "pacman": [
     "downgrade",

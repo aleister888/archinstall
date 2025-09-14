@@ -29,9 +29,9 @@ statusbar() {
 	[ -z "$TITLE" ] && exit
 
 	if [ "$STATUS" == "Playing" ]; then
-		ICON="  "
+		ICON=" "
 	elif [ -n "$STATUS" ]; then
-		ICON="  "
+		ICON=" "
 	fi
 
 	echo "$ICON$(makesafe "$TITLE")"

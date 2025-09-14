@@ -4,13 +4,10 @@
 
 NOTIFY="notify-send -t 750 -i screensaver"
 
-if pgrep redshift; then
-	kill -9 $(pgrep redshift)
-	redshift -x
-	pkill -35 dwmblocks
+if pgrep gammastep; then
+	kill -9 $(pgrep gammastep)
 	eval "$NOTIFY 'Filtro desactivado'"
 else
-	redshift -l 40.42:-3.70 -t 5700:4600 -b 1:0.8 -m randr -v &
-	pkill -35 dwmblocks
+	eval "$GAMMASTEP_CMD" &
 	eval "$NOTIFY 'Filtro activado'"
 fi

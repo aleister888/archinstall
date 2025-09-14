@@ -21,6 +21,7 @@ user_service_add() {
 SERVICES=(
 	"earlyoom"
 	"fwupd"
+	"gdm"
 	"input-remapper"
 	"syslog-ng"
 	"tlp"

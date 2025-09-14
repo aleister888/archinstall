@@ -3,6 +3,7 @@ return {
 	-- Queremos que el plugin este cargado siempre para poder usar
 	-- VimtexInverseSearch sin abrir ningún buffer, de forma que nuestro lector
 	-- de PDF pueda hacer "reverse search" con synctex
+	lazy = false,
 	config = function()
 		-- Configuración de VimTeX
 		vim.g.vimtex_toc_config = { show_help = 0 }
@@ -31,7 +32,7 @@ return {
 				-- Ver el documento
 				vim.keymap.set("n", "<leader>h", ":VimtexView<CR>", { silent = true })
 				-- Guardar y compilar con Vimtex
-				vim.keymap.set("n", "<leader>g", ":w<CR>:VimtexCompile<CR>", { silent = true, buffer = true })
+				vim.keymap.set("n", "<leader>g", ":VimtexCompile<CR>", { silent = true, buffer = true })
 				-- Guardar y compilar manualmente con xelatex
 				vim.keymap.set("n", "<leader>G", ":w<CR>:!xelatex %<CR>", { silent = true, buffer = true })
 				-- Poner texto entre comillas

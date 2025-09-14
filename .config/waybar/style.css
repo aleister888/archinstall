@@ -1,62 +1,77 @@
 * {
-  border: none;
-  border-radius: 0px;
-  font-family: "Symbols Nerd Font", "Inconsolata Nerd Font Mono";
-  font-size: 20px;
-  min-height: 0;
   color: #ebdbb2;
-  font-weight: 600;
+  font-family: "Symbols Nerd Font", "Fira Sans Condensed";
+  font-size: 22px;
 }
 
 window#waybar {
   background: #1d2021;
 }
 
-#window {
-  padding: 0px 5px;
+#workspaces {
+  margin: 4px 0px 4px 8px;
 }
 
 #workspaces button {
-  padding: 0px 7.5px 0px 7.5px;
+  font-weight: 400;
+  margin: 0px 2px 0px 2px;
+  padding: 2px 6px 2px 6px;
 }
 
 #workspaces button.active {
   background: #98971a;
+  font-weight: 600;
+  margin: 0px 2px 0px 2px;
 }
 
 #window {
-  padding: 0px 12.5px;
+  margin: 0px 10px;
 }
 
 #custom-music-metadata {
-  padding: 0px 15px;
+  font-weight: 600;
+}
+
+#custom-blue-filter {
+  color: #928374;
+  margin: 0px 15px 0px 15px;
 }
 
 #custom-battery {
   color: #689d6a;
-  padding: 0px 7.5px;
-}
-
-#custom-disk {
-  color: #d79921;
-  padding: 0px 7.5px;
+  font-weight: 600;
+  margin: 0px 7.5px 0px 7.5px;
 }
 
 #pulseaudio {
   color: #458588;
-  padding: 0px 7.5px;
+  font-weight: 600;
+  margin: 0px 7.5px 0px 7.5px;
 }
 
-#custom-date {
-  color: #b16286;
-  padding: 0px 7.5px;
+#custom-disk {
+  color: #d79921;
+  font-weight: 600;
+  margin: 0px 7.5px 0px 7.5px;
 }
 
 #custom-time {
   color: #d65d0e;
-  padding: 0px 7.5px;
+  font-weight: 600;
+  margin: 0px 7.5px 0px 7.5px;
+}
+
+#custom-date {
+  color: #b16286;
+  font-weight: 600;
+  margin: 0px 7.5px 0px 2.5px;
 }
 
 #tray {
-  padding: 0px 12.5px 0px 7.5px;
+  margin: 0px 15px 0px 10px;
+}
+
+#tray menu {
+  margin: 2px;
+  padding: 5px;
 }

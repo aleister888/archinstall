@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script para instalar/desinstalar Citra
+# Script para instalar/desinstalar Citrahold
 
 INSTALL_DIR="$HOME/.local/opt/citrahold"
 BIN_FILE="$INSTALL_DIR/bin"

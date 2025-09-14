@@ -1,5 +1,6 @@
 return {
 	"hat0uma/csvview.nvim",
+	ft = { "csv" },
 	opts = {
 		parser = { comments = { "#", "//" } },
 		ft = { "csv" },

@@ -12,16 +12,16 @@ window {
 }
 
 #inner-box {
-  margin: 12px;
+  margin: 18px;
 }
 
 #outer-box {
   background-color: #1d2021;
-  border-radius: 12px;
+  border-radius: 18px;
 }
 
 #text {
-  margin: 6px;
+  margin: 8px;
   color: #ebdbb2;
 }
 

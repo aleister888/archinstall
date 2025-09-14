@@ -22,11 +22,11 @@
     "winetricks"
   ],
   "zathura": [
-    "poppler",
     "tesseract-data-spa",
     "zathura",
     "zathura-cb",
-    "zathura-pdf-poppler"
+    "libmupdf",
+    "zathura-pdf-mupdf"
   ],
   "mozilla": [
     "arkenfox-user.js",
