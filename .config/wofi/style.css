@@ -1,14 +1,17 @@
 window {
   background: none;
-  border: none;
   font-family: "Symbols Nerd Font", "Inconsolata Nerd Font";
   font-size: 18px;
 }
 
 #input {
-  margin: 12px 12px 0px 12px;
+  margin: 10px;
   color: #ebdbb2;
   background-color: #282828;
+}
+
+#input:focus {
+  box-shadow: none;
 }
 
 #inner-box {
@@ -16,6 +19,7 @@ window {
 }
 
 #outer-box {
+  border: 4px solid #98971a;
   background-color: #1d2021;
   border-radius: 18px;
 }

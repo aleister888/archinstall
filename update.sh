@@ -140,6 +140,7 @@ fi
 if [ ! -d /usr/share/themes/Gruvbox-Dark ]; then
 	# https://www.pling.com/p/1681313/
 	unzip "$ASSETDIR/gtk/Gruvbox-Dark-BL-LB.zip" -d /tmp/
+	# Borramos cualquier otra versión de Gruvbox
 	sudo rm -rf /usr/share/themes/Gruvbox-*
 	sudo cp -rf /tmp/Gruvbox-Dark/ /usr/share/themes/
 	sudo cp -rf /tmp/Gruvbox-Dark-hdpi /usr/share/themes/
