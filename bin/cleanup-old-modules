@@ -8,8 +8,17 @@ pgrep pacman >/dev/null && exit 1
 KERNELS=()
 
 # Comprobamos solo para los kernels que están instalados
-pacman -Q linux-lts >/dev/null 2>&1 && KERNELS+=("lts")
-pacman -Q linux-zen >/dev/null 2>&1 && KERNELS+=("zen")
+if pacman -Q linux-lts >/dev/null 2>&1; then
+	KERNELS+=("lts")
+else
+	sudo rm -f /etc/mkinitcpio.d/linux-lts.preset
+fi
+
+if pacman -Q linux-zen >/dev/null 2>&1; then
+	KERNELS+=("zen")
+else
+	sudo rm -f /etc/mkinitcpio.d/linux-zen.preset
+fi
 
 # Si solo esta instalado el kernel por defecto detenemos la ejecución
 [ ${#KERNELS[@]} -eq 0 ] && exit 1

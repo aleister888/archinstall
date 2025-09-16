@@ -65,7 +65,7 @@ vim.api.nvim_create_autocmd("FileType", {
 		local opt = vim.opt_local
 		opt.smartindent = false
 		opt.cindent = false
-		opt.expandtab = true
+		opt.expandtab = false
 		opt.copyindent = true
 		opt.preserveindent = true
 		opt.tabstop = 4

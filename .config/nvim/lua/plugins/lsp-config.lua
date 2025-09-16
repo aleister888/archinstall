@@ -1,6 +1,7 @@
 local servers = {
 	"bashls",
 	"cssls",
+	"jdtls",
 	"lua_ls",
 	"markdown_oxide",
 	"texlab",
@@ -45,6 +46,8 @@ return {
 			)
 			return {
 				ensure_installed = servers,
+				-- Desactivamos para evitar clientes duplicados
+				automatic_enable = false,
 			}
 		end,
 	},
@@ -57,13 +60,20 @@ return {
 		},
 		config = function()
 			local lspconfig = require("lspconfig")
-			local capabilities = vim.lsp.protocol.make_client_capabilities()
+			local capabilities = require("cmp_nvim_lsp").default_capabilities()
 			-- Configurar servidores LSP
 			for _, lsp in ipairs(servers) do
-				lspconfig[lsp].setup({
-					capabilities = capabilities,
-				})
+				if lsp ~= "jdtls" then
+					lspconfig[lsp].setup({
+						capabilities = capabilities,
+					})
+				end
 			end
+			require("mason-tool-installer").setup({
+				ensure_installed = { "java-debug-adapter", "java-test" },
+				auto_update = true,
+				run_on_start = true,
+			})
 		end,
 	},
 	{
@@ -77,6 +87,12 @@ return {
 			"hrsh7th/cmp-nvim-lua", -- Autocompletado para Lua
 			"onsails/lspkind.nvim",
 		},
+		requires = {
+			"Sirver/ultisnips",
+			config = function()
+				vim.g.UltiSnipsSnippetDirectories = { "~/.config/nvim/snips" }
+			end,
+		},
 		config = function()
 			local cmp = require("cmp")
 			local lspkind = require("lspkind")
@@ -84,7 +100,6 @@ return {
 			cmp.setup({
 				snippet = {
 					expand = function(args)
-						require("luasnip").lsp_expand(args.body)
 						vim.fn["UltiSnips#Anon"](args.body)
 					end,
 				},
