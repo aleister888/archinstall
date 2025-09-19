@@ -1,69 +1,73 @@
 return {
 	{
 		"mfussenegger/nvim-jdtls",
+		dependencies = {
+			"mfussenegger/nvim-dap",
+		},
 		ft = "java",
 		config = function()
+			local jdtls = require("jdtls")
+			local lsp_capabilities = vim.lsp.protocol.make_client_capabilities()
+
+			local blink_status_ok, blink = pcall(require, "blink.cmp")
+			if blink_status_ok then
+				lsp_capabilities = vim.tbl_deep_extend("force", {}, lsp_capabilities, blink.get_lsp_capabilities())
+			end
+
+			local mason_share = vim.fn.expand("$HOME/.local/share/nvim/mason")
+			local jdtls_path = mason_share .. "/bin/jdtls"
+			local lombok_path = mason_share .. "/packages/jdtls/lombok.jar"
+			local debug_pattern = mason_share .. "/packages/java-debug-adapter/extension/server/*.jar"
+			local test_pattern = mason_share .. "/packages/java-test/extension/server/*.jar"
+
+			-- Bundles para debug
+			local bundles = {
+				vim.fn.glob(debug_pattern, 1), -- único jar
+			}
+			vim.list_extend(bundles, vim.split(vim.fn.glob(test_pattern, 1), "\n"))
+
+			-- Configuración LSP
 			local config = {
 				cmd = {
-					vim.fn.expand("$HOME/.local/share/nvim/mason/bin/jdtls"),
-					("--jvm-arg=-javaagent:%s"):format(
-						vim.fn.expand("$HOME/.local/share/nvim/mason/packages/jdtls/lombok.jar")
-					),
+					jdtls_path,
+					("--jvm-arg=-javaagent:%s"):format(lombok_path),
 				},
-				capabilities = require("cmp_nvim_lsp").default_capabilities(),
-				data_dir = vim.fn.stdpath("cache") .. "/jdtls",
+				capabilities = lsp_capabilities,
 				root_dir = require("jdtls.setup").find_root({ ".git", "pom.xml", "build.gradle" }),
+				data_dir = vim.fn.stdpath("cache") .. "/jdtls",
+				init_options = {
+					bundles = bundles,
+				},
 			}
 
-			require("jdtls").start_or_attach(config)
-		end,
-	},
-	{
-		"nvim-neotest/neotest",
-		ft = "java",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"nvim-treesitter/nvim-treesitter",
-			"rcasia/neotest-java",
-			"nvim-neotest/nvim-nio",
-		},
-		config = function()
-			require("neotest").setup({
-				adapters = {
-					require("neotest-java"),
-				},
-			})
+			-- Iniciar JDTLS
+			jdtls.start_or_attach(config)
+			-- Configurar DAP para Java
+			jdtls.setup_dap({ hotcodereplace = "auto" })
 
-			local function download_junit_jar()
-				local jar_name = "junit-platform-console-standalone-1.10.1.jar"
-				local junit_jar_path = vim.fn.expand("~/.local/share/nvim/neotest-java/") .. jar_name
-
-				-- Verificar si el archivo JAR ya existe
-				if vim.fn.filereadable(junit_jar_path) == 0 then
-					-- Si el archivo no existe, usar wget para descargarlo
-					local url = "https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/1.10.1/"
-						.. jar_name
-					local cmd = "wget -O " .. junit_jar_path .. " " .. url .. " >/dev/null 2>&1"
-					os.execute(cmd)
-				end
-			end
-			-- Llamar a la función para descargar el JAR
-			download_junit_jar()
+			-- Tests
+			local dap = require("dap")
+			dap.defaults.fallback.focus_terminal = false
+			dap.defaults.fallback.terminal_win_cmd = "5new"
 
 			-- Ejecutar test
-			vim.api.nvim_set_keymap(
-				"n",
-				"<leader>xr",
-				[[:lua require("neotest").run.run(vim.fn.expand("%"))<CR>]],
-				{ noremap = true, silent = true }
-			)
-			-- Mostrar/ocultar interfaz
-			vim.api.nvim_set_keymap(
-				"n",
-				"<leader>xt",
-				[[<CR>:lua require("neotest").summary.toggle()<CR>]],
-				{ noremap = true, silent = true }
-			)
+			vim.keymap.set("n", "<leader>tc", function()
+				jdtls.test_class()
+				dap.repl.open({ height = 7 })
+			end, { noremap = true, silent = true })
+
+			-- Ocultar resultados del test
+			vim.keymap.set("n", "<leader>td", function()
+				-- Cerrramos la terminal
+				for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+					local name = vim.api.nvim_buf_get_name(buf)
+					if name:match("dap%-terminal") then
+						vim.api.nvim_buf_delete(buf, { force = true })
+					end
+				end
+				-- Cerramos el reply
+				dap.repl.close()
+			end, { noremap = true, silent = true })
 		end,
 	},
 }

@@ -1,17 +1,5 @@
--- stylua: ignore
-local colors = {
-	bg =       "#282828",
-	fg =       "#a89984",
-	yellow =   "#d79921",
-	cyan =     "#689d6a",
-	darkblue = "#076678",
-	green =    "#98971a",
-	orange =   "#fe8019",
-	violet =   "#b16286",
-	magenta =  "#8f3f71",
-	blue =     "#458588",
-	red =      "#cc241d",
-}
+local cs = require("colorscheme")
+local colors = cs.colors
 
 local conditions = {
 	buffer_not_empty = function()

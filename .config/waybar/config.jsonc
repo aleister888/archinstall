@@ -18,9 +18,6 @@
         "custom/date",
         "tray"
     ],
-    "hyprland/workspaces": {
-        "show-special": true
-    },
     "hyprland/window": {
         "tooltip": false,
         "max-length": 45

@@ -14,8 +14,17 @@ return {
 			jump_prev_row = { "<S-Enter>", mode = { "n", "v" } },
 		},
 	},
-	vim.keymap.set("n", "<leader>f", function()
-		vim.cmd("CsvViewToggle display_mode=border")
-	end, { silent = true }),
+	config = function(_, opts)
+		require("csvview").setup(opts)
+		-- Cargar los atajos solo para el tipo de archivo 'csv'
+		vim.api.nvim_create_autocmd("FileType", {
+			pattern = "csv",
+			callback = function()
+				vim.keymap.set("n", "<leader>f", function()
+					vim.cmd("CsvViewToggle display_mode=border")
+				end, { silent = true, buffer = true })
+			end,
+		})
+	end,
 	cmd = { "CsvViewEnable", "CsvViewDisable", "CsvViewToggle" },
 }

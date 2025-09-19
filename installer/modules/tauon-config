@@ -31,9 +31,10 @@ sed -i 's/restore-window-position = true/restore-window-position = false/g' "$CO
 sed -i 's/theme-name = ".*"/theme-name = "aleister-gruvbox"/g' "$CONF"
 
 # Cambiar las fuentes usadas
+BASE_FONT="Fira Sans Condensed"
 sed -i 's/use-custom-fonts = false/use-custom-fonts = true/g' "$CONF"
-sed -i 's/font-main-standard = ".*"/font-main-standard = "Inconsolata Nerd Font"/g' "$CONF"
-sed -i 's/font-main-medium = ".*"/font-main-medium = "Inconsolata Nerd Font Medium"/g' "$CONF"
-sed -i 's/font-main-bold = ".*"/font-main-bold = "Inconsolata Nerd Font Bold"/g' "$CONF"
-sed -i 's/font-main-condensed = ".*"/font-main-condensed = "Inconsolata Nerd Font"/g' "$CONF"
-sed -i 's/font-main-condensed-bold = ".*"/font-main-condensed-bold = "Inconsolata Nerd Font Bold"/g' "$CONF"
+sed -i 's/font-main-standard = ".*"/font-main-standard = "$BASE_FONT"/g' "$CONF"
+sed -i 's/font-main-medium = ".*"/font-main-medium = "$BASE_FONT Medium"/g' "$CONF"
+sed -i 's/font-main-bold = ".*"/font-main-bold = "$BASE_FONT Bold"/g' "$CONF"
+sed -i 's/font-main-condensed = ".*"/font-main-condensed = "$BASE_FONT"/g' "$CONF"
+sed -i 's/font-main-condensed-bold = ".*"/font-main-condensed-bold = "$BASE_FONT Bold"/g' "$CONF"

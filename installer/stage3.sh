@@ -9,22 +9,18 @@
 # Importamos todos los componentes en los que se separa el script
 PATH="$PATH:$(find ~/.dotfiles/installer/modules -type d | paste -sd ':' -)"
 
-yayinstall() { # Instalar paquetes con yay
+# Instalar paquetes con yay
+yayinstall() {
 	yay -Sy --noconfirm --needed "$@"
 }
 
-# Guardamos nuestros paquetes a instalar en un array
-mapfile -t PACKAGES < <(
-	# Añadimos los paquetes que no dependen de la distro
-	find "$HOME/.dotfiles/assets/packages" -name '*.json' \
-		-exec jq -r '.[] | .[]' {} +
-)
-
+PACKAGES=()
+DRIVERS_VID=()
 driver_add() {
 	case $GRAPHIC_DRIVER in
 
 	amd)
-		PACKAGES+=(
+		DRIVERS_VID+=(
 			"lib32-mesa"
 			"lib32-vulkan-radeon"
 			"mesa"
@@ -34,7 +30,7 @@ driver_add() {
 		;;
 
 	nvidia)
-		PACKAGES+=(
+		DRIVERS_VID+=(
 			"dkms"
 			"lib32-nvidia-utils"
 			"libva-mesa-driver"
@@ -47,7 +43,7 @@ driver_add() {
 		;;
 
 	intel)
-		PACKAGES+=(
+		DRIVERS_VID+=(
 			"lib32-libva-intel-driver"
 			"lib32-vulkan-intel"
 			"libva-intel-driver"
@@ -57,14 +53,23 @@ driver_add() {
 		;;
 
 	vm)
-		PACKAGES+=(
+		DRIVERS_VID+=(
 			"lib32-vulkan-virtio"
 			"vulkan-virtio"
 			"xf86-input-vmmouse"
 		)
 		;;
-
 	esac
+}
+
+arr_packages() {
+	# Guardamos nuestros paquetes a instalar en un array
+	mapfile -t TMP_PACKAGES < <(
+		# Añadimos los paquetes que no dependen de la distro
+		find "$HOME/.dotfiles/assets/packages" -name '*.json' \
+			-exec jq -r '.[] | .[]' {} +
+	)
+	PACKAGES=("${TMP_PACKAGES[@]}" "${DRIVERS_VID[@]}")
 }
 
 # Configurar Xresources
@@ -120,6 +125,10 @@ sudo sed -i "s/-j2/-j$(nproc)/;/^#MAKEFLAGS/s/^#//" /etc/makepkg.conf
 
 # Instalamos todos los paquetes a la vez
 while true; do
+	# En cada iteración se vuelven a leer los archivos con los paquetes a instalar
+	# De este modo en caso de error podemos intervenir más facilmente
+	arr_packages
+
 	yayinstall "${PACKAGES[@]}" && break
 
 	echo
@@ -193,10 +202,15 @@ sudo set-clock
 # Sincronizar las bases de datos de los paquetes
 sudo pacman -Fy
 
+# Creamos un directorio para gnupg
+mkdir -p "$HOME"/.local/share/gnupg/private-keys-v1.d
+chmod 700 -R ~/.local/share/gnupg
+mkdir -p "$HOME"/.local/share/cargo
+
 # Añadir entradas a /etc/environment
-cat <<-'EOF' | sudo tee -a /etc/environment
-	CARGO_HOME="~/.local/share/cargo"
-	GNUPGHOME="~/.local/share/gnupg"
+cat <<EOF | sudo tee -a /etc/environment
+CARGO_HOME="$HOME/.local/share/cargo"
+GNUPGHOME="$HOME/.local/share/gnupg"
 EOF
 
 WINEPREFIX="$HOME/.config/wineprefixes" winetricks -q mfc42
@@ -207,10 +221,6 @@ rm "$HOME"/.wget-hsts 2>/dev/null
 
 # Cambiamos el layout de teclado de la tty a español
 echo "KEYMAP=es" | doas tee -a /etc/vconsole.conf
-
-# Creamos un directorio para gnupg
-mkdir -p "$HOME"/.local/share/gnupg/private-keys-v1.d
-chmod 700 -R ~/.local/share/gnupg
 
 toilet "Instalación terminada"
 echo "La instalación ha terminado. Reinicia tu ordenador cuando estés listo"

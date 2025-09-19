@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/sh -x
+
+[ $(pgrep screenshot | wc -l) -ge 3 ] && exit 1
 
 makoctl dismiss -a
 
@@ -7,6 +9,7 @@ SCRENSHOTS_DIR="$HOME/Imágenes/Screenshots"
 FILEPATH="$SCRENSHOTS_DIR/$FILENAME"
 SOUND="/usr/share/sounds/freedesktop/stereo/camera-shutter.oga"
 TMP="/tmp/screenshot.png"
+MSG="Captura de Pantalla"
 
 mkdir -p "$SCRENDIR"
 
@@ -24,15 +27,15 @@ capture() {
 		if [ "$MODE" = "clipboard" ]; then
 			# Copiar al portapapeles con wl-copy
 			wl-copy <"$TMP"
-			notify-send -i "$TMP" 'Captura copiada al Portapapeles'
+			notify-send -i "$TMP" "$MSG" "Copiada al Portapapeles"
 			rm "$TMP"
 		else
 			mv "$TMP" "$FILEPATH"
-			notify-send -i "$FILEPATH" "$FILENAME"
+			notify-send -i "$FILEPATH" "$MSG" "$FILENAME"
 		fi
 		pw-play "$SOUND"
 	else
-		notify-send -i system-error 'Error al capturar'
+		notify-send -i system-error "$MSG" "Error al capturar"
 	fi
 
 }

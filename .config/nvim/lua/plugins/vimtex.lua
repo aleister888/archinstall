@@ -35,6 +35,7 @@ return {
 				vim.keymap.set("n", "<leader>g", ":VimtexCompile<CR>", { silent = true, buffer = true })
 				-- Guardar y compilar manualmente con xelatex
 				vim.keymap.set("n", "<leader>G", ":w<CR>:!xelatex %<CR>", { silent = true, buffer = true })
+
 				-- Poner texto entre comillas
 				vim.keymap.set("v", "`", "s`<C-r>\"'", { noremap = true, silent = true })
 				vim.keymap.set("v", "<leader>`", "s``<C-r>\"''", { noremap = true, silent = true })
@@ -42,9 +43,6 @@ return {
 				vim.keymap.set("v", "<leader>e", 's\\emph{<C-r>"}', { silent = true })
 				vim.keymap.set("v", "<leader>b", 's\\textbf{<C-r>"}', { silent = true })
 				vim.keymap.set("v", "<leader>i", 's\\textit{<C-r>"}', { silent = true })
-				vim.keymap.set("v", "<leader>t", 's\\text{<C-r>"}', { silent = true })
-				vim.keymap.set("v", "<leader>m", 's\\texttt{<C-r>"}', { silent = true })
-				vim.keymap.set("v", "<leader>h", 's\\hl{<C-r>"}', { silent = true })
 			end,
 		})
 	end,

@@ -40,29 +40,21 @@ statusbar() {
 metaprint() {
 	local OUT
 
-	case "$1" in
-	title)
-		if [ -z "$PLAYER" ]; then
-			OUT="Cannot detect artist"
-		else
-			OUT="$(playerctl metadata --player="$PLAYER" title)"
-		fi
-		;;
-	album)
-		if [ -z "$PLAYER" ]; then
-			OUT="Cannot detect album"
-		else
-			OUT="$(playerctl metadata --player="$PLAYER" album)"
-		fi
-		;;
-	artist)
-		if [ -z "$PLAYER" ]; then
-			OUT="Player Stopped"
-		else
-			OUT="$(playerctl metadata --player="$PLAYER" artist)"
-		fi
-		;;
-	esac
+	if [ -z "$PLAYER" ]; then
+		case "$1" in
+		title) OUT="Reproductor cerrado" ;;
+		album) OUT="No se pudo obtener la información" ;;
+		artist) OUT="No se pudo obtener la información" ;;
+		esac
+	else
+		case "$1" in
+		title | album | artist)
+			OUT="$(playerctl metadata --player="$PLAYER" "$1")"
+			;;
+		esac
+	fi
+
+	[ -z "$OUT" ] && exit 1
 
 	if [ "$WITHSAFE" == "true" ]; then
 		makesafe "$OUT"
@@ -117,7 +109,6 @@ while [[ "$#" -gt 0 ]]; do
 		exit
 		;;
 	-c)
-		[ -z "$PLAYER" ] && exit 1
 		COVER=$(playerctl --player="$PLAYER" metadata mpris:artUrl)
 		if [ -z "$COVER" ]; then
 			echo "$HOME/.dotfiles/assets/images/music-control_placeholder.png"

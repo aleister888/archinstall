@@ -5,22 +5,23 @@
 }
 
 window#waybar {
+  font-weight: 400;
   background: #1d2021;
 }
 
 #workspaces {
-  margin: 6px 0px 6px 8px;
+  margin: 6px 0px 6px 10px;
 }
 
 #workspaces button {
   font-weight: 400;
   margin: 0px 2px 0px 2px;
-  padding: 2px 6px 2px 6px;
+  padding: 1px 6px 1px 6px;
 }
 
 #workspaces button.active {
   background: #98971a;
-  font-weight: 600;
+  font-weight: 500;
   margin: 0px 2px 0px 2px;
 }
 
@@ -29,41 +30,41 @@ window#waybar {
 }
 
 #custom-music-metadata {
-  font-weight: 600;
+  font-weight: 500;
 }
 
 #custom-blue-filter {
   color: #928374;
-  margin: 0px 15px 0px 15px;
+  margin: 0px 7.5px 0px 7.5px;
 }
 
 #custom-battery {
   color: #689d6a;
-  font-weight: 600;
+  font-weight: 500;
   margin: 0px 7.5px 0px 7.5px;
 }
 
 #pulseaudio {
   color: #458588;
-  font-weight: 600;
+  font-weight: 500;
   margin: 0px 7.5px 0px 7.5px;
 }
 
 #custom-disk {
   color: #d79921;
-  font-weight: 600;
+  font-weight: 500;
   margin: 0px 7.5px 0px 7.5px;
 }
 
 #custom-time {
   color: #d65d0e;
-  font-weight: 600;
+  font-weight: 500;
   margin: 0px 7.5px 0px 7.5px;
 }
 
 #custom-date {
   color: #b16286;
-  font-weight: 600;
+  font-weight: 500;
   margin: 0px 7.5px 0px 2.5px;
 }
 

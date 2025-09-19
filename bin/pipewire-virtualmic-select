@@ -9,8 +9,9 @@ DMENU="wofi --show dmenu"
 SINK_L=my-combined-sink:playback_FL
 SINK_R=my-combined-sink:playback_FR
 
-# Icono para las notificaciones
+# Variables para las notificaciones
 ICON="bridge-constructor"
+MSG="Micrófono Virtual"
 
 # Excluiremos los sinks cuyo nombre contenga alguno de estos patrones
 EXCLUDE_PATTERN="my-combined-sink\|my-virtualmic\|PulseAudio\|Midi\|v4l2\|WEBRTC\|Chromium"
@@ -78,12 +79,12 @@ sink_edit() {
 		sink_match "$1"
 		# Comprobar que los dispositivos/aplicaciones se añadieron correctamente
 		if pw-link -l | grep "my-combined-sink" -A 1 | grep "$DMENU_SELECTED" >/dev/null; then
-			notify-send -i $ICON "Sink vinculado correctamente"
+			notify-send -i $ICON "$MSG" "Sink vinculado correctamente"
 		else
-			notify-send -i $ICON "Hubo un fallo al añadir el sink"
+			notify-send -i $ICON "$MSG" "Hubo un fallo al añadir el sink"
 		fi
 	elif [ "$1" = "del" ]; then # Desvincular dispositivos/aplicaciones
-		sink_match "$1" && notify-send -i $ICON "Sink borrado"
+		sink_match "$1" && notify-send -i $ICON "$MSG" "Sink borrado"
 	fi
 }
 
@@ -93,10 +94,10 @@ DEL="Quitar sink del micrófono virtual"
 CHOSEN=$(echo -e "$ADD\n$DEL" | eval $DMENU)
 if [ "$CHOSEN" = "$ADD" ]; then
 	[ -z "$DEVICES" ] &&
-		notify-send -i $ICON "No hay sinks que añadir" && exit
+		notify-send -i $ICON "$MSG" "No hay sinks que añadir" && exit
 	sink_edit add
 elif [ "$CHOSEN" = "$DEL" ]; then
 	[ -z "$DEL_DEVICES" ] &&
-		notify-send -i $ICON "No hay sinks que borrar" && exit
+		notify-send -i $ICON "$MSG" "No hay sinks que borrar" && exit
 	sink_edit del
 fi

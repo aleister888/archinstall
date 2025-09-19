@@ -157,8 +157,8 @@ cat <<-EOF | tee "$CONF_DIR/qt5ct/qt5ct.conf" "$CONF_DIR/qt6ct/qt6ct.conf" >/dev
 	style=Fusion
 
 	[Fonts]
-	fixed="Inconsolata Nerd Font Mono,12,0,0,0,0,0,0,0,0,Bold"
-	general="Inconsolata Nerd Font,12,0,0,0,0,0,0,0,0,Bold"
+	fixed="Fira Sans Condensed Mono,12,0,0,0,0,0,0,0,0,Bold"
+	general="Fira Sans Condensed,12,0,0,0,0,0,0,0,0,Bold"
 EOF
 
 #####################

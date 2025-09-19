@@ -7,6 +7,35 @@ local servers = {
 	"texlab",
 }
 
+-- Configure diagnostic display with custom signs
+vim.diagnostic.config({
+	float = {
+		focusable = true,
+		style = "minimal",
+		border = "rounded",
+		source = true, -- Show source in diagnostic popup window
+		header = "",
+		prefix = "",
+	},
+	virtual_text = false,
+	virtual_lines = false,
+	signs = {
+		text = {
+			[vim.diagnostic.severity.ERROR] = " ",
+			[vim.diagnostic.severity.WARN] = " ",
+			[vim.diagnostic.severity.HINT] = " ",
+			[vim.diagnostic.severity.INFO] = " ",
+		},
+	},
+	underline = true,
+	update_in_insert = false,
+	severity_sort = true,
+})
+
+-- Enable inlay hints
+vim.lsp.inlay_hint.enable(true)
+
+local keymap = vim.keymap
 return {
 	{
 		"williamboman/mason.nvim",
@@ -15,35 +44,19 @@ return {
 	{
 		"williamboman/mason-lspconfig.nvim",
 		opts = function()
+			local opts = { silent = true }
+
 			vim.keymap.set("n", "<leader>A", vim.lsp.buf.code_action, {})
 			-- Mostrar diagnóstico en una ventana flotante
-			vim.api.nvim_set_keymap(
-				"n",
-				"<leader>d1",
-				":lua vim.diagnostic.open_float()<CR>",
-				{ noremap = true, silent = true }
-			)
-			-- Mostrar diagnósticos en forma de lista
-			vim.api.nvim_set_keymap(
-				"n",
-				"<leader>dl",
-				":lua vim.diagnostic.setqflist()<CR>",
-				{ noremap = true, silent = true }
-			)
-			-- Ir al siguiente diagnóstico
-			vim.api.nvim_set_keymap(
-				"n",
-				"<leader>dn",
-				":lua vim.diagnostic.goto_next()<CR>",
-				{ noremap = true, silent = true }
-			)
+			keymap.set("n", "<leader>i", vim.diagnostic.open_float)
 			-- Ir al diagnóstico anterior
-			vim.api.nvim_set_keymap(
-				"n",
-				"<leader>dp",
-				":lua vim.diagnostic.goto_prev()<CR>",
-				{ noremap = true, silent = true }
-			)
+			keymap.set("n", "<leader>o", function()
+				vim.diagnostic.jump({ count = -1, float = true })
+			end)
+			-- Ir al siguiente diagnóstico
+			keymap.set("n", "<leader>p", function()
+				vim.diagnostic.jump({ count = 1, float = true })
+			end)
 			return {
 				ensure_installed = servers,
 				-- Desactivamos para evitar clientes duplicados
@@ -59,75 +72,19 @@ return {
 			"WhoIsSethDaniel/mason-tool-installer.nvim",
 		},
 		config = function()
-			local lspconfig = require("lspconfig")
-			local capabilities = require("cmp_nvim_lsp").default_capabilities()
-			-- Configurar servidores LSP
-			for _, lsp in ipairs(servers) do
-				if lsp ~= "jdtls" then
-					lspconfig[lsp].setup({
-						capabilities = capabilities,
-					})
-				end
+			require("lspconfig")
+			local lsp_capabilities = vim.lsp.protocol.make_client_capabilities()
+			local blink_status_ok, blink = pcall(require, "blink.cmp")
+			if blink_status_ok then
+				lsp_capabilities = vim.tbl_deep_extend("force", {}, lsp_capabilities, blink.get_lsp_capabilities())
 			end
+			vim.lsp.config("*", {
+				capabilities = lsp_capabilities,
+			})
 			require("mason-tool-installer").setup({
 				ensure_installed = { "java-debug-adapter", "java-test" },
 				auto_update = true,
 				run_on_start = true,
-			})
-		end,
-	},
-	{
-		"hrsh7th/nvim-cmp",
-		dependencies = {
-			"hrsh7th/cmp-nvim-lsp", -- Para LSP
-			"quangnguyen30192/cmp-nvim-ultisnips", -- Para ultisnips
-			"L3MON4D3/LuaSnip", -- Dependencia de snippets
-			"hrsh7th/cmp-buffer", -- Autocompletado desde el buffer
-			"hrsh7th/cmp-path", -- Autocompletado de rutas
-			"hrsh7th/cmp-nvim-lua", -- Autocompletado para Lua
-			"onsails/lspkind.nvim",
-		},
-		requires = {
-			"Sirver/ultisnips",
-			config = function()
-				vim.g.UltiSnipsSnippetDirectories = { "~/.config/nvim/snips" }
-			end,
-		},
-		config = function()
-			local cmp = require("cmp")
-			local lspkind = require("lspkind")
-			-- Setup de nvim-cmp
-			cmp.setup({
-				snippet = {
-					expand = function(args)
-						vim.fn["UltiSnips#Anon"](args.body)
-					end,
-				},
-				sources = {
-					{ name = "nvim_lsp" },
-					{ name = "ultisnips" },
-					{ name = "buffer" },
-					{ name = "path" },
-					{ name = "nvim_lua" },
-				},
-				mapping = {
-					-- Shift+Tab para confirmar selección
-					["<S-Tab>"] = cmp.mapping.confirm({ select = true }),
-					-- Flecha Abajo para ir a la siguiente opción
-					["<Down>"] = cmp.mapping.select_next_item(),
-					-- Flecha Arriba para ir a la opción anterior
-					["<Up>"] = cmp.mapping.select_prev_item(),
-				},
-				formatting = {
-					fields = { "kind", "abbr", "menu" },
-					format = function(entry, vim_item)
-						local kind = lspkind.cmp_format({ mode = "symbol_text", maxwidth = 50 })(entry, vim_item)
-						local strings = vim.split(kind.kind, "%s", { trimempty = true })
-						kind.kind = " " .. (strings[1] or "") .. " "
-						kind.menu = "    (" .. (strings[2] or "") .. ")"
-						return kind
-					end,
-				},
 			})
 		end,
 	},

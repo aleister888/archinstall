@@ -90,6 +90,18 @@ repos_conf() {
 		# Escoger los mejores repositorios para Arch Linux
 		@hourly root ping gnu.org -c 1 && reflector --latest 10 --connection-timeout 1 --download-timeout 1 --sort rate --save /etc/pacman.d/mirrorlist
 	EOF
+
+	# Añadir Chaotic AUR
+	pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+	pacman-key --lsign-key 3056513887B78AEB
+	pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
+	pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+
+	cat <<-EOF >>/etc/pacman.conf
+
+		[chaotic-aur]
+		Include = /etc/pacman.d/chaotic-mirrorlist
+	EOF
 }
 
 # Cambiar la codificación del sistema a español

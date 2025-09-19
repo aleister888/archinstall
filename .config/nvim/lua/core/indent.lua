@@ -1,134 +1,82 @@
--- Indentación y tabulación
+-- Configuración de indentación y tabulación
 
+-- Configuración por defecto para todos los tipos de archivo
+local default_config = {
+	smartindent = false,
+	cindent = false,
+	expandtab = false,
+	copyindent = true,
+	preserveindent = true,
+	tabstop = 4,
+	shiftwidth = 4,
+}
+
+-- Configuraciones específicas por tipo de archivo
+local filetype_configs = {
+	sql = {
+		expandtab = true,
+		tabstop = 4,
+		shiftwidth = 4,
+	},
+	["json*"] = {
+		smartindent = true,
+		expandtab = true,
+		tabstop = 2,
+		shiftwidth = 2,
+	},
+	fstab = {
+		tabstop = 8,
+		shiftwidth = 8,
+	},
+	java = {}, -- Usa la configuración por defecto
+	["*css"] = {
+		expandtab = true,
+		tabstop = 2,
+		shiftwidth = 2,
+	},
+	tex = {
+		smartindent = true,
+		expandtab = true,
+		tabstop = 6,
+		shiftwidth = 6,
+	},
+	xml = {
+		expandtab = true,
+		tabstop = 2,
+		shiftwidth = 2,
+	},
+	markdown = {
+		expandtab = true,
+		tabstop = 2,
+		shiftwidth = 2,
+	},
+}
+
+-- Función para aplicar configuración
+local function apply_config(config)
+	local opt = vim.opt_local
+	for key, value in pairs(config) do
+		opt[key] = value
+	end
+end
+
+-- Configuración por defecto para todos los archivos
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "*",
 	callback = function()
-		local opt = vim.opt_local
-		opt.smartindent = false
-		opt.cindent = false
-		opt.expandtab = false
-		opt.copyindent = true
-		opt.preserveindent = true
-		opt.tabstop = 4
-		opt.shiftwidth = 4
+		apply_config(default_config)
 	end,
 })
 
--- sql
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = "sql",
-	callback = function()
-		local opt = vim.opt_local
-		opt.smartindent = false
-		opt.cindent = false
-		opt.expandtab = true
-		opt.copyindent = true
-		opt.preserveindent = true
-		opt.tabstop = 4
-		opt.shiftwidth = 4
-	end,
-})
--- json
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = "json*",
-	callback = function()
-		local opt = vim.opt_local
-		opt.smartindent = true
-		opt.cindent = false
-		opt.expandtab = true
-		opt.copyindent = true
-		opt.preserveindent = true
-		opt.tabstop = 2
-		opt.shiftwidth = 2
-	end,
-})
+-- Configuraciones específicas por tipo de archivo
+for pattern, config in pairs(filetype_configs) do
+	-- Combinar con configuración por defecto
+	local merged_config = vim.tbl_extend("force", {}, default_config, config)
 
--- Fstab
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = "fstab",
-	callback = function()
-		local opt = vim.opt_local
-		opt.smartindent = false
-		opt.cindent = false
-		opt.expandtab = false
-		opt.copyindent = true
-		opt.preserveindent = true
-		opt.tabstop = 8
-		opt.shiftwidth = 8
-	end,
-})
-
--- Java
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = "java",
-	callback = function()
-		local opt = vim.opt_local
-		opt.smartindent = false
-		opt.cindent = false
-		opt.expandtab = false
-		opt.copyindent = true
-		opt.preserveindent = true
-		opt.tabstop = 4
-		opt.shiftwidth = 4
-	end,
-})
-
--- CSS/SCSS
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = "*css",
-	callback = function()
-		local opt = vim.opt_local
-		opt.smartindent = false
-		opt.cindent = false
-		opt.expandtab = true
-		opt.copyindent = true
-		opt.preserveindent = true
-		opt.tabstop = 2
-		opt.shiftwidth = 2
-	end,
-})
-
--- laTeX
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = "tex",
-	callback = function()
-		local opt = vim.opt_local
-		opt.smartindent = true
-		opt.cindent = false
-		opt.expandtab = true
-		opt.copyindent = true
-		opt.preserveindent = true
-		opt.tabstop = 6
-		opt.shiftwidth = 6
-	end,
-})
-
--- XML
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = "xml",
-	callback = function()
-		local opt = vim.opt_local
-		opt.smartindent = false
-		opt.cindent = false
-		opt.expandtab = true
-		opt.copyindent = true
-		opt.preserveindent = true
-		opt.tabstop = 2
-		opt.shiftwidth = 2
-	end,
-})
-
--- Markdown
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = "markdown",
-	callback = function()
-		local opt = vim.opt_local
-		opt.smartindent = false
-		opt.cindent = false
-		opt.expandtab = true
-		opt.copyindent = true
-		opt.preserveindent = true
-		opt.tabstop = 2
-		opt.shiftwidth = 2
-	end,
-})
+	vim.api.nvim_create_autocmd("FileType", {
+		pattern = pattern,
+		callback = function()
+			apply_config(merged_config)
+		end,
+	})
+end

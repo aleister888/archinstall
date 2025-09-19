@@ -1,7 +1,11 @@
+* {
+  font-family: "Symbols Nerd Font", "Fira Sans Condensed";
+  font-size: 18px;
+  font-weight: 400;
+}
+
 window {
   background: none;
-  font-family: "Symbols Nerd Font", "Inconsolata Nerd Font";
-  font-size: 18px;
 }
 
 #input {

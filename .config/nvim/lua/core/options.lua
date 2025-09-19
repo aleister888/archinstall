@@ -1,42 +1,45 @@
+local opt = vim.opt
+
+opt.winborder = "rounded"
 -- Título de la ventana: Título del archivo
-vim.opt.title = true
+opt.title = true
 -- Codificación de caracteres: UTF-8
-vim.opt.encoding = "utf-8"
+opt.encoding = "utf-8"
 -- Permitir el uso del mouse en todos los modos
-vim.opt.mouse = "a"
+opt.mouse = "a"
 -- Desactivar ctags
-vim.opt.tags = "/dev/null"
+opt.tags = "/dev/null"
 -- Cambiar de buffer sin guardar los cambios
-vim.opt.hidden = true
+opt.hidden = true
 -- Cambiar el directorio de trabajo al del archivo
-vim.opt.autochdir = true
+opt.autochdir = true
 -- Tiempo de espera entre teclas
-vim.opt.ttimeoutlen = 0
+opt.ttimeoutlen = 0
 -- Navegación y autocompletado de comandos
-vim.opt.wildmode = "longest,list,full"
+opt.wildmode = "longest,list,full"
 -- Altura máxima del menú de autocompletado
-vim.opt.pumheight = 10
+opt.pumheight = 10
 -- Añadir márgenes en los extremos de la ventana
-vim.opt.scrolloff = 5
+opt.scrolloff = 5
 -- Desactiva el ajuste de línea
-vim.opt.wrap = true
+opt.wrap = true
 -- Una sola barra de estado para todas las ventanas
-vim.opt.laststatus = 3
+opt.laststatus = 3
 -- Opciones del cursor
-vim.opt.number = true
-vim.opt.relativenumber = true
-vim.opt.cursorline = true
+opt.number = true
+opt.relativenumber = true
+opt.cursorline = true
 -- Ajustes de búsqueda
-vim.opt.ignorecase = true
-vim.opt.incsearch = true
+opt.ignorecase = true
+opt.incsearch = true
 -- Líneas de separación vertical y caracteres invisibles
-vim.opt.list = true
-vim.opt.listchars = { tab = "| ", trail = "·", lead = "·", precedes = "<", extends = ">" }
+opt.list = true
+opt.listchars = { tab = "| ", trail = "·", lead = "·", precedes = "<", extends = ">" }
 -- Marcar la columna 80
-vim.opt.colorcolumn = "80"
+opt.colorcolumn = "80"
 
 -- Permitir el acceso global al porta-papeles
-vim.opt.clipboard:append("unnamedplus")
+opt.clipboard = "unnamedplus"
 
 -- Borrar automáticamente los espacios sobrantes al guardar
 vim.api.nvim_create_autocmd("BufWritePre", {
