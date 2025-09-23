@@ -219,4 +219,4 @@ convert +append \
 	"${TMP_DIR}/7d_protein.png" \
 	"$OUTPUT_WEEKLY_COMBINED" >/dev/null 2>&1
 
-notify-send -i text-csv "Informe compilado"
+notify-send -i text-csv "$(basename "$0")" "Informe compilado"

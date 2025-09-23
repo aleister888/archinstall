@@ -20,7 +20,7 @@ return {
 		vim.api.nvim_create_autocmd("FileType", {
 			pattern = "csv",
 			callback = function()
-				vim.keymap.set("n", "<leader>f", function()
+				vim.keymap.set("n", "<leader>ff", function()
 					vim.cmd("CsvViewToggle display_mode=border")
 				end, { silent = true, buffer = true })
 			end,

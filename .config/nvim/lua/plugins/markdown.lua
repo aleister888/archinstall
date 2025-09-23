@@ -45,7 +45,11 @@ return {
 					vim.cmd("Tocv")
 				end
 			end
-			vim.keymap.set("n", "<leader>f", toc_toggle, { silent = true })
+			vim.keymap.set("n", "<leader>ff", toc_toggle, { silent = true })
 		end,
+	},
+	{
+		"MeanderingProgrammer/render-markdown.nvim",
+		opts = {},
 	},
 }

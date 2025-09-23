@@ -50,6 +50,11 @@ local filetype_configs = {
 		tabstop = 2,
 		shiftwidth = 2,
 	},
+	python = {
+		expandtab = true,
+		tabstop = 4,
+		shiftwidth = 4,
+	},
 }
 
 -- Función para aplicar configuración

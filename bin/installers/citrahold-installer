@@ -45,7 +45,7 @@ install() {
 }
 
 uninstall() {
-	rm -f "$BIN_FILE"
+	rm -f "$INSTALL_DIR"
 	rm -f "$DESKTOP_FILE"
 }
 

@@ -34,7 +34,7 @@ return {
 				-- Guardar y compilar con Vimtex
 				vim.keymap.set("n", "<leader>g", ":VimtexCompile<CR>", { silent = true, buffer = true })
 				-- Guardar y compilar manualmente con xelatex
-				vim.keymap.set("n", "<leader>G", ":w<CR>:!xelatex %<CR>", { silent = true, buffer = true })
+				vim.keymap.set("n", "<leader>G", ':w<CR>:!xelatex "%"<CR>', { silent = true, buffer = true })
 
 				-- Poner texto entre comillas
 				vim.keymap.set("v", "`", "s`<C-r>\"'", { noremap = true, silent = true })

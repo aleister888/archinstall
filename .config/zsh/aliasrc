@@ -13,15 +13,19 @@ alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
 # Actualizar el sistema
-alias update='yay -Syuu --answerclean --answerdiff --removemake --ignore joycond-git --ignore joycond-cemuhook-git'
+alias update='yay -Syuu --answerclean --answerdiff --removemake --ignore joycond-git --ignore joycond-cemuhook-git --ignore wlay-git'
 # Herramientas
 alias xdotool_table='xmodmap -pk'
 alias du='BLOCKSIZE=1073741824 du -s * | sort -rnk 1'
 alias grub-update='sudo grub-mkconfig -o /boot/grub/grub.cfg'
 # Alias para encontrar enlaces simbólicos rotos y archivos no reclamados
 alias brokenlink='find / -xtype l -print 2>/dev/null'
-alias unownedfiles='sudo find / ! -name "/mnt/*" -nogroup -nouser -print 2>/dev/null'
-alias lostfiles='sudo lostfiles | grep -iv "Theme\|opt\|Font"'
+alias lostfiles='
+	sudo lostfiles |
+		grep -iv "Theme\|opt\|Font" |
+		grep -v "/usr/lib/modules/" |
+		grep -v inputremapper
+'
 # Detectar que paquetes del AUR necesitan recompilarse
 alias rebuild-detector="checkrebuild -v"
 # Para pasar el output de un comando al portapeles con: comando | clipboard

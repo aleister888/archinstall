@@ -1,0 +1,51 @@
+#!/bin/sh
+
+[ ! -e "$XDG_CACHE_HOME/gemini_key" ] &&
+	notify-send -i system-error "Imágen -> laTeX" "No se encontró la API Key de Gemini en \$XDG_CACHE_HOME/gemini_key"
+
+IMAGE="/tmp/canvas-draw.png"
+LLAVE="$(cat $XDG_CACHE_HOME/gemini_key)"
+PROMPT="
+Esta es una imagen de una ecuación o expresión matemática escrita a mano. Convierte esta imagen a código LaTeX preciso y correcto.
+Responde únicamente con el código LaTeX de la ecuación sin estar rodeado por backtics:
+"
+
+IMAGE_DATA=$(base64 -w 0 "$IMAGE")
+
+if ! curl -s --head --request GET https://generativelanguage.googleapis.com; then
+	notify-send -i system-error "$(basename "$0")" "Error de conexión"
+	exit 1
+fi
+
+OUTPUT_JSON="/tmp/canvas2latex_output.json"
+LATEX_OUTPUT="/tmp/canvas2latex_result.txt"
+
+# Obtenemos la respuesta de Gemini
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent" \
+	-H "Content-Type: application/json" \
+	-H "X-goog-api-key: $LLAVE" \
+	-X POST \
+	-d "{
+    \"contents\": [
+      {
+        \"parts\": [
+          {
+            \"text\": \"$PROMPT\"
+          },
+          {
+            \"inline_data\": {
+              \"mime_type\": \"image/png\",
+              \"data\": \"$IMAGE_DATA\"
+            }
+          }
+        ]
+      }
+    ]
+  }" 2>/dev/null >$OUTPUT_JSON
+
+# Extramos solo el código latex
+jq -r '.candidates[0].content.parts[0].text' "$OUTPUT_JSON" >"$LATEX_OUTPUT"
+
+notify-send -i texmaker "$(basename "$0")" "$(cat $LATEX_OUTPUT)"
+
+wl-copy "$(cat $LATEX_OUTPUT)"

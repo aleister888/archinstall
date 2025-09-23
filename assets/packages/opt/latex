@@ -1,14 +1,16 @@
 biber
-texlive-core
-texlive-bin
-texlive-langspanish
+perl-file-homedir
+perl-yaml-tiny
 texlive-bibtexextra
+texlive-bin
 texlive-binextra
 texlive-context
+texlive-core
 texlive-fontsextra
 texlive-fontsrecommended
 texlive-fontutils
 texlive-formatsextra
+texlive-langspanish
 texlive-latex
 texlive-latexextra
 texlive-latexrecommended
@@ -21,5 +23,3 @@ texlive-publishers
 texlive-xetex
 ttf-fira-mono
 ttf-fira-sans
-perl-yaml-tiny
-perl-file-homedir

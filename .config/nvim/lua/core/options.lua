@@ -1,5 +1,6 @@
 local opt = vim.opt
 
+opt.conceallevel = 2
 opt.winborder = "rounded"
 -- Título de la ventana: Título del archivo
 opt.title = true
