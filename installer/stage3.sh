@@ -175,9 +175,9 @@ dotfiles-install
 # Crear el directorio /.Trash con permisos adecuados
 trash_dir
 
-# Configurar cronie para iniciar syncthing con el ordenador y asignar la swap
+# Borrar los módulos del kernel antiguos
 cat <<-EOF | sudo tee -a /etc/crontab >/dev/null
-	@reboot $USER syncthing --no-browser --no-default-folder
+	@hourly root cleanup-old-modules
 EOF
 
 # Activar WiFi y Bluetooth

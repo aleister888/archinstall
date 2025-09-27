@@ -1,9 +1,7 @@
 #!/bin/bash -x
 
-# Si pacman o yay se están ejecutando (p.e. se están actualizando paquetes)
-# el script se detiene
-pgrep yay >/dev/null && exit 1
-pgrep pacman >/dev/null && exit 1
+# Si pacman o yay se están ejecutando el script se detiene
+(pgrep yay >/dev/null || pgrep pacman >/dev/null) && exit 1
 
 KERNELS=()
 
@@ -11,16 +9,16 @@ KERNELS=()
 if pacman -Q linux-lts >/dev/null 2>&1; then
 	KERNELS+=("lts")
 else
-	sudo rm -f /etc/mkinitcpio.d/linux-lts.preset
+	rm -f /etc/mkinitcpio.d/linux-lts.preset
 fi
 
 if pacman -Q linux-zen >/dev/null 2>&1; then
 	KERNELS+=("zen")
 else
-	sudo rm -f /etc/mkinitcpio.d/linux-zen.preset
+	rm -f /etc/mkinitcpio.d/linux-zen.preset
 fi
 
-# Si solo esta instalado el kernel por defecto detenemos la ejecución
+# Si solo esta instalado el kernel predeterminado detenemos la ejecución
 [ ${#KERNELS[@]} -eq 0 ] && exit 1
 
 MODULE_LIST=$(/usr/bin/ls /usr/lib/modules)
@@ -32,6 +30,6 @@ for KERNEL in "${KERNELS[@]}"; do
 			# Excluimos el kernel más reciente y el que se está usando
 			head -n -1 | grep -v "$(uname -r)"
 	); do
-		sudo rm -rf "/usr/lib/modules/$MODULE"
+		rm -rf "/usr/lib/modules/$MODULE"
 	done
 done

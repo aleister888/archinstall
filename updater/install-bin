@@ -5,11 +5,12 @@
 
 [ "$(id -u)" -eq 0 ] && exit 1
 
-files=(
+FILES=(
+	"cleanup-old-modules"
 	"rdp-connect"
 	"wakeat"
 	"wakeme"
 )
-for file in "${files[@]}"; do
-	sudo ln -sf "$HOME/.dotfiles/assets/bin/$file" "/usr/local/bin/$file"
+for FILE in "${FILES[@]}"; do
+	sudo ln -sf "$HOME/.dotfiles/assets/bin/$FILE" "/usr/local/bin/$FILE"
 done

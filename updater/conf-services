@@ -30,6 +30,7 @@ SERVICES=(
 USER_SERVICES=(
 	"pipewire"
 	"pipewire-pulse"
+	"syncthing"
 	"wireplumber"
 )
 
