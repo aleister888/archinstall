@@ -1,13 +1,16 @@
 {
   "general": [
     "bleachbit",
-    "gimp",
     "handbrake",
     "handbrake-cli",
     "keepassxc",
     "qbittorrent",
     "seahorse",
     "vlc"
+  ],
+  "gimp": [
+    "cfitsio",
+    "gimp"
   ],
   "neovim": [
     "hunspell-en_us",
