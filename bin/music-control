@@ -13,12 +13,16 @@ if [ -z "$PLAYER" ]; then
 # Si se encontró, notificamos el cambio de canción
 else
 	playerctl --player="$PLAYER" "$1"
-	export ALTFACT=29
+	export ALTFACT=28
 
 	if [ "$1" != "play-pause" ]; then
 		makoctl dismiss -a
+		TITLE="$(music-metadata -S -t)"
+		ARTIST="<span font='10'>$(music-metadata -S -a)</span>"
+		LINE_BREAK="<span font='4'>\n\n</span>"
+		ALBUM="<span font='8'><i>$(music-metadata -S -A)</i></span>"
+
 		notify-send -i "$(music-metadata -c)" \
-			"$(music-metadata -S -t)" \
-			"$(music-metadata -S -a)\n$(music-metadata -S -A)"
+			"$TITLE" "$ARTIST$LINE_BREAK$ALBUM"
 	fi
 fi
