@@ -32,12 +32,19 @@ if command -v sudo &>/dev/null; then
 	pacman -Rcns sudo --noconfirm
 fi
 
-# Instalar doas-sudo-shim para que las aplicaciones que dependen
+# yay necesitará /usr/bin/sudo durante la instalación de doas-sudo-shim-v,
+# por lo que, para que yay pueda usar privilegios elevados, crearemos un enlace
+# simbólico temporal de OpenDoas en /usr/bin/sudo y permitiremos que yay lo
+# sobrescriba con --overwrite="*".
+ln -s /usr/bin/doas /usr/bin/sudo
+
+# Instalar doas-sudo-shim-v para que las aplicaciones que dependen
 # de sudo puedan seguir funcionando
 echo "Instalando doas-sudo-shim..."
 if command -v yay &>/dev/null; then
-	su "$RUSER" -c "yay -Sy --noconfirm --disable-download-timeout --needed \
-		doas-sudo-shim"
+	runuser "$RUSER" -c \
+		"yay -S --noconfirm --disable-download-timeout --needed \
+		doas-sudo-shim-v --overwrite=\"*\""
 else
 	echo "Error: yay no está instalado." >&2
 	exit 1

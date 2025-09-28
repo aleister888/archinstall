@@ -102,6 +102,8 @@ repos_conf() {
 		[chaotic-aur]
 		Include = /etc/pacman.d/chaotic-mirrorlist
 	EOF
+
+	pacman -Sy
 }
 
 # Cambiar la codificación del sistema a español
