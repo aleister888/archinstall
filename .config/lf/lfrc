@@ -35,6 +35,7 @@ cmd myclear ${{
 	lf -remote "send $id clear"
 	lf -remote "send $id glob-unselect *"
 	lf -remote "send $id reload"
+	clear
 }}
 
 # Abrir archivos en función del tipo
@@ -113,7 +114,6 @@ cmd open ${{
 
 # Muestra información sobre el directorio actual
 cmd on-cd &{{
-	clear
 	# Mostrar el directorio en el nombre de la ventana
 	printf '\033]0;%s\007' "$(pwd | sed "s|^$HOME|~|")" > /dev/tty
 	# Mostrar información sobre los repositorios (Rama y URL)
@@ -130,7 +130,6 @@ cmd on-cd &{{
 
 # Muestra información del archivo seleccionado con eza
 cmd on-select &{{
-	clear
 	INFO=""
 	# Si es un directorio, calculamos el espacio que ocupa en disco
 	[ -d "$f" ] && INFO+="[$(/usr/bin/du -chs $fx | grep total | awk '{print $1}')] "
@@ -303,7 +302,8 @@ cmd compress ${{
 	[ -e "$ARCHIVO" ] &&
 		notify-send -i ark "lf" "Archivo comprimido en\n<i>$OUT_DIR</i>"
 
-	clear
+	lf -remote "send $id reload"
+	lf -remote "send $id select \"$ARCHIVO\""
 }}
 
 # Función para abrir un scratchpad en el directorio actual
@@ -365,7 +365,7 @@ cmd fzf_search ${{
 		res="$(printf '%s' "$res" | sed 's/\\/\\\\/g;s/"/\\"/g')"
 		/usr/bin/lf -remote "send $id $cmd \"$res\""
 	fi
-	clear
+	lf -remote "send $id reload"
 }}
 
 # Extraer archivo
@@ -417,34 +417,37 @@ cmd paste &{{
 		;;
 	esac
 	rm ~/.local/share/lf/files
-	/usr/bin/lf -remote "send clear"
 }}
 
 # Mover a la papelera
 cmd trash ${{
 	makoctl dismiss -a
-	clear; tput bold
+	clear
+	tput bold
 	set -f
 	printf "%s\n\n" "$fx"
 	printf "¿Mover archivo(s) a la papelera? [s/N] "
 	read ans
 	[ $ans = "s" ] && trash-put $fx &&
 	notify-send -i user-trash "lf" "Archivo(s) movido(s) a la papelera"
-	clear
+	lf -remote "send $id reload"
 }}
 
 # Vaciar la papelera
 cmd clean-trash ${{
 	makoctl dismiss -a
-	clear; tput bold
+	clear
+	tput bold
 	set -f
 	printf "Contenidos de la papelera:\n"
 	trash-list
 	printf "¿Vaciar papelera? [s/N] "
 	read ans
-	[ $ans = "s" ] && trash-empty -f && \
-	notify-send -i user-trash "lf" "Archivo(s) borrados"
-	clear
+	if [ $ans = "s" ] || [ $ans = "S" ]; then
+		trash-empty -f && \
+		notify-send -i user-trash "lf" "Archivo(s) borrados"
+	fi
+	lf -remote "send $id reload"
 }}
 
 # Restaurar archivos de la papelera
@@ -452,20 +455,22 @@ cmd restore-trash ${{
 	makoctl dismiss -a
 	TRASH_CONTENTS=$(trash-list)
 	if [ -z "$TRASH_CONTENTS" ]; then
-		notify-send -i user-trash "lf" "La papelera esta vacía"
+		notify-send -i system-error "lf" "La papelera esta vacía"
 		exit 0
 	fi
 
-	clear; tput bold
+	clear
+	tput bold
 	set -f
 	echo $TRASH_CONTENTS | sed "s|$HOME|~|"
-	if whiptail --title "Restaurar papelera" \
-		--yesno "¿Restaurar los archivos eliminados?" 10 60; then
-		clear
+	printf "¿Restaurar? [s/N] "
+	read ans
+	[ $ans = "s" ]
+	if [ $ans = "s" ] || [ $ans = "S" ]; then
 		trash-restore
 		notify-send -i user-trash "lf" "Archivo(s) restaurado(s)"
 	fi
-	clear
+	lf -remote "send $id reload"
 }}
 
 on-cd
