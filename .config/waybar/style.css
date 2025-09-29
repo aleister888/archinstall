@@ -8,6 +8,7 @@
 window#waybar {
   font-weight: 400;
   background: #1d2021;
+  border-radius: 0px;
 }
 
 #workspaces {

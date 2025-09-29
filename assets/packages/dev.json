@@ -12,6 +12,10 @@
     "time",
     "yarn"
   ],
+  "python": [
+    "python-pandas",
+    "python-scikit-learn"
+  ],
   "formateadores": [
     "astyle",
     "prettier",

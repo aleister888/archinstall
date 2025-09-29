@@ -4,6 +4,7 @@ local servers = {
 	"jdtls",
 	"lua_ls",
 	"markdown_oxide",
+	"pylsp",
 	"texlab",
 }
 
