@@ -2,8 +2,6 @@
 
 [ $(pgrep screenshot | wc -l) -ge 3 ] && exit 1
 
-makoctl dismiss -a
-
 FILENAME="$(date +"%Y-%m-%d_%H-%M-%S").png"
 SCRENSHOTS_DIR="$HOME/Imágenes/Screenshots"
 FILEPATH="$SCRENSHOTS_DIR/$FILENAME"
@@ -11,7 +9,7 @@ SOUND="/usr/share/sounds/freedesktop/stereo/camera-shutter.oga"
 TMP="/tmp/screenshot.png"
 MSG="Captura de Pantalla"
 
-mkdir -p "$SCRENDIR"
+mkdir -p "$SCRENSHOTS_DIR"
 
 capture() {
 	AREA=$1

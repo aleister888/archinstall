@@ -130,9 +130,7 @@ cmd on-cd &{{
 
 # Muestra información del archivo seleccionado con eza
 cmd on-select &{{
-	INFO=""
-	# Si es un directorio, calculamos el espacio que ocupa en disco
-	[ -d "$f" ] && INFO+="[$(/usr/bin/du -chs $fx | grep total | awk '{print $1}')] "
+	INFO="[$(/usr/bin/du -chs $fx | grep total | awk '{print $1}')] "
 	# Añadimos los permisos, dueño, fecha y nombre
 	INFO+=$(
 		eza -dlo --color=always --time-style iso "$(basename "$f")" |
