@@ -30,6 +30,13 @@ set previewer '~/.config/lf/scope'
 cmd home :cd ~/
 cmd mkdir $mkdir -p "$(echo $* | tr ' ' '\ ')"
 
+# Limpiar todas las selecciones
+cmd myclear ${{
+	lf -remote "send $id clear"
+	lf -remote "send $id glob-unselect *"
+	lf -remote "send $id reload"
+}}
+
 # Abrir archivos en función del tipo
 cmd open ${{
 	FILETYPE="$(xdg-mime query filetype "$(readlink -f $f)")"
@@ -123,7 +130,6 @@ cmd on-cd &{{
 
 # Muestra información del archivo seleccionado con eza
 cmd on-select &{{
-	# Limpiamos la pantalla
 	clear
 	INFO=""
 	# Si es un directorio, calculamos el espacio que ocupa en disco
@@ -468,8 +474,11 @@ on-cd
 # Atajos #
 ##########
 
+# Limpiar selección
+map <backspace2> myclear
+
 # Limpiar pantalla
-map R $clear
+map R reload
 # Recargar configuración
 map C &lf -remote "send $id source ~/.config/lf/lfrc"
 
