@@ -16,11 +16,12 @@ set scrolloff 10
 set icons
 set relativenumber
 set info size:time
-set cleaner '~/.config/lf/cleaner'
-set previewer '~/.config/lf/scope'
 set ratios 3:5:4
 set autoquit true
 set hiddenfiles ".*:*.aux:*.toc:*.sty:*.out:*.log:*.bbl:*.blg:*.synctex.gz:_minted:*.bcf:*.nav:*.run.xml:*.snm:*.xwm:*.lrc"
+
+set cleaner '~/.config/lf/cleaner'
+set previewer '~/.config/lf/scope'
 
 ######################
 # Comandos/Funciones #
@@ -31,46 +32,76 @@ cmd mkdir $mkdir -p "$(echo $* | tr ' ' '\ ')"
 
 # Abrir archivos en función del tipo
 cmd open ${{
-	case $(xdg-mime query filetype "$(readlink -f $f)") in
+	FILETYPE="$(xdg-mime query filetype "$(readlink -f $f)")"
+	{
+	case $FILETYPE in
 		*/x-7z-compressed | */vnd.rar | */*-tar | */zip | */gzip)
-			setsid -f xarchiver "$fx" 2>/dev/null ;;
+			setsid -f xarchiver "$fx" ;;
+
 		*/vnd.*document*)
-			setsid -f libreoffice "$fx" 2>/dev/null ;;
+			setsid -f libreoffice "$fx" ;;
+
 		*/pdf | */epub* | */vnd.comicbook*)
-			zathura "$f" 2>/dev/null ;;
+			zathura "$f" ;;
+
 		text/* | */xml | */json | inode/x-empty | */x-shellscript | */x-desktop | */yaml | */sql | */x-php)
 			$EDITOR "$fx" ;;
+
 		image/x-eps)
 			HASH="$(stat --printf '%n\0%i\0%F\0%s\0%W\0%Y' -- "$(readlink -f "$f")" | sha256sum | awk '{print $1}')"
 			CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/lf/thumb.$HASH"
-			[ ! -f "$CACHE.jpg" ] && gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -r300 -dEPSCrop -sOutputFile="$CACHE.jpg" "$f" >/dev/null 2>&1
-			nsxiv "$CACHE.jpg" 2>/dev/null
+			[ ! -f "$CACHE.jpg" ] && \
+				gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -r300 -dEPSCrop \
+					-sOutputFile="$CACHE.jpg" "$f"
+			nsxiv "$CACHE.jpg"
 			;;
+
 		image/*)
-			BASE="$(basename "$f")"
-			/usr/bin/ls |
-			awk -v BASE="$BASE" \
-			'BEGIN { lines = ""; m = 0; } { if ($0 == BASE) { m = 1; } } { if (!m) { if (lines) { lines = lines"\n"; } lines = lines""$0; } else { print $0; } } END { print lines; }' |
-			grep -iE '.+\.(jpg|jpeg|png|gif|bmp|tiff|ppm|svg|webp|xpm)' |
-			nsxiv -aio 2>/dev/null | while read -r file; do
-				[ -z "$file" ] && continue
-				lf -remote "send select \"$file\""
-				lf -remote "send toggle"
-			done &
+			DIR="$(dirname -- "$f")"
+			BASE="$(basename -- "$f")"
+
+			# Listar imágenes en el directorio (ordenadas alfabéticamente)
+			IMAGES=$(printf '%s\n' "$DIR"/*.{jpg,jpeg,png,gif,bmp,tiff,ppm,svg,webp,xpm} |
+				grep -iE '\.(jpg|jpeg|png|gif|bmp|tiff|ppm|svg|webp|xpm)$' |
+				sort -f)
+
+			# Rotar la lista para que empiece en $BASE
+			ROTATED=$(printf '%s\n' "$IMAGES" | awk -v start="$DIR/$BASE" '
+				BEGIN { hit = 0 }
+				$0 == start { hit = 1; print; next }
+				{ if (hit) print; else buf = buf $0 ORS }
+				END { if (buf != "") printf "%s", buf }
+			')
+
+			# Pasar a nsxiv
+			printf '%s\n' "$ROTATED" |
+				nsxiv -aio |
+				while read -r FILE; do
+					[ -z "$FILE" ] && continue
+					lf -remote "send select \"$FILE\""
+					lf -remote "send toggle"
+				done &
 			;;
+
 		audio/*)
 			mpv --audio-display=no "$f" ;;
+
 		video/*)
-			mpv "$f" 2>/dev/null ;;
+			mpv "$f" ;;
+
 		*/x-keepass2)
-			setsid -f keepassxc "$f" 2>/dev/null ;;
+			setsid -f keepassxc "$f" ;;
+
 		*/x-reaper-*)
-			setsid -f reaper "$f" 2>/dev/null ;;
+			setsid -f reaper "$f" ;;
+
 		*/x-tuxguitar | */gpx+xml | */x-gnuplot | */x-gtp)
-			setsid -f tuxguitar "$fx" 2>/dev/null ;;
+			setsid -f tuxguitar "$fx" ;;
+
 		# Si no tenemos configurada una forma de abrirlo, usamos xdg-open
-		*) for f in $fx; do setsid -f $OPENER $f >/dev/null 2>&1; done ;;
+		*) for f in $fx; do setsid -f $OPENER $f; done ;;
 	esac
+	} 2>/dev/null
 }}
 
 # Muestra información sobre el directorio actual
@@ -78,7 +109,7 @@ cmd on-cd &{{
 	clear
 	# Mostrar el directorio en el nombre de la ventana
 	printf '\033]0;%s\007' "$(pwd | sed "s|^$HOME|~|")" > /dev/tty
-	# Mostrar información sobre los repositorios
+	# Mostrar información sobre los repositorios (Rama y URL)
 	if [ -d .git ] || [ -f .git ]; then
 		branch="$(git branch --show-current 2>/dev/null)" || true
 		remote="$(git config --get "branch.$branch.remote" 2>/dev/null)" || true
@@ -92,33 +123,180 @@ cmd on-cd &{{
 
 # Muestra información del archivo seleccionado con eza
 cmd on-select &{{
+	# Limpiamos la pantalla
 	clear
-	lf -remote "send $id set statfmt \"$(eza -ldHF --color=always --time-style iso "$(basename "$f")" | sed 's/\\/\\\\/g;s/"/\\"/g')\""
+	INFO=""
+	# Si es un directorio, calculamos el espacio que ocupa en disco
+	[ -d "$f" ] && INFO+="[$(/usr/bin/du -chs $fx | grep total | awk '{print $1}')] "
+	# Añadimos los permisos, dueño, fecha y nombre
+	INFO+=$(
+		eza -dlo --color=always --time-style iso "$(basename "$f")" |
+			awk '{printf "%s %s %s %s %s %s", $1, $4, $5, $6, $7, $8; for (i=9; i<=NF; i++) printf " %s", $i; print ""}' |
+			sed 's/\\/\\\\/g;s/"/\\"/g'
+	)
+	lf -remote "send $id set statfmt \"$INFO\""
 }}
 
 # Comprimir archivos dentro de un directorio en el formato seleccionado
 cmd compress ${{
-	if whiptail --title "$(echo $PWD)" \
-	--yesno "Comprimir:\n  Archivos de => $PWD\n  En el archivo => /tmp/$(basename $(echo $PWD)).*" 10 60; then
-		FORMATO=$(whiptail --title "Formato" --menu "¿En que formato desea comprimirlos?" \
-		15 60 3 "tar" ".tar.gz" "zip" ".zip" "7z" ".7z" 3>&1 1>&2 2>&3)
-		case "$FORMATO" in
-			tar)
-				ARCHIVO="/tmp/$(basename $(echo $PWD)).tar.gz"
-				tar -zcvf "$ARCHIVO" . ;;
-			zip)
-				ARCHIVO="/tmp/$(basename $(echo $PWD)).zip"
-				zip -r "$ARCHIVO" . ;;
-			7z)
-				ARCHIVO="/tmp/$(basename $(echo $PWD)).7z"
-				7z a "$ARCHIVO" . ;;
-		esac
-		if [ -e "$ARCHIVO" ]; then
-			whiptail --title "Operación Completada" \
-				--msgbox "Archivo comprimido en: $ARCHIVO" 10 60
-		fi
-		lf -remote "send select \"$ARCHIVO\""
+	makoctl dismiss -a
+	OUT_DIR="/tmp/00_Compressed"
+	[ ! -e "$OUT_DIR" ] && mkdir -p "$OUT_DIR"
+
+	# Convertir $fx en argumentos para los comandos de compresión
+	set -- $fx
+	# Si no hay archivos seleccionados, salir
+	[ $# -eq 0 ] && exit 0
+
+	# Determinar si los archivos provienen de directorios diferentes
+	DIRS=$(dirname -z "$@" | tr '\0' '\n' | sort -u)
+	NUM_DIRS=$(echo "$DIRS" | wc -l)
+
+	if [ "$NUM_DIRS" -eq 1 ]; then
+		# Si todos los archivos vienen del mismo directorio, usamos el nombre
+		# del directorio para el archivo comprimido.
+		BASE_NAME=$(basename "$DIRS")
+	else
+		# Archivos de diferentes directorios, preguntar al usuario por el nombre
+		BASE_NAME=$(
+			whiptail --title "Nombre del archivo" \
+				--inputbox "Ingrese el nombre del archivo comprimido:" 10 60 3>&1 1>&2 2>&3
+		)
+		# Si el usuario cancela, salir
+		[ -z "$BASE_NAME" ] && exit 0
 	fi
+
+	if [ "$(printf "%s\n" "$@" | wc -l)" -eq 1 ]; then
+		LIST="$@"
+	else
+		LIST="$(printf "%s\n" "$@" | head -n1)\n...\n$(printf "%s\n" "$@" | tail -n1)"
+	fi
+	whiptail \
+		--title "Archivos seleccionados" \
+		--yesno "$LIST\nComprimir en: $OUT_DIR/${BASE_NAME}.*" 10 60 ||
+	exit 0
+
+	FORMATO=$(
+		whiptail \
+			--title "Formato" \
+			--menu "¿En qué formato desea comprimirlos?" \
+			10 60 3 \
+			"tar" "" \
+			"zip" "" \
+			"7z" "" \
+			3>&1 1>&2 2>&3
+	)
+
+	case "$FORMATO" in
+		tar)
+			ARCHIVO="$OUT_DIR/${BASE_NAME}.tar.gz"
+			tar -zcvf "$ARCHIVO" "$@"
+			;;
+
+		7z)
+			ARCHIVO="$OUT_DIR/${BASE_NAME}.7z"
+			7z a "$ARCHIVO" "$@"
+			;;
+
+		zip)
+			if ! whiptail \
+				--title "Fragmentación" \
+				--yesno "¿Desea fragmentar el archivo zip?" 10 60
+			then
+				ARCHIVO="$OUT_DIR/${BASE_NAME}.zip"
+				zip -r "$ARCHIVO" "$@" &&
+					notify-send -i ark "lf" "Archivo comprimido en\n<i>$OUT_DIR</i>"
+				exit 0
+			fi
+
+			OPCION=$(
+				whiptail \
+					--title "Tamaño" \
+					--menu "Seleccione tamaño de fragmento:" \
+					10 70 3 \
+					"10mb" "Discord" \
+					"500mb" "Archivos grandes" \
+					"gb" "Número personalizado de GB [1:Tamaño/2]" \
+					3>&1 1>&2 2>&3
+			)
+
+			# Calcular tamaño total en bytes de todos los archivos seleccionados
+			TOTAL_BYTES=$(/usr/bin/du -cb "$@" | grep total | awk '{print $1}')
+			TOTAL_KB=$((TOTAL_BYTES / 1024))
+			TOTAL_MB=$((TOTAL_KB / 1024))
+			if [ "$TOTAL_MB" -le 1 ]; then
+				SHOW_SIZE="${TOTAL_KB}kb"
+			else
+				SHOW_SIZE="${TOTAL_MB}mb"
+			fi
+			case "$OPCION" in
+				"10mb")
+					# Si la selección ocupa menos de 10mb, salimos
+					# (podemos comprimir el archivo en un solo .zip)
+					if [ "$TOTAL_MB" -lt 10 ]; then
+						whiptail --title "Error" \
+							--msgbox "Los archivos seleccionados son demasiado pequeños para fragmentar en 10mb. [$SHOW_SIZE]" 10 60
+						exit 1
+					fi
+					SIZE="10m"
+					;;
+				"500mb")
+					# Si la selección ocupa menos de 500mb, salimos
+					# (podemos comprimir el archivo en un solo .zip)
+					if [ "$TOTAL_MB" -lt 500 ]; then
+						whiptail --title "Error" \
+							--msgbox "Los archivos seleccionados son demasiado pequeños para fragmentar en 500mb. [$SHOW_SIZE]" 10 60
+						exit 1
+					fi
+					SIZE="500m"
+					;;
+
+				"gb")
+					MAX_SIZE=$((TOTAL_MB / 1024 / 2))
+
+					if [ "$MAX_SIZE" -lt 1 ]; then
+						whiptail --title "Error" \
+							--msgbox "Los archivos seleccionados son demasiado pequeños para fragmentar en GB." 10 60
+						exit 1
+					fi
+
+					while true; do
+						SIZE_GB=$(
+							whiptail \
+								--inputbox "Ingrese el tamaño en GB (1-$MAX_SIZE):" \
+								10 60 1 \
+								3>&1 1>&2 2>&3
+						)
+
+						if ! [[ "$SIZE_GB" =~ ^[0-9]+$ ]]; then
+							whiptail --title "Error" \
+								--msgbox "Debe ingresar un número entero." 10 60
+							continue
+						fi
+
+						if [ "$SIZE_GB" -lt 1 ] || [ "$SIZE_GB" -gt "$MAX_SIZE" ]; then
+							whiptail --title "Error" \
+								--msgbox "El valor debe estar entre 1 y $MAX_SIZE GB." 10 60
+							continue
+						fi
+
+						SIZE="${SIZE_GB}g"
+						break
+					done
+					;;
+			esac
+
+			# Si el archivo está fragmentado, lo guardamos en su propia carpeta
+			OUT_DIR="/tmp/00_Compressed/${BASE_NAME}"
+			[ ! -e "$OUT_DIR" ] && mkdir -p "$OUT_DIR"
+			ARCHIVO="$OUT_DIR/${BASE_NAME}.zip"
+			zip -r -s "$SIZE" "$ARCHIVO" "$@"
+			;;
+	esac
+
+	[ -e "$ARCHIVO" ] &&
+		notify-send -i ark "lf" "Archivo comprimido en\n<i>$OUT_DIR</i>"
+
 	clear
 }}
 
@@ -129,11 +307,12 @@ cmd cdterm &{{
 
 # Enviar una notificación con el tamaño del ítem seleccionado
 cmd size &{{
+	makoctl dismiss -a
 	notify-send -i system-file-manager \
 		"El tamaño es de $(/usr/bin/du -chs $fx | grep total | awk '{print $1}')"
 }}
 
-# Renombrar el contenido de un directorio con nvim
+# Renombrar los contenido del directorio actual con nvim
 cmd bulk-rename ${{
 	old="$(mktemp)"
 	new="$(mktemp)"
@@ -183,8 +362,9 @@ cmd fzf_search ${{
 	clear
 }}
 
-# Extraer archive
+# Extraer archivo
 cmd extract ${{
+	makoctl dismiss -a
 	whiptail --title "¿Extraer archivo(s)?" \
 	--yesno "¿Quieres extraer el archivo $f?" 10 60 && \
 	{
@@ -194,15 +374,21 @@ cmd extract ${{
 			aunpack "$(basename -s .zst "$f")"
 			rm "$(basename -s .zst "$f")"
 			;;
+		# Extraemos archivos con 7z para poder extraer archivos .zip fragmentados
+		*/zip)
+			OUT_DIR="${f%.zip}"
+			mkdir -p "$OUT_DIR"
+			7z x "$f" -o"$OUT_DIR"
+			;;
 		*) aunpack $f ;;
 		esac
 	} && \
-	whiptail --title "Operación Completada" \
-	--msgbox "Los archivos se extrajeron correctamente" 10 60
+	notify-send -i ark "lf" "Extraído:\n<i>$(basename $f)</i>"
 }}
 
 # Pegar archivos copiados/cortados
 cmd paste &{{
+	makoctl dismiss -a
 	set -- $(cat ~/.local/share/lf/files)
 	mode="$1"
 	shift
@@ -214,11 +400,13 @@ cmd paste &{{
 				/usr/bin/lf -remote "send $id echo $line"
 			done &&
 				notify-send -i copyq \
+					"lf" \
 					"Archivo(s) copiados."
 			;;
 		move)
 			mv -n -- "$@" . &&
 				notify-send -i copyq \
+				"lf" \
 				"Archivo(s) movidos."
 		;;
 	esac
@@ -228,18 +416,20 @@ cmd paste &{{
 
 # Mover a la papelera
 cmd trash ${{
+	makoctl dismiss -a
 	clear; tput bold
 	set -f
 	printf "%s\n\n" "$fx"
 	printf "¿Mover archivo(s) a la papelera? [s/N] "
 	read ans
 	[ $ans = "s" ] && trash-put $fx &&
-	notify-send -i user-trash "Archivo(s) movido(s) a la papelera"
+	notify-send -i user-trash "lf" "Archivo(s) movido(s) a la papelera"
 	clear
 }}
 
 # Vaciar la papelera
 cmd clean-trash ${{
+	makoctl dismiss -a
 	clear; tput bold
 	set -f
 	printf "Contenidos de la papelera:\n"
@@ -247,20 +437,27 @@ cmd clean-trash ${{
 	printf "¿Vaciar papelera? [s/N] "
 	read ans
 	[ $ans = "s" ] && trash-empty -f && \
-	notify-send -i user-trash.svg "Archivo(s) borrados"
+	notify-send -i user-trash "lf" "Archivo(s) borrados"
 	clear
 }}
 
 # Restaurar archivos de la papelera
 cmd restore-trash ${{
+	makoctl dismiss -a
+	TRASH_CONTENTS=$(trash-list)
+	if [ -z "$TRASH_CONTENTS" ]; then
+		notify-send -i user-trash "lf" "La papelera esta vacía"
+		exit 0
+	fi
+
 	clear; tput bold
 	set -f
-	trash-list | sed "s|$HOME|~|"
+	echo $TRASH_CONTENTS | sed "s|$HOME|~|"
 	if whiptail --title "Restaurar papelera" \
 		--yesno "¿Restaurar los archivos eliminados?" 10 60; then
 		clear
 		trash-restore
-		notify-send -i user-trash.svg "Archivo(s) restaurado(s)"
+		notify-send -i user-trash "lf" "Archivo(s) restaurado(s)"
 	fi
 	clear
 }}
@@ -327,8 +524,9 @@ map m push %mkdir<space>
 
 # Copiar el directorio del archivo actual al portapapeles
 map Y ${{
+	makoctl dismiss -a
 	printf '"%s"' "$(dirname "$fx")" | wl-copy
-	notify-send -i gpaste.svg "Ruta copiada al portapapeles" "$(dirname "$fx")"
+	notify-send -i gpaste "lf" "Ruta copiada al portapapeles"
 }}
 
 # Salir del programa

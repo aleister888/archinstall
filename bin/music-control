@@ -18,9 +18,9 @@ else
 	if [ "$1" != "play-pause" ]; then
 		makoctl dismiss -a
 		TITLE="$(music-metadata -S -t)"
-		ARTIST="<span font='10'>$(music-metadata -S -a)</span>"
+		ARTIST="<span font='12'>$(music-metadata -S -a)</span>"
 		LINE_BREAK="<span font='4'>\n\n</span>"
-		ALBUM="<span font='8'><i>$(music-metadata -S -A)</i></span>"
+		ALBUM="<span font='10'>$(music-metadata -S -A)</span>"
 
 		notify-send -i "$(music-metadata -c)" \
 			"$TITLE" "$ARTIST$LINE_BREAK$ALBUM"
