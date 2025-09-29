@@ -2,11 +2,18 @@
 
 # Script para controlar la reproducción de la música
 
+# Si se ejecuta con -q el script no notifica
+QUIET=false
+if [ "$1" = "-q" ]; then
+	QUIET=true
+	shift
+fi
+
 # Establecemos el reproductor
 PLAYER="$(music-priority)"
 
 # Si no se encontró el reproductor, se informa al usuario
-if [ -z "$PLAYER" ]; then
+if [ -z "$PLAYER" ] && ! $QUIET; then
 	makoctl dismiss -a
 	notify-send -i "$(music-metadata -c)" \
 		"$(music-metadata -t)" "$(music-metadata -a)"
@@ -15,7 +22,7 @@ else
 	playerctl --player="$PLAYER" "$1"
 	export ALTFACT=28
 
-	if [ "$1" != "play-pause" ]; then
+	if [ "$1" != "play-pause" ] && ! $QUIET; then
 		makoctl dismiss -a
 		TITLE="$(music-metadata -S -t)"
 		ARTIST="<span font='12'>$(music-metadata -S -a)</span>"

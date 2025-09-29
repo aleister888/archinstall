@@ -32,10 +32,7 @@ CHOSEN=$(printf "%s\n" "${OPTIONS[@]}" | eval $DMENU ${#OPTIONS[@]})
 
 # Maneja la opción elegida usando un caso
 case $CHOSEN in
-"${OPTIONS[0]}")
-	pactl set-sink-mute @DEFAULT_SINK@ 1
-	hyprlock
-	;;
+"${OPTIONS[0]}") lock ;;
 "${OPTIONS[1]}") systemctl suspend ;;
 "${OPTIONS[2]}")
 	HORA=$(obtener_hora)

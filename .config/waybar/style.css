@@ -2,6 +2,7 @@
   color: #ebdbb2;
   font-family: "Symbols Nerd Font", "Fira Sans Condensed";
   font-size: 22px;
+  border-radius: 4px;
 }
 
 window#waybar {

@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Secuencia de comandos que usamos para bloquear el equipo
+
+# Pausamos la música
+music-control -q pause
+# Limpiamos todas las notificaciones
+makoctl dismiss -a
+# Silenciamos el audio (si hay medios reproducción)
+[ "$(playerctl status)" = "Playing" ] && pactl set-sink-mute @DEFAULT_SINK@ 1
+# Iniciamos la pantalla de bloqueo
+hyprlock

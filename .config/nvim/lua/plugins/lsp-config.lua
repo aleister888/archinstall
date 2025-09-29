@@ -59,8 +59,7 @@ return {
 			end)
 			return {
 				ensure_installed = servers,
-				-- Desactivamos para evitar clientes duplicados
-				automatic_enable = false,
+				automatic_enable = true,
 			}
 		end,
 	},
