@@ -22,6 +22,12 @@
     "uwsm",
     "wl-clip-persist"
   ],
+  "sys_ficheros": [
+    "exfat-utils",
+    "f2fs-tools",
+    "udftools",
+    "xfsprogs"
+  ],
   "kernel": [
     "linux-zen",
     "linux-zen-headers"

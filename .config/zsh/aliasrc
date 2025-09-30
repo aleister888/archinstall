@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/zsh
 
 # Alias para herramientas comunes
 alias wget='wget --hsts-file="$XDG_CONFIG_HOME"/wget-hsts'
@@ -18,20 +18,36 @@ alias update='yay -Syuu --answerclean --answerdiff --removemake --ignore ttf-goo
 alias xdotool_table='xmodmap -pk'
 alias du='BLOCKSIZE=1073741824 du -s * | sort -rnk 1'
 alias grub-update='sudo grub-mkconfig -o /boot/grub/grub.cfg'
-# Alias para encontrar enlaces simbólicos rotos y archivos no reclamados
+# Alias para encontrar enlaces simbólicos rotos
 alias brokenlink='find / -xtype l -print 2>/dev/null'
-alias lostfiles='
-	sudo lostfiles |
-		grep -iv "Theme\|opt\|Font" |
-		grep -v "/usr/lib/modules/" |
-		grep -v inputremapper
-'
 # Detectar que paquetes del AUR necesitan recompilarse
 alias rebuild-detector="checkrebuild -v"
 # Para pasar el output de un comando al portapeles con: comando | clipboard
 alias clipboard="wl-copy"
 
 alias webcam="ffplay /dev/video0"
+
+# Para obtener archivos no reclamados por pacman
+lostfiles() {
+	local IGNORAR=(
+		"/opt"
+		"/usr/lib/modules/"
+		".*\.cache$"
+		"/usr/share/themes"
+		"/usr/lib/python[0-9\.]*/site-packages/inputremapper"
+		"/var/[a-zA-Z\.]*$"
+		"/var/lib/[a-zA-Z\.]*$"
+		".*\.service" # Systemd
+		".*\.target"  # Systemd
+	)
+
+	local COMANDO="sudo /usr/bin/lostfiles"
+	for PATRON in "${IGNORAR[@]}"; do
+		COMANDO+=" | grep -iv \"$PATRON\""
+	done
+
+	eval "$COMANDO"
+}
 
 # Para obtener el mimetype del archivo
 filetype() {
