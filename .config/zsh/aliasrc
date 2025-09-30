@@ -134,7 +134,7 @@ pac() {
 		echo "##$(printf '#%.0s' $(seq 1 ${#ORIGINAL_FILE}))##"
 
 		# Mostrar diferencias y limitar la salida
-		diff -d "$FILE" "$ORIGINAL_FILE" | head -n 20
+		sudo diff -d "$FILE" "$ORIGINAL_FILE" | head -n 20
 	done
 }
 
