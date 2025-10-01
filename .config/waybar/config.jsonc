@@ -73,7 +73,7 @@
         "icon-size": 16,
         "spacing": 8,
         "icons": {
-            "TelegramDesktop": "$HOME/.local/share/icons/hicolor/16x16/apps/telegram.png"
+            "TelegramDesktop": "/usr/share/icons/hicolor/symbolic/apps/org.telegram.desktop-symbolic.svg"
         }
     }
 }
