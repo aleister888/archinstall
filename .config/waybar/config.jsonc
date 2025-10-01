@@ -26,7 +26,7 @@
         "tooltip": false,
         "interval": 1,
         "exec": "music-metadata -d",
-        "on-click": "music-control play-pause",
+        "on-click": "music-control play-pause"
     },
     "custom/blue-filter": {
         "tooltip": false,
@@ -62,18 +62,15 @@
         "tooltip": false,
         "format": "󰥔 {}",
         "interval": 1,
-        "exec": "date +'%H:%M'",
+        "exec": "date +'%H:%M'"
     },
     "custom/date": {
         "tooltip": false,
         "interval": 1,
-        "exec": "date +'%d/%m/%y'",
+        "exec": "date +'%d/%m/%y'"
     },
     "tray": {
         "icon-size": 16,
-        "spacing": 8,
-        "icons": {
-            "TelegramDesktop": "/usr/share/icons/hicolor/symbolic/apps/org.telegram.desktop-symbolic.svg"
-        }
+        "spacing": 8
     }
 }

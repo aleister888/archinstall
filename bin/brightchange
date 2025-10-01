@@ -4,65 +4,64 @@
 
 # Sonido
 SOUND="/usr/share/sounds/freedesktop/stereo/audio-volume-change.oga"
-# Número de niveles de brillo (ajustar según preferencia)
+# Número de niveles de brillo
 LEVELS=8
 
-# Prevenir que el script se ejecute varias veces simultáneamente
-[ $(pgrep -c "$(basename "$0")") -ge 2 ] && exit 1
-
-# Establecer el dispositivo en función de si nuestro procesador es AMD
-if grep "GenuineIntel" /proc/cpuinfo >/dev/null; then
-	BRIGHT_DEV=/sys/class/backlight/intel_backlight
+# Establecer el dispositivo en función de la CPU
+if grep -q "GenuineIntel" /proc/cpuinfo; then
+	BRIGHT_DEV="/sys/class/backlight/intel_backlight"
+elif grep -q "AMD" /proc/cpuinfo; then
+	BRIGHT_DEV="/sys/class/backlight/amdgpu_bl1"
 else
-	BRIGHT_DEV=/sys/class/backlight/amdgpu_bl1
+	exit 1
 fi
 
 # Verificar si el archivo existe antes de continuar
 [ ! -e "$BRIGHT_DEV/brightness" ] && exit 1
 
-MAX_BRIGHTNESS=$(cat "$BRIGHT_DEV/max_brightness" 2>/dev/null)
-CURRENT_BRIGHTNESS=$(cat "$BRIGHT_DEV/brightness" 2>/dev/null)
-STEPS=$((MAX_BRIGHTNESS / LEVELS))
+MAX_BRIGHTNESS=$(cat "$BRIGHT_DEV/max_brightness")
+CURRENT_BRIGHTNESS=$(cat "$BRIGHT_DEV/brightness")
 
 # Crear un array con todos los niveles de brillo posibles
+STEPS=$(((MAX_BRIGHTNESS + LEVELS - 1) / LEVELS)) # Redondeo hacia arriba
 LEVELS_ARRAY=()
 for ((i = 1; i <= LEVELS; i++)); do
 	VALUE=$((STEPS * i))
-	if [[ VALUE -le MAX_BRIGHTNESS ]]; then
-		RESULT=$VALUE
-	else
-		RESULT=$MAX_BRIGHTNESS
-	fi
-	LEVELS_ARRAY+=("$RESULT")
+	[[ $VALUE -gt MAX_BRIGHTNESS ]] && VALUE=$MAX_BRIGHTNESS
+	LEVELS_ARRAY+=("$VALUE")
 done
 
-# Encontramos el intervalo en el que nos encontramos
+# Encontramos el nivel actual
+INDEX=0
 for ((i = 0; i < LEVELS; i++)); do
-	[ "${LEVELS_ARRAY[$i]}" -ge "$CURRENT_BRIGHTNESS" ] && break
+	if [[ "${LEVELS_ARRAY[i]}" -ge "$CURRENT_BRIGHTNESS" ]]; then
+		INDEX=$i
+		break
+	fi
 done
 
+# Ajustamos el índice según acción
 case "$1" in
-dec)
-	INDEX=$((i - 1))
-	[ $INDEX -lt 0 ] && exit
-	;;
 inc)
-	INDEX=$((i + 1))
-	[ $INDEX -gt $((LEVELS - 1)) ] && exit
+	((INDEX++))
+	[[ $INDEX -ge LEVELS ]] && exit 1
 	;;
-*)
-	exit
+dec)
+	((INDEX--))
+	[[ $INDEX -lt 0 ]] && exit 1
 	;;
+*) exit ;;
 esac
 
 NEXT=${LEVELS_ARRAY[$INDEX]}
 
-[ -z "$NEXT" ] && exit
+# Cambiar brillo
+echo "$NEXT" | sudo tee "$BRIGHT_DEV/brightness" >/dev/null
 
-echo "$NEXT" | sudo tee $BRIGHT_DEV/brightness
+# Reproducir sonido
+pw-play "$SOUND" &
 
-pw-play $SOUND
-
-makoctl dismiss -a
+# Notificación de porcentaje
 PERC=$(((INDEX + 1) * 100 / LEVELS))
+makoctl dismiss all &
 notify-send -i brightness "Brillo: $PERC%" -t 500 --hint=INT:value:$PERC

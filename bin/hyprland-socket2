@@ -1,0 +1,27 @@
+#!/bin/sh
+# shellcheck disable=SC2086
+
+# TODO: Implementar una utilidad para usar varios monitores de forma sencilla
+
+handle() {
+	case $1 in
+	#monitoradded*) ;;
+	#focusedmon*) ;;
+	openwindow*)
+		# La ventana para desbloquear las bases de datos en KeePassXC se abre
+		# por defecto en el mismo espacio que la ventana padre. Para que se
+		# abra en el espacio actual utilizamos hyprctl y por defecto no le
+		# damos el foco con:
+		#     windowrulev2 = noinitialfocus, title:^(Desbloquear base de datos - KeePassXC)
+		if echo $1 | grep "Desbloquear base de datos - KeePassXC"; then
+			CURRENT_WORKSPACE="$(hyprctl activeworkspace | head -n1 | awk '{print $3}')"
+			hyprctl dispatch focuswindow "title:Desbloquear base de datos - KeePassXC"
+			hyprctl dispatch movetoworkspace "$CURRENT_WORKSPACE"
+		fi
+		;;
+	esac
+}
+
+# Obtenemos la información del socket de hyprland
+socat -U - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock |
+	while read -r LINE; do handle "$LINE"; done
