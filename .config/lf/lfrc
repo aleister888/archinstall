@@ -18,7 +18,7 @@ set relativenumber
 set info size:time
 set ratios 3:5:4
 set autoquit true
-set hiddenfiles ".*:*.aux:*.toc:*.sty:*.out:*.log:*.bbl:*.blg:*.synctex.gz:_minted:*.bcf:*.nav:*.run.xml:*.snm:*.xwm:*.lrc"
+set hiddenfiles ".*:*.aux:*.toc:*.sty:*.out:*.log:*.bbl:*.blg:*.synctex.gz:_minted:*.bcf:*.nav:*.run.xml:*.snm:*.xwm:*.lrc:*-autosave.kra:*~"
 
 set cleaner '~/.config/lf/cleaner'
 set previewer '~/.config/lf/scope'
@@ -31,9 +31,14 @@ cmd home :cd ~/
 cmd mkdir $mkdir -p "$(echo $* | tr ' ' '\ ')"
 
 # Limpiar todas las selecciones
-cmd myclear ${{
+cmd clear_selection ${{
 	lf -remote "send $id clear"
 	lf -remote "send $id glob-unselect *"
+	lf -remote "send $id reload"
+	clear
+}}
+
+cmd myclear ${{
 	lf -remote "send $id reload"
 	clear
 }}
@@ -130,7 +135,12 @@ cmd on-cd &{{
 
 # Muestra información del archivo seleccionado con eza
 cmd on-select &{{
-	INFO="[$(/usr/bin/du -chs $fx | grep total | awk '{print $1}')] "
+	INFO="[$(/usr/bin/du -chs $fx | grep total | awk '{print $1}')"
+	if [ ! -d "$fx" ]; then
+		INFO+=":$(stat -c %s "$fx")B] "
+	else
+		INFO+="] "
+	fi
 	# Añadimos los permisos, dueño, fecha y nombre
 	INFO+=$(
 		eza -dlo --color=always --time-style iso "$(basename "$f")" |
@@ -478,10 +488,10 @@ on-cd
 ##########
 
 # Limpiar selección
-map <backspace2> myclear
+map <backspace2> clear_selection
 
 # Limpiar pantalla
-map R reload
+map R myclear
 # Recargar configuración
 map C &lf -remote "send $id source ~/.config/lf/lfrc"
 
