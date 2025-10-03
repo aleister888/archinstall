@@ -136,8 +136,9 @@ cmd on-cd &{{
 # Muestra información del archivo seleccionado con eza
 cmd on-select &{{
 	INFO="[$(/usr/bin/du -chs $fx | grep total | awk '{print $1}')"
-	if [ ! -d "$fx" ]; then
-		INFO+=":$(stat -c %s "$fx")B] "
+	TOTAL_BYTES="$(stat -c %s "$fx")"
+	if [ ! -d "$fx" ] && [ "$TOTAL_BYTES" -le 4096 ]; then
+		INFO+=":${TOTAL_BYTES}B] "
 	else
 		INFO+="] "
 	fi
