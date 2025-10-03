@@ -154,10 +154,6 @@ while true; do
 	done
 done
 
-# Crear directorio para montar dispositivos android
-sudo mkdir /mnt/ANDROID
-sudo chown "$USER" /mnt/ANDROID
-
 # Configuramos Tauon Music Box (Nuestro reproductor de música)
 tauon-config
 # Configuramos firefox

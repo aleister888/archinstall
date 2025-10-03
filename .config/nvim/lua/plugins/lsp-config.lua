@@ -1,10 +1,10 @@
 local servers = {
+	"basedpyright",
 	"bashls",
 	"cssls",
 	"jdtls",
 	"lua_ls",
 	"markdown_oxide",
-	"pylsp",
 	"texlab",
 }
 

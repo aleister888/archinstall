@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 # shellcheck disable=SC2086
 
-DMENU="wofi --show dmenu"
+DMENU="wofi --show dmenu -L 5"
 
 # Script para montar dispositivos android
 
@@ -10,28 +10,61 @@ escape() {
 	echo "$@" |
 		iconv -cf UTF-8 -t ASCII//TRANSLIT |
 		tr -d '[:punct:]' |
-		tr '[:upper:]' '[:lower:]' |
 		tr ' ' '-' |
 		sed "s/-\+/-/g;s/\(^-\|-\$\)//g"
 }
 
 # Directorio donde montar el dispositivo
-MP="/mnt/ANDROID"
+create_mountpoint() {
+	BASENAME="/mnt/ANDROID_"
+	N=0
+	while mountpoint $BASENAME$N >/dev/null 2>&1; do
+		N=$((N + 1))
+	done
+	local MOUNTPOINT="$BASENAME$N"
+	# Creamos el directorio para montar dispositivos android
+	if [ ! -e "$MOUNTPOINT" ]; then
+		sudo mkdir "$MOUNTPOINT" >/dev/null 2>&1
+		sudo chown "$USER" "$MOUNTPOINT" >/dev/null 2>&1
+	fi
+
+	echo "$BASENAME$N"
+}
 
 # Obtener una lista de dispositivos Android conectados
-ANDDRIVES=$(simple-mtpfs -l 2>/dev/null)
+ANDDRIVES=$(
+	simple-mtpfs -l 2>/dev/null
+)
 
-# Salir si no se detecta ningún dispositivo Android
-[ -z "$ANDDRIVES" ] && exit 1
+# Creamos una lista con el número de los dispositivos ya montados
+MOUNTED="$(grep -oP 'simple-mtpfs-\K[0-9]+' /etc/mtab || true)"
+
+# Borramos los dispositivos ya montados
+for NUM in $MOUNTED; do
+	ANDDRIVES="$(echo "$ANDDRIVES" | grep -v "^$NUM:")"
+done
+
+# Salir si no hay ningún dispositivo Android que montar
+if [ -z "$ANDDRIVES" ]; then
+	notify-send -i usb "$(basename "$0")" "No hay ningún dispositivo disponible"
+	exit 1
+fi
 
 # Seleccionar un dispositivo Android para montar
-CHOSEN="$(echo "$ANDDRIVES" | eval $DMENU -p "Que dispositivo montar?")"
+CHOSEN="$(echo "$ANDDRIVES" | $DMENU -p "¿Qué dispositivo montar?")"
+
+# Salir si no se seleccionó ningún dispositivo
+[ -z "$CHOSEN" ] && exit 1
 
 NUMBER="${CHOSEN%%:*}"
 
+MP=$(create_mountpoint)
+
 # Intentar montar el dispositivo Android
 if sudo simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$(escape "$CHOSEN")" --device "$NUMBER" "$MP"; then
-	notify-send "🤖 Android montado en $MP."
+	DEVICE="$(echo $CHOSEN | grep -oP "[0-9]: \K.*(?= \(MTP\))")"
+	notify-send -i usb "$(basename "$0")" \
+		"<i>$DEVICE</i>\nMontado: $MP"
 else
-	notify-send "🤖 Hubo un error al montar $CHOSEN"
+	notify-send -i usb "$(basename "$0")" "Error al montar: $CHOSEN"
 fi

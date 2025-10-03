@@ -5,7 +5,7 @@
 # Sonido
 SOUND="/usr/share/sounds/freedesktop/stereo/audio-volume-change.oga"
 # Número de niveles de brillo
-LEVELS=8
+LEVELS=10
 
 # Establecer el dispositivo en función de la CPU
 if grep -q "GenuineIntel" /proc/cpuinfo; then
@@ -64,4 +64,4 @@ pw-play "$SOUND" &
 # Notificación de porcentaje
 PERC=$(((INDEX + 1) * 100 / LEVELS))
 makoctl dismiss all &
-notify-send -i brightness "Brillo: $PERC%" -t 500 --hint=INT:value:$PERC
+notify-send -i brightness "Brillo: $PERC%" -t 500 --hint=INT:value:$PERC &

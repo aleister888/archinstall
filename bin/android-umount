@@ -1,22 +1,38 @@
-#!/bin/sh
+#!/bin/sh -x
 # shellcheck disable=SC2086
 
-DMENU="wofi --show dmenu"
+DMENU="wofi --show dmenu -L 5"
 
 # Script para desmontar dispositivos android
 
+# Limpiamos todos los mountpoints que no se están usando
+cleanup_mountpoints() {
+	for DIR in /mnt/ANDROID_*; do
+		mountpoint $DIR || {
+			sudo rm -rf "$DIR"
+		}
+	done
+}
+
+MOUNTED="$(awk '/simple-mtpfs/ {print $2}' /etc/mtab)"
+if [ -z "$MOUNTED" ]; then
+	notify-send -i usb "$(basename "$0")" "No hay ningún dispositivo montado"
+	exit 1
+fi
+
 # Elegir que dispositivo Android desmontar
 CHOSEN="$(
-	awk '/simple-mtpfs/ {print $2}' /etc/mtab |
-		eval $DMENU -p "Que dispositivo desmontar?"
+	echo "$MOUNTED" |
+		$DMENU -p "Que dispositivo desmontar?"
 )" || exit 1
 
 # Verificar si se seleccionó un dispositivo
-[ -z "$CHOSEN" ] && exit
+[ -z "$CHOSEN" ] && exit 1
 
 # Intentar desmontar el dispositivo seleccionado
 if sudo umount -l "$CHOSEN"; then
-	notify-send "🤖 Dispositivo Android $CHOSEN desmontado"
+	notify-send -i usb "$(basename "$0")" "Desmontado: $CHOSEN"
+	cleanup_mountpoints
 else
-	notify-send "🤖 Hubo un error al desmontar $CHOSEN"
+	notify-send -i usb "$(basename "$0")" "Error al desmontar: $CHOSEN"
 fi
