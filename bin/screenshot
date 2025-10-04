@@ -1,15 +1,17 @@
-#!/bin/sh -x
+#!/bin/bash -x
 
-[ $(pgrep screenshot | wc -l) -ge 3 ] && exit 1
+trap 'rm -f "$TMP"' EXIT
+
+[ "$(pgrep screenshot | wc -l)" -ge 3 ] && exit 1
 
 FILENAME="$(date +"%Y-%m-%d_%H-%M-%S").png"
-SCRENSHOTS_DIR="$HOME/Imágenes/Screenshots"
-FILEPATH="$SCRENSHOTS_DIR/$FILENAME"
+SCREENSHOTS_DIR="$HOME/Imágenes/Screenshots"
+FILEPATH=${FILEPATH:-$SCREENSHOTS_DIR/$FILENAME}
 SOUND="/usr/share/sounds/freedesktop/stereo/camera-shutter.oga"
 TMP="/tmp/screenshot.png"
 MSG="Captura de Pantalla"
 
-mkdir -p "$SCRENSHOTS_DIR"
+mkdir -p "$SCREENSHOTS_DIR"
 
 capture() {
 	AREA=$1
@@ -25,11 +27,12 @@ capture() {
 		if [ "$MODE" = "clipboard" ]; then
 			# Copiar al portapapeles con wl-copy
 			wl-copy <"$TMP"
-			notify-send -i "$TMP" "$MSG" "Copiada al Portapapeles"
-			rm "$TMP"
+			[ "$QUIET" ] ||
+				notify-send -i "$TMP" "$MSG" "Copiada al Portapapeles"
 		else
 			mv "$TMP" "$FILEPATH"
-			notify-send -i "$FILEPATH" "$MSG" "$FILENAME"
+			[ "$QUIET" ] ||
+				notify-send -i "$FILEPATH" "$MSG" "$FILENAME"
 		fi
 		pw-play "$SOUND"
 	else
@@ -38,18 +41,12 @@ capture() {
 
 }
 
+[ "$2" = "-q" ] && QUIET=true
+
 case "$1" in
-all_clip)
-	capture all clipboard
-	;;
-selection_clip)
-	capture selection clipboard
-	;;
-all_save)
-	capture all disk
-	;;
-selection_save)
-	capture selection disk
-	;;
+all_clip) capture all clipboard ;;
+selection_clip) capture selection clipboard ;;
+all_save) capture all disk ;;
+selection_save) capture selection disk ;;
 *) echo "Uso: $0 {all_clip|selection_clip|all_save|selection_save}" ;;
 esac
