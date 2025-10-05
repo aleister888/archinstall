@@ -9,6 +9,11 @@ if [ "$1" = "-q" ]; then
 	shift
 fi
 
+# Reemplazar caracteres conflictivos para pango markup
+escape_markup() {
+	sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g;'
+}
+
 # Establecemos el reproductor
 PLAYER="$(music-priority)"
 
@@ -24,10 +29,10 @@ else
 
 	if [ "$1" != "play-pause" ] && ! $QUIET; then
 		makoctl dismiss -a
-		TITLE="$(music-metadata -S -t)"
-		ARTIST="<span font='12'>$(music-metadata -S -a)</span>"
+		TITLE="$(music-metadata -S -t | escape_markup)"
+		ARTIST="<span font='12'>$(music-metadata -S -a | escape_markup)</span>"
 		LINE_BREAK="<span font='4'>\n\n</span>"
-		ALBUM="<span font='10'>$(music-metadata -S -A)</span>"
+		ALBUM="<span font='10'>$(music-metadata -S -A | escape_markup)</span>"
 
 		notify-send -i "$(music-metadata -c)" \
 			"$TITLE" "$ARTIST$LINE_BREAK$ALBUM"
