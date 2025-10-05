@@ -1,7 +1,8 @@
-#!/bin/bash
+#!/bin/bash -x
 # shellcheck disable=SC2086
 
 DMENU="wofi --show dmenu -L 5"
+MOUNT_LOG="/tmp/$(basename "$0").log"
 
 # Script para montar dispositivos android
 
@@ -61,10 +62,10 @@ NUMBER="${CHOSEN%%:*}"
 MP=$(create_mountpoint)
 
 # Intentar montar el dispositivo Android
-if sudo simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$(escape "$CHOSEN")" --device "$NUMBER" "$MP"; then
+if sudo simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$(escape "$CHOSEN")" --device "$NUMBER" "$MP" 2>$MOUNT_LOG; then
 	DEVICE="$(echo $CHOSEN | grep -oP "[0-9]: \K.*(?= \(MTP\))")"
 	notify-send -i usb "$(basename "$0")" \
 		"<i>$DEVICE</i>\nMontado: $MP"
 else
-	notify-send -i usb "$(basename "$0")" "Error al montar: $CHOSEN"
+	notify-send -i usb "$(basename "$0")" "$(cat $MOUNT_LOG)"
 fi

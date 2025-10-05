@@ -9,6 +9,7 @@ local default_config = {
 	preserveindent = true,
 	tabstop = 4,
 	shiftwidth = 4,
+	conceallevel = 2,
 }
 
 -- Configuraciones específicas por tipo de archivo
@@ -23,6 +24,7 @@ local filetype_configs = {
 		expandtab = true,
 		tabstop = 2,
 		shiftwidth = 2,
+		conceallevel = 0,
 	},
 	fstab = {
 		tabstop = 8,

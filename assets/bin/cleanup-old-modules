@@ -1,31 +1,44 @@
 #!/bin/bash -x
 
+[ "$(id -u)" -ne 0 ] && exit 1
+
 # Si pacman o yay se están ejecutando el script se detiene
 (pgrep yay >/dev/null || pgrep pacman >/dev/null) && exit 1
 
 KERNELS=()
+DELETED_KERNELS=0
 
-# Comprobamos solo para los kernels que están instalados
-if pacman -Q linux-lts >/dev/null 2>&1; then
-	KERNELS+=("lts")
-else
-	rm -f /etc/mkinitcpio.d/linux-lts.preset
-fi
+kernel_cleanup() {
+	local VERSION="$1"
+	if pacman -Q "linux-$VERSION" >/dev/null 2>&1; then
+		KERNELS+=("$VERSION")
+	else
+		rm -f "/etc/mkinitcpio.d/linux-$VERSION.preset"
+		rm -f "/boot/initramfs-linux-$VERSION"*
+		rm -f "/boot/vmlinuz-linux-$VERSION"
+		DELETED_KERNELS=$((DELETED_KERNELS + 1))
+	fi
+}
 
-if pacman -Q linux-zen >/dev/null 2>&1; then
-	KERNELS+=("zen")
-else
-	rm -f /etc/mkinitcpio.d/linux-zen.preset
+# Borramos los presets de mkinitcpio y las imágenes del kernel
+# que ya no son necesarias
+kernel_cleanup lts
+kernel_cleanup zen
+
+# Si borramos algún preset de mkinitcpio, reconstruimos las imágenes
+if [ $DELETED_KERNELS -ge 1 ]; then
+	mkinitcpio -P
+	grub-mkconfig -o /boot/grub/grub.cfg
 fi
 
 # Si solo esta instalado el kernel predeterminado detenemos la ejecución
 [ ${#KERNELS[@]} -eq 0 ] && exit 1
 
+# Borramos los módulos del kernel antiguos
 MODULE_LIST=$(/usr/bin/ls /usr/lib/modules)
-
 for KERNEL in "${KERNELS[@]}"; do
 	for MODULE in $(
-		# Listamos todos los modulos del kernel correspondiente
+		# Listamos todos los módulos del kernel correspondiente
 		echo "$MODULE_LIST" | grep "$KERNEL$" |
 			# Excluimos el kernel más reciente y el que se está usando
 			head -n -1 | grep -v "$(uname -r)"
