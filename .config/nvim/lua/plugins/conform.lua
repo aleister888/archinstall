@@ -17,7 +17,6 @@ return {
 			java = { "astyle" },
 			sh = { "shfmt" },
 			tex = { "latexindent" },
-			markdown = { "prettier" },
 			scss = { "prettier" },
 			css = { "prettier" },
 			xml = { "xmllint" },

@@ -9,9 +9,9 @@ handle() {
 	#focusedmon*) ;;
 	openwindow*)
 		# La ventana para desbloquear las bases de datos en KeePassXC se abre
-		# por defecto en el mismo espacio que la ventana padre. Para que se
-		# abra en el espacio actual utilizamos hyprctl y por defecto no le
-		# damos el foco con:
+		# por defecto en el mismo espacio que la ventana padre. Para poder
+		# moverla al espacio actual utilizamos hyprctl. Esto es posible por que
+		# por defecto no le damos el foco con el ajuste:
 		#     windowrulev2 = noinitialfocus, title:^(Desbloquear base de datos - KeePassXC)
 		if echo $1 | grep "Desbloquear base de datos - KeePassXC"; then
 			CURRENT_WORKSPACE="$(hyprctl activeworkspace | head -n1 | awk '{print $3}')"
