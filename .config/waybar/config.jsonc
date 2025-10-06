@@ -15,8 +15,7 @@
         "custom/battery",
         "pulseaudio",
         "custom/disk",
-        "custom/time",
-        "custom/date",
+        "clock",
         "tray"
     ],
     "hyprland/window": {
@@ -59,16 +58,11 @@
         "exec": "df -h /home | awk '/[0-9]/ {print $4}'",
         "on-click": "~/.dotfiles/bin/sb/sb-disks-info"
     },
-    "custom/time": {
-        "tooltip": false,
-        "format": "󰥔 {}",
-        "interval": 1,
-        "exec": "date +'%H:%M'"
-    },
-    "custom/date": {
+    "clock": {
         "tooltip": false,
         "interval": 1,
-        "exec": "date +'%d/%m/%y'"
+        "format": " {:L%I:%M:%S | %a %d de %b}",
+        "locale": "es_ES.UTF-8"
     },
     "tray": {
         "icon-size": 16,

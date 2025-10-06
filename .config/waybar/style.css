@@ -6,9 +6,10 @@
 }
 
 window#waybar {
-  font-weight: 500;
   background: #1d2021;
 
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
 
@@ -18,15 +19,18 @@ window#waybar {
 }
 
 .modules-left {
+  font-weight: 400;
   margin-left: 10px;
   margin-bottom: 6px;
 }
 
 .modules-center {
+  font-weight: 600;
   margin-bottom: 6px;
 }
 
 .modules-right {
+  font-weight: 600;
   margin-right: 10px;
   margin-bottom: 6px;
 }
@@ -55,7 +59,7 @@ window#waybar {
 }
 
 #custom-battery {
-  color: #689d6a;
+  color: #b16286;
   margin: 0px 7.5px 0px 7.5px;
 }
 
@@ -69,14 +73,9 @@ window#waybar {
   margin: 0px 7.5px 0px 7.5px;
 }
 
-#custom-time {
-  color: #98971a;
+#clock {
+  color: #d65d0e;
   margin: 0px 7.5px 0px 7.5px;
-}
-
-#custom-date {
-  color: #b16286;
-  margin: 0px 7.5px 0px 2.5px;
 }
 
 #tray {
