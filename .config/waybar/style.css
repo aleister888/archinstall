@@ -6,9 +6,29 @@
 }
 
 window#waybar {
-  font-weight: 400;
+  font-weight: 500;
   background: #1d2021;
-  border-radius: 0px;
+
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+
+  border-left: 4px solid #98971a;
+  border-right: 4px solid #98971a;
+  border-bottom: 4px solid #98971a;
+}
+
+.modules-left {
+  margin-left: 10px;
+  margin-bottom: 6px;
+}
+
+.modules-center {
+  margin-bottom: 6px;
+}
+
+.modules-right {
+  margin-right: 10px;
+  margin-bottom: 6px;
 }
 
 #workspaces {
@@ -16,23 +36,17 @@ window#waybar {
 }
 
 #workspaces button {
-  font-weight: 400;
   margin: 0px 2px 0px 2px;
   padding: 1px 6px 1px 6px;
 }
 
 #workspaces button.active {
   background: #98971a;
-  font-weight: 500;
   margin: 0px 2px 0px 2px;
 }
 
 #window {
   margin: 0px 10px;
-}
-
-#custom-music-metadata {
-  font-weight: 500;
 }
 
 #custom-blue-filter {
@@ -42,31 +56,26 @@ window#waybar {
 
 #custom-battery {
   color: #689d6a;
-  font-weight: 500;
   margin: 0px 7.5px 0px 7.5px;
 }
 
 #pulseaudio {
   color: #458588;
-  font-weight: 500;
   margin: 0px 7.5px 0px 7.5px;
 }
 
 #custom-disk {
   color: #d79921;
-  font-weight: 500;
   margin: 0px 7.5px 0px 7.5px;
 }
 
 #custom-time {
-  color: #d65d0e;
-  font-weight: 500;
+  color: #98971a;
   margin: 0px 7.5px 0px 7.5px;
 }
 
 #custom-date {
   color: #b16286;
-  font-weight: 500;
   margin: 0px 7.5px 0px 2.5px;
 }
 

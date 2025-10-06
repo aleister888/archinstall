@@ -36,7 +36,7 @@ install() {
 		Version=1.0
 		Name=Ryujinx
 		Type=Application
-		Icon=$INSTALL_DIR/Logo.svg
+		Icon=ryujinx
 		Exec=$RUN_SCRIPT %f
 		Comment=A Nintendo Switch Emulator
 		GenericName=Nintendo Switch Emulator

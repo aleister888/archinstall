@@ -6,6 +6,7 @@
     "dashbinsh",
     "fluidsynth",
     "gnupg",
+    "inotify-tools",
     "kernel-modules-hook",
     "lib32-gnutls",
     "lib32-libjpeg-turbo",

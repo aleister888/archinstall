@@ -91,7 +91,7 @@ sink_edit() {
 # Elegir si vincular o desvincular sinks
 ADD="Añadir sink al micrófono virtual"
 DEL="Quitar sink del micrófono virtual"
-CHOSEN=$(echo -e "$ADD\n$DEL" | eval $DMENU)
+CHOSEN=$(echo -e "$ADD\n$DEL" | eval $DMENU -L 3)
 if [ "$CHOSEN" = "$ADD" ]; then
 	[ -z "$DEVICES" ] &&
 		notify-send -i $ICON "$MSG" "No hay sinks que añadir" && exit

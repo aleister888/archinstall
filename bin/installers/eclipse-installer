@@ -51,7 +51,7 @@ install() {
 		Type=Application
 		Exec=$RUN_SCRIPT
 		Terminal=false
-		Icon=$INSTALL_DIR/icon.xpm
+		Icon=eclipse
 		Comment=Integrated Development Environment
 		Categories=Development;IDE;
 		StartupWMClass=Eclipse

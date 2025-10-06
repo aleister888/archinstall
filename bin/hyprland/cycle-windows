@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Cambiamos el foco de las ventanas de forma cíclica en función de si estamos en
+# un espacio normal o en el espacio especial "scratch"
+
+# La clase de las ventanas que cuentan como scratchpads
+SCRATCHPAD_CLASS="kitty"
+SCRATCH_PIDS=()
+
+ARG="$1"
+[ -z "$ARG" ] && exit 1
+
+ACTIVE_WORKSPACE=$(hyprctl -j activewindow | jq -r '.workspace.name')
+
+index_scratch() {
+	mapfile -t SCRATCH_PIDS < <(
+		hyprctl -j clients |
+			jq -r '.[] | select( .workspace.name=="special:scratch" and .class=="'"$SCRATCHPAD_CLASS"'" ) | "\(.focusHistoryID):\(.pid)"' |
+			sort -n | cut -d':' -f2
+	)
+}
+
+cycle_regular() {
+	if [ "$ARG" = "prev" ]; then
+		hyprctl dispatch layoutmsg cycleprev
+	elif [ "$ARG" = "next" ]; then
+		hyprctl dispatch layoutmsg cyclenext
+	fi
+}
+
+cycle_scratch() {
+	index_scratch
+	hyprctl dispatch alterzorder top,"pid:${SCRATCH_PIDS[-1]}" &
+	hyprctl dispatch focuswindow "pid:${SCRATCH_PIDS[-1]}" &
+}
+
+# Si estamos en un espacio normal cambiamos ventanas con layoutmsg
+if [ "$ACTIVE_WORKSPACE" != "special:scratch" ]; then
+	cycle_regular
+# Si estamos en el espacio especial "scratch" vamos alternando el foco entre
+# los distintos scratchpads
+else
+	cycle_scratch
+fi

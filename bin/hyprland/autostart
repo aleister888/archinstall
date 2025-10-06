@@ -76,5 +76,12 @@ fi &
 # https://github.com/emersion/hydroxide?tab=readme-ov-file#usage
 [ -x /usr/bin/hydroxide ] && hydroxide imap &
 
+# Actualizar el fondo de pantalla automaticamente
+while true; do
+	inotifywait -e modify ~/.dotfiles/assets/images/wallpaper
+	pkill hyprpaper
+	setsid -f hyprpaper
+done
+
 # Limpiar directorio $HOME
 cleaner

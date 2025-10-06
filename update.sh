@@ -46,7 +46,7 @@ REPO_PKGS=$(printf "%s\n" "${PACKAGE_LIST[@]}" | cut -d/ -f2)
 INSTALLED_PKGS=$(yay -Qq)
 
 # Filtramos los paquetes que aún no están instalados
-PKGS_TO_INSTALL=$(comm -23 <(printf "%s\n" "$REPO_PKGS" | sort) <(printf "%s\n" "$INSTALLED_PKGS" | sort))
+PKGS_TO_INSTALL=$(comm -23 <(printf "%s\n" "$REPO_PKGS" | sort -u) <(printf "%s\n" "$INSTALLED_PKGS" | sort))
 
 # Si hay paquetes pendientes y tenemos internet, los instalamos
 if [ -n "$PKGS_TO_INSTALL" ] && timeout -k 1s 3s ping -q -c 1 gnu.org &>/dev/null; then

@@ -1,0 +1,19 @@
+#!/bin/sh
+
+PAVUCONTROL_CLASS="org.pulseaudio.pavucontrol"
+SPECIAL_W="audio_panel"
+
+# Si pavucontrol no está abierto, lo abrimos
+if ! pgrep pavucontrol; then
+	exec pavucontrol
+else
+	ACTIVE_WORKSPACE=$(hyprctl -j activewindow | jq -r '.workspace.name')
+	# Si pavucontrol esta abierto y estamos en el espacio del panel, ocultamos
+	# el espacio especial
+	if [ "$ACTIVE_WORKSPACE" = "special:${SPECIAL_W}" ]; then
+		hyprctl dispatch togglespecialworkspace $SPECIAL_W
+	# Si no estamos en el espacio especial, lo abrimos enfocando a pavucontrol
+	else
+		hyprctl dispatch focuswindow "class:$PAVUCONTROL_CLASS"
+	fi
+fi
