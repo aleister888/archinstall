@@ -57,7 +57,7 @@
   },
   "network": {
     "tooltip": false,
-    "format": "{ifname}",
+    "format": "󰈀 {ipaddr}",
     "format-wifi": "{icon} {essid} <i>{frequency}GHz</i>",
     "format-disconnected": "󰤭 N/A",
     "format-icons": ["󰤟", "󰤢", "󰤥", "󰤨"],
