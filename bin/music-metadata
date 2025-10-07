@@ -1,7 +1,9 @@
 #!/bin/bash
 
+shopt -s extglob
+
 # Número máximo de caracteres del output
-[ -z "$FACT" ] && FACT=30
+[ -z "$FACT" ] && FACT=26
 [ -z "$ALTFACT" ] && ALTFACT=12
 
 # Establecemos el reproductor
@@ -19,22 +21,23 @@ makesafe() {
 statusbar() {
 	[ -z "$PLAYER" ] && exit
 
+	local TITLE ARTIST STATUS INDICATOR
+
 	# Obtener el título de la canción y estado de la reproducción
-	local TITLE
-	TITLE="$(playerctl metadata --player="$PLAYER" title)"
-	local STATUS
+	TITLE=$(metaprint title)
+	ARTIST=$(metaprint artist)
 	STATUS="$(playerctl status --player="$PLAYER")"
-	local ICON
 
 	[ -z "$TITLE" ] && exit
 
 	if [ "$STATUS" == "Playing" ]; then
-		ICON=" "
+		INDICATOR="Playing:"
 	elif [ -n "$STATUS" ]; then
-		ICON=" "
+		INDICATOR="Paused:"
 	fi
+	INDICATOR="<b>$INDICATOR</b>"
 
-	echo "$ICON$(makesafe "$TITLE")"
+	echo "$INDICATOR <i>$TITLE - $ARTIST</i>"
 }
 
 metaprint() {
@@ -56,16 +59,14 @@ metaprint() {
 
 	[ -z "$OUT" ] && exit 1
 
-	if [ "$WITHSAFE" == "true" ]; then
-		makesafe "$OUT"
-	else
-		echo "$OUT"
-	fi
+	[ "$WITHSAFE" == "true" ] && OUT=$(makesafe "$OUT")
+
+	echo "${OUT%%+([[:space:]])}"
 }
 
 help_msg() {
 	echo "Uso:
-  $(basename $0) [-Sdtacsh]
+  $(basename "$0") [-Sdtacsh]
 
 OPCIONES:
   -S	Habilitar máximo de caracteres ($FACT para -d, $ALTFACT para -t/-a/-A)
@@ -88,8 +89,11 @@ fi
 
 while [[ "$#" -gt 0 ]]; do
 	case "$1" in
-	-S) WITHSAFE=true ;;
+	-S)
+		WITHSAFE=true
+		;;
 	-d)
+		WITHSAFE=true
 		statusbar
 		exit
 		;;

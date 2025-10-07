@@ -19,6 +19,8 @@ return {
 			tex = { "latexindent" },
 			scss = { "prettier" },
 			css = { "prettier" },
+			json = { "prettier" },
+			jsonc = { "prettier" },
 			xml = { "xmllint" },
 		},
 		format_on_save = { timeout_ms = 5000 },

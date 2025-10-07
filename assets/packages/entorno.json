@@ -23,16 +23,8 @@
     "yt-dlp",
     "zenity"
   ],
-  "musica": [
-    "atomicparsley",
-    "glyr",
-    "python-eyed3"
-  ],
-  "servicios": [
-    "gnome-keyring",
-    "mako",
-    "gammastep"
-  ],
+  "musica": ["atomicparsley", "glyr", "python-eyed3"],
+  "servicios": ["gnome-keyring", "mako", "gammastep"],
   "discos": [
     "gnome-disk-utility",
     "ntfs-3g",
@@ -75,9 +67,7 @@
     "extra/wxwidgets-common",
     "extra/wxwidgets-gtk3"
   ],
-  "bandeja_sistema": [
-    "network-manager-applet"
-  ],
+  "bandeja_sisteam": ["network-manager-applet"],
   "aplicaciones_gui": [
     "hyprpaper",
     "mpv",
@@ -87,7 +77,5 @@
     "sxiv",
     "wl-color-picker"
   ],
-  "aplicaciones_tui": [
-    "htop"
-  ]
+  "aplicaciones_tui": ["htop"]
 }

@@ -47,4 +47,4 @@ $CHARGING && ICON=" $ICON"
 
 # Imprimos el icono, las secuencias de colores y el % de cada batería
 IFS=' '
-echo "$ICON${BATTERY_LEVEL[*]}"
+echo "${ICON}${BATTERY_LEVEL[*]}%"

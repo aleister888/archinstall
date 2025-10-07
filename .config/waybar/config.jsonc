@@ -1,71 +1,70 @@
 {
-    "layer": "bottom",
-    "position": "top",
-    "height": 30,
-    "margin": "0 32 0 32",
-    "modules-left": [
-        "hyprland/workspaces",
-        "hyprland/window"
-    ],
-    "modules-center": [
-        "custom/music-metadata",
-        "custom/blue-filter"
-    ],
-    "modules-right": [
-        "custom/battery",
-        "pulseaudio",
-        "custom/disk",
-        "clock",
-        "tray"
-    ],
-    "hyprland/window": {
-        "tooltip": false,
-        "max-length": 45
+  "layer": "bottom",
+  "position": "top",
+  "height": 30,
+  "margin": "0 24 0 24",
+  "modules-left": ["hyprland/workspaces", "custom/music-metadata"],
+  "modules-center": ["clock", "custom/blue-filter"],
+  "modules-right": [
+    "custom/battery",
+    "custom/disk",
+    "pulseaudio",
+    "network",
+    "tray",
+  ],
+  "custom/music-metadata": {
+    "tooltip": false,
+    "interval": 1,
+    "exec": "music-metadata -d",
+    "on-click": "music-control play-pause",
+  },
+  "clock": {
+    "tooltip": false,
+    "interval": 1,
+    "format": "{:%I:%M:%S}",
+    "format-alt": "{:L%A %d de %B (%m), %Y}",
+    "locale": "es_ES.UTF-8",
+  },
+  "custom/blue-filter": {
+    "tooltip": false,
+    "interval": 1,
+    "exec": "~/.dotfiles/bin/sb/sb-blue",
+    "on-click": "setsid -f blue-toggle",
+  },
+  "custom/battery": {
+    "tooltip": false,
+    "interval": 1,
+    "exec": "~/.dotfiles/bin/sb/sb-bat",
+    "on-click": "~/.dotfiles/bin/sb/sb-bat-info",
+  },
+  "custom/disk": {
+    "tooltip": false,
+    "format": "󰨣 {}",
+    "interval": 15,
+    "exec": "df -h /home | awk '/[0-9]/ {print $4}'",
+    "on-click": "~/.dotfiles/bin/sb/sb-disks-info",
+  },
+  "pulseaudio": {
+    "tooltip": false,
+    "format": "{icon} {volume}%",
+    "format-bluetooth": "{icon} {volume}%",
+    "format-muted": " {volume}%",
+    "format-icons": {
+      "headphone": "",
+      "default": ["", ""],
     },
-    "custom/music-metadata": {
-        "tooltip": false,
-        "interval": 1,
-        "exec": "music-metadata -d",
-        "on-click": "music-control play-pause"
-    },
-    "custom/blue-filter": {
-        "tooltip": false,
-        "interval": 1,
-        "exec": "~/.dotfiles/bin/sb/sb-blue",
-        "on-click": "setsid -f blue-toggle"
-    },
-    "custom/battery": {
-        "tooltip": false,
-        "interval": 1,
-        "exec": "~/.dotfiles/bin/sb/sb-bat",
-        "on-click": "~/.dotfiles/bin/sb/sb-bat-info"
-    },
-      "pulseaudio": {
-        "tooltip": false,
-        "format": "{icon} {volume}%",
-        "format-bluetooth": "{icon} {volume}%",
-        "format-muted": " {volume}%",
-        "format-icons": {
-            "headphone": "",
-            "default": ["", ""]
-        },
-        "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle"
-    },
-    "custom/disk": {
-        "tooltip": false,
-        "format": "󰨣 {}",
-        "interval": 15,
-        "exec": "df -h /home | awk '/[0-9]/ {print $4}'",
-        "on-click": "~/.dotfiles/bin/sb/sb-disks-info"
-    },
-    "clock": {
-        "tooltip": false,
-        "interval": 1,
-        "format": " {:L%I:%M:%S | %a %d de %b}",
-        "locale": "es_ES.UTF-8"
-    },
-    "tray": {
-        "icon-size": 16,
-        "spacing": 8
-    }
+    "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+  },
+  "network": {
+    "tooltip": false,
+    "format": "{ifname}",
+    "format-wifi": "{icon} {essid} <i>{frequency}GHz</i>",
+    "format-disconnected": "󰤭 N/A",
+    "format-icons": ["󰤟", "󰤢", "󰤥", "󰤨"],
+    "max-length": 50,
+  },
+  "tray": {
+    "icon-size": 24,
+    "spacing": 2,
+  },
 }

@@ -2,10 +2,10 @@
 
 if pgrep gammastep >/dev/null; then
 	# Filtro activado
-	ICON="󰹏"
+	ICON=""
 else
 	# Filtro desactivado
-	ICON="󰌵"
+	ICON=""
 fi
 
 echo "$ICON"
