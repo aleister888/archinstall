@@ -58,7 +58,7 @@
   "network": {
     "tooltip": false,
     "format": "󰈀 {ipaddr}",
-    "format-wifi": "{icon} {essid} <i>{frequency}GHz {signaldBm}dBm</i>",
+    "format-wifi": "{icon} {essid} <i>{frequency}GHz</i>",
     "format-disconnected": "󰤭 N/A",
     "format-alt": "󰈀 {ipaddr} 󰏔 {bandwidthDownBytes} 󰏕 {bandwidthUpBytes}",
     "format-icons": ["󰤟", "󰤢", "󰤥", "󰤨"],
