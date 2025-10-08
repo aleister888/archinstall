@@ -117,19 +117,15 @@ cmd open ${{
 	} 2>/dev/null
 }}
 
-# Muestra información sobre el directorio actual
 cmd on-cd &{{
-	# Mostrar el directorio en el nombre de la ventana
-	printf '\033]0;%s\007' "$(pwd | sed "s|^$HOME|~|")" > /dev/tty
-	# Mostrar información sobre los repositorios (Rama y URL)
-	if [ -d .git ] || [ -f .git ]; then
-		branch="$(git branch --show-current 2>/dev/null)" || true
-		remote="$(git config --get "branch.$branch.remote" 2>/dev/null)" || true
-		url="$(git remote get-url "$remote" 2>/dev/null)" || true
-		fmt="\033[32;1m%u@%h\033[0m:\033[34;1m%w\033[0m\033[33;1m [$branch >> $url]\033[0m"
-	else
-		fmt="\033[32;1m%u@%h\033[0m:\033[34;1m%d\033[0m\033[1m%f\033[0m"
-	fi
+	source /usr/share/git/completion/git-prompt.sh
+	GIT_PS1_SHOWDIRTYSTATE=auto
+	GIT_PS1_SHOWSTASHSTATE=auto
+	GIT_PS1_SHOWUNTRACKEDFILES=auto
+	GIT_PS1_SHOWUPSTREAM=auto
+	GIT_PS1_COMPRESSSPARSESTATE=auto
+	git="$(__git_ps1 " [GIT BRANCH:> %s]")" || true
+	fmt="\033[32;1m%u@%h\033[0m:\033[34;1m%w\033[0m\033[33;1m$git\033[0m"
 	lf -remote "send $id set promptfmt \"$fmt\""
 }}
 
@@ -402,33 +398,7 @@ cmd extract ${{
 }}
 
 # Pegar archivos copiados/cortados
-cmd paste &{{
-	makoctl dismiss -a
-	set -- $(cat ~/.local/share/lf/files)
-	mode="$1"
-	shift
-	case "$mode" in
-		copy)
-			rsync -av --ignore-existing --progress -- "$@" . |
-			stdbuf -i0 -o0 -e0 tr '\r' '\n' |
-			while IFS= read -r line; do
-				/usr/bin/lf -remote "send $id echo $line"
-			done &&
-				notify-send -i copyq \
-					"lf" \
-					"Archivo(s) copiados."
-			;;
-		move)
-			mv -n -- "$@" . &&
-				notify-send -i copyq \
-				"lf" \
-				"Archivo(s) movidos."
-		;;
-	esac
-	rm ~/.local/share/lf/files
-	lf -remote "send $id reload"
-	clear
-}}
+cmd paste $cp-p --lf-paste "$id"
 
 # Mover a la papelera
 cmd trash ${{

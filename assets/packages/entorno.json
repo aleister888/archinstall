@@ -1,6 +1,5 @@
 {
   "general": [
-    "fastfetch",
     "feh",
     "grim",
     "hyprland",
@@ -46,6 +45,7 @@
     "bc",
     "cdrtools",
     "chafa",
+    "cp-p-git",
     "csvkit",
     "expac",
     "eza",

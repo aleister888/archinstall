@@ -5,9 +5,9 @@
 
 # Aquí se establece la prioridad de los reproductores:
 PRIORITY=(
-	"spotify"
-	"tauon"
 	"$BROWSER"
+	"tauon"
+	"spotify"
 )
 
 # Lista de dominios permitidos para el navegador
@@ -22,7 +22,7 @@ for APP in "${PRIORITY[@]}"; do
 	case "$APP" in
 	# Si es el navegador, comprobamos que se está reproduciendo
 	# contenido en uno de los dominios permitidos
-	$BROWSER)
+	"$BROWSER")
 		# Convierte el array en una expresión regular
 		DOMAINS_PATTERN=$(
 			IFS=\|

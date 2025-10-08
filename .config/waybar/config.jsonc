@@ -22,7 +22,7 @@
     "tooltip": false,
     "interval": 1,
     "format": "{:%I:%M:%S}",
-    "format-alt": "{:L%A %d de %B (%m), %Y}",
+    "format-alt": "{:L%A %d de %B | %d/%m/%Y}",
     "locale": "es_ES.UTF-8",
   },
   "custom/blue-filter": {
@@ -58,8 +58,9 @@
   "network": {
     "tooltip": false,
     "format": "󰈀 {ipaddr}",
-    "format-wifi": "{icon} {essid} <i>{frequency}GHz</i>",
+    "format-wifi": "{icon} {essid} <i>{frequency}GHz {signaldBm}dBm</i>",
     "format-disconnected": "󰤭 N/A",
+    "format-alt": "󰈀 {ipaddr} 󰏔 {bandwidthDownBytes} 󰏕 {bandwidthUpBytes}",
     "format-icons": ["󰤟", "󰤢", "󰤥", "󰤨"],
     "max-length": 50,
   },

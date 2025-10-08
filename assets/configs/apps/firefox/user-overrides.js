@@ -2,6 +2,15 @@
 user_pref("identity.fxaccounts.enabled", false);
 user_pref("identity.fxaccounts.toolbar.enabled", false);
 
+// Permitir restaurar la sesión
+user_pref("privacy.clearOnShutdown_v2.historyFormDataAndDownloads", false);
+
+// Pantalla de inicio
+user_pref("browser.startup.page", 3); // Restaurar pestañas
+user_pref("browser.startup.homepage", "about:home");
+user_pref("browser.newtabpage.enabled", true);
+user_pref("browser.newtabpage.activity-stream.feeds.topsites", false);
+
 // Permitir las extensiones instaladas de forma externa
 user_pref("extensions.autoDisableScopes", 0);
 
@@ -27,17 +36,13 @@ user_pref("browser.tabs.inTitlebar", 0);
 user_pref("browser.sessionstore.privacy_level", 0);
 user_pref("privacy.clearOnShutdown.sessions", false);
 user_pref("privacy.clearOnShutdown.cache", false);
+user_pref("privacy.clearOnShutdown.history", false);
+user_pref("privacy.clearOnShutdown_v2.historyFormDataAndDownloads", false);
 
 // No borrar los datos automáticamente
 user_pref("privacy.sanitize.sanitizeOnShutdown", false);
 user_pref("privacy.sanitize.clearOnShutdown.hasMigratedToNewPrefs2", false);
 user_pref("privacy.sanitize.cpd.hasMigratedToNewPrefs2", false);
-
-// Pantalla de inicio
-user_pref("browser.startup.homepage", "about:home");
-user_pref("browser.startup.page", 1);
-user_pref("browser.newtabpage.enabled", true);
-user_pref("browser.newtabpage.activity-stream.feeds.topsites", false);
 
 // Desactivar notificaciones
 user_pref("dom.push.enabled", false);

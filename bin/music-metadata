@@ -8,6 +8,8 @@ shopt -s extglob
 
 # Establecemos el reproductor
 PLAYER="$(music-priority)"
+# Si la música se está reproduciendo en el navegador, esperamos un tiempo
+[ "$PLAYER" = "$BROWSER" ] && sleep 1
 
 makesafe() {
 	if [ "${#1}" -gt "$FACT" ]; then

@@ -41,28 +41,22 @@ bindkey '^[OB' history-substring-search-down
 bindkey "^[[1;5C" forward-word
 bindkey "^[[1;5D" backward-word
 
-# Funcion para imprimir la dirección IP local en el prompt
-function get_local_ip {
-	adress=$(ip addr show | grep inet | grep -v 127.0.0.1 | awk '{print $2}' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | head -1)
-	if [ ! -z $adress ]; then
-		echo $adress
-	else
-		echo "N/A"
-	fi
-}
-
 function get_time {
 	date +'%H:%M:%S'
 }
-
-function precmd {
-PROMPT="%B%F{red}[%F{yellow}$(get_time)%F{green}/%F{blue}$(get_local_ip)%F{white}:%F{magenta}%~%F{red}]%F{white}$ %b"
+function parse_git_branch() {
+  git branch 2>/dev/null | grep '^*' | colrm 1 2
 }
+function git_prompt_info() {
+  local branch=$(parse_git_branch)
+  [[ -n $branch ]] && echo "%F{yellow}($branch)%f"
+}
+PROMPT='%F{magenta}%~%f $(git_prompt_info)%f$ '
+
+RPROMPT='$(get_time)'
 
 setopt promptsubst
 
 printf '\033[?1h\033=' >/dev/tty
-
-fastfetch -c screenfetch -l arch3
 
 source "$HOME/.profile"
