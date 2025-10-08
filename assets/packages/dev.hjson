@@ -9,6 +9,7 @@
     "luarocks",
     "nodejs-lts-jod",
     "npm",
+    "python-hjson",
     "smartmontools",
     "time",
     "yarn"

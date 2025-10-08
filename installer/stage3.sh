@@ -65,9 +65,8 @@ driver_add() {
 arr_packages() {
 	# Guardamos nuestros paquetes a instalar en un array
 	mapfile -t TMP_PACKAGES < <(
-		# Añadimos los paquetes que no dependen de la distro
-		find "$HOME/.dotfiles/assets/packages" -name '*.json' \
-			-exec jq -r '.[] | .[]' {} +
+		find "$HOME/.dotfiles/assets/packages" -name '*.hjson' \
+			-exec sh -c 'hjson -j "$1" | jq -r ".[] | .[]" ' _ {} \;
 	)
 	PACKAGES=("${TMP_PACKAGES[@]}" "${DRIVERS_VID[@]}")
 }

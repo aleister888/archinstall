@@ -38,7 +38,6 @@ makeuserjs() {
 installffaddons() {
 	ADDON_LIST=(
 		"checkmarks-web-ext"
-		"clear-browsing-data"
 		"clearurls"
 		"darkreader"
 		"decentraleyes"

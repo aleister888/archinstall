@@ -248,6 +248,7 @@ def end_erase(event):
 
 root = tk.Tk()
 root.title(WINTITLE)
+root.resizable(False, False)
 
 status_var = tk.StringVar(value="✏️ Modo dibujar")
 status_label = tk.Label(root, textvariable=status_var, bg=BG_COLOR, fg=STROKE_COLOR)

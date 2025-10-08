@@ -8,5 +8,5 @@ music-control -q pause
 makoctl dismiss -a
 # Silenciamos el audio (si hay medios reproducción)
 [ "$(playerctl status)" = "Playing" ] && pactl set-sink-mute @DEFAULT_SINK@ 1
-# Iniciamos la pantalla de bloqueo
+# Bloqueamos la pantalla
 hyprlock

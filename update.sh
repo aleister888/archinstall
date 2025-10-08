@@ -35,8 +35,8 @@ fi
 
 # Construimos la lista de paquetes dependiendo de la distro
 mapfile -t PACKAGE_LIST < <(
-	find "$HOME/.dotfiles/assets/packages" -name '*.json' \
-		-exec jq -r '.[] | .[]' {} +
+	find "$HOME/.dotfiles/assets/packages" -name '*.hjson' \
+		-exec sh -c 'hjson -j "$1" | jq -r ".[] | .[]" ' _ {} \;
 )
 
 # Extraemos solo el nombre del paquete (sin prefijo repo/)
