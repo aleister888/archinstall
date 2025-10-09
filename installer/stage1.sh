@@ -230,7 +230,7 @@ basestrap_install() {
 	BASESTRAP_PACKAGES+=" go sudo"
 
 	# Para procesar los .json con los paquetes a instalar
-	BASESTRAP_PACKAGES+=" jq"
+	BASESTRAP_PACKAGES+=" jq python-hjson"
 
 	# Añadimos el paquete con el microcódigo de CPU correspodiente
 	local MANUFACTURER
