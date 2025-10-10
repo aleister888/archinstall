@@ -16,8 +16,14 @@ trap 'fc-cache -f' EXIT
 # Guardamos el hash del script para comprobar mas adelante si este ha cambiado
 OG_HASH=$(sha256sum "$0" | awk '{print $1}')
 
+if timeout -k 1s 3s curl -s --head --request GET "https://www.gnu.org/" >/dev/null 2>&1; then
+	CONNECTED=true
+else
+	CONNECTED=false
+fi
+
 # Si tenemos conexión a Internet y el repo. clonado, lo actualizamos
-if [ -d "$REPO_DIR/.git" ] && timeout -k 1s 3s ping gnu.org -c 1 >/dev/null 2>&1; then
+if [ -d "$REPO_DIR/.git" ] && [ "$CONNECTED" == "true" ]; then
 	sh -c "cd $REPO_DIR && git pull" >/dev/null
 fi
 
@@ -49,7 +55,7 @@ INSTALLED_PKGS=$(yay -Qq)
 PKGS_TO_INSTALL=$(comm -23 <(printf "%s\n" "$REPO_PKGS" | sort -u) <(printf "%s\n" "$INSTALLED_PKGS" | sort))
 
 # Si hay paquetes pendientes y tenemos internet, los instalamos
-if [ -n "$PKGS_TO_INSTALL" ] && timeout -k 1s 3s ping -q -c 1 gnu.org &>/dev/null; then
+if [ -n "$PKGS_TO_INSTALL" ] && [ "$CONNECTED" == "true" ]; then
 	yay -Sy --noconfirm --needed --asexplicit $PKGS_TO_INSTALL
 fi
 

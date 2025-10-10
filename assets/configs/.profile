@@ -56,6 +56,8 @@ export PAGER="less"
 export VIEWER="nsxiv"
 
 # Limpiar el directorio ~/ de archivos de configuración
+alias wget='wget --hsts-file="$XDG_CONFIG_HOME"/wget-hsts'
+alias gpg2='gpg2 --homedir "$XDG_DATA_HOME"/gnupg'
 export PARALLEL_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"/parallel
 export RUSTUP_HOME="$XDG_DATA_HOME"/rustup
 export GOPATH="$XDG_DATA_HOME"/go

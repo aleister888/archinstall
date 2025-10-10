@@ -1,6 +1,7 @@
 local servers = {
 	"basedpyright",
 	"bashls",
+	"clangd",
 	"cssls",
 	"jdtls",
 	"lua_ls",

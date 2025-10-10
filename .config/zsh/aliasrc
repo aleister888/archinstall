@@ -1,34 +1,42 @@
 #!/bin/zsh
 
-# Alias para herramientas comunes
-alias wget='wget --hsts-file="$XDG_CONFIG_HOME"/wget-hsts'
-alias gpg2='gpg2 --homedir "$XDG_DATA_HOME"/gnupg'
-# Alias de comandos básicos
+# Moverse rápidamente entre directorios
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+
+# Utilidades básicas
 alias cp='cp -iv'
 alias cat='bat -p --tabs 8'
 alias ls='eza -lagX --time-style iso --group-directories-first --smart-group'
 alias grep='grep --color=auto'
-# Alias para moverse rápidamente entre directorios
-alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
+
 # Actualizar el sistema
-alias update='yay -Syuu --answerclean --answerdiff --removemake --ignore ttf-google-fonts-git --ignore joycond-git --ignore joycond-cemuhook-git'
+alias update='yay -Syuu --answerclean --answerdiff --removemake --ignore "*-git"'
+
 # Herramientas
 alias xdotool_table='xmodmap -pk'
 alias du='BLOCKSIZE=1073741824 du -s * | sort -rnk 1'
 alias grub-update='sudo grub-mkconfig -o /boot/grub/grub.cfg'
+
 # Alias para encontrar enlaces simbólicos rotos
 alias brokenlink='find / -xtype l -print 2>/dev/null'
+
 # Detectar que paquetes del AUR necesitan recompilarse
 alias rebuild-detector="checkrebuild -v"
+
 # Para pasar el output de un comando al portapeles con: comando | clipboard
 alias clipboard="wl-copy"
 
 alias webcam="ffplay /dev/video0"
 
+# Compilar programas clang rápidamente
+function GCC() {
+	gcc "$1" -o "${1%.*}"
+}
+
 # Para obtener archivos no reclamados por pacman
-lostfiles() {
+function lostfiles() {
 	local IGNORAR=(
 		"/opt"
 		"/usr/lib/modules/"
