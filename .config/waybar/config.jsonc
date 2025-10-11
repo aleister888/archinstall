@@ -67,5 +67,8 @@
   "tray": {
     "icon-size": 24,
     "spacing": 2,
+    "icons": {
+      "discord": "/usr/share/icons/Papirus/24x24/panel/discord-tray.svg",
+    },
   },
 }
