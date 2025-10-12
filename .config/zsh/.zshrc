@@ -19,8 +19,9 @@ _comp_options+=(globdots) # Incluir archivos ocultos
 WORDCHARS=${WORDCHARS//\//}
 
 function fzf_dir() {
-	DIR="$(find . | fzf --reverse --header='Ir a la localización')"
-	[ -d "$DIR" ] && cd "$DIR"
+	local SELECTED="$(find . | fzf --reverse --header='Ir a la localización')"
+	[ -d "$SELECTED" ] && cd "$SELECTED"
+	[ -f "$SELECTED" ] && cd $(dirname "$SELECTED")
 }
 
 # Bindings de teclado
@@ -38,6 +39,20 @@ function command_not_found_handler() {
 
 printf '\033[?1h\033=' >/dev/tty
 
+#############
+# Historial #
+#############
+
+HISTSIZE=10000              # Líneas de historial en memoria
+SAVEHIST=10000              # Líneas de historial que se guardan en el archivo
+setopt hist_ignore_dups     # Ignorar duplicados consecutivos
+setopt hist_ignore_all_dups # No guardar líneas duplicadas
+setopt hist_reduce_blanks   # Quitar espacios extra
+setopt hist_verify          # Verifica antes de ejecutar desde el historial
+setopt share_history        # Comparte historial entre sesiones
+setopt append_history       # Añade al archivo, no lo sobrescribe
+setopt inc_append_history   # Guarda los comandos al ejecutarlos
+
 ##########
 # Prompt #
 ##########
@@ -51,5 +66,5 @@ function git_prompt_info() {
 	[[ -n $branch ]] && echo "%F{yellow}($branch)%f"
 }
 
-PROMPT='%F{magenta}%~%f $(git_prompt_info)%f%% '
+PROMPT='%F{magenta}%~%f $(git_prompt_info)%f$ '
 setopt promptsubst

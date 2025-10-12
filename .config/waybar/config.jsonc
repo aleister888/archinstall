@@ -4,7 +4,7 @@
   "height": 30,
   "margin": "0 24 0 24",
   "modules-left": ["hyprland/workspaces", "custom/music-metadata"],
-  "modules-center": ["clock", "custom/blue-filter"],
+  "modules-center": ["clock", "custom/blue-filter", "privacy"],
   "modules-right": [
     "custom/battery",
     "custom/disk",
@@ -19,10 +19,9 @@
     "on-click": "music-control play-pause",
   },
   "clock": {
-    "tooltip": false,
+    "tooltip-format": "{:L%A %d de %B | %d/%m/%Y}",
     "interval": 1,
     "format": "{:%I:%M:%S}",
-    "format-alt": "{:L%A %d de %B | %d/%m/%Y}",
     "locale": "es_ES.UTF-8",
   },
   "custom/blue-filter": {
@@ -30,6 +29,9 @@
     "interval": 1,
     "exec": "~/.dotfiles/bin/sb/sb-blue",
     "on-click": "setsid -f blue-toggle",
+  },
+  "privacy": {
+    "icon-size": 20,
   },
   "custom/battery": {
     "tooltip": false,
@@ -45,7 +47,6 @@
     "on-click": "~/.dotfiles/bin/sb/sb-disks-info",
   },
   "pulseaudio": {
-    "tooltip": false,
     "format": "{icon} {volume}%",
     "format-bluetooth": "{icon} {volume}%",
     "format-muted": " {volume}%",
@@ -56,11 +57,12 @@
     "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
   },
   "network": {
-    "tooltip": false,
-    "format": "󰈀 {ipaddr}",
-    "format-wifi": "{icon} {essid} <i>{frequency}GHz</i>",
+    "interval": 1,
+    "format": "󰈀 {ifname}",
     "format-disconnected": "󰤭 N/A",
-    "format-alt": "󰈀 {ipaddr} 󰏔 {bandwidthDownBytes} 󰏕 {bandwidthUpBytes}",
+    "format-wifi": "{icon} {essid} {frequency}GHz",
+    "format-alt": "󰏔 {bandwidthDownBytes} 󰏕 {bandwidthUpBytes}",
+    "tooltip-format": "{ipaddr}",
     "format-icons": ["󰤟", "󰤢", "󰤥", "󰤨"],
     "max-length": 50,
   },
