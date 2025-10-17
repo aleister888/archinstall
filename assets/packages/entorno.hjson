@@ -28,9 +28,9 @@
     "python-eyed3"
   ],
   "servicios": [
+    "gammastep",
     "gnome-keyring",
-    "mako",
-    "gammastep"
+    "swaync"
   ],
   "discos": [
     "gnome-disk-utility",

@@ -2,7 +2,7 @@
 
 # Script para mostrar el uso de ram
 
-makoctl dismiss -a
+$CLOSE_NOTIFICATIONS
 
 TOTAL=$(free -h | awk '/^Mem:/ {print $2}')
 USADO=$(free -h | awk '/^Mem:/ {print $3}')

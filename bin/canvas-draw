@@ -150,7 +150,6 @@ def redraw_image():
             draw.line([x1, y1, x2, y2], fill=STROKE_COLOR, width=STROKE_WIDTH)
 
 def save_to_tmp(event=None):
-    subprocess.run(["makoctl", "dismiss", "-a"])
     save_path = "/tmp/canvas-draw.png"
 
     # Si no se dibujo nada, salimos del script informado del error y sin guardar

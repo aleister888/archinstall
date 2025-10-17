@@ -76,12 +76,19 @@ fi &
 # https://github.com/emersion/hydroxide?tab=readme-ov-file#usage
 [ -x /usr/bin/hydroxide ] && hydroxide imap &
 
-# Actualizar el fondo de pantalla automaticamente
+# Actualizar el fondo de pantalla automáticamente
 while true; do
 	inotifywait -e modify ~/.dotfiles/assets/images/wallpaper
 	pkill hyprpaper
 	setsid -f hyprpaper
-done
+done &
+
+# Actualizar la configuración de swaync automáticamente
+while true; do
+	inotifywait -e modify ~/.dotfiles/.config/swaync/style.css
+	killall swaync
+	eval "$SWAYNC_CMD" &
+done &
 
 # Limpiar directorio $HOME
 cleaner

@@ -19,22 +19,21 @@ PLAYER="$(music-priority)"
 
 # Si no se encontró el reproductor, se informa al usuario
 if [ -z "$PLAYER" ] && ! $QUIET; then
-	makoctl dismiss -a
+	$CLOSE_NOTIFICATIONS
 	notify-send -i "$(music-metadata -c)" \
 		"$(music-metadata -t)" "$(music-metadata -a)"
 # Si se encontró, notificamos el cambio de canción
 else
-	export ALTFACT=26
+	export ALTFACT=34
 	playerctl --player="$PLAYER" "$1"
 
 	if [ "$1" != "play-pause" ] && ! $QUIET; then
-		makoctl dismiss -a
+		$CLOSE_NOTIFICATIONS
 		TITLE="$(music-metadata -S -t | escape_markup)"
-		ARTIST="<span font='12'>$(music-metadata -S -a | escape_markup)</span>"
-		LINE_BREAK="<span font='4'>\n\n</span>"
-		ALBUM="<span font='10'>$(music-metadata -S -A | escape_markup)</span>"
+		ARTIST="$(music-metadata -S -a | escape_markup)"
+		ALBUM="<i>$(music-metadata -S -A | escape_markup)</i>"
 
 		notify-send -i "$(music-metadata -c)" \
-			"$TITLE" "$ARTIST$LINE_BREAK$ALBUM"
+			"$TITLE" "$ARTIST\n$ALBUM"
 	fi
 fi

@@ -24,7 +24,7 @@ sed -i 's/auto-dl-artist-data = false/auto-dl-artist-data = true/g' "$CONF"
 sed -i 's/auto-update-playlists = false/auto-update-playlists = true/g' "$CONF"
 sed -i 's/auto-search-lyrics = false/auto-search-lyrics = true/g' "$CONF"
 
-# Desactivar el recordar la posición para hacer la aplicación mas amigable con DWM
+# Desactivar el recordar la posición (Útil para los tiling window managers)
 sed -i 's/restore-window-position = true/restore-window-position = false/g' "$CONF"
 
 # Establecer el tema

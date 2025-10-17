@@ -2,9 +2,9 @@
   "layer": "bottom",
   "position": "top",
   "height": 30,
-  "margin": "0 24 0 24",
+  "margin": "0 16 0 16",
   "modules-left": ["hyprland/workspaces", "custom/music-metadata"],
-  "modules-center": ["clock", "custom/blue-filter", "privacy"],
+  "modules-center": ["clock", "custom/swaync", "custom/blue-filter", "privacy"],
   "modules-right": [
     "custom/battery",
     "custom/disk",
@@ -23,6 +23,12 @@
     "interval": 1,
     "format": "{:%I:%M:%S}",
     "locale": "es_ES.UTF-8",
+  },
+  "custom/swaync": {
+    "tooltip": false,
+    "interval": 1,
+    "exec": "~/.dotfiles/bin/sb/sb-dnd",
+    "on-click": "swaync-client -t",
   },
   "custom/blue-filter": {
     "tooltip": false,

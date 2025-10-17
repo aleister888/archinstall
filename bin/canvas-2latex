@@ -4,13 +4,13 @@ IMAGE="/tmp/canvas-draw.png"
 
 # Comprobamos que se dibujo una ecuación
 [ ! -e "$IMAGE" ] && {
-	notify-send -i system-error "Imágen -> laTeX" "No se encontró ningún dibujo"
+	notify-send -e -i system-error "Imágen -> laTeX" "No se encontró ningún dibujo"
 	exit 1
 }
 
 # Comprobamos que haya una clave para la API de Gemini
 [ ! -e "$XDG_CACHE_HOME/gemini_key" ] && {
-	notify-send -i system-error "Imágen -> laTeX" "No se encontró la API Key de Gemini en \$XDG_CACHE_HOME/gemini_key"
+	notify-send -e -i system-error "Imágen -> laTeX" "No se encontró la API Key de Gemini en \$XDG_CACHE_HOME/gemini_key"
 	exit 1
 }
 
@@ -23,7 +23,7 @@ Responde únicamente con el código LaTeX de la ecuación sin estar rodeado por 
 IMAGE_DATA=$(base64 -w 0 "$IMAGE")
 
 if ! curl -s --head --request GET https://generativelanguage.googleapis.com; then
-	notify-send -i system-error "$(basename "$0")" "Error de conexión"
+	notify-send -e -i system-error "$(basename "$0")" "Error de conexión"
 	exit 1
 fi
 
@@ -56,6 +56,6 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:g
 # Extramos solo el código latex
 jq -r '.candidates[0].content.parts[0].text' "$OUTPUT_JSON" >"$LATEX_OUTPUT"
 
-notify-send -i texmaker "$(basename "$0")" "\$$(cat $LATEX_OUTPUT)\$"
+notify-send -e -i texmaker "$(basename "$0")" "\$$(cat $LATEX_OUTPUT)\$"
 
 wl-copy "$(cat $LATEX_OUTPUT)"
