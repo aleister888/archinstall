@@ -3,6 +3,7 @@
   --noti-border-color: rgba(152, 151, 26, 1);
   --noti-bg: rgba(40, 40, 40, 1);
   --noti-bg-darker: rgb(37, 36, 35);
+  --noti-bg-darker2: rgb(29, 32, 33);
   --noti-bg-hover: rgb(60, 56, 54);
   --noti-bg-focus: rgb(80, 73, 69);
   --noti-close-bg: rgb(80, 73, 69);
@@ -13,22 +14,22 @@
 }
 
 /* Caja notificación */
-.notification-row .notification-background .notification {
+.notification {
+  margin: 32px;
   box-shadow: 1px 1px 3px 2px #151515;
-  border-radius: 12px;
   border: 4px solid var(--noti-border-color);
   border-radius: 12px;
   transition: background 0.15s ease-in-out;
   background: var(--noti-bg);
 }
 
+/* Botón cerrar */
+.close-button {
+  margin: 42px;
+}
+
 /* Iconos */
-.notification-row
-  .notification-background
-  .notification
-  .notification-default-action
-  .notification-content
-  .image {
+.image {
   margin: 4px;
   -gtk-icon-filter: none;
   -gtk-icon-size: var(--notification-icon-size);
@@ -103,5 +104,27 @@
   .notification-content
   progressbar
   progress {
+  background-color: var(--noti-border-color);
+}
+
+/* Centro de control */
+.control-center {
+  color: var(--text-color);
+  background: var(--noti-bg);
+  border: 4px solid var(--noti-border-color);
+  border-radius: 12px;
+  box-shadow: 1px 1px 3px 2px #151515;
+  margin-top: 32px;
+  margin-right: 48px;
+  margin-bottom: 48px;
+}
+
+/* Centro de control Do Not Disturb */
+/* Desactivado */
+.control-center-dnd {
+  background-color: var(--noti-bg-darker2);
+}
+/* Activado */
+.control-center-dnd:checked {
   background-color: var(--noti-border-color);
 }

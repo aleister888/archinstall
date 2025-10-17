@@ -63,5 +63,5 @@ pw-play "$SOUND" &
 
 # Notificación de porcentaje
 PERC=$(((INDEX + 1) * 100 / LEVELS))
-$CLOSE_NOTIFICATIONS &
-notify-send "$(basename "$0")" "Brillo: $PERC%" -t 500 --hint=INT:value:$PERC &
+$HIDE_NOTIFICATIONS &
+notify-send -e "$(basename "$0")" "Brillo: $PERC%" -t 500 --hint=INT:value:$PERC &

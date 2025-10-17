@@ -2,10 +2,10 @@
 
 # Script para mostrar el uso de ram
 
-$CLOSE_NOTIFICATIONS
+$HIDE_NOTIFICATIONS
 
 TOTAL=$(free -h | awk '/^Mem:/ {print $2}')
 USADO=$(free -h | awk '/^Mem:/ {print $3}')
 LIBRE=$(free -h | awk '/^Mem:/ {print $7}')
 
-notify-send "$USADO/$TOTAL ($LIBRE)"
+notify-send -e "$USADO/$TOTAL ($LIBRE)"

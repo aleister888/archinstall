@@ -16,7 +16,7 @@ cleanup_mountpoints() {
 
 MOUNTED="$(awk '/simple-mtpfs/ {print $2}' /etc/mtab)"
 if [ -z "$MOUNTED" ]; then
-	notify-send -i usb "$(basename "$0")" "No hay ningún dispositivo montado"
+	notify-send -e -i usb "$(basename "$0")" "No hay ningún dispositivo montado"
 	exit 1
 fi
 
@@ -31,8 +31,8 @@ CHOSEN="$(
 
 # Intentar desmontar el dispositivo seleccionado
 if sudo umount -l "$CHOSEN"; then
-	notify-send -i usb "$(basename "$0")" "Desmontado: $CHOSEN"
+	notify-send -e -i usb "$(basename "$0")" "Desmontado: $CHOSEN"
 	cleanup_mountpoints
 else
-	notify-send -i usb "$(basename "$0")" "Error al desmontar: $CHOSEN"
+	notify-send -e -i usb "$(basename "$0")" "Error al desmontar: $CHOSEN"
 fi

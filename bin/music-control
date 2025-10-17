@@ -19,8 +19,8 @@ PLAYER="$(music-priority)"
 
 # Si no se encontró el reproductor, se informa al usuario
 if [ -z "$PLAYER" ] && ! $QUIET; then
-	$CLOSE_NOTIFICATIONS
-	notify-send -i "$(music-metadata -c)" \
+	$HIDE_NOTIFICATIONS
+	notify-send -e -i "$(music-metadata -c)" \
 		"$(music-metadata -t)" "$(music-metadata -a)"
 # Si se encontró, notificamos el cambio de canción
 else
@@ -28,12 +28,12 @@ else
 	playerctl --player="$PLAYER" "$1"
 
 	if [ "$1" != "play-pause" ] && ! $QUIET; then
-		$CLOSE_NOTIFICATIONS
+		$HIDE_NOTIFICATIONS
 		TITLE="$(music-metadata -S -t | escape_markup)"
 		ARTIST="$(music-metadata -S -a | escape_markup)"
 		ALBUM="<i>$(music-metadata -S -A | escape_markup)</i>"
 
-		notify-send -i "$(music-metadata -c)" \
+		notify-send -e -i "$(music-metadata -c)" \
 			"$TITLE" "$ARTIST\n$ALBUM"
 	fi
 fi

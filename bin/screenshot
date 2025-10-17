@@ -28,15 +28,15 @@ capture() {
 			# Copiar al portapapeles con wl-copy
 			wl-copy <"$TMP"
 			[ "$QUIET" ] ||
-				notify-send -i "$TMP" "$MSG" "Copiada al Portapapeles"
+				notify-send -e -i "$TMP" "$MSG" "Copiada al Portapapeles"
 		else
 			mv "$TMP" "$FILEPATH"
 			[ "$QUIET" ] ||
-				notify-send -i "$FILEPATH" "$MSG" "$FILENAME"
+				notify-send -e -i "$FILEPATH" "$MSG" "$FILENAME"
 		fi
 		pw-play "$SOUND"
 	else
-		notify-send -i system-error "$MSG" "Error al capturar"
+		notify-send -e -i system-error "$MSG" "Error al capturar"
 	fi
 
 }

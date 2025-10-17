@@ -158,6 +158,7 @@ def save_to_tmp(event=None):
         if not quiet:
             subprocess.run([
                 "notify-send",
+                "-e",
                 "-i",
                 "system-error",
                 "Canvas",
@@ -185,6 +186,7 @@ def save_to_tmp(event=None):
         if not quiet:
             subprocess.run([
                 "notify-send",
+                "-e",
                 "-i",
                 "com.github.maoschanz.drawing",
                 "Canvas",

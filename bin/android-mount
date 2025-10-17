@@ -47,7 +47,7 @@ done
 
 # Salir si no hay ningún dispositivo Android que montar
 if [ -z "$ANDDRIVES" ]; then
-	notify-send -i usb "$(basename "$0")" "No hay ningún dispositivo disponible"
+	notify-send -e -i usb "$(basename "$0")" "No hay ningún dispositivo disponible"
 	exit 1
 fi
 
@@ -64,8 +64,8 @@ MP=$(create_mountpoint)
 # Intentar montar el dispositivo Android
 if sudo simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$(escape "$CHOSEN")" --device "$NUMBER" "$MP" 2>$MOUNT_LOG; then
 	DEVICE="$(echo $CHOSEN | grep -oP "[0-9]: \K.*(?= \(MTP\))")"
-	notify-send -i usb "$(basename "$0")" \
+	notify-send -e -i usb "$(basename "$0")" \
 		"<i>$DEVICE</i>\nMontado: $MP"
 else
-	notify-send -i usb "$(basename "$0")" "$(cat $MOUNT_LOG)"
+	notify-send -e -i usb "$(basename "$0")" "$(cat $MOUNT_LOG)"
 fi

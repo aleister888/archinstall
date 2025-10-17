@@ -4,7 +4,7 @@
 
 NOTIFY="notify-send -e -t 1500 -i screensaver"
 
-$CLOSE_NOTIFICATIONS
+$HIDE_NOTIFICATIONS
 
 if pgrep gammastep; then
 	kill -9 $(pgrep gammastep)

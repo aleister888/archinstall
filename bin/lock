@@ -5,7 +5,7 @@
 # Pausamos la música
 music-control -q pause
 # Limpiamos todas las notificaciones
-$CLOSE_NOTIFICATIONS
+$HIDE_NOTIFICATIONS
 # Silenciamos el audio (si hay medios reproducción)
 [ "$(playerctl status)" = "Playing" ] && pactl set-sink-mute @DEFAULT_SINK@ 1
 # Bloqueamos la pantalla
