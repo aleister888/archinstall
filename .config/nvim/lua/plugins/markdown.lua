@@ -48,8 +48,4 @@ return {
 			vim.keymap.set("n", "<leader>ff", toc_toggle, { silent = true })
 		end,
 	},
-	{
-		"MeanderingProgrammer/render-markdown.nvim",
-		opts = {},
-	},
 }

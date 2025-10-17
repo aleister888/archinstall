@@ -7,3 +7,7 @@ VOL=$(($(pamixer --get-volume) + $1))
 
 # Establecer el nuevo volumen
 pactl set-sink-volume @DEFAULT_SINK@ "${VOL}%"
+
+# Notificar
+$HIDE_NOTIFICATIONS &
+notify-send -e "Volumen: $VOL%" -t 500 --hint=INT:value:$VOL &

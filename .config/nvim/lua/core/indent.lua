@@ -58,6 +58,7 @@ local filetype_configs = {
 		expandtab = true,
 		tabstop = 2,
 		shiftwidth = 2,
+		conceallevel = 0,
 	},
 	python = {
 		expandtab = true,
@@ -73,14 +74,6 @@ local function apply_config(config)
 		opt[key] = value
 	end
 end
-
--- Configuración por defecto para todos los archivos
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = "*",
-	callback = function()
-		apply_config(default_config)
-	end,
-})
 
 -- Configuraciones específicas por tipo de archivo
 for pattern, config in pairs(filetype_configs) do

@@ -2,8 +2,7 @@
   --cc-bg: rgb(37, 36, 35);
   --noti-border-color: rgba(152, 151, 26, 1);
   --noti-bg: rgba(40, 40, 40, 1);
-  --noti-bg-darker: rgb(37, 36, 35);
-  --noti-bg-darker2: rgb(29, 32, 33);
+  --noti-bg-darker: rgb(29, 32, 33);
   --noti-bg-hover: rgb(60, 56, 54);
   --noti-bg-focus: rgb(80, 73, 69);
   --noti-close-bg: rgb(80, 73, 69);
@@ -122,7 +121,7 @@
 /* Centro de control Do Not Disturb */
 /* Desactivado */
 .control-center-dnd {
-  background-color: var(--noti-bg-darker2);
+  background-color: var(--noti-bg-darker);
 }
 /* Activado */
 .control-center-dnd:checked {
