@@ -28,7 +28,7 @@
     "tooltip": false,
     "interval": 1,
     "exec": "~/.dotfiles/bin/sb/sb-dnd",
-    "on-click": "swaync-client -d",
+    "on-click": "swaync-client -t",
   },
   "custom/blue-filter": {
     "tooltip": false,
