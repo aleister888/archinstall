@@ -19,16 +19,16 @@
     "on-click": "music-control play-pause",
   },
   "clock": {
-    "tooltip-format": "{:L%A %d de %B | %d/%m/%Y}",
+    "tooltip": false,
     "interval": 1,
     "format": "{:%I:%M:%S}",
-    "locale": "es_ES.UTF-8",
+    "on-click": "$HIDE_NOTIFICATIONS; notify-send -e \"Fecha\" \"$(date +'%A %d de %B | %d/%m/%Y')\"",
   },
   "custom/swaync": {
     "tooltip": false,
     "interval": 1,
     "exec": "~/.dotfiles/bin/sb/sb-dnd",
-    "on-click": "swaync-client -t",
+    "on-click": "swaync-client -d",
   },
   "custom/blue-filter": {
     "tooltip": false,
@@ -53,6 +53,7 @@
     "on-click": "~/.dotfiles/bin/sb/sb-disks-info",
   },
   "pulseaudio": {
+    "tooltip": false,
     "format": "{icon} {volume}%",
     "format-bluetooth": "{icon} {volume}%",
     "format-muted": " {volume}%",
@@ -63,12 +64,12 @@
     "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
   },
   "network": {
+    "tooltip": false,
     "interval": 1,
     "format": "󰈀 {ifname}",
     "format-disconnected": "󰤭 N/A",
     "format-wifi": "{icon} {essid} {frequency}GHz",
-    "format-alt": "󰏔 {bandwidthDownBytes} 󰏕 {bandwidthUpBytes}",
-    "tooltip-format": "{ipaddr}",
+    "format-alt": "󰏔 {bandwidthDownBytes} 󰏕 {bandwidthUpBytes} | {ipaddr}",
     "format-icons": ["󰤟", "󰤢", "󰤥", "󰤨"],
     "max-length": 50,
   },

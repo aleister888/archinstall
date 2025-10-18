@@ -18,6 +18,8 @@ Refactor
     - Improve logic and performance
   - bin/utils/convert-2m4a & bin/utils/convert-2mp3
     - Fuse into a single conversion script
+  - bin/hyprland/cycle-windows
+    - Change behaviour for special workspaces
 
 Update:
   - Powermenu
