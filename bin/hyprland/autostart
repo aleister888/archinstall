@@ -85,7 +85,7 @@ done &
 
 # Actualizar la configuración de swaync automáticamente
 while true; do
-	inotifywait -e modify ~/.dotfiles/.config/swaync/style.css
+	inotifywait -e modify ~/.dotfiles/.config/swaync
 	killall swaync
 	eval "$SWAYNC_CMD" &
 done &

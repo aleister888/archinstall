@@ -149,7 +149,7 @@ cmd on-select &{{
 
 # Comprimir archivos dentro de un directorio en el formato seleccionado
 cmd compress ${{
-	eval "$CLOSE_NOTIFICATIONS"
+	eval "$HIDE_NOTIFICATIONS"
 	OUT_DIR="/tmp/00_Compressed"
 	[ ! -e "$OUT_DIR" ] && mkdir -p "$OUT_DIR"
 
@@ -318,7 +318,7 @@ cmd cdterm &{{
 
 # Enviar una notificación con el tamaño del ítem seleccionado
 cmd size &{{
-	eval "$CLOSE_NOTIFICATIONS"
+	eval "$HIDE_NOTIFICATIONS"
 	notify-send -i system-file-manager \
 		"El tamaño es de $(/usr/bin/du -chs $fx | grep total | awk '{print $1}')"
 }}
@@ -375,7 +375,7 @@ cmd fzf_search ${{
 
 # Extraer archivo
 cmd extract ${{
-	eval "$CLOSE_NOTIFICATIONS"
+	eval "$HIDE_NOTIFICATIONS"
 	whiptail --title "¿Extraer archivo(s)?" \
 	--yesno "¿Quieres extraer el archivo $f?" 10 60 && \
 	{
@@ -402,7 +402,7 @@ cmd paste $cp-p --lf-paste "$id"
 
 # Mover a la papelera
 cmd trash ${{
-	eval "$CLOSE_NOTIFICATIONS"
+	eval "$HIDE_NOTIFICATIONS"
 	clear
 	tput bold
 	set -f
@@ -416,7 +416,7 @@ cmd trash ${{
 
 # Vaciar la papelera
 cmd clean-trash ${{
-	eval "$CLOSE_NOTIFICATIONS"
+	eval "$HIDE_NOTIFICATIONS"
 	clear
 	tput bold
 	set -f
@@ -433,7 +433,7 @@ cmd clean-trash ${{
 
 # Restaurar archivos de la papelera
 cmd restore-trash ${{
-	eval "$CLOSE_NOTIFICATIONS"
+	eval "$HIDE_NOTIFICATIONS"
 	TRASH_CONTENTS=$(trash-list)
 	if [ -z "$TRASH_CONTENTS" ]; then
 		notify-send -i system-error "lf" "La papelera esta vacía"
@@ -519,7 +519,7 @@ map m push %mkdir<space>
 
 # Copiar el directorio del archivo actual al portapapeles
 map Y ${{
-	eval "$CLOSE_NOTIFICATIONS"
+	eval "$HIDE_NOTIFICATIONS"
 	printf '"%s"' "$(dirname "$fx")" | wl-copy
 	notify-send -i gpaste "lf" "Ruta copiada al portapapeles"
 }}

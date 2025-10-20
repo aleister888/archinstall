@@ -1,0 +1,58 @@
+{
+  "$schema": "/etc/xdg/swaync/configSchema.json",
+  "ignore-gtk-theme": true,
+  "positionX": "right",
+  "positionY": "top",
+  "layer": "overlay",
+  "control-center-layer": "top",
+  "layer-shell": true,
+  "layer-shell-cover-screen": true,
+  "cssPriority": "highest",
+  "control-center-margin-top": 32,
+  "control-center-margin-bottom": 40,
+  "control-center-margin-right": 40,
+  "control-center-margin-left": 0,
+  "notification-2fa-action": true,
+  "notification-inline-replies": false,
+  "timeout": 10,
+  "timeout-low": 5,
+  "timeout-critical": 0,
+  "relative-timestamps": true,
+  "keyboard-shortcuts": true,
+  "notification-grouping": true,
+  "image-visibility": "when-available",
+  "transition-time": 50,
+  "hide-on-clear": false,
+  "hide-on-action": true,
+  "text-empty": "Sin Notificaciones",
+  "script-fail-notify": true,
+  "widgets": ["title", "dnd", "mpris", "notifications"],
+  "widget-config": {
+    "notifications": {
+      "vexpand": true
+    },
+    "title": {
+      "text": "Notificaciones",
+      "clear-all-button": true,
+      "button-text": "Limpiar"
+    },
+    "dnd": {
+      "text": "No Molestar"
+    },
+    "mpris": {
+      "blacklist": ["firefox"],
+      "image-size": 96
+    },
+    "buttons-grid": {
+      "actions": [
+        {
+          "label": "",
+          "type": "toggle",
+          "active": false,
+          "command": "setsid -f ~/.dotfiles/bin/blue-toggle",
+          "update-command": "sh -c 'pgrep gammastep >/dev/null && echo true || echo false'"
+        }
+      ]
+    }
+  }
+}

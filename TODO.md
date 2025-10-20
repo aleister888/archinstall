@@ -8,8 +8,6 @@ General
   - Make a tag for tested, working versions
 
 Refactor
-  - bin/utils/validate_filenames
-    - Rewrite in bash
   - bin/canvas-2latex
     - Rewrite
   - bin/pipewire-virtualmic-select
