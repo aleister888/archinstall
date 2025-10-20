@@ -201,8 +201,15 @@ progressbar progress {
 /* Título y botones de los grupos de notificaciones */
 .notification-group-buttons,
 .notification-group-headers {
-  margin-left: 12px;
-  margin-right: 12px;
+  margin: 12px 12px 6px 12px;
+}
+
+/* Botones grupo de notificaciones */
+.notification-group-buttons,
+.notification-group-headers > button {
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 6px;
 }
 
 /*********/
@@ -215,16 +222,13 @@ progressbar progress {
   border-radius: 12px;
   border: 4px solid var(--accent-color);
   box-shadow: var(--shadow-opts);
-  background: var(--bg-dark);
+  background: var(--bg);
   margin: 6px;
 }
 
 /* Carátula como fondo */
 picture.mpris-background {
-  opacity: 0;
-  background: none;
-  box-shadow: none;
-  border: none;
+  opacity: 0.05;
 }
 
 /* Botones para cambiar de reproductor */
@@ -239,14 +243,15 @@ picture.mpris-background {
   border-radius: var(--image-radius);
   margin-top: 18px;
   margin-bottom: 4px;
-  margin-left: 18px;
+  margin-left: 48px;
+  border: 4px solid var(--accent-color);
   box-shadow: var(--shadow-opts);
 }
 
 .widget-mpris-title,
 .widget-mpris-subtitle {
   color: var(--fg);
-  margin-right: 20px;
+  margin-right: 50px;
   margin-left: 12px;
 }
 
@@ -263,10 +268,60 @@ picture.mpris-background {
 }
 
 /* Botones (Anterior, siguiente, etc.) */
+/*
 .widget-mpris .widget-mpris-player button {
-  all: unset;
-  color: transparent;
+  max-height: 28px;
+  max-width: 28px;
+  min-height: 28px;
+  min-width: 28px;
+  border-radius: 100%;
+  margin-bottom: 12px;
+  background-color: var(--bg-light);
+}
+*/
+.widget-mpris .widget-mpris-player button {
   background: transparent;
-  max-height: 0px;
-  max-width: 0px;
+  color: transparent;
+}
+
+/*
+.widget-mpris .widget-mpris-player button:hover {
+  background-color: var(--bg-lighter);
+}
+*/
+
+/*******************/
+/* Rejilla botones */
+/*******************/
+
+.widget-buttons-grid {
+  padding: 6px 2px;
+  background: transparent;
+}
+
+/* Botón */
+.widget-buttons-grid > flowbox > flowboxchild > button {
+  margin: 4px;
+  padding: 6px 16px;
+  background: var(--bg);
+  color: var(--fg-disabled);
+  border-radius: 8px;
+  min-width: 40px;
+  min-height: 26px;
+}
+
+/* Botón (Animación activar) */
+.widget-buttons-grid > flowbox > flowboxchild > button:active {
+  background: var(--bg-lighter);
+  transition: background 0.15s ease-in-out;
+}
+
+/* Botón activado (Cuerpo) */
+.widget-buttons-grid > flowbox > flowboxchild > button.toggle:checked {
+  background: var(--bg-light);
+}
+
+/* Botón activado (Texto) */
+.widget-buttons-grid > flowbox > flowboxchild > button.toggle:checked label {
+  color: var(--fg);
 }

@@ -62,10 +62,11 @@
   "network": {
     "tooltip": false,
     "interval": 1,
-    "format": "󰈀 {ifname}",
+    "format": "󰈀 N/A",
     "format-disconnected": "󰤭 N/A",
+    "format-ethernet": "󰈀 {ifname}",
     "format-wifi": "{icon} {essid} {frequency}GHz",
-    "format-alt": "󰏔 {bandwidthDownBytes} 󰏕 {bandwidthUpBytes} | {ipaddr}",
+    "format-alt": "󰏔 {bandwidthDownBytes} 󰏕 {bandwidthUpBytes}",
     "format-icons": ["󰤟", "󰤢", "󰤥", "󰤨"],
     "max-length": 50,
   },

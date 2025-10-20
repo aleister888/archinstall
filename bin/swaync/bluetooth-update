@@ -1,0 +1,11 @@
+#!/bin/sh
+
+if { lspci | grep -i bluetooth || lsusb | grep -i bluetooth; } >/dev/null; then
+	if bluetoothctl show | grep -q "Powered: yes"; then
+		echo true
+	else
+		echo false
+	fi
+else
+	echo false
+fi

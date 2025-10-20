@@ -1,0 +1,9 @@
+#!/bin/sh
+
+{ lspci | grep -i bluetooth || lsusb | grep -i bluetooth; } >/dev/null || exit
+
+if bluetoothctl show | grep -q "Powered: yes"; then
+	bluetoothctl power off
+else
+	bluetoothctl power on
+fi

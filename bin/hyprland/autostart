@@ -90,5 +90,12 @@ while true; do
 	eval "$SWAYNC_CMD" &
 done &
 
+# Aveces el servicio bluetooth falla e impide abrir el panel de swaync
+{ lspci | grep -i bluetooth || lsusb | grep -i bluetooth; } >/dev/null &&
+	while true; do
+		systemctl status bluetooth >/dev/null
+		sleep 0.5
+	done &
+
 # Limpiar directorio $HOME
 cleaner

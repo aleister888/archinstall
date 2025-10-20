@@ -26,7 +26,7 @@
   "hide-on-action": true,
   "text-empty": "Sin Notificaciones",
   "script-fail-notify": true,
-  "widgets": ["title", "dnd", "mpris", "notifications"],
+  "widgets": ["buttons-grid", "title", "dnd", "mpris", "notifications"],
   "widget-config": {
     "notifications": {
       "vexpand": true
@@ -44,13 +44,34 @@
       "image-size": 96
     },
     "buttons-grid": {
+      "buttons-per-row": 5,
       "actions": [
         {
           "label": "",
           "type": "toggle",
-          "active": false,
           "command": "setsid -f ~/.dotfiles/bin/blue-toggle",
           "update-command": "sh -c 'pgrep gammastep >/dev/null && echo true || echo false'"
+        },
+        {
+          "label": "",
+          "type": "toggle",
+          "command": "~/.dotfiles/bin/swaync/bluetooth-command",
+          "update-command": "~/.dotfiles/bin/swaync/bluetooth-update"
+        },
+        {
+          "label": "",
+          "type": "toggle",
+          "active": true,
+          "command": "bash -c '[[ $SWAYNC_TOGGLE_STATE == true ]] && nmcli radio wifi on || nmcli radio wifi off'",
+          "update-command": "bash -c '[[ $(nmcli radio wifi) == \"enabled\" ]] && echo true || echo false'"
+        },
+        {
+          "label": "",
+          "command": "sh -c 'swaync-client -cp & pkexec systemctl soft-reboot'"
+        },
+        {
+          "label": "⏻",
+          "command": "sh -c 'swaync-client -cp & ~/.dotfiles/bin/powermenu'"
         }
       ]
     }

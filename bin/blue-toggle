@@ -2,7 +2,7 @@
 
 # Activar/Desactivar redshift (Filtro de la luz azul) con localización en Madrid/España
 
-NOTIFY="notify-send -e -t 1500 -i screensaver"
+NOTIFY="notify-send -a Gammastep -t 1500 -i screensaver"
 
 $HIDE_NOTIFICATIONS
 
@@ -10,6 +10,6 @@ if pgrep gammastep; then
 	kill -9 $(pgrep gammastep)
 	$NOTIFY "$(basename "$0") 󰌵" 'Filtro desactivado'
 else
-	eval "$GAMMASTEP_CMD" &
+	setisd -f "$GAMMASTEP_CMD" >/tmp/blue-toggle.log 2>&1
 	$NOTIFY "$(basename "$0") 󰹏" 'Filtro activado'
 fi
