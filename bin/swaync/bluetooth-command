@@ -1,6 +1,7 @@
 #!/bin/sh
 
-{ lspci | grep -i bluetooth || lsusb | grep -i bluetooth; } >/dev/null || exit
+# Salimos si el dispositivo no tiene una tarjeta bluetooth
+{ lspci | grep -qi bluetooth || lsusb | grep -qi bluetooth; } || exit
 
 if bluetoothctl show | grep -q "Powered: yes"; then
 	bluetoothctl power off

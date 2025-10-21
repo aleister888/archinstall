@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# Salimos si el dispositivo no tiene una tarjeta wifi
+{ lspci | grep -qi wireless || lsusb | grep -qi wireless; } || exit
+
+if [ "$(nmcli radio wifi)" = "enabled" ]; then
+	nmcli radio wifi off
+else
+	nmcli radio wifi on
+fi

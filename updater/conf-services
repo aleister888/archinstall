@@ -4,11 +4,8 @@
 
 # Activar servicio
 service_add() {
-	if [ "$SERVICE" = "syslog-ng" ]; then
-		sudo systemctl enable "${SERVICE}@default.service"
-	else
-		sudo systemctl enable "$SERVICE"
-	fi
+	SERVICE="$1"
+	sudo systemctl enable "$SERVICE"
 }
 # Activar servicio para el usuario
 user_service_add() {
@@ -23,8 +20,8 @@ SERVICES=(
 	"fwupd"
 	"gdm"
 	"input-remapper"
-	"syslog-ng"
-	"tlp"
+	"power-profiles-daemon"
+	"syslog-ng@default.service"
 )
 
 USER_SERVICES=(

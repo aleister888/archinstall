@@ -62,16 +62,19 @@
           "label": "",
           "type": "toggle",
           "active": true,
-          "command": "bash -c '[[ $SWAYNC_TOGGLE_STATE == true ]] && nmcli radio wifi on || nmcli radio wifi off'",
-          "update-command": "bash -c '[[ $(nmcli radio wifi) == \"enabled\" ]] && echo true || echo false'"
+          "command": "~/.dotfiles/bin/swaync/wifi-command",
+          "update-command": "~/.dotfiles/bin/swaync/wifi-update"
+        },
+        {
+          "label": "󰓅",
+          "type": "toggle",
+          "active": true,
+          "command": "bash -c '[[ $(powerprofilesctl get) == \"power-saver\" ]] && powerprofilesctl set performance || powerprofilesctl set power-saver'",
+          "update-command": "bash -c '[[ $(powerprofilesctl get) == \"power-saver\" ]] && echo false || echo true'"
         },
         {
           "label": "",
           "command": "sh -c 'swaync-client -cp & pkexec systemctl soft-reboot'"
-        },
-        {
-          "label": "⏻",
-          "command": "sh -c 'swaync-client -cp & ~/.dotfiles/bin/powermenu'"
         }
       ]
     }

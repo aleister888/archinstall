@@ -21,7 +21,7 @@
   ],
   "init": [
     "earlyoom",
-    "tlp"
+    "power-profiles-daemon"
   ],
   "syslog-ng": [
     "hiredis",

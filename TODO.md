@@ -6,6 +6,7 @@ Pending maintenance tasks and improvements for the project.
 
 General
   - Make a tag for tested, working versions
+  - Enhance security by allowing only specific commands to be executed as root without a password
 
 Refactor
   - bin/canvas-2latex
