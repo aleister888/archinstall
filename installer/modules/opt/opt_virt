@@ -10,35 +10,36 @@ virt_install() {
 	xargs yay -S --noconfirm --disable-download-timeout --needed \
 		<"$HOME/.dotfiles/assets/packages/opt/virt"
 
-	sudo install -m 755 "$HOME/.dotfiles/assets/desktop/looking-glass-client.desktop" \
+	sudo /usr/bin/cp "$HOME/.dotfiles/assets/desktop/looking-glass-client.desktop" \
 		/usr/local/share/applications/looking-glass-client.desktop
+	sudo /usr/bin/chmod 644 /usr/local/share/applications/looking-glass-client.desktop
 
 	# Configurar QEMU para usar el usuario actual
-	sudo sed -i "s/^#user = .*/user = \"$USER\"/" /etc/libvirt/qemu.conf
-	sudo sed -i "s/^#group = .*/group = \"$USER\"/" /etc/libvirt/qemu.conf
+	sudo /usr/bin/sed -i "s/^#user = .*/user = \"$USER\"/" /etc/libvirt/qemu.conf
+	sudo /usr/bin/sed -i "s/^#group = .*/group = \"$USER\"/" /etc/libvirt/qemu.conf
 
 	# Configurar libvirt
-	sudo sed -i "s/^#unix_sock_group = .*/unix_sock_group = \"$USER\"/" \
+	sudo /usr/bin/sed -i "s/^#unix_sock_group = .*/unix_sock_group = \"$USER\"/" \
 		/etc/libvirt/libvirtd.conf
-	sudo sed -i "s/^#unix_sock_rw_perms = .*/unix_sock_rw_perms = \"0770\"/" \
+	sudo /usr/bin/sed -i "s/^#unix_sock_rw_perms = .*/unix_sock_rw_perms = \"0770\"/" \
 		/etc/libvirt/libvirtd.conf
 
 	# Agregar el usuario a los grupos necesarios para la virtualización
-	sudo usermod -aG libvirt,libvirt-qemu,kvm "$USER"
+	sudo /usr/bin/usermod -aG libvirt,libvirt-qemu,kvm "$USER"
 
 	# Activar los servicios necesarios
-	sudo systemctl enable libvirtd
-	sudo systemctl enable virtlogd
+	sudo /usr/bin/systemctl enable libvirtd
+	sudo /usr/bin/systemctl enable virtlogd
 }
 
 # Desinstalar libvirt por completo
 virt_uninstall() {
-	sudo systemctl disable libvirtd --now
-	sudo systemctl disable virtlogd --now
+	sudo /usr/bin/systemctl disable libvirtd --now
+	sudo /usr/bin/systemctl disable virtlogd --now
 
 	# Borrar al usuario de los grupos
 	for GROUP in libvirt libvirt-qemu kvm; do
-		sudo gpasswd -d "$USER" $GROUP
+		sudo /usr/bin/gpasswd -d "$USER" $GROUP
 	done
 
 	# Desinstalar los paquetes
@@ -46,9 +47,9 @@ virt_uninstall() {
 		<"$HOME/.dotfiles/assets/packages/opt/virt"
 
 	# Borrar archivos restantes
-	sudo rm -rf /var/lib/libvirt
-	sudo rm -rf /etc/libvirt
-	sudo rm -f /usr/local/share/applications/looking-glass-client.desktop
+	sudo /usr/bin/rm -rf /var/lib/libvirt
+	sudo /usr/bin/rm -rf /etc/libvirt
+	sudo /usr/bin/rm -f /usr/local/share/applications/looking-glass-client.desktop
 
 	sync
 }

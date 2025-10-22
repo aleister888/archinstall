@@ -5,11 +5,11 @@
 [ "$(id -u)" -eq 0 ] && exit 1
 
 # Añadimos el usuario a los grupos necesarios
-sudo usermod -aG realtime,audio "$USER"
+sudo /usr/bin/usermod -aG realtime,audio "$USER"
 
 # Permite a los usuarios en el grupo "audio" utilizar dispositivos de audio con
 # prioridad elevada y acceso a recursos extendidos.
-cat <<-EOF | sudo tee -a /etc/security/limits.conf
+cat <<-EOF | sudo /usr/bin/tee -a /etc/security/limits.conf
 	    @audio - rtprio 95
 	    @audio - memlock unlimited
 	    $USER hard nofile 524288

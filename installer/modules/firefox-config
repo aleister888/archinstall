@@ -26,12 +26,13 @@ makeuserjs() {
 	chown "$USER:wheel" "$ARKENFOX" "$USERJS"
 
 	# Instalar el script de actualizado.
-	sudo mkdir -p /usr/local/lib /etc/pacman.d/hooks
-	sudo install -m 755 -o root -g root "$HOME/.dotfiles/bin/arkenfox-auto-update" \
-		/usr/local/lib/arkenfox-auto-update
+	sudo /usr/bin/mkdir -p /usr/local/lib
+	sudo /usr/bin/mkdir -p /etc/pacman.d/hooks
+	sudo /usr/bin/cp "$HOME/.dotfiles/bin/arkenfox-auto-update" /usr/local/lib/arkenfox-auto-update
+	sudo /usr/bin/chmod 755 /usr/local/lib/arkenfox-auto-update
 
 	# Ejecutar la actualización cuando sea necesario mediante un hook de pacman.
-	sudo cp -f "$HOME/.dotfiles/assets/system/arkenfox.hook" \
+	sudo /usr/bin/cp -f "$HOME/.dotfiles/assets/system/arkenfox.hook" \
 		/etc/pacman.d/hooks/arkenfox.hook
 }
 

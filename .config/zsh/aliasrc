@@ -17,7 +17,7 @@ alias update='yay -Syuu --answerclean --answerdiff --removemake --ignore "*-git"
 # Herramientas
 alias xdotool_table='xmodmap -pk'
 alias du='BLOCKSIZE=1073741824 du -s * | sort -rnk 1'
-alias grub-update='sudo grub-mkconfig -o /boot/grub/grub.cfg'
+alias grub-update='sudo /usr/bin/grub-mkconfig -o /boot/grub/grub.cfg'
 
 # Alias para encontrar enlaces simbólicos rotos
 alias brokenlink='find / -xtype l -print 2>/dev/null'
@@ -103,7 +103,7 @@ reexplicit() {
 	for PACKAGE in $(yay -Qq); do
 		if grep -E "\[ALPM\] installed" /var/log/pacman.log |
 			grep "$PACKAGE" >/dev/null 2>&1; then
-			sudo pacman -D --asexplicit "$PACKAGE"
+			sudo /usr/bin/pacman -D --asexplicit "$PACKAGE"
 		fi
 	done
 }
@@ -147,7 +147,7 @@ push() {
 # Alias para encontrar archivos pac de pacman
 pac() {
 	# Buscar archivos .pacnew y .pacsave
-	sudo find /etc \( -name "*.pacnew" -o -name "*.pacsave" \) 2>/dev/null | while read -r FILE; do
+	sudo /usr/bin/find /etc \( -name "*.pacnew" -o -name "*.pacsave" \) 2>/dev/null | while read -r FILE; do
 		# Obtener el nombre del archivo original
 		ORIGINAL_FILE="${FILE%.pacnew}"
 		ORIGINAL_FILE="${ORIGINAL_FILE%.pacsave}"
@@ -158,7 +158,7 @@ pac() {
 		echo "##$(printf '#%.0s' $(seq 1 ${#ORIGINAL_FILE}))##"
 
 		# Mostrar diferencias y limitar la salida
-		sudo diff -d "$FILE" "$ORIGINAL_FILE" | head -n 20
+		sudo /usr/bin/diff -d "$FILE" "$ORIGINAL_FILE" | head -n 20
 	done
 }
 

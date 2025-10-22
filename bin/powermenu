@@ -41,8 +41,8 @@ case $CHOSEN in
 	fi
 	;;
 "${OPTIONS[3]}") pkill Hyprland ;;
-"${OPTIONS[4]}") sudo systemctl reboot ;;
-"${OPTIONS[5]}") sudo systemctl poweroff ;;
+"${OPTIONS[4]}") sudo /usr/bin/systemctl reboot ;;
+"${OPTIONS[5]}") sudo /usr/bin/systemctl poweroff ;;
 "${OPTIONS[6]}") systemctl hibernate ;;
 "${OPTIONS[7]}") systemctl reboot --firmware-setup ;;
 esac

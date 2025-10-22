@@ -147,10 +147,10 @@ if [ ! -d /usr/share/themes/Gruvbox-Dark ]; then
 	# https://www.pling.com/p/1681313/
 	unzip "$ASSETDIR/gtk/Gruvbox-Dark-BL-LB.zip" -d /tmp/
 	# Borramos cualquier otra versión de Gruvbox
-	sudo rm -rf /usr/share/themes/Gruvbox-*
-	sudo cp -rf /tmp/Gruvbox-Dark/ /usr/share/themes/
-	sudo cp -rf /tmp/Gruvbox-Dark-hdpi /usr/share/themes/
-	sudo cp -rf /tmp/Gruvbox-Dark-xhdpi /usr/share/themes/
+	sudo /usr/bin/rm -rf /usr/share/themes/Gruvbox-*
+	sudo /usr/bin/cp -rf /tmp/Gruvbox-Dark/ /usr/share/themes/
+	sudo /usr/bin/cp -rf /tmp/Gruvbox-Dark-hdpi /usr/share/themes/
+	sudo /usr/bin/cp -rf /tmp/Gruvbox-Dark-xhdpi /usr/share/themes/
 fi &
 
 # Configuramos QT
@@ -172,7 +172,7 @@ EOF
 #####################
 
 [ -d /usr/local/share/applications ] ||
-	sudo mkdir -p /usr/local/share/applications
+	sudo /usr/bin/mkdir -p /usr/local/share/applications
 
 # Ocultar archivos .desktop innecesarios
 DESKTOPENT=(
@@ -223,9 +223,9 @@ DESKTOPENT=(
 # Ocultamos estas entradas .desktop
 for ENTRY in "${DESKTOPENT[@]}"; do
 	if [ -e "/usr/share/applications/$ENTRY.desktop" ]; then
-		sudo cp -f "/usr/share/applications/$ENTRY.desktop" \
+		sudo /usr/bin/cp -f "/usr/share/applications/$ENTRY.desktop" \
 			"/usr/local/share/applications/$ENTRY.desktop"
-		echo 'NoDisplay=true' | sudo tee -a \
+		echo 'NoDisplay=true' | sudo /usr/bin/tee -a \
 			"/usr/local/share/applications/$ENTRY.desktop"
 	fi
 done >/dev/null &

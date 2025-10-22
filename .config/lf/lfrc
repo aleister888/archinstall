@@ -350,7 +350,7 @@ cmd bulk-rename ${{
 
 # Buscar con fzf cadenas entre los archivos
 cmd fzf_grep ${{
-	cmd="rg --column --line-number --no-heading --color=always --smart-case"
+	cmd="rg --hidden --glob '!.git/*' --column --line-number --no-heading --color=always --smart-case"
 	fzf --ansi --disabled --layout=reverse --delimiter=: \
 		--bind="start:reload([ -n {q} ] && $cmd -- {q} || true)" \
 		--bind="change:reload([ -n {q} ] && $cmd -- {q} || true)" \

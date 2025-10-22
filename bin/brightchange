@@ -56,7 +56,7 @@ esac
 NEXT=${LEVELS_ARRAY[$INDEX]}
 
 # Cambiar brillo
-echo "$NEXT" | sudo tee "$BRIGHT_DEV/brightness" >/dev/null
+echo "$NEXT" | sudo /usr/bin/tee "$BRIGHT_DEV/brightness" >/dev/null
 
 # Reproducir sonido
 pw-play "$SOUND" &

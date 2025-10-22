@@ -9,9 +9,6 @@ rm -rf ~/.local/share/mime:
 mkdir -p "$DATA_DIR/mime/packages"
 update-mime-database ~/.local/share/mime
 
-#sudo rm -f /usr/share/applications/mimeinfo.cache
-#sudo update-mime-database /usr/share/mime
-
 [ ! -d "$DATA_DIR/applications" ] &&
 	mkdir -p "$DATA_DIR/applications"
 

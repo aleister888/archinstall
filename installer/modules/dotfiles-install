@@ -12,5 +12,5 @@ mkdir -p "$HOME/.config"
 "$HOME/.dotfiles/update.sh"
 
 # Selecciona zsh como el shell del usuario
-echo "ZDOTDIR=\$HOME/.config/zsh" | sudo tee /etc/zsh/zshenv
-sudo chsh -s /bin/zsh "$USER"
+echo "ZDOTDIR=\$HOME/.config/zsh" | sudo /usr/bin/tee /etc/zsh/zshenv
+sudo /usr/bin/chsh -s /bin/zsh "$USER"

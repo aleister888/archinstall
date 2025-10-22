@@ -19,8 +19,8 @@ check_command() {
 }
 
 # Verificar que todas las dependencias están instaladas
-check_command "ffmpeg" "sudo pacman -S ffmpeg"
-check_command "glyrc" "sudo pacman -S glyrc"
+check_command "ffmpeg" "sudo /usr/bin/pacman -S ffmpeg"
+check_command "glyrc" "sudo /usr/bin/pacman -S glyrc"
 check_command "eyeD3" "yay -S python-eyed3"
 
 usage() {

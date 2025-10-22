@@ -12,5 +12,7 @@ FILES=(
 	"wakeme"
 )
 for FILE in "${FILES[@]}"; do
-	sudo ln -sf "$HOME/.dotfiles/assets/bin/$FILE" "/usr/local/bin/$FILE"
+	[ -e "/usr/local/bin/$FILE" ] && sudo /usr/bin/rm "/usr/local/bin/$FILE"
+	sudo /usr/bin/cp "$HOME/.dotfiles/assets/bin/$FILE" "/usr/local/bin/$FILE"
+	sudo /usr/bin/chmod 755 "/usr/local/bin/$FILE"
 done

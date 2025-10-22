@@ -13,8 +13,32 @@ fi
 
 # Configurar OpenDoas
 echo "Configurando OpenDoas..."
-cat <<EOF >/etc/doas.conf
-permit nopass keepenv setenv { SUDO_USER SUDO_UID SUDO_GID DISPLAY XAUTHORITY LANG LC_ALL } :wheel
+cat <<EOF | tee /etc/doas.conf
+permit persist keepenv setenv { SUDO_USER SUDO_UID SUDO_GID LANG LC_ALL } :wheel
+
+permit nopass 1000 as root cmd /usr/bin/rm
+permit nopass 1000 as root cmd /usr/bin/cp
+permit nopass 1000 as root cmd /usr/bin/chmod
+permit nopass 1000 as root cmd /usr/bin/tee
+permit nopass 1000 as root cmd /usr/bin/pacman
+permit nopass 1000 as root cmd /usr/bin/usermod
+permit nopass 1000 as root cmd /usr/bin/gpasswd
+permit nopass 1000 as root cmd /usr/bin/chsh
+permit nopass 1000 as root cmd /usr/bin/systemctl
+
+permit nopass 1000 as root cmd /usr/bin/sed
+permit nopass 1000 as root cmd /usr/bin/umount
+permit nopass 1000 as root cmd /usr/local/bin/wakeat
+
+permit nopass 1000 as root cmd /usr/bin/rfkill args unblock wifi
+permit nopass 1000 as root cmd /usr/bin/rfkill args unblock bluetooth
+
+permit nopass 1000 as root cmd /usr/bin/archlinux-java args set java-21-openjdk
+
+permit nopass 1000 as root cmd /usr/bin/mkdir args -p /usr/local/lib
+permit nopass 1000 as root cmd /usr/bin/mkdir args -p /etc/pacman.d/hooks
+permit nopass 1000 as root cmd /usr/bin/mkdir args --parent /.Trash
+permit nopass 1000 as root cmd /usr/bin/mkdir args -p /usr/local/share/applications
 EOF
 
 if [ $? -ne 0 ]; then
@@ -23,7 +47,7 @@ if [ $? -ne 0 ]; then
 fi
 
 chown root:root /etc/doas.conf
-chmod 0400 /etc/doas.conf
+chmod 0600 /etc/doas.conf
 mv /etc/sudoers /etc/sudoers.bak
 
 # Desinstalar sudo

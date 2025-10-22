@@ -25,10 +25,10 @@ echo "USB ID: $usbid"
 aunpack "$ZIP_PATH" -X "$EXTRACT_PATH" -f -q
 
 # Crear el directorio de firmware si no existe
-sudo mkdir -p "$FIRMWARE_DIR"
+sudo /usr/bin/mkdir -p "$FIRMWARE_DIR"
 
 # Convertir el archivo .hex a .hcd y moverlo al directorio de firmware
 cd "$EXTRACT_PATH/Win10_USB-BT400_DRIVERS/Win10_USB-BT400_Driver_Package/64"
-sudo hex2hcd "$HEX_FILE" -o "$HCD_FILE"
+sudo /usr/bin/hex2hcd "$HEX_FILE" -o "$HCD_FILE"
 
 echo "Driver instalado correctamente."

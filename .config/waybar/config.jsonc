@@ -4,7 +4,7 @@
   "height": 30,
   "margin": "0 16 0 16",
   "modules-left": ["hyprland/workspaces", "custom/music-metadata"],
-  "modules-center": ["clock", "custom/swaync", "privacy"],
+  "modules-center": ["clock", "privacy"],
   "modules-right": [
     "custom/battery",
     "custom/disk",
@@ -22,12 +22,6 @@
     "tooltip": false,
     "interval": 1,
     "format": "{:%I:%M:%S}",
-    "on-click": "swaync-client -t",
-  },
-  "custom/swaync": {
-    "tooltip": false,
-    "interval": 1,
-    "exec": "~/.dotfiles/bin/sb/sb-dnd",
     "on-click": "swaync-client -t",
   },
   "privacy": {

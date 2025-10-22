@@ -91,9 +91,9 @@ vim_spell_download() {
 
 # Crear el directorio /.Trash con permisos adecuados
 trash_dir() {
-	sudo mkdir --parent /.Trash
-	sudo chmod a+rw /.Trash
-	sudo chmod +t /.Trash
+	sudo /usr/bin/mkdir --parent /.Trash
+	sudo /usr/bin/chmod a+rw /.Trash
+	sudo /usr/bin/chmod +t /.Trash
 }
 
 ##########################
@@ -120,7 +120,7 @@ xresources_make
 
 # Antes de instalar los paquetes, configurar makepkg para
 # usar todos los núcleos durante la compilación
-sudo sed -i "s/-j2/-j$(nproc)/;/^#MAKEFLAGS/s/^#//" /etc/makepkg.conf
+sudo /usr/bin/sed -i "s/-j2/-j$(nproc)/;/^#MAKEFLAGS/s/^#//" /etc/makepkg.conf
 
 # Instalamos todos los paquetes a la vez
 while true; do
@@ -159,7 +159,7 @@ tauon-config
 firefox-config
 
 # Establecemos la versión de java por defecto
-sudo archlinux-java set java-21-openjdk
+sudo /usr/bin/archlinux-java set java-21-openjdk
 
 # Descargar los diccionarios para vim
 vim_spell_download
@@ -171,17 +171,17 @@ dotfiles-install
 trash_dir
 
 # Borrar los módulos del kernel antiguos
-cat <<-EOF | sudo tee -a /etc/crontab >/dev/null
+cat <<-EOF | sudo /usr/bin/tee -a /etc/crontab >/dev/null
 	@hourly root cleanup-old-modules
 EOF
 
 # Activar WiFi y Bluetooth
-sudo rfkill unblock wifi
+sudo /usr/bin/rfkill unblock wifi
 { lspci | grep -i bluetooth || lsusb | grep -i bluetooth; } >/dev/null &&
-	sudo rfkill unblock bluetooth
+	sudo /usr/bin/rfkill unblock bluetooth
 
 # Añadimos al usuario a los grupos correspondientes
-sudo usermod -aG storage,input,users,video,optical,uucp "$USER"
+sudo /usr/bin/usermod -aG storage,input,users,video,optical,uucp "$USER"
 
 # Configurar el software opcional
 [ "$CHOSEN_AUDIO_PROD" == "true" ] && opt_audio_prod
@@ -191,11 +191,9 @@ sudo usermod -aG storage,input,users,video,optical,uucp "$USER"
 
 # Configurar el audio de baja latencia
 audio-setup
-# Configuramos el reloj según la zona horaria escogida
-sudo set-clock
 
 # Sincronizar las bases de datos de los paquetes
-sudo pacman -Fy
+sudo /usr/bin/pacman -Fy
 
 # Creamos un directorio para gnupg
 mkdir -p "$HOME"/.local/share/gnupg/private-keys-v1.d
@@ -203,7 +201,7 @@ chmod 700 -R ~/.local/share/gnupg
 mkdir -p "$HOME"/.local/share/cargo
 
 # Añadir entradas a /etc/environment
-cat <<EOF | sudo tee -a /etc/environment
+cat <<EOF | sudo /usr/bin/tee -a /etc/environment
 CARGO_HOME="$HOME/.local/share/cargo"
 GNUPGHOME="$HOME/.local/share/gnupg"
 EOF

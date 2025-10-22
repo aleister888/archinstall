@@ -14,7 +14,7 @@ fi
 # Configuramos el servidor de claves y actualizamos las claves
 grep ubuntu /etc/pacman.d/gnupg/gpg.conf ||
 	echo 'keyserver hkp://keyserver.ubuntu.com' |
-	sudo tee -a /etc/pacman.d/gnupg/gpg.conf >/dev/null
+	sudo /usr/bin/tee -a /etc/pacman.d/gnupg/gpg.conf >/dev/null
 
 # Instalamos los paquetes necesarios:
 # - whiptail: para la interfaz TUI
@@ -23,10 +23,9 @@ grep ubuntu /etc/pacman.d/gnupg/gpg.conf ||
 # - bc: para calcular el DPI de la pantalla
 # - git: para clonar el repositorio
 # - lvm2: para gestionar volúmenes lógicos
-sudo pacman -Sy
-sudo pacman -Sc --noconfirm
-#sudo pacman-key --populate && sudo pacman-key --refresh-keys
-sudo pacman -S --noconfirm --needed parted libnewt xkeyboard-config bc git lvm2
+sudo /usr/bin/pacman -Sy
+sudo /usr/bin/pacman -Sc --noconfirm
+sudo /usr/bin/pacman -S --noconfirm --needed parted libnewt xkeyboard-config bc git lvm2
 
 # Clonamos el repositorio solo si es necesario
 if [ -d ./installer ]; then

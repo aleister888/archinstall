@@ -23,7 +23,7 @@
   "image-visibility": "when-available",
   "transition-time": 50,
   "hide-on-clear": false,
-  "hide-on-action": true,
+  "hide-on-action": false,
   "text-empty": "Sin Notificaciones",
   "script-fail-notify": true,
   "widgets": ["buttons-grid", "title", "dnd", "mpris", "notifications"],

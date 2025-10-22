@@ -19,9 +19,9 @@ check_command() {
 }
 
 # Verificar que todas las dependencias están instaladas
-check_command "ffmpeg" "sudo pacman -S ffmpeg"
-check_command "glyrc" "sudo pacman -S glyrc"
-check_command "atomicparsley" "sudo pacman -S atomicparsley"
+check_command "ffmpeg" "sudo /usr/bin/pacman -S ffmpeg"
+check_command "glyrc" "sudo /usr/bin/pacman -S glyrc"
+check_command "atomicparsley" "sudo /usr/bin/pacman -S atomicparsley"
 
 usage() {
 	echo -e "Uso: $0 [-plh] [Directorio original] [Directorio para la copia]\n"

@@ -5,7 +5,7 @@
 # Activar servicio
 service_add() {
 	SERVICE="$1"
-	sudo systemctl enable "$SERVICE"
+	sudo /usr/bin/systemctl enable "$SERVICE"
 }
 # Activar servicio para el usuario
 user_service_add() {
