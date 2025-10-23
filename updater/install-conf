@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 # Script para recompilar las aplicaciones suckless
 # - Invocado por /update.sh
@@ -12,15 +12,6 @@
 # Permitir a Steam controlar mandos de PlayStation 4
 sudo /usr/bin/cp -f "$HOME/.dotfiles/assets/system/udev/99-steam-controller-perms.rules" \
 	/usr/lib/udev/rules.d/
-
-# Permitir al usuario escanear redes Wi-Fi y cambiar ajustes de red
-id -nG "$USER" | grep network -q || sudo /usr/bin/usermod -aG network "$USER"
-
-if [ -e /sys/class/power_supply/BAT0 ]; then
-	sudo /usr/bin/cp -f \
-		"$HOME/.dotfiles/assets/system/udev/50-org.freedesktop.NetworkManager.rules" \
-		/etc/polkit-1/rules.d/
-fi
 
 ################
 # Aplicaciones #
@@ -60,7 +51,7 @@ if [ -e /sys/class/power_supply/BAT0 ]; then
 		sudo /usr/bin/cp
 		"$HOME/.dotfiles/assets/system/services/auto-suspend/systemd-service" \
 			/etc/systemd/system/auto-suspend.service
-		sudo chmod /etc/systemd/system/auto-suspend.service 644
+		sudo chmod 644 /etc/systemd/system/auto-suspend.service
 	fi
 
 	sudo /usr/bin/systemctl enable auto-suspend

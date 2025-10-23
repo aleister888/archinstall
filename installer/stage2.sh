@@ -180,6 +180,7 @@ ln -sf /usr/bin/nvim /usr/local/bin/vim
 ln -sf /usr/bin/nvim /usr/local/bin/vi
 
 # Configuramos sudo para stage3.sh
+cp /etc/sudoers /etc/sudoers.bak
 echo "root ALL=(ALL:ALL) ALL
 %wheel ALL=(ALL) NOPASSWD: ALL" | tee /etc/sudoers
 

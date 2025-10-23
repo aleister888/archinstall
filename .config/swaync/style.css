@@ -128,7 +128,7 @@ progressbar progress {
 /* Panel de control */
 .control-center {
   box-shadow: var(--shadow-opts);
-  border-radius: 10px;
+  border-radius: 16px;
   border: 4px solid var(--accent-color);
   background-color: var(--bg-darker);
   color: var(--fg);

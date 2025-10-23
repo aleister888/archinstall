@@ -1,0 +1,33 @@
+root ALL=(ALL:ALL) ALL
+%wheel ALL=(ALL) ALL
+
+Defaults:%wheel env_keep += "SUDO_USER SUDO_UID SUDO_GID LANG LC_ALL"
+
+%wheel ALL=(root) NOPASSWD: /usr/bin/umount
+%wheel ALL=(root) NOPASSWD: /usr/local/bin/wakeat
+
+%wheel ALL=(root) NOPASSWD: /usr/bin/systemctl enable *
+%wheel ALL=(root) NOPASSWD: /usr/bin/systemctl disable *
+
+# bin/brightchange
+%wheel ALL=(root) NOPASSWD: /usr/bin/tee /sys/class/backlight/intel_backlight/brightness
+%wheel ALL=(root) NOPASSWD: /usr/bin/tee /sys/class/backlight/amdgpu_bl1/brightness
+
+# updater/install-bin
+%wheel ALL=(root) NOPASSWD: /usr/bin/rm ^/usr/local/bin/[a-zA-Z0-9-]+$
+%wheel ALL=(root) NOPASSWD: /usr/bin/install ^-o root -g root -m 0755 .* /usr/local/bin/[a-zA-Z0-9-]+$
+
+# updater/install-conf
+%wheel ALL=(root) NOPASSWD: /usr/bin/tee /etc/modprobe.d/nobeep.conf
+%wheel ALL=(root) NOPASSWD: /usr/bin/chmod 644 /etc/systemd/system/auto-suspend.service
+%wheel ALL=(root) NOPASSWD: /usr/bin/cp ^-rf .* /usr/lib/udev/rules.d/$
+
+# update.sh
+%wheel ALL=(root) NOPASSWD: /usr/bin/tee ^-a /usr/local/share/applications/[a-zA-Z0-9-]+.desktop$
+%wheel ALL=(root) NOPASSWD: /usr/bin/mkdir -p /usr/local/share/themes
+%wheel ALL=(root) NOPASSWD: /usr/bin/rm ^-rf /usr/local/share/themes/[a-zA-Z0-9-]+$
+%wheel ALL=(root) NOPASSWD: /usr/bin/cp ^-rf .* /usr/local/share/themes/$
+%wheel ALL=(root) NOPASSWD: /usr/bin/cp ^-f .* /usr/local/share/applications/[a-zA-Z0-9-]+.desktop$
+
+# installer/modules/firefox-config
+%wheel ALL=(root) NOPASSWD: /usr/bin/chmod 755 /usr/local/lib/arkenfox-auto-update

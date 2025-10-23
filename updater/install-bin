@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 # Script que crea enlaces simbólicos en /usr/local/bin para ciertos scripts
 # - Invocado por /update.sh
@@ -12,7 +12,6 @@ FILES=(
 	"wakeme"
 )
 for FILE in "${FILES[@]}"; do
-	[ -e "/usr/local/bin/$FILE" ] && sudo /usr/bin/rm "/usr/local/bin/$FILE"
-	sudo /usr/bin/cp "$HOME/.dotfiles/assets/bin/$FILE" "/usr/local/bin/$FILE"
-	sudo /usr/bin/chmod 755 "/usr/local/bin/$FILE"
+	[ -e "/usr/local/bin/$FILE" ] && sudo /usr/bin/rm /usr/local/bin/"$FILE"
+	sudo /usr/bin/install -o root -g root -m 0755 "$HOME/.dotfiles/assets/bin/$FILE" "/usr/local/bin/$FILE"
 done

@@ -103,9 +103,6 @@ trash_dir() {
 # Instalamos yay (https://aur.archlinux.org/packages/yay)
 yay-install
 
-# Reemplamos sudo por doas
-sudo sudo2doas
-
 # Crear directorios
 for DIR in Documentos Música Imágenes Público Vídeos; do
 	mkdir -p "$HOME/$DIR"
@@ -164,8 +161,15 @@ sudo /usr/bin/archlinux-java set java-21-openjdk
 # Descargar los diccionarios para vim
 vim_spell_download
 
-# Instalar los archivos de configuración e instalar plugins de zsh
-dotfiles-install
+# Creamos la carpeta ~/.config
+mkdir -p "$HOME/.config"
+
+# Instalar los archivos de configuración
+"$HOME/.dotfiles/update.sh"
+
+# Selecciona zsh como el shell del usuario
+echo "ZDOTDIR=\$HOME/.config/zsh" | sudo /usr/bin/tee /etc/zsh/zshenv
+sudo /usr/bin/chsh -s /bin/zsh "$USER"
 
 # Crear el directorio /.Trash con permisos adecuados
 trash_dir
@@ -181,7 +185,12 @@ sudo /usr/bin/rfkill unblock wifi
 	sudo /usr/bin/rfkill unblock bluetooth
 
 # Añadimos al usuario a los grupos correspondientes
-sudo /usr/bin/usermod -aG storage,input,users,video,optical,uucp "$USER"
+sudo /usr/bin/usermod -aG storage "$USER"
+sudo /usr/bin/usermod -aG input "$USER"
+sudo /usr/bin/usermod -aG users "$USER"
+sudo /usr/bin/usermod -aG video "$USER"
+sudo /usr/bin/usermod -aG optical "$USER"
+sudo /usr/bin/usermod -aG uucp "$USER"
 
 # Configurar el software opcional
 [ "$CHOSEN_AUDIO_PROD" == "true" ] && opt_audio_prod
@@ -215,5 +224,19 @@ rm "$HOME"/.wget-hsts 2>/dev/null
 # Cambiamos el layout de teclado de la tty a español
 echo "KEYMAP=es" | doas tee -a /etc/vconsole.conf
 
+# Creamos el directorio para los archivos .desktop locales
+[ -d /usr/local/share/applications ] || sudo /usr/bin/mkdir -p /usr/local/share/applications
+
+# Permitir al usuario escanear redes Wi-Fi y cambiar ajustes de red
+id -nG "$USER" | grep network -q || sudo /usr/bin/usermod -aG network "$USER"
+
+sudo /usr/bin/cp -f \
+	"$HOME/.dotfiles/assets/system/udev/50-org.freedesktop.NetworkManager.rules" \
+	/etc/polkit-1/rules.d/
+
+# Finalmente configuramos sudo de forma segura
+sudo cp "$HOME/.dotfiles/assets/configs/sudoers" /etc/sudoers
+
+clear
 toilet "Instalación terminada"
 echo "La instalación ha terminado. Reinicia tu ordenador cuando estés listo"

@@ -25,7 +25,9 @@ virt_install() {
 		/etc/libvirt/libvirtd.conf
 
 	# Agregar el usuario a los grupos necesarios para la virtualización
-	sudo /usr/bin/usermod -aG libvirt,libvirt-qemu,kvm "$USER"
+	sudo /usr/bin/usermod -aG libvirt "$USER"
+	sudo /usr/bin/usermod -aG libvirt-qemu "$USER"
+	sudo /usr/bin/usermod -aG kvm "$USER"
 
 	# Activar los servicios necesarios
 	sudo /usr/bin/systemctl enable libvirtd

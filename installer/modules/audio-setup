@@ -5,7 +5,8 @@
 [ "$(id -u)" -eq 0 ] && exit 1
 
 # Añadimos el usuario a los grupos necesarios
-sudo /usr/bin/usermod -aG realtime,audio "$USER"
+sudo /usr/bin/usermod -aG realtime "$USER"
+sudo /usr/bin/usermod -aG audio "$USER"
 
 # Permite a los usuarios en el grupo "audio" utilizar dispositivos de audio con
 # prioridad elevada y acceso a recursos extendidos.

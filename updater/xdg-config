@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 XDG_LOCKFILE="/tmp/xdg-mime.lock"
 

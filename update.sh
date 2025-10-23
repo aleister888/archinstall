@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 # shellcheck disable=SC2086
 
 # Instalador de ajustes para Arch Linux
@@ -54,7 +54,7 @@ INSTALLED_PKGS=$(yay -Qq)
 # Filtramos los paquetes que aún no están instalados
 PKGS_TO_INSTALL=$(comm -23 <(printf "%s\n" "$REPO_PKGS" | sort -u) <(printf "%s\n" "$INSTALLED_PKGS" | sort))
 
-# Si hay paquetes pendientes y tenemos internet, los instalamos
+Si hay paquetes pendientes y tenemos internet, los instalamos
 if [ -n "$PKGS_TO_INSTALL" ] && [ "$CONNECTED" == "true" ]; then
 	yay -Sy --noconfirm --needed --asexplicit $PKGS_TO_INSTALL
 fi
@@ -77,7 +77,6 @@ fi
 "$HOME"/.dotfiles/updater/conf-services &
 # Añade integración con dbus para lf
 "$HOME"/.dotfiles/updater/lf-dbus &
-wait
 
 ############################
 # Aplicaciones por defecto #
@@ -143,14 +142,15 @@ if [ ! -f "$CONF_DIR/gtk-3.0/bookmarks" ]; then
 fi
 
 # Instalamos el tema de GTK
-if [ ! -d /usr/share/themes/Gruvbox-Dark ]; then
+if [ ! -d /usr/local/share/themes/Gruvbox-Dark ]; then
 	# https://www.pling.com/p/1681313/
 	unzip "$ASSETDIR/gtk/Gruvbox-Dark-BL-LB.zip" -d /tmp/
 	# Borramos cualquier otra versión de Gruvbox
-	sudo /usr/bin/rm -rf /usr/share/themes/Gruvbox-*
-	sudo /usr/bin/cp -rf /tmp/Gruvbox-Dark/ /usr/share/themes/
-	sudo /usr/bin/cp -rf /tmp/Gruvbox-Dark-hdpi /usr/share/themes/
-	sudo /usr/bin/cp -rf /tmp/Gruvbox-Dark-xhdpi /usr/share/themes/
+	sudo /usr/bin/mkdir -p /usr/local/share/themes
+	sudo /usr/bin/rm -rf /usr/local/share/themes/Gruvbox-*
+	sudo /usr/bin/cp -rf /tmp/Gruvbox-Dark/ /usr/local/share/themes/
+	sudo /usr/bin/cp -rf /tmp/Gruvbox-Dark-hdpi /usr/local/share/themes/
+	sudo /usr/bin/cp -rf /tmp/Gruvbox-Dark-xhdpi /usr/local/share/themes/
 fi &
 
 # Configuramos QT
@@ -170,9 +170,6 @@ EOF
 #####################
 # Archivos .desktop #
 #####################
-
-[ -d /usr/local/share/applications ] ||
-	sudo /usr/bin/mkdir -p /usr/local/share/applications
 
 # Ocultar archivos .desktop innecesarios
 DESKTOPENT=(
