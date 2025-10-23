@@ -4,9 +4,6 @@ Pending maintenance tasks and improvements for the project.
 
 ---
 
-General
-  - Make a tag for tested, working versions
-
 Refactor
   - bin/canvas-2latex
     - Rewrite
