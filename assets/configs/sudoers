@@ -8,6 +8,9 @@ Defaults:%wheel env_keep += "SUDO_USER SUDO_UID SUDO_GID LANG LC_ALL"
 
 %wheel ALL=(root) NOPASSWD: /usr/bin/systemctl enable *
 %wheel ALL=(root) NOPASSWD: /usr/bin/systemctl disable *
+%wheel ALL=(root) NOPASSWD: /usr/bin/systemctl restart *
+
+%wheel ALL=(root) NOPASSWD: /usr/bin/install ^-o root -g root -m 0755 .* /usr/local/bin/[a-zA-Z0-9-]+$
 
 # bin/brightchange
 %wheel ALL=(root) NOPASSWD: /usr/bin/tee /sys/class/backlight/intel_backlight/brightness
@@ -15,12 +18,10 @@ Defaults:%wheel env_keep += "SUDO_USER SUDO_UID SUDO_GID LANG LC_ALL"
 
 # updater/install-bin
 %wheel ALL=(root) NOPASSWD: /usr/bin/rm ^/usr/local/bin/[a-zA-Z0-9-]+$
-%wheel ALL=(root) NOPASSWD: /usr/bin/install ^-o root -g root -m 0755 .* /usr/local/bin/[a-zA-Z0-9-]+$
 
 # updater/install-conf
 %wheel ALL=(root) NOPASSWD: /usr/bin/tee /etc/modprobe.d/nobeep.conf
-%wheel ALL=(root) NOPASSWD: /usr/bin/chmod 644 /etc/systemd/system/auto-suspend.service
-%wheel ALL=(root) NOPASSWD: /usr/bin/cp ^-rf .* /usr/lib/udev/rules.d/$
+%wheel ALL=(root) NOPASSWD: /usr/bin/cp ^-f .* /usr/lib/udev/rules.d/$
 
 # update.sh
 %wheel ALL=(root) NOPASSWD: /usr/bin/tee ^-a /usr/local/share/applications/[a-zA-Z0-9-]+.desktop$

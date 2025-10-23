@@ -1,6 +1,7 @@
 #!/bin/sh -x
+# shellcheck disable=SC2046
 
 gcc -o /tmp/file-handler ~/.dotfiles/assets/file-handler.c \
-	"$(pkg-config --cflags --libs dbus-1)"
+	$(pkg-config --cflags --libs dbus-1)
 
 install -m 755 /tmp/file-handler "$HOME/.local/bin/file-handler"

@@ -57,8 +57,8 @@ hostname_config() {
 	echo "$HOSTNAME" >/etc/hostname
 
 	# Este archivo hosts bloquea el acceso a sitios maliciosos
-	ping gnu.org -c 1 && curl -o /etc/hosts \
-		"https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
+	timeout -k 1s 3s curl -s --head --request GET "https://www.gnu.org/" >/dev/null 2>&1 &&
+		curl -o /etc/hosts "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
 
 	cat <<-EOF | tee -a /etc/hosts
 		127.0.0.1 localhost
@@ -143,10 +143,7 @@ pacman-key --populate && pacman-key --refresh-keys
 sed -i 's/^#Color/Color\nILoveCandy/' /etc/pacman.conf
 sed -i 's/^#ParallelDownloads = 5/ParallelDownloads = 5/' /etc/pacman.conf
 
-if echo "$(
-	lspci
-	lsusb
-)" | grep -i bluetooth; then
+if { lspci | grep -qi bluetooth || lsusb | grep -qi bluetooth; }; then
 	pacinstall bluez bluez-utils bluez-obex
 	service_add bluetooth
 fi
@@ -179,7 +176,7 @@ service_add cups
 ln -sf /usr/bin/nvim /usr/local/bin/vim
 ln -sf /usr/bin/nvim /usr/local/bin/vi
 
-# Configuramos sudo para stage3.sh
+# Configuramos sudo temporalmente para stage3.sh
 cp /etc/sudoers /etc/sudoers.bak
 echo "root ALL=(ALL:ALL) ALL
 %wheel ALL=(ALL) NOPASSWD: ALL" | tee /etc/sudoers
@@ -188,7 +185,6 @@ echo "root ALL=(ALL:ALL) ALL
 # correspondientes
 su "$USERNAME" -c "
 	export \
-	FINAL_DPI=$FINAL_DPI \
 	GRAPHIC_DRIVER=$GRAPHIC_DRIVER \
 	CHOSEN_AUDIO_PROD=$CHOSEN_AUDIO_PROD \
 	CHOSEN_LATEX=$CHOSEN_LATEX \

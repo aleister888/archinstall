@@ -18,46 +18,31 @@ PACKAGES=()
 DRIVERS_VID=()
 driver_add() {
 	case $GRAPHIC_DRIVER in
-
-	amd)
-		DRIVERS_VID+=(
-			"lib32-mesa"
-			"lib32-vulkan-radeon"
-			"mesa"
-			"vulkan-radeon"
-			"xf86-video-amdgpu"
-		)
-		;;
-
 	nvidia)
 		DRIVERS_VID+=(
 			"dkms"
+			"nvidia-dkms"
+			"nvidia-utils"
 			"lib32-nvidia-utils"
 			"libva-mesa-driver"
 			"libva-nvidia-driver"
-			"nvidia-dkms"
 			"nvidia-prime"
-			"nvidia-utils"
 			"opencl-nvidia"
 		)
 		;;
-
 	intel)
 		DRIVERS_VID+=(
 			"lib32-libva-intel-driver"
 			"lib32-vulkan-intel"
 			"libva-intel-driver"
 			"vulkan-intel"
-			"xf86-video-intel"
 		)
 		;;
-
 	vm)
-		DRIVERS_VID+=(
-			"lib32-vulkan-virtio"
-			"vulkan-virtio"
-			"xf86-input-vmmouse"
-		)
+		DRIVERS_VID+=("vulkan-virtio" "lib32-vulkan-virtio")
+		;;
+	amd)
+		DRIVERS_VID+=("mesa" "lib32-mesa" "vulkan-radeon" "lib32-vulkan-radeon")
 		;;
 	esac
 }
@@ -69,15 +54,6 @@ arr_packages() {
 			-exec sh -c 'hjson -j "$1" | jq -r ".[] | .[]" ' _ {} \;
 	)
 	PACKAGES=("${TMP_PACKAGES[@]}" "${DRIVERS_VID[@]}")
-}
-
-# Configurar Xresources
-xresources_make() {
-	mkdir -p "$HOME/.config"
-	XRES_FILE="$HOME/.config/Xresources"
-	cp "$HOME/.dotfiles/assets/configs/Xresources" "$XRES_FILE"
-	# Añadimos nuestro DPI a el arcivo Xresources
-	echo "Xft.dpi:$FINAL_DPI" | tee -a "$XRES_FILE"
 }
 
 # Descargar los archivos de diccionario
@@ -96,28 +72,24 @@ trash_dir() {
 	sudo /usr/bin/chmod +t /.Trash
 }
 
-##########################
-# Aquí empieza el script #
-##########################
+##########
+# SCRIPT #
+##########
+
+###############################
+# Instalación de los paquetes #
+###############################
+
+# Antes de instalar los paquetes, configuramos makepkg para
+# usar todos los núcleos durante la compilación
+sudo /usr/bin/sed -i "s/-j2/-j$(nproc)/;/^#MAKEFLAGS/s/^#//" /etc/makepkg.conf
 
 # Instalamos yay (https://aur.archlinux.org/packages/yay)
 yay-install
 
-# Crear directorios
-for DIR in Documentos Música Imágenes Público Vídeos; do
-	mkdir -p "$HOME/$DIR"
-done
-ln -s /tmp/ "$HOME/Descargas"
-
-# Escogemos que drivers de vídeo instalar
+# Añadimos los drivers de video a la lista de paquetes
+# TODO: Re-evaluar en cada iteración del bucle para instalar los paquetes
 driver_add
-
-# Calcular el DPI de nuestra pantalla y configurar Xresources
-xresources_make
-
-# Antes de instalar los paquetes, configurar makepkg para
-# usar todos los núcleos durante la compilación
-sudo /usr/bin/sed -i "s/-j2/-j$(nproc)/;/^#MAKEFLAGS/s/^#//" /etc/makepkg.conf
 
 # Instalamos todos los paquetes a la vez
 while true; do
@@ -127,9 +99,7 @@ while true; do
 
 	yayinstall "${PACKAGES[@]}" && break
 
-	echo
 	echo "La instalación de los paquetes falló. Por favor revisa tu conexión."
-	echo
 
 	# Preguntamos al usuario como continuar si hubo un fallo
 	while true; do
@@ -150,38 +120,109 @@ while true; do
 	done
 done
 
-# Configuramos Tauon Music Box (Nuestro reproductor de música)
-tauon-config
-# Configuramos firefox
-firefox-config
+#############################
+# Configuración del sistema #
+#############################
+
+# Cambiamos el layout de teclado de la tty a español
+echo "KEYMAP=es" | doas tee -a /etc/vconsole.conf
 
 # Establecemos la versión de java por defecto
 sudo /usr/bin/archlinux-java set java-21-openjdk
 
+# Configurar el audio de baja latencia
+audio-setup
+
+# Instalar un servicio de systemd para suspender el equipo cuando la batería
+# esta por debajo del 10%
+sudo /usr/bin/install -o root -g root -m 0755 \
+	"$HOME/.dotfiles/assets/system/services/auto-suspend/auto-suspend-loop" \
+	/usr/local/bin/auto-suspend-loop
+
+sudo /usr/bin/install -o root -g root -m 0644 \
+	"$HOME/.dotfiles/assets/system/services/auto-suspend/systemd-service" \
+	/etc/systemd/system/auto-suspend.service
+
+# Permitir al usuario escanear redes Wi-Fi y cambiar ajustes de red sin
+# introducir la contraseña
+sudo /usr/bin/usermod -aG network "$USER"
+sudo /usr/bin/cp -f \
+	"$HOME/.dotfiles/assets/system/udev/50-org.freedesktop.NetworkManager.rules" \
+	/etc/polkit-1/rules.d/
+
+# Configuramos crond para borrar los módulos del kernel antiguos
+cat <<-EOF | sudo /usr/bin/tee -a /etc/crontab >/dev/null
+	@hourly root cleanup-old-modules
+EOF
+
+# Añadir entradas a /etc/environment
+cat <<EOF | sudo /usr/bin/tee -a /etc/environment
+CARGO_HOME="$HOME/.local/share/cargo"
+GNUPGHOME="$HOME/.local/share/gnupg"
+EOF
+
+###########################
+# Creación de directorios #
+###########################
+
+# Creamos los directorios básicos del usuario
+for DIR in Documentos Música Imágenes Público Vídeos; do
+	mkdir -p "$HOME/$DIR"
+done
+ln -s /tmp/ "$HOME/Descargas"
+mkdir -p "$HOME/.config"
+
+# Crear el directorio /.Trash con permisos adecuados
+trash_dir
+
+# Creamos un directorio para gnupg
+mkdir -p "$HOME"/.local/share/gnupg/private-keys-v1.d
+chmod 700 -R ~/.local/share/gnupg
+mkdir -p "$HOME"/.local/share/cargo
+
+# Creamos el directorio para los archivos .desktop locales
+[ -d /usr/local/share/applications ] || sudo /usr/bin/mkdir -p /usr/local/share/applications
+
+#####################################
+# Configuración de las aplicaciones #
+#####################################
+
+# Añadimos el Xresources
+XRES_FILE="$HOME/.config/Xresources"
+cp "$HOME/.dotfiles/assets/configs/Xresources" "$XRES_FILE"
+
+# Configuramos Tauon Music Box (Reproductor de música)
+tauon-config
+
+# Configuramos firefox
+firefox-config
+
 # Descargar los diccionarios para vim
 vim_spell_download
 
-# Creamos la carpeta ~/.config
-mkdir -p "$HOME/.config"
-
 # Instalar los archivos de configuración
 "$HOME/.dotfiles/update.sh"
+
+##############################
+# Instalar software opcional #
+##############################
+
+[ "$CHOSEN_AUDIO_PROD" == "true" ] && opt_audio_prod
+[ "$CHOSEN_LATEX" == "true" ] && opt_latex
+[ "$CHOSEN_MUSIC" == "true" ] && opt_music
+[ "$CHOSEN_VIRT" == "true" ] && opt_virt
+
+##############
+# Miscelánea #
+##############
 
 # Selecciona zsh como el shell del usuario
 echo "ZDOTDIR=\$HOME/.config/zsh" | sudo /usr/bin/tee /etc/zsh/zshenv
 sudo /usr/bin/chsh -s /bin/zsh "$USER"
 
-# Crear el directorio /.Trash con permisos adecuados
-trash_dir
-
-# Borrar los módulos del kernel antiguos
-cat <<-EOF | sudo /usr/bin/tee -a /etc/crontab >/dev/null
-	@hourly root cleanup-old-modules
-EOF
-
 # Activar WiFi y Bluetooth
 sudo /usr/bin/rfkill unblock wifi
-{ lspci | grep -i bluetooth || lsusb | grep -i bluetooth; } >/dev/null &&
+{ lspci | grep -qi bluetooth || lsusb | grep -qi bluetooth; } &&
 	sudo /usr/bin/rfkill unblock bluetooth
 
 # Añadimos al usuario a los grupos correspondientes
@@ -192,28 +233,8 @@ sudo /usr/bin/usermod -aG video "$USER"
 sudo /usr/bin/usermod -aG optical "$USER"
 sudo /usr/bin/usermod -aG uucp "$USER"
 
-# Configurar el software opcional
-[ "$CHOSEN_AUDIO_PROD" == "true" ] && opt_audio_prod
-[ "$CHOSEN_LATEX" == "true" ] && opt_latex
-[ "$CHOSEN_MUSIC" == "true" ] && opt_music
-[ "$CHOSEN_VIRT" == "true" ] && opt_virt
-
-# Configurar el audio de baja latencia
-audio-setup
-
 # Sincronizar las bases de datos de los paquetes
 sudo /usr/bin/pacman -Fy
-
-# Creamos un directorio para gnupg
-mkdir -p "$HOME"/.local/share/gnupg/private-keys-v1.d
-chmod 700 -R ~/.local/share/gnupg
-mkdir -p "$HOME"/.local/share/cargo
-
-# Añadir entradas a /etc/environment
-cat <<EOF | sudo /usr/bin/tee -a /etc/environment
-CARGO_HOME="$HOME/.local/share/cargo"
-GNUPGHOME="$HOME/.local/share/gnupg"
-EOF
 
 WINEPREFIX="$HOME/.config/wineprefixes" winetricks -q mfc42
 
@@ -221,21 +242,17 @@ WINEPREFIX="$HOME/.config/wineprefixes" winetricks -q mfc42
 rm "$HOME"/.bash* 2>/dev/null
 rm "$HOME"/.wget-hsts 2>/dev/null
 
-# Cambiamos el layout de teclado de la tty a español
-echo "KEYMAP=es" | doas tee -a /etc/vconsole.conf
-
-# Creamos el directorio para los archivos .desktop locales
-[ -d /usr/local/share/applications ] || sudo /usr/bin/mkdir -p /usr/local/share/applications
-
-# Permitir al usuario escanear redes Wi-Fi y cambiar ajustes de red
-id -nG "$USER" | grep network -q || sudo /usr/bin/usermod -aG network "$USER"
-
-sudo /usr/bin/cp -f \
-	"$HOME/.dotfiles/assets/system/udev/50-org.freedesktop.NetworkManager.rules" \
-	/etc/polkit-1/rules.d/
-
-# Finalmente configuramos sudo de forma segura
+# Configuramos sudo de forma segura
 sudo cp "$HOME/.dotfiles/assets/configs/sudoers" /etc/sudoers
+
+# Ahora que el instalador ha terminado, cambiamos el repositorio para que
+# siga los cambios
+sh -c "
+	cd $HOME/.dotfiles
+	git fetch origin main
+	git checkout main
+	git pull
+"
 
 clear
 toilet "Instalación terminada"

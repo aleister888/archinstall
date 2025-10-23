@@ -1,6 +1,6 @@
 #!/bin/bash -x
 
-# Script para recompilar las aplicaciones suckless
+# Script para configurar diversas partes del sistema
 # - Invocado por /update.sh
 
 [ "$(id -u)" -eq 0 ] && exit 1
@@ -31,28 +31,10 @@ fi
 # Desactivar el altavoz del PC
 echo "blacklist pcspkr" | sudo /usr/bin/tee /etc/modprobe.d/nobeep.conf >/dev/null
 
-# Suspender de forma automática cuando la batería cae por debajo del 10%
+# Si el dispositivo tiene una batería activar el servicio de auto-suspensión
 if [ -e /sys/class/power_supply/BAT0 ]; then
-	if [ ! -e /usr/local/bin/auto-suspend ]; then
-		sudo /usr/bin/cp \
-			"$HOME/.dotfiles/assets/system/services/auto-suspend/auto-suspend" \
-			/usr/local/bin/auto-suspend
-		sudo /usr/bin/chmod 755 /usr/local/bin/auto-suspend
-	fi
-
-	if [ ! -e /usr/local/bin/auto-suspend-loop ]; then
-		sudo /usr/bin/cp \
-			"$HOME/.dotfiles/assets/system/services/auto-suspend/auto-suspend-loop" \
-			/usr/local/bin/auto-suspend-loop
-		sudo chmod 755 /usr/local/bin/auto-suspend-loop
-	fi
-
-	if [ ! -e /etc/systemd/system/auto-suspend.service ]; then
-		sudo /usr/bin/cp
-		"$HOME/.dotfiles/assets/system/services/auto-suspend/systemd-service" \
-			/etc/systemd/system/auto-suspend.service
-		sudo chmod 644 /etc/systemd/system/auto-suspend.service
-	fi
-
 	sudo /usr/bin/systemctl enable auto-suspend
+# Si no la tiene, desactivarlo
+else
+	sudo /usr/bin/systemctl disable auto-suspend
 fi

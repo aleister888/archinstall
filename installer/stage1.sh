@@ -257,79 +257,6 @@ basestrap_install() {
 	done
 }
 
-# Calcular el DPI
-calculate_dpi() {
-	local RESOLUTION SIZE WIDTH HEIGHT FACT DISPLAY_DPI
-
-	# Selección de resolución del monitor
-	while true; do
-		RESOLUTION=$(
-			whip_menu "Resolucion del Monitor" \
-				"Seleccione la resolucion de su monitor:" \
-				"720p" "HD" "1080p" "Full-HD" "1440p" "QHD" "2160p" "4K"
-		)
-
-		# Si se cancela o está vacío, preguntar si quiere salir
-		if [ -z "$RESOLUTION" ]; then
-			cancel_installation
-		else
-			break
-		fi
-	done
-
-	# Selección del tamaño del monitor en pulgadas (diagonal)
-	while true; do
-		SIZE=$(
-			whip_menu "Tamaño del Monitor" \
-				"Seleccione el tamaño de su monitor (en pulgadas):" \
-				"14" "Portatil" \
-				"15.6" "Portatil" \
-				"17" "Portatil" \
-				"24" "Escritorio" \
-				"27" "Escritorio"
-		)
-
-		# Si se cancela o está vacío, preguntar si quiere salir
-		if [ -z "$SIZE" ]; then
-			cancel_installation
-		else
-			break
-		fi
-	done
-
-	# Definimos la resolución elegida
-	case $RESOLUTION in
-	"720p")
-		WIDTH=1280
-		HEIGHT=720
-		FACT="0.6"
-		;;
-	"1080p")
-		WIDTH=1920
-		HEIGHT=1080
-		FACT="0.75"
-		;;
-	"1440p")
-		WIDTH=2560
-		HEIGHT=1440
-		FACT="1"
-		;;
-	"2160p")
-		WIDTH=3840
-		HEIGHT=2160
-		FACT="1.2"
-		;;
-	esac
-
-	# Calculamos el DPI
-	DISPLAY_DPI=$(
-		echo "scale=6; sqrt($WIDTH^2 + $HEIGHT^2) / $SIZE * $FACT" | bc
-	)
-
-	# Redondeamos el DPI calculado al entero más cercano
-	FINAL_DPI=$(printf "%.0f" "$DISPLAY_DPI")
-}
-
 get_password() {
 	local PASSWORD_1 PASSWORD_2
 	local TITLE_1=$1
@@ -528,9 +455,6 @@ scheme_setup
 # Formateamos, creamos la swap y montamos los discos
 disk_setup
 
-# Calculamos el DPI
-calculate_dpi
-
 ROOT_PASSWORD=$(
 	get_password "Entrada de contraseña" "Confirmación de contraseña" \
 		"Introduce la contraseña del superusuario:" \
@@ -610,7 +534,6 @@ cp -r "$(dirname "$0")/.." "/mnt/home/$USERNAME/.dotfiles"
 arch-chroot /mnt sh -c "
 	export \
 	USERNAME=$USERNAME \
-	FINAL_DPI=$FINAL_DPI \
 	SYSTEM_TIMEZONE=$SYSTEM_TIMEZONE \
 	ROOT_DISK=$ROOT_DISK \
 	ROOT_PART_NAME=$ROOT_PART_NAME \

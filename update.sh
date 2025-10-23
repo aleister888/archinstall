@@ -16,6 +16,7 @@ trap 'fc-cache -f' EXIT
 # Guardamos el hash del script para comprobar mas adelante si este ha cambiado
 OG_HASH=$(sha256sum "$0" | awk '{print $1}')
 
+# Comprobamos si tenemos conexión a Internet
 if timeout -k 1s 3s curl -s --head --request GET "https://www.gnu.org/" >/dev/null 2>&1; then
 	CONNECTED=true
 else
@@ -54,7 +55,7 @@ INSTALLED_PKGS=$(yay -Qq)
 # Filtramos los paquetes que aún no están instalados
 PKGS_TO_INSTALL=$(comm -23 <(printf "%s\n" "$REPO_PKGS" | sort -u) <(printf "%s\n" "$INSTALLED_PKGS" | sort))
 
-Si hay paquetes pendientes y tenemos internet, los instalamos
+# Si hay paquetes pendientes y tenemos internet, los instalamos
 if [ -n "$PKGS_TO_INSTALL" ] && [ "$CONNECTED" == "true" ]; then
 	yay -Sy --noconfirm --needed --asexplicit $PKGS_TO_INSTALL
 fi
@@ -77,6 +78,7 @@ fi
 "$HOME"/.dotfiles/updater/conf-services &
 # Añade integración con dbus para lf
 "$HOME"/.dotfiles/updater/lf-dbus &
+wait
 
 ############################
 # Aplicaciones por defecto #
@@ -93,6 +95,7 @@ fi
 sh -c "cd $REPO_DIR && stow --adopt --target=${HOME}/.local/bin/ bin/" >/dev/null &
 sh -c "cd $REPO_DIR && stow --adopt --target=${HOME}/.config/ .config/" >/dev/null &
 
+# Enlazamos el archivo .profile
 ln -sf "$REPO_DIR/assets/configs/.profile" "$HOME/.profile"
 ln -sf "$REPO_DIR/assets/configs/.profile" "$HOME/.bash_profile"
 ln -sf "$REPO_DIR/assets/configs/.profile" "$CONF_DIR/zsh/.zprofile"
@@ -101,6 +104,7 @@ ln -sf "$REPO_DIR/assets/configs/.profile" "$CONF_DIR/zsh/.zprofile"
 find "$HOME/.local/bin" -type l ! -exec test -e {} \; -delete &
 find "$CONF_DIR" -type l ! -exec test -e {} \; -delete &
 
+# Configuramos el portal de XDG
 mkdir -p ~/.config/xdg-desktop-portal/
 cat <<-EOF >~/.config/xdg-desktop-portal/portals.conf
 	[preferred]
@@ -122,13 +126,21 @@ fi &
 # Configurar GTK y QT #
 #######################
 
+# Borramos las configuraciones de GTK anteriores
 rm -rf ~/.config/gtk-4.0/* ~/.config/gtk-3.0/settings.ini
+
+# Instalamos nuestra configuración de nwg-look
 mkdir -p "$HOME/.local/share/nwg-look" "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0"
 install "$ASSETDIR/gtk/gsettings" "$HOME/.local/share/nwg-look/gsettings"
+
+# Especificamos que queremos usar la variante oscura de nuestro tema
 dconf write /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
+
+# Creamos la configuración de GTK usando nwg-look
 nwg-look -a
 nwg-look -x
 
+# Añadimos a marcadores las carpetas básicas (Si no hay archivo de marcadores)
 if [ ! -f "$CONF_DIR/gtk-3.0/bookmarks" ]; then
 	# Definimos nuestros directorios anclados
 	cat <<-EOF >"$CONF_DIR/gtk-3.0/bookmarks"

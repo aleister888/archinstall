@@ -1,7 +1,15 @@
 #!/bin/sh
-# sudo install -m 755 "$HOME/.dotfiles/assets/system/auto-suspend-loop" /usr/local/bin/auto-suspend-loop
+# sudo install -o root -g root -m 0755 "$HOME/.dotfiles/assets/system/services/auto-suspend/auto-suspend-loop" /usr/local/bin/auto-suspend-loop
 
 while true; do
-	/usr/local/bin/auto-suspend
+	[ ! -e /sys/class/power_supply/BAT0 ] && exit 1
+
+	# Verifica el nivel de batería
+	BATTERY_LEVEL=$(cat /sys/class/power_supply/BAT0/capacity)
+	BATTERY_STATUS=$(cat /sys/class/power_supply/BAT0/status)
+
+	if [ "$BATTERY_STATUS" = "Discharging" ] && [ "$BATTERY_LEVEL" -le 10 ]; then
+		/usr/bin/systemctl suspend
+	fi
 	sleep 30
 done

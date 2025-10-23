@@ -10,6 +10,8 @@ virt_install() {
 	xargs yay -S --noconfirm --disable-download-timeout --needed \
 		<"$HOME/.dotfiles/assets/packages/opt/virt"
 
+	sudo mkdir -p /usr/local/sha/applications
+
 	sudo /usr/bin/cp "$HOME/.dotfiles/assets/desktop/looking-glass-client.desktop" \
 		/usr/local/share/applications/looking-glass-client.desktop
 	sudo /usr/bin/chmod 644 /usr/local/share/applications/looking-glass-client.desktop
