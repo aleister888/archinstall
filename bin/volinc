@@ -10,4 +10,4 @@ pactl set-sink-volume @DEFAULT_SINK@ "${VOL}%"
 
 # Notificar
 $HIDE_NOTIFICATIONS &
-notify-send -e "Volumen: $VOL%" -t 500 --hint=INT:value:$VOL &
+notify-send -e "Volumen: $VOL%" -t 850 --hint=INT:value:$VOL &
