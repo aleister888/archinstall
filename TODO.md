@@ -4,6 +4,9 @@ Pending maintenance tasks and improvements for the project.
 
 ---
 
+Fix
+  - lf doesnt open correctly Xresources files
+
 Refactor
   - bin/canvas-2latex
     - Rewrite

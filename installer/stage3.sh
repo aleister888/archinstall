@@ -18,32 +18,29 @@ PACKAGES=()
 DRIVERS_VID=()
 driver_add() {
 	case $GRAPHIC_DRIVER in
-	nvidia)
-		DRIVERS_VID+=(
-			"dkms"
-			"nvidia-dkms"
-			"nvidia-utils"
-			"lib32-nvidia-utils"
-			"libva-mesa-driver"
-			"libva-nvidia-driver"
-			"nvidia-prime"
-			"opencl-nvidia"
-		)
-		;;
-	intel)
-		DRIVERS_VID+=(
-			"lib32-libva-intel-driver"
-			"lib32-vulkan-intel"
-			"libva-intel-driver"
-			"vulkan-intel"
-		)
-		;;
-	vm)
-		DRIVERS_VID+=("vulkan-virtio" "lib32-vulkan-virtio")
-		;;
-	amd)
-		DRIVERS_VID+=("mesa" "lib32-mesa" "vulkan-radeon" "lib32-vulkan-radeon")
-		;;
+	vm) DRIVERS_VID+=("vulkan-virtio" "lib32-vulkan-virtio") ;;
+	intel) DRIVERS_VID+=(
+		"lib32-libva-intel-driver"
+		"lib32-vulkan-intel"
+		"libva-intel-driver"
+		"vulkan-intel"
+	) ;;
+	amd) DRIVERS_VID+=(
+		"mesa"
+		"lib32-mesa"
+		"vulkan-radeon"
+		"lib32-vulkan-radeon"
+	) ;;
+	nvidia) DRIVERS_VID+=(
+		"dkms"
+		"nvidia-dkms"
+		"nvidia-utils"
+		"lib32-nvidia-utils"
+		"libva-mesa-driver"
+		"libva-nvidia-driver"
+		"nvidia-prime"
+		"opencl-nvidia"
+	) ;;
 	esac
 }
 

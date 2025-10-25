@@ -37,6 +37,9 @@ makeuserjs() {
 }
 
 installffaddons() {
+	# Lista con el nombre de las extensiones a instalar
+	# Puedes encontrarlo en la tienda de Firefox como:
+	# https://addons.mozilla.org/.../Firefox/addon/NOMBRE_EXTENSIÓN/...
 	ADDON_LIST=(
 		"checkmarks-web-ext"
 		"clearurls"
@@ -50,16 +53,23 @@ installffaddons() {
 		"violentmonkey"
 		"xbs"
 	)
+	# Creamos un directorio temporal para descargar las extensiones
 	ADDON_TMP="$(mktemp -d)"
 
+	# Creamos un directorio dentro de nuestro perfil de Firefox donde
+	# guardar las extensiones
 	mkdir -p "$PROFILE_DIR/extensions/"
 
+	# Para cada addon de la lista descargamos la extensión y la movemos
+	# dentro de nuestro perfil de Firefox
 	for ADDON in "${ADDON_LIST[@]}"; do
+		# Si es ublock-origin, descargamos el addon desde GitHub
 		if [ "$ADDON" == "ublock-origin" ]; then
 			ADDON_URL=$(
 				curl -sL "https://api.github.com/repos/gorhill/uBlock/releases/latest" |
 					grep -E 'browser_download_url.*firefox' | cut -d '"' -f 4
 			)
+		# Para todos los demás, los descargamos desde la tienda
 		else
 			ADDON_URL=$(
 				curl --silent "https://addons.mozilla.org/en-US/firefox/addon/${ADDON}/" |
@@ -67,20 +77,25 @@ installffaddons() {
 			)
 		fi
 
+		# El nombre del addon es la última parte de la URL
 		FILE="${ADDON_URL##*/}"
 
+		# Descargamos el addon en el directorio temporal
 		wget -q "$ADDON_URL" -O "$ADDON_TMP/$FILE"
 
-		ID="$(
-			unzip -p "$ADDON_TMP/$FILE" manifest.json |
-				grep "\"id\"" | head -n 1
-		)"
+		# Extraemos el id de la extensión desde el archivo manifest.json
+		# (El addon debe guardarse en el perfil como ID.xpi)
+		ID="$(unzip -p "$ADDON_TMP/$FILE" manifest.json |
+			grep "\"id\"" | head -n 1)"
 		ID="${ID%\"*}"
 		ID="${ID##*\"}"
 
+		# El ID aveces no se puede extraer para checkmarks-web-ext, lo
+		# establecemos manualmente en esos casos
 		[ -z "$ID" ] && [ "$ADDON" = "checkmarks-web-ext" ] &&
 			ID="{bd97f89b-17ba-4539-9fec-06852d07f917}"
 
+		# Si se pudo extraer el ID, guardamos el addon en el perfil
 		if [ -n "$ID" ]; then
 			mv "$ADDON_TMP/$FILE" "$PROFILE_DIR/extensions/$ID.xpi"
 		fi

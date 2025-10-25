@@ -2,6 +2,7 @@
 
 [ "$(id -u)" -eq 0 ] && exit 1
 
+# Instalar paquetes
 xargs yay -S --noconfirm --disable-download-timeout --needed \
 	<"$HOME/.dotfiles/assets/packages/opt/music"
 

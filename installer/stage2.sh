@@ -8,7 +8,6 @@
 # Esta parte del script se ejecuta ya dentro de la instalación (chroot).
 
 # - Pasa como variables los siguientes parámetros al siguiente script:
-#   - DPI de la pantalla ($FINAL_DPI)
 #   - Driver de video a usar ($GRAPHIC_DRIVER)
 #   - Variables con el software opcional elegido
 #     - $CHOSEN_AUDIO_PROD, $CHOSEN_LATEX, $CHOSEN_MUSIC, $CHOSEN_VIRT
@@ -164,6 +163,7 @@ genlocale
 mkinitcpio_conf
 # Regeneramos el initramfs
 mkinitcpio -P
+
 # Actualizamos la configuración de GRUB
 grub-mkconfig -o /boot/grub/grub.cfg
 

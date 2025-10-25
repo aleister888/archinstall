@@ -7,7 +7,6 @@
 
 # - Pasa como variables los siguientes parámetros al siguiente script:
 #   - Nombre del usuario regular ($USERNAME)
-#   - DPI de la pantalla ($FINAL_DPI)
 #   - Zona horaria del sistema ($SYSTEM_TIMEZONE)
 #   - Nombre del disco utilizado ($ROOT_DISK)
 #   - Nombre de la partición principal ($ROOT_PART_NAME)
