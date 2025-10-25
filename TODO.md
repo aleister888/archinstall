@@ -6,6 +6,7 @@ Pending maintenance tasks and improvements for the project.
 
 Fix
   - lf doesnt open correctly Xresources files
+  - gammastep doesn't work anymore, find alternative
 
 Refactor
   - bin/canvas-2latex
