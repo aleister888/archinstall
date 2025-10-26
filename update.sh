@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 # shellcheck disable=SC2086
 
 # Instalador de ajustes para Arch Linux
@@ -11,21 +11,59 @@ export CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
 export REPO_DIR="$HOME/.dotfiles"
 export ASSETDIR="$REPO_DIR/assets/configs"
 
+DEBUG=false
+
+# Comprobamos si el script se ejecutó en modo debug
+while getopts "d" opt; do
+	case $opt in
+	d) DEBUG=true ;;
+	*) ;;
+	esac
+done
+
+# Si está en modo debug, activamos xtrace
+# Además, los scripts de "$HOME"/.dotfiles/updater no se ejecutarán
+# en modo silencioso
+if [ "$DEBUG" = true ]; then
+	set -x
+fi
+
 trap 'fc-cache -f' EXIT
+
+################################################
+# Actualizar repo, informar cambios en sudoers #
+################################################
 
 # Guardamos el hash del script para comprobar mas adelante si este ha cambiado
 OG_HASH=$(sha256sum "$0" | awk '{print $1}')
 
+# Guardamos el hash del archivo sudoers para comprobar si este ha cambiado
+SUDOERS_HASH=$(sha256sum "$ASSETDIR/sudoers" | awk '{print $1}')
+
 # Comprobamos si tenemos conexión a Internet
-if timeout -k 1s 3s curl -s --head --request GET "https://www.gnu.org/" >/dev/null 2>&1; then
-	CONNECTED=true
-else
-	CONNECTED=false
-fi
+CONNECTED=false
+{
+	timeout -k 1s 3s ping -c 1 8.8.8.8 ||
+		timeout -k 1s 3s curl -s --head --request GET "https://dns.google/"
+} >/dev/null 2>&1 && CONNECTED=true
+
+notify_sudoers_change() {
+	echo "El archivo sudoers tiene cambios desde la última actualización"
+	echo
+	echo "Puedes actualizarlo con:"
+	echo -e "\tsudo install -o root -g root -m 440 \\"
+	echo -e "\t\t\"$HOME/.dotfiles/assets/configs/sudoers\" /etc/sudoers"
+}
 
 # Si tenemos conexión a Internet y el repo. clonado, lo actualizamos
 if [ -d "$REPO_DIR/.git" ] && [ "$CONNECTED" == "true" ]; then
 	sh -c "cd $REPO_DIR && git pull" >/dev/null
+	# Si al actualizar el repo el archivo sudoers cambió, se lo haremos
+	# saber al usuario al terminar la ejecución
+	if [[ "$SUDOERS_HASH" != $(sha256sum "$ASSETDIR/sudoers" | awk '{print $1}') ]]; then
+		trap notify_sudoers_change EXIT
+	fi
+
 fi
 
 # Guardamos el hash tras hacer pull
@@ -70,14 +108,26 @@ fi
 # Módulos #
 ###########
 
-# Instalar/actualizar archivos de configuración
-"$HOME"/.dotfiles/updater/install-conf &
-# Crear enlaces simbólicos en /usr/local/bin para ciertos scripts
-"$HOME"/.dotfiles/updater/install-bin &
-# Activar los servicios necesarios
-"$HOME"/.dotfiles/updater/conf-services &
-# Añade integración con dbus para lf
-"$HOME"/.dotfiles/updater/lf-dbus &
+# Si DEBUG=true hacemos visible la salida
+if [ "$DEBUG" = true ]; then
+	# Instalar/actualizar archivos de configuración
+	"$HOME"/.dotfiles/updater/install-conf -d &
+	# Crear enlaces simbólicos en /usr/local/bin para ciertos scripts
+	"$HOME"/.dotfiles/updater/install-bin -d &
+	# Activar los servicios necesarios
+	"$HOME"/.dotfiles/updater/conf-services -d &
+	# Añade integración con dbus para lf
+	"$HOME"/.dotfiles/updater/lf-dbus &
+else
+	# Instalar/actualizar archivos de configuración
+	"$HOME"/.dotfiles/updater/install-conf >/dev/null 2>&1 &
+	# Crear enlaces simbólicos en /usr/local/bin para ciertos scripts
+	"$HOME"/.dotfiles/updater/install-bin >/dev/null 2>&1 &
+	# Activar los servicios necesarios
+	"$HOME"/.dotfiles/updater/conf-services >/dev/null 2>&1 &
+	# Añade integración con dbus para lf
+	"$HOME"/.dotfiles/updater/lf-dbus >/dev/null 2>&1 &
+fi
 wait
 
 ############################
@@ -137,8 +187,8 @@ install "$ASSETDIR/gtk/gsettings" "$HOME/.local/share/nwg-look/gsettings"
 dconf write /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
 
 # Creamos la configuración de GTK usando nwg-look
-nwg-look -a
-nwg-look -x
+nwg-look -a 2>/dev/null
+nwg-look -x 2>/dev/null
 
 # Añadimos a marcadores las carpetas básicas (Si no hay archivo de marcadores)
 if [ ! -f "$CONF_DIR/gtk-3.0/bookmarks" ]; then

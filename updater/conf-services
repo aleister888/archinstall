@@ -1,6 +1,24 @@
-#!/bin/bash -x
+#!/bin/bash
+
+# Script para configurar los servicios del sistema y de usuario (systemd)
+# - Invocado por /update.sh
 
 [ "$(id -u)" -eq 0 ] && exit 1
+
+DEBUG=false
+
+# Comprobamos si el script se ejecutó en modo debug
+while getopts "d" opt; do
+	case $opt in
+	d) DEBUG=true ;;
+	*) ;;
+	esac
+done
+
+# Si está en modo debug, activamos xtrace
+if [ "$DEBUG" = true ]; then
+	set -x
+fi
 
 # Activar servicio
 service_add() {

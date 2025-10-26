@@ -1,7 +1,11 @@
-#!/bin/sh
+#!/bin/sh -x
 
 # Salimos si el dispositivo no tiene una tarjeta bluetooth
 { lspci | grep -qi bluetooth || lsusb | grep -qi bluetooth; } || exit
+
+# Si el dispositivo bluetooth esta bloqueado por software, lo desbloqueamos
+rfkill list bluetooth | grep -q "Soft blocked: yes" &&
+	sudo /usr/bin/rfkill unblock bluetooth
 
 if bluetoothctl show | grep -q "Powered: yes"; then
 	bluetoothctl power off

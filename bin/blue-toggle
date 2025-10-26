@@ -1,15 +1,14 @@
 #!/bin/sh
+# Activar/Desactivar hyprsunset (Filtro de la luz azul)
 
-# Activar/Desactivar redshift (Filtro de la luz azul) con localización en Madrid/España
-
-NOTIFY="notify-send -a Gammastep -t 1500 -i screensaver"
+NOTIFY="notify-send -a hyprsunset -t 1500 -i screensaver"
 
 $HIDE_NOTIFICATIONS
 
-if pgrep gammastep; then
-	kill -9 $(pgrep gammastep)
-	$NOTIFY "$(basename "$0") 󰌵" 'Filtro desactivado'
+if pgrep hyprsunset; then
+	pkill hyprsunset
+	$NOTIFY "hyprsunset 󰌵" 'Filtro desactivado'
 else
-	setisd -f "$GAMMASTEP_CMD" >/tmp/blue-toggle.log 2>&1
-	$NOTIFY "$(basename "$0") 󰹏" 'Filtro activado'
+	setsid -f hyprsunset >/tmp/blue-toggle.log 2>&1
+	$NOTIFY "hyprsunset 󰹏" 'Filtro activado'
 fi

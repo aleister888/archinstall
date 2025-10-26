@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 # shellcheck disable=SC2046
 
 gcc -o /tmp/file-handler ~/.dotfiles/assets/file-handler.c \

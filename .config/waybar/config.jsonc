@@ -22,7 +22,7 @@
     "tooltip": false,
     "interval": 1,
     "format": "{:%I:%M:%S}",
-    "on-click": "swaync-client -t",
+    "on-click": "sh -c 'pgrep swaync >/dev/null || setsid -f swaync; swaync-client -t'",
   },
   "privacy": {
     "icon-size": 20,

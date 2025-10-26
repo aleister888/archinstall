@@ -12,6 +12,10 @@ Defaults:%wheel env_keep += "SUDO_USER SUDO_UID SUDO_GID LANG LC_ALL"
 
 %wheel ALL=(root) NOPASSWD: /usr/bin/install ^-o root -g root -m 0755 .* /usr/local/bin/[a-zA-Z0-9-]+$
 
+# Activar/desactivar bluetooth
+%wheel ALL=(root) NOPASSWD: /usr/bin/rfkill unblock bluetooth
+%wheel ALL=(root) NOPASSWD: /usr/bin/rfkill block bluetooth
+
 # bin/brightchange
 %wheel ALL=(root) NOPASSWD: /usr/bin/tee /sys/class/backlight/intel_backlight/brightness
 %wheel ALL=(root) NOPASSWD: /usr/bin/tee /sys/class/backlight/amdgpu_bl1/brightness

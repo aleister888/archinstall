@@ -28,8 +28,8 @@
     "python-eyed3"
   ],
   "servicios": [
-    "gammastep",
     "gnome-keyring",
+    "hyprsunset",
     "swaync"
   ],
   "discos": [

@@ -7,7 +7,6 @@
   "control-center-layer": "top",
   "layer-shell": true,
   "layer-shell-cover-screen": true,
-  "cssPriority": "highest",
   "control-center-margin-top": 32,
   "control-center-margin-bottom": 40,
   "control-center-margin-right": 40,
@@ -50,7 +49,7 @@
           "label": "",
           "type": "toggle",
           "command": "setsid -f ~/.dotfiles/bin/blue-toggle",
-          "update-command": "sh -c 'pgrep gammastep >/dev/null && echo true || echo false'"
+          "update-command": "sh -c 'pgrep hyprsunset >/dev/null 2>&1 && echo true || echo false'"
         },
         {
           "label": "",
@@ -61,14 +60,12 @@
         {
           "label": "",
           "type": "toggle",
-          "active": true,
           "command": "~/.dotfiles/bin/swaync/wifi-command",
           "update-command": "~/.dotfiles/bin/swaync/wifi-update"
         },
         {
           "label": "󰓅",
           "type": "toggle",
-          "active": true,
           "command": "bash -c '[[ $(powerprofilesctl get) == \"power-saver\" ]] && powerprofilesctl set performance || powerprofilesctl set power-saver'",
           "update-command": "bash -c '[[ $(powerprofilesctl get) == \"power-saver\" ]] && echo false || echo true'"
         },

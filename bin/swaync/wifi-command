@@ -1,7 +1,10 @@
 #!/bin/sh
 
 # Salimos si el dispositivo no tiene una tarjeta wifi
-{ lspci | grep -qi wireless || lsusb | grep -qi wireless; } || exit
+if ! { lspci | grep -qi wireless || lsusb | grep -qi wireless; }; then
+	notify-send -a swaync "WiFi" "El dispositivo no tiene una tarjeta WiFi"
+	exit
+fi
 
 if [ "$(nmcli radio wifi)" = "enabled" ]; then
 	nmcli radio wifi off
