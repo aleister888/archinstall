@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 
 # Salimos si el dispositivo no tiene una tarjeta bluetooth
 { lspci | grep -qi bluetooth || lsusb | grep -qi bluetooth; } || exit

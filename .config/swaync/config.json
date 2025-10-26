@@ -48,7 +48,7 @@
         {
           "label": "",
           "type": "toggle",
-          "command": "setsid -f ~/.dotfiles/bin/blue-toggle",
+          "command": "setsid -f ~/.dotfiles/bin/swaync/blue-toggle",
           "update-command": "sh -c 'pgrep hyprsunset >/dev/null 2>&1 && echo true || echo false'"
         },
         {

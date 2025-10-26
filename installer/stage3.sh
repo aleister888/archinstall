@@ -240,8 +240,8 @@ rm "$HOME"/.bash* 2>/dev/null
 rm "$HOME"/.wget-hsts 2>/dev/null
 
 # Configuramos sudo de forma segura
-sudo install -o root -g root -m 440 "$HOME/.dotfiles/assets/configs/sudoers" \
-	/etc/sudoers
+sudo /usr/bin/install -o root -g root -m 440 \
+	"$HOME/.dotfiles/assets/configs/sudoers" /etc/sudoers
 
 # Ahora que el instalador ha terminado, cambiamos el repositorio para que
 # siga los cambios
