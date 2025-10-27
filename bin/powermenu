@@ -5,7 +5,7 @@
 # Función para obtener y validar la hora
 obtener_hora() {
 	local HORA
-	HORA=$(printf "07:00\n12:00\n17:00\n22:00" | eval "$DMENU -p 'Ingrese una hora (HH:MM):'")
+	HORA=$(printf "07:00\n12:00\n17:00\n22:00" | wofi --hide-scroll --dmenu -L 4 -p 'Ingrese una hora (HH:MM):')
 
 	if [[ $HORA =~ ^([01][0-9]|2[0-3]):[0-5][0-9]$ ]]; then
 		echo "$HORA"

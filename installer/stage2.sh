@@ -22,7 +22,7 @@ service_add() {
 
 # Instalamos GRUB
 install_grub() {
-	local -r SWAP_UUID=$(lsblk -nd -o UUID /dev/mapper/"$VG_NAME"-"swap")
+	local -r SWAP_UUID=$(lsblk -nd -o UUID /dev/mapper/"$VG_NAME-swap")
 
 	# Obtenemos el nombre del dispositivo donde se aloja la partición boot
 	case "$ROOT_DISK" in
@@ -43,7 +43,7 @@ install_grub() {
 
 	# Le indicamos a GRUB el UUID de la partición encriptada y desencriptada.
 	local -r CRYPT_ID=$(lsblk -nd -o UUID /dev/"$ROOT_PART_NAME")
-	local -r ROOT_UUID=$(lsblk -nd -o UUID /dev/mapper/"$VG_NAME"-"root")
+	local -r ROOT_UUID=$(lsblk -nd -o UUID /dev/mapper/"$VG_NAME-root")
 	echo GRUB_ENABLE_CRYPTODISK=y >>/etc/default/grub
 	sed -i "s/\(^GRUB_CMDLINE_LINUX_DEFAULT=\".*\)\"/\1 cryptdevice=UUID=$CRYPT_ID:cryptroot root=UUID=$ROOT_UUID resume=UUID=$SWAP_UUID net.ifnames=0\"/" /etc/default/grub
 
