@@ -10,6 +10,7 @@
     "custom/disk",
     "pulseaudio",
     "network",
+    "custom/powermenu",
     "tray",
   ],
   "custom/music-metadata": {
@@ -63,6 +64,11 @@
     "format-alt": "󰏔 {bandwidthDownBytes} 󰏕 {bandwidthUpBytes}",
     "format-icons": ["󰤟", "󰤢", "󰤥", "󰤨"],
     "max-length": 50,
+  },
+  "custom/powermenu": {
+    "tooltip": false,
+    "format": "⏻",
+    "on-click": "~/.dotfiles/bin/powermenu",
   },
   "tray": {
     "icon-size": 24,
