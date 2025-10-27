@@ -19,7 +19,3 @@ Refactor
     - Fuse into a single conversion script
   - bin/hyprland/cycle-windows
     - Change behaviour for special workspaces
-
-Update:
-  - Powermenu
-    - Improve UI look

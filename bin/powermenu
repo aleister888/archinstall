@@ -1,7 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC2086
-
-DMENU="wofi -d -W 380 -b -L 9"
+# shellcheck disable=SC2181
 
 # Función para obtener y validar la hora
 obtener_hora() {
@@ -17,18 +16,20 @@ obtener_hora() {
 
 # Define las opciones con iconos
 OPTIONS=(
-	" Bloquear"
-	" Suspender"
-	" Suspender hasta las..."
-	" Cerrar sesión"
-	" Reinciar"
-	" Apagar"
-	"󰤄 Hibernar"
-	" BIOS"
+	"" # Bloquear
+	"󰒲" # Suspender
+	"󱣶" # Suspender hasta las...
+	"" # Cerrar sesión
+	"" # Reinciar
+	"" # Apagar
+	"󰤄" # Hibernar
+	"" # BIOS
 )
 
+DMENU="wofi --dmenu --hide-scroll --columns ${#OPTIONS[@]} --hide-search --width $((${#OPTIONS[@]} * 42)) --allow-markup -L 1"
+
 # Presenta las opciones usando dmenu
-CHOSEN=$(printf "%s\n" "${OPTIONS[@]}" | eval $DMENU ${#OPTIONS[@]})
+CHOSEN=$(printf '<span size="x-large">%s</span>\n' "${OPTIONS[@]}" | $DMENU)
 
 # Maneja la opción elegida usando un caso
 case $CHOSEN in
