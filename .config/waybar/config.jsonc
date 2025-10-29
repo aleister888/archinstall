@@ -11,6 +11,7 @@
     "pulseaudio",
     "network",
     "custom/powermenu",
+    "custom/blue-filter",
     "tray",
   ],
   "custom/music-metadata": {
@@ -69,6 +70,13 @@
     "tooltip": false,
     "format": "⏻",
     "on-click": "~/.dotfiles/bin/powermenu",
+  },
+  "custom/blue-filter": {
+    "tooltip": false,
+    "format": "{}",
+    "interval": 1,
+    "exec": "~/.dotfiles/bin/sb/blue-status",
+    "on-click": "~/.dotfiles/bin/sb/blue-toggle",
   },
   "tray": {
     "icon-size": 24,

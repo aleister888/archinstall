@@ -3,8 +3,6 @@
 # Cambiamos el foco de las ventanas de forma cíclica en función de si estamos en
 # un espacio normal o en el espacio especial "scratch"
 
-# La clase de las ventanas que cuentan como scratchpads
-SCRATCHPAD_CLASS="kitty"
 SCRATCH_PIDS=()
 
 ARG="$1"
@@ -12,10 +10,13 @@ ARG="$1"
 
 ACTIVE_WORKSPACE=$(hyprctl -j activewindow | jq -r '.workspace.name')
 
+# Indexamos el PID de las ventanas en el espacio "special:scratch" ordenadas
+# en función de la última vez que tuvieron el foco
 index_scratch() {
 	mapfile -t SCRATCH_PIDS < <(
 		hyprctl -j clients |
-			jq -r '.[] | select( .workspace.name=="special:scratch" and .class=="'"$SCRATCHPAD_CLASS"'" ) | "\(.focusHistoryID):\(.pid)"' |
+			jq -r '.[] | select( .workspace.name=="special:scratch") |
+				"\(.focusHistoryID):\(.pid)"' |
 			sort -n | cut -d':' -f2
 	)
 }
@@ -30,6 +31,7 @@ cycle_regular() {
 
 cycle_scratch() {
 	index_scratch
+	# Enfocamos la última ventana enfocada de la lista
 	hyprctl dispatch alterzorder top,"pid:${SCRATCH_PIDS[-1]}" &
 	hyprctl dispatch focuswindow "pid:${SCRATCH_PIDS[-1]}" &
 }

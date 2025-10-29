@@ -43,14 +43,8 @@
       "image-size": 96
     },
     "buttons-grid": {
-      "buttons-per-row": 5,
+      "buttons-per-row": 4,
       "actions": [
-        {
-          "label": "",
-          "type": "toggle",
-          "command": "setsid -f ~/.dotfiles/bin/swaync/blue-toggle",
-          "update-command": "sh -c 'pgrep hyprsunset >/dev/null 2>&1 && echo true || echo false'"
-        },
         {
           "label": "",
           "type": "toggle",

@@ -85,6 +85,13 @@
   margin: 0px 7.5px 0px 7.5px;
 }
 
+#custom-blue-filter {
+  font-size: 18px;
+  color: #dfdfdf;
+  margin: 0px 0px 0px 7.5px;
+  min-width: 18px;
+}
+
 #tray {
   margin: 0px 0px 0px 7.5px;
 }

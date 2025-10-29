@@ -1,13 +1,33 @@
-#!/bin/sh
-
+#!/bin/bash -x
 # Script para cambiar el volumen, controlando que no supere el límite establecido
-LIMIT=130
-VOL=$(($(pamixer --get-volume) + $1))
-[ $VOL -gt $LIMIT ] && VOL=$LIMIT
+
+NOTIFY=false
+VOL_LIMIT=130
+VOLINC=0
+
+# Procesamos argumentos
+while [[ "$1" ]]; do
+	case "$1" in
+	-n)
+		NOTIFY=true
+		shift
+		;;
+	-[0-9]* | [0-9]* | +[0-9]*)
+		VOLINC=$1
+		shift
+		;;
+	esac
+done
+
+VOL=$(($(pamixer --get-volume) + VOLINC))
+[ $VOL -gt $VOL_LIMIT ] && VOL=$VOL_LIMIT
+[ $VOL -lt 0 ] && exit
 
 # Establecer el nuevo volumen
 pactl set-sink-volume @DEFAULT_SINK@ "${VOL}%"
 
 # Notificar
-$HIDE_NOTIFICATIONS &
-notify-send -e "Volumen: $VOL%" -t 850 --hint=INT:value:$VOL &
+if [ "$NOTIFY" = true ]; then
+	$HIDE_NOTIFICATIONS &
+	notify-send -e "Volumen: $VOL%" -t 850 --hint=INT:value:$VOL &
+fi

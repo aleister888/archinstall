@@ -1,7 +1,7 @@
 #!/bin/sh
 # Activar/Desactivar hyprsunset (Filtro de la luz azul)
 
-NOTIFY="notify-send -a hyprsunset -t 1500 -i screensaver"
+NOTIFY="notify-send -e -a hyprsunset -t 1500 -i screensaver"
 
 $HIDE_NOTIFICATIONS
 

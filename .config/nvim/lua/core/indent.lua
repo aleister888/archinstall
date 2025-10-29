@@ -15,7 +15,10 @@ local default_config = {
 -- Configuraciones específicas por tipo de archivo
 local filetype_configs = {
 	java = {}, -- Usa la configuración por defecto
-	lf = {}, -- Usa la configuración por defecto
+	lf = {
+		tabstop = 2,
+		shiftwidth = 2,
+	},
 	sql = {
 		expandtab = true,
 		tabstop = 4,
