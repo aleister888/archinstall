@@ -19,3 +19,4 @@ qemu-hw-usb-redirect
 qemu-ui-sdl
 swtpm
 virt-manager
+virt-viewer
