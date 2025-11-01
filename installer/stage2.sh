@@ -45,7 +45,7 @@ install_grub() {
 	local -r CRYPT_ID=$(lsblk -nd -o UUID /dev/"$ROOT_PART_NAME")
 	local -r ROOT_UUID=$(lsblk -nd -o UUID /dev/mapper/"$VG_NAME-root")
 	echo GRUB_ENABLE_CRYPTODISK=y >>/etc/default/grub
-	sed -i "s/\(^GRUB_CMDLINE_LINUX_DEFAULT=\".*\)\"/\1 cryptdevice=UUID=$CRYPT_ID:cryptroot root=UUID=$ROOT_UUID resume=UUID=$SWAP_UUID net.ifnames=0\"/" /etc/default/grub
+	sed -i "s/\(^GRUB_CMDLINE_LINUX_DEFAULT=\".*\)\"/\1 cryptdevice=UUID=$CRYPT_ID:cryptroot root=UUID=$ROOT_UUID resume=UUID=$SWAP_UUID modprobe.blacklist=nouveau net.ifnames=0\"/" /etc/default/grub
 
 	# Crear el archivo de configuración
 	grub-mkconfig -o /boot/grub/grub.cfg
