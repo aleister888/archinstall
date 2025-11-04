@@ -2,8 +2,6 @@
   color: #ebdbb2;
   font-family: "Symbols Nerd Font", "Fira Sans Condensed";
   font-size: 22px;
-
-  font-weight: 600;
   border-radius: 4px;
 }
 
@@ -31,16 +29,19 @@
 }
 
 .modules-center {
+  font-weight: 600;
   margin-bottom: 2px;
 }
 
 .modules-right {
+  font-weight: 600;
   margin-right: 15px;
   margin-bottom: 2px;
 }
 
 #workspaces {
-  margin: 6px 12px 6px 12px;
+  font-weight: 600;
+  margin: 6px 7.5px 6px 12px;
 }
 
 #workspaces .workspace-label {
@@ -74,7 +75,7 @@
 }
 
 #custom-music-metadata {
-  margin: 0px 7.5px 0px 7.5px;
+  margin: 0px 7.5px 0px 0px;
 }
 
 #clock {

@@ -23,11 +23,10 @@ makesafe() {
 statusbar() {
 	[ -z "$PLAYER" ] && exit
 
-	local TITLE ARTIST STATUS INDICATOR
+	local TITLE STATUS INDICATOR
 
 	# Obtener el título de la canción y estado de la reproducción
 	TITLE=$(metaprint title)
-	ARTIST=$(metaprint artist)
 	STATUS="$(playerctl status --player="$PLAYER")"
 
 	[ -z "$TITLE" ] && exit
@@ -39,7 +38,7 @@ statusbar() {
 	fi
 	INDICATOR="<b>$INDICATOR</b>"
 
-	echo "$INDICATOR <i>$TITLE - $ARTIST</i>"
+	echo "$INDICATOR <i>$TITLE</i>"
 }
 
 metaprint() {
