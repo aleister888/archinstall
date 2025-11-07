@@ -3,7 +3,8 @@
   "position": "top",
   "height": 30,
   "margin": "0 16 0 16",
-  "modules-left": ["hyprland/workspaces", "custom/music-metadata"],
+  "modules-left": ["hyprland/workspaces"],
+  //"modules-left": ["hyprland/workspaces", "custom/music-metadata"],
   "modules-center": ["clock", "privacy"],
   "modules-right": [
     "custom/battery",
@@ -23,9 +24,6 @@
       "enable": true,
       "format": "{icon}",
       "icon-size": 16,
-      /* "lf": This only applies to swallowed lf instances, as regular lf
-               windows will have the $PWD as part of their name. */
-      "ignore-list": ["lf"],
     },
   },
   "custom/music-metadata": {

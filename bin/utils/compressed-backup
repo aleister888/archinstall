@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -x
 
 # Script para crear copias de seguridad como archivos comprimidos
 
@@ -30,7 +30,8 @@ while [ "$#" -gt 0 ]; do
 done
 
 # Verificar que los directorios proporcionados existan y sean válidos
-[ ! -d "$OG_DIR" ] || [ ! -d "$BAK_DIR" ] && help_msg
+[ ! -d "$BAK_DIR" ] && mkdir -p "$BAK_DIR"
+{ [ ! -d "$OG_DIR" ] || [ ! -d "$BAK_DIR" ]; } && help_msg
 
 EXTENSION="tar.gz"
 BAK_NAME="$(date +'%Y-%m-%d_%H:%M:%S').$EXTENSION"

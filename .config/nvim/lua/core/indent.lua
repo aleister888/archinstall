@@ -24,6 +24,10 @@ local filetype_configs = {
 		tabstop = 4,
 		shiftwidth = 4,
 	},
+	sh = {
+		tabstop = 4,
+		shiftwidth = 4,
+	},
 	["hjson"] = {
 		smartindent = true,
 		expandtab = true,

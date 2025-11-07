@@ -17,7 +17,7 @@ escape() {
 
 # Directorio donde montar el dispositivo
 create_mountpoint() {
-	BASENAME="/mnt/ANDROID_"
+	BASENAME="/tmp/ANDROID_"
 	N=0
 	while mountpoint $BASENAME$N >/dev/null 2>&1; do
 		N=$((N + 1))
@@ -25,10 +25,8 @@ create_mountpoint() {
 	local MOUNTPOINT="$BASENAME$N"
 	# Creamos el directorio para montar dispositivos android
 	if [ ! -e "$MOUNTPOINT" ]; then
-		pkexec sh -c "
-			/usr/bin/mkdir $MOUNTPOINT
-			/usr/bin/chown $USER $MOUNTPOINT
-		" >/dev/null 2>&1
+		/usr/bin/mkdir $MOUNTPOINT
+		/usr/bin/chown $USER $MOUNTPOINT
 	fi
 
 	echo "$BASENAME$N"
@@ -64,10 +62,12 @@ NUMBER="${CHOSEN%%:*}"
 MP=$(create_mountpoint)
 
 # Intentar montar el dispositivo Android
-if pkexec /usr/bin/simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$(escape "$CHOSEN")" --device "$NUMBER" "$MP" 2>$MOUNT_LOG; then
+if sudo /usr/bin/simple-mtpfs -o allow_other -o fsname="simple-mtpfs-$(escape "$CHOSEN")" --device "$NUMBER" "$MP" 2>$MOUNT_LOG; then
+
 	DEVICE="$(echo $CHOSEN | grep -oP "[0-9]: \K.*(?= \(MTP\))")"
-	notify-send -e -i usb "$(basename "$0")" \
-		"<i>$DEVICE</i>\nMontado: $MP"
+	notify-send -e -i usb "$(basename "$0")" "<i>$DEVICE</i>\nMontado: $MP"
+	xdg-open "$MP"
+
 else
 	notify-send -e -i usb "$(basename "$0")" "$(cat $MOUNT_LOG)"
 fi

@@ -12,6 +12,8 @@ Defaults:%wheel env_keep += "SUDO_USER SUDO_UID SUDO_GID LANG LC_ALL"
 %wheel ALL=(root) NOPASSWD: /usr/bin/systemctl disable *
 %wheel ALL=(root) NOPASSWD: /usr/bin/systemctl restart *
 
+%wheel ALL=(root) NOPASSWD: /usr/bin/simple-mtpfs
+
 %wheel ALL=(root) NOPASSWD: /usr/bin/install ^-o root -g root -m 0755 .* /usr/local/bin/[a-zA-Z0-9-]+$
 
 # Activar/desactivar bluetooth

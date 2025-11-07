@@ -81,19 +81,19 @@ Al iniciar Hyprland se crea un \emph{micrófono virtual}, que podemos enlazar co
 
 El repositorio incluye una variedad de scripts para automatizar tareas. Por defecto no se usan, pero podemos hacer que se ejecuten de forma automática con \href{https://wiki.archlinux.org/title/cron}{crond}.
 
-\subsection{convert-2m4a y convert-2mp3}
+\subsection{music-convert}
 
-Estos scripts convierten toda la música del directorio que damos como primer argumento a formato \emph{.m4a} o \emph{.mp3} en un mirror que replica al estructura del directorio original.
+Este script convierte toda la música del directorio que damos como primer argumento a formato \emph{.m4a} o \emph{.mp3} en un mirror que replica al estructura del directorio original.
 
 \medskip
 \noindent Si ejecutamos:
 \begin{verbatim}
-convert-2mp3 /musica/biblioteca /musica/mp3
+music-convert -m4a /musica/biblioteca /musica/m4a
 \end{verbatim}
-Toda la música de \path{/musica/biblioteca} se convertira en mp3 en la carpeta \path{/musica/mp3}
+Toda la música de \path{/musica/biblioteca} se convertira en m4a en la carpeta \path{/musica/m4a}
 \begin{itemize}
-	\item El script puede usarse con el flag \emph{-p} para convertir varios archivos de forma paralela, lo que reduce el tiempo necesario para la conversión de archivos, pero consume más recursos y probablemente ocupe todo el tiempo de CPU hasta que el script se termine de ejecutar.
-	\item El script también puede usarse con el flag \emph{-l} lo que hará que además de convertir las canciones a otro formato, se busque la letra de la canción y se incluya dentro del archivo de audio.
+	\item Si no se pone nada, el formato usado por defecto es mp3. También se puede especificar este comportamiento explícitamente con \path{-mp3},
+	\item El script también puede usarse con el flag \emph{-l} lo que hará que además de convertir las canciones, se obtenga la letra de la canción (del archivo original, y si no está ahí, de internet) y se incluya dentro del archivo de audio.
 \end{itemize}
 
 \subsection{corruption-check}

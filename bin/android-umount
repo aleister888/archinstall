@@ -7,9 +7,9 @@ DMENU="wofi --show dmenu -L 5"
 
 # Limpiamos todos los mountpoints que no se están usando
 cleanup_mountpoints() {
-	for DIR in /mnt/ANDROID_*; do
+	for DIR in /tmp/ANDROID_*; do
 		mountpoint $DIR || {
-			sudo /usr/bin/rm -rf "$DIR"
+			/usr/bin/rm -rf "$DIR"
 		}
 	done
 }
