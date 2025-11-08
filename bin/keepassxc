@@ -1,0 +1,14 @@
+#!/bin/bash
+# shellcheck disable=SC2153
+
+# KeePassXC escala el tamaño del cursos incorrectamente, este script trata de
+# corregir dicho comportamiento reduciendo el tamaño del cursor en función del
+# factor de escalado del monitor.
+
+# Calculamos el tamaño del cursor necesario
+ACTIVE_MONITOR=$(hyprctl monitors -j | jq '.[] | select(.focused == true)')
+SCALE=$(echo "$ACTIVE_MONITOR" | jq -r '.scale')
+CURSOR_SIZE=$(echo "($XCURSOR_SIZE / $SCALE + 0.5)/1" | bc)
+
+# Iniciamos keepassxc
+XCURSOR_SIZE=$CURSOR_SIZE /usr/bin/keepassxc

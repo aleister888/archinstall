@@ -5,7 +5,7 @@ SPECIAL_W="audio_panel"
 
 # Si pavucontrol no está abierto, lo abrimos
 if ! pgrep pavucontrol; then
-	exec pavucontrol
+	exec pavucontrol -t 3
 else
 	ACTIVE_WORKSPACE=$(hyprctl -j activewindow | jq -r '.workspace.name')
 	# Si pavucontrol esta abierto y estamos en el espacio del panel, ocultamos

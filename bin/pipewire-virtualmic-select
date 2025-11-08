@@ -35,10 +35,10 @@ for ADDED in $DEL_DEVICES; do
 	DEVICES=$(echo "$DEVICES" | grep -v "$ADDED")
 done
 
-sink_match() {
-	local PWFLAG
+sink_link() {
+	local FLAG
 	local CSELECTED
-	[ "$1" = "del" ] && PWFLAG="-d"
+	[ "$1" = "del" ] && FLAG="-d"
 
 	case "$SELECTED" in
 	*FL) CSELECTED="${SELECTED%FL}FR" ;;
@@ -48,8 +48,8 @@ sink_match() {
 	*) CSELECTED="$SELECTED" ;;
 	esac
 
-	pw-link $PWFLAG "$SELECTED" "$SINK_L"
-	pw-link $PWFLAG "$CSELECTED" "$SINK_R"
+	timeout -k 1s 3s pw-link $FLAG "$SELECTED" "$SINK_L"
+	timeout -k 1s 3s pw-link $FLAG "$CSELECTED" "$SINK_R"
 }
 
 # Función para vincular/desvincular dispositivos/aplicaciones
@@ -63,8 +63,10 @@ sink_edit() {
 		SINKS=$DEL_DEVICES
 	fi
 
+	F_SINKS=$(echo "$SINKS" | sed 's/:.*//g' | sort -u)
+
 	# Elegir el sink con dmenu mostrando solo la información esencial
-	DMENU_SELECTED=$(echo "$SINKS" | sed 's/:.*//g' | sort -u | eval $DMENU)
+	DMENU_SELECTED=$(echo "$F_SINKS" | $DMENU --lines "$(echo "$F_SINKS" | wc -l)")
 	if [ -z "$DMENU_SELECTED" ]; then
 		# Salir del script si no se eligió ninguna opción
 		exit
@@ -76,15 +78,14 @@ sink_edit() {
 	if [ -z "$SELECTED" ]; then
 		exit
 	elif [ "$1" = "add" ]; then # Vincular dispositivos/aplicaciones
-		sink_match "$1"
 		# Comprobar que los dispositivos/aplicaciones se añadieron correctamente
-		if pw-link -l | grep "my-combined-sink" -A 1 | grep "$DMENU_SELECTED" >/dev/null; then
+		if sink_link "$1" && pw-link -l | grep "my-combined-sink" -A 1 | grep "$DMENU_SELECTED" >/dev/null; then
 			notify-send -e -i $ICON "$MSG" "Sink vinculado correctamente"
 		else
 			notify-send -e -i $ICON "$MSG" "Hubo un fallo al añadir el sink"
 		fi
 	elif [ "$1" = "del" ]; then # Desvincular dispositivos/aplicaciones
-		sink_match "$1" && notify-send -e -i $ICON "$MSG" "Sink borrado"
+		sink_link "$1" && notify-send -e -i $ICON "$MSG" "Sink borrado"
 	fi
 }
 

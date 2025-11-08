@@ -34,7 +34,7 @@ done
 { [ ! -d "$OG_DIR" ] || [ ! -d "$BAK_DIR" ]; } && help_msg
 
 EXTENSION="tar.gz"
-BAK_NAME="$(date +'%Y-%m-%d_%H:%M:%S').$EXTENSION"
+BAK_NAME="$(date +'%Y-%m-%d_%H-%M-%S').$EXTENSION"
 
 # Crear el archivo tar.gz
 cd "$OG_DIR"

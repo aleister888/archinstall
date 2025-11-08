@@ -158,6 +158,7 @@ cmd on-select &{{
 cmd compress ${{
 	# Ocultamos todas las notificaciones anteriores
 	eval "$HIDE_NOTIFICATIONS"
+
 	# Creamos un directorio para guardar todos los archivos comprimidos
 	OUT_DIR="/tmp/00_Compressed"
 	[ ! -e "$OUT_DIR" ] && mkdir -p "$OUT_DIR"
@@ -176,6 +177,7 @@ cmd compress ${{
 		# Si todos los archivos vienen del mismo directorio, usamos el nombre
 		# del directorio para el archivo comprimido.
 		BASE_NAME=$(basename "$DIRS")
+		COMMON_PATH=$(dirname -z "$1")
 	else
 		# Si están en directorios distintos, le preguntamos al usuario por el
 		# nombre del archivo comprimido
@@ -184,6 +186,21 @@ cmd compress ${{
 				--inputbox "Ingrese el nombre del archivo comprimido:" 10 60 3>&1 1>&2 2>&3
 		)
 		[ -z "$BASE_NAME" ] && exit 0
+
+		# Obtenemos la ruta común para todos los archivos
+
+		# Inicializamos la ruta común con el directorio del primer archivo
+		FILES=("$@")
+		COMMON_PATH=$(dirname "${FILES[0]}")
+
+		# Recorremos los demás archivos
+		for f in "${FILES[@]:1}"; do
+			DIR=$(dirname "$f")
+			# Mientras la ruta común no sea un prefijo de DIR, subimos un nivel
+			while [[ "$DIR" != "$COMMON_PATH"* ]]; do
+				COMMON_PATH=$(dirname "$COMMON_PATH")
+			done
+		done
 	fi
 
 	# Construimos una lista con los archivos a comprimir para que el usuario
@@ -215,25 +232,35 @@ cmd compress ${{
 			3>&1 1>&2 2>&3
 	)
 
+	# Creamos un array de rutas relativas
+	REL_FILES=()
+	for f in "$@"; do
+		REL_FILES+=("$(realpath --relative-to="$COMMON_PATH" "$f")")
+	done
+
+
 	# Preguntamos por el formato de compresión y comprimimos
 	case "$FORMATO" in
 		tar)
 			ARCHIVO="$OUT_DIR/${BASE_NAME}.tar.gz"
-			tar -zcvf "$ARCHIVO" "$@"
+			tar -zcvf "$ARCHIVO" -C "$COMMON_PATH" "${REL_FILES[@]}"
 			;;
 		7z)
 			ARCHIVO="$OUT_DIR/${BASE_NAME}.7z"
-			7z a "$ARCHIVO" "$@"
+			(cd "$COMMON_PATH" && 7z a "$ARCHIVO" "${REL_FILES[@]}")
 			;;
 		zip)
 			ARCHIVO="$OUT_DIR/${BASE_NAME}.zip"
-			zip -r "$ARCHIVO" "$@"
+			(cd "$COMMON_PATH" && zip -r "$ARCHIVO" "${REL_FILES[@]}")
 			;;
 	esac
 
 	# Si los archivos se comprimieron correctamente, informamos al usuario
-	[ -e "$ARCHIVO" ] &&
-		notify-send -a lf -i ark "lf" "Archivo comprimido en\n<i>$OUT_DIR</i>"
+	if [ -e "$ARCHIVO" ]; then
+		notify-send -e -a lf -i ark "lf" "Archivo comprimido en\n<i>$OUT_DIR</i>"
+	else
+		notify-send -e -a lf -i system-error "lf" "Hubo un error al comprimir los archivos"
+	fi
 
 	unset --
 
@@ -256,7 +283,7 @@ cmd cdterm &{{
 # Enviar una notificación con el tamaño del ítem seleccionado
 cmd size &{{
 	eval "$HIDE_NOTIFICATIONS"
-	notify-send -a lf -i system-file-manager \
+	notify-send -e -a lf -i system-file-manager \
 		"El tamaño es de $(/usr/bin/du -chs $fx | grep total | awk '{print $1}')"
 }}
 
@@ -331,7 +358,7 @@ cmd extract ${{
 		*) aunpack $f ;;
 		esac
 	} && \
-	notify-send -a lf -i ark "lf" "Extraído:\n<i>$(basename $f)</i>"
+	notify-send -e -a lf -i ark "lf" "Extraído:\n<i>$(basename $f)</i>"
 }}
 
 # Pegar archivos copiados/cortados
@@ -347,7 +374,7 @@ cmd trash ${{
 	printf "¿Mover archivo(s) a la papelera? [s/N] "
 	read ans
 	[ $ans = "s" ] && trash-put $fx &&
-	notify-send -a lf -i user-trash "lf" "Archivo(s) movido(s) a la papelera"
+	notify-send -e -a lf -i user-trash "lf" "Archivo(s) movido(s) a la papelera"
 	lf -remote "send $id reload"
 }}
 
@@ -363,7 +390,7 @@ cmd clean-trash ${{
 	read ans
 	if [ $ans = "s" ] || [ $ans = "S" ]; then
 		trash-empty -f && \
-		notify-send -a lf -i user-trash "lf" "Archivo(s) borrados"
+		notify-send -e -a lf -i user-trash "lf" "Archivo(s) borrados"
 	fi
 	lf -remote "send $id reload"
 }}
@@ -373,7 +400,7 @@ cmd restore-trash ${{
 	eval "$HIDE_NOTIFICATIONS"
 	TRASH_CONTENTS=$(trash-list)
 	if [ -z "$TRASH_CONTENTS" ]; then
-		notify-send -a lf -i system-error "lf" "La papelera esta vacía"
+		notify-send -e -a lf -i system-error "lf" "La papelera esta vacía"
 		exit 0
 	fi
 
@@ -386,7 +413,7 @@ cmd restore-trash ${{
 	[ $ans = "s" ]
 	if [ $ans = "s" ] || [ $ans = "S" ]; then
 		trash-restore
-		notify-send -a lf -i user-trash "lf" "Archivo(s) restaurado(s)"
+		notify-send -e -a lf -i user-trash "lf" "Archivo(s) restaurado(s)"
 	fi
 	lf -remote "send $id reload"
 }}
@@ -458,7 +485,7 @@ map m push %mkdir<space>
 map Y ${{
 	eval "$HIDE_NOTIFICATIONS"
 	printf '"%s"' "$(dirname "$fx")" | wl-copy
-	notify-send -a lf -i gpaste "lf" "Ruta copiada al portapapeles"
+	notify-send -e -a lf -i gpaste "lf" "Ruta copiada al portapapeles"
 }}
 
 # Salir del programa
