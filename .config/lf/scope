@@ -41,7 +41,7 @@ thumbnail_resize() {
 	THUMBNAIL="$1"
 
 	# Ancho mínimo: 1/3 del ancho de pantalla
-	THIRD="$(($(xrandr | grep '\*' | awk '{print $1}' | cut -dx -f1) / 3))"
+	THIRD="$(($(hyprctl monitors -j | jq '.[] | select(.focused == true)' | jq -r '.width') / 3))"
 	WIDTH=$(identify -format "%w" "$THUMBNAIL")
 	# Si el ancho es menor al requerido, lo reescalamos proporcionalmente
 	if [ "$WIDTH" -lt "$THIRD" ]; then

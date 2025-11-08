@@ -23,7 +23,7 @@
     "workspace-taskbar": {
       "enable": true,
       "format": "{icon}",
-      "icon-size": 16,
+      "icon-size": 18,
     },
   },
   "custom/music-metadata": {
