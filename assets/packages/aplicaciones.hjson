@@ -32,7 +32,7 @@
     "zathura-pdf-mupdf"
   ],
   "mozilla": [
-    "arkenfox-user.js",
+    "chaotic-aur/arkenfox-user.js-git",
     "ca-certificates",
     "ca-certificates-mozilla",
     "firefox",

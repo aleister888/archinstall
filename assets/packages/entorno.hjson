@@ -5,7 +5,7 @@
     "hyprland",
     "hyprlock",
     "hyprpolkitagent",
-    "input-remapper-bin",
+    "chaotic-aur/input-remapper-bin-git",
     "kitty",
     "mediainfo",
     "nwg-look",
