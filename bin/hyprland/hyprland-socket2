@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # shellcheck disable=SC2086
 
 # TODO: Implementar una utilidad para usar varios monitores de forma sencilla
@@ -12,16 +12,41 @@ handle() {
 		# por defecto en el mismo espacio que la ventana padre. Para poder
 		# moverla al espacio actual utilizamos hyprctl. Esto es posible por que
 		# por defecto no le damos el foco con el ajuste:
-		#     windowrulev2 = noinitialfocus, title:^(Desbloquear base de datos - KeePassXC)
-		if echo $1 | grep "Desbloquear base de datos - KeePassXC"; then
+		#   windowrulev2 = noinitialfocus, title:^(Desbloquear base de datos - KeePassXC)
+		if echo $1 | grep -q "Desbloquear base de datos - KeePassXC"; then
 			CURRENT_WORKSPACE="$(hyprctl activeworkspace | head -n1 | awk '{print $3}')"
 			hyprctl dispatch focuswindow "title:Desbloquear base de datos - KeePassXC"
 			hyprctl dispatch movetoworkspace "$CURRENT_WORKSPACE"
+		fi
+
+		# Aveces hyprland se equivoca y maximiza la ventana de descargas de
+		# Firefox. Para evitar esto, vamos a minimizar la ventana manualmente
+		if echo $1 | grep -q "firefox"; then
+
+			WINDOW_ADDRESS=$(echo $1 | grep -oP ">>\K[a-f0-9]+")
+
+			WINDOW_PID=$(hyprctl clients -j | jq -r ".[] | select(.address == \"0x$WINDOW_ADDRESS\") | .pid")
+			WINDOW_TITLE=$(hyprctl clients -j | jq -r ".[] | select(.address == \"0x$WINDOW_ADDRESS\") | .title")
+			WINDOW_FULLSCREEN=$(hyprctl clients -j | jq -r ".[] | select(.address == \"0x$WINDOW_ADDRESS\") | .fullscreen")
+
+			# Aveces la ventana cuando aparece no tiene título y hay que esperar
+			while [ -z "$WINDOW_TITLE" ]; do
+				WINDOW_TITLE=$(hyprctl clients -j | jq -r ".[] | select(.address == \"0x$WINDOW_ADDRESS\") | .title")
+			done
+
+			# Nos aseguramos que sea una ventana de descargas
+			echo $WINDOW_TITLE | grep -q "Opening.*" || return
+
+			# Nos aseguramos que la ventana no este en pantalla completa
+			while [ $WINDOW_FULLSCREEN -eq 1 ]; do
+				hyprctl dispatch fullscreenstate "0,pid:$WINDOW_PID"
+				WINDOW_FULLSCREEN=$(hyprctl clients -j | jq -r ".[] | select(.address == \"0x$WINDOW_ADDRESS\") | .fullscreen")
+			done &
 		fi
 		;;
 	esac
 }
 
 # Obtenemos la información del socket de hyprland
-socat -U - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock |
+socat -U - UNIX-CONNECT:${XDG_RUNTIME_DIR}/hypr/${HYPRLAND_INSTANCE_SIGNATURE}/.socket2.sock |
 	while read -r LINE; do handle "$LINE"; done

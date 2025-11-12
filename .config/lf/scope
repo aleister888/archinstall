@@ -59,7 +59,10 @@ FILETYPE="$(xdg-mime query filetype "$1")"
 case $FILETYPE in
 
 # Imprimir los manuales con man
-text/troff) man ./ "$1" | col -b ;;
+text/troff)
+	man ./ "$1" | col -b
+	exit 1
+	;;
 
 # Imprimir los archivos de texto con bat
 text/* | */xml | */json | */x-shellscript | */x-xcursor | */x-theme | */x-desktop | */x-troff-man | */x-ruby | */yaml | */toml | */sql | */x-php | inode/x-empty)
@@ -69,14 +72,15 @@ text/* | */xml | */json | */x-shellscript | */x-xcursor | */x-theme | */x-deskto
 	*/*)
 		case "$1" in
 		*json)
-			bat -fp --terminal-width "$(($4 - 2))" -l JSON "$1"
+			bat -fp --terminal-width "$((4 - 2))" -l JSON "$1"
 			;;
 		*)
-			bat -fp --terminal-width "$(($4 - 2))" -f "$1"
+			bat -fp --terminal-width "$((4 - 2))" -f "$1"
 			;;
 		esac
 		;;
 	esac
+	exit 1
 	;;
 
 # Convertir con imagemagick a JPG
@@ -150,6 +154,7 @@ audio/flac | audio/mpeg | audio/x-m4a | audio/mp4)
 	fi
 	chafa /usr/share/icons/Papirus-Dark/128x128/devices/media-optical.svg
 	cat "$CACHE"
+	exit 1
 	;;
 
 # Mostrar una pre-visualización e información sobre el video
@@ -190,9 +195,9 @@ video/*)
 		# Determinamos el número de saltos de línea en
 		# función de si el vídeo está rotado o no
 		if [ "$ROTATION" = "90" ] || [ "$ROTATION" = "270" ]; then
-			COUNT=$(echo "scale=2; (${4}/4) * $RATIO + 1" | bc | cut -d. -f1)
+			COUNT=$(echo "(${4}/4) * $RATIO + 1" | bc)
 		else
-			COUNT=$(echo "scale=2; (${4}/4) / $RATIO + 1" | bc | cut -d. -f1)
+			COUNT=$(echo "(${4}/4) / $RATIO + 1" | bc)
 		fi
 		printf '\n%.0s' $(seq "$COUNT")
 		cat "$METADATA"
@@ -238,54 +243,51 @@ video/*)
 */x-tar | */x-compressed-tar)
 	HASH="$(file_hash "$1")"
 	CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/lf/$HASH.txt"
-	if [ ! -f "$CACHE" ]; then
-		tar -tf "$1" | tail -n +1 |
-			tee "$CACHE" >/dev/null
-	fi
+	[ ! -f "$CACHE" ] && tar -tf "$1" && tee "$CACHE" >/dev/null
 	cat "$CACHE"
 	exit 1
 	;;
 */vnd.rar)
 	HASH="$(file_hash "$1")"
 	CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/lf/$HASH.txt"
-	if [ ! -f "$CACHE" ]; then
-		unrar l "$1" | tail -n +9 | head -n -3 |
-			awk '{ for(i=4; i<=NF; i++) printf "%s%s", $i, (i==NF ? "\n" : " ") }' |
-			tee "$CACHE" >/dev/null
-	fi
+	[ ! -f "$CACHE" ] && unrar l "$1" | tee "$CACHE" >/dev/null
 	cat "$CACHE"
 	exit 1
 	;;
 */zip | */vnd.android.package-archive)
 	HASH="$(file_hash "$1")"
 	CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/lf/$HASH.txt"
-	if [ ! -f "$CACHE" ]; then
-		unzip -l "$1" | tail -n +4 | head -n -2 |
-			awk '{ for(i=3; i<=NF; i++) printf "%s%s", $i, (i==NF ? "\n" : " ") }' |
-			tee "$CACHE" >/dev/null
-	fi
+	[ ! -f "$CACHE" ] && unzip -l "$1" | tee "$CACHE" >/dev/null
 	cat "$CACHE"
 	exit 1
 	;;
 */x-7z-compressed)
 	HASH="$(file_hash "$1")"
 	CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/lf/$HASH.txt"
-	if [ ! -f "$CACHE" ]; then
-		7z l "$1" | tail -n +21 | head -n -2 |
-			awk '{ for(i=6; i<=NF; i++) printf "%s%s", $i, (i==NF ? "\n" : " ") }' |
-			tee "$CACHE" >/dev/null
-	fi
+	[ ! -f "$CACHE" ] && 7z l "$1" | tee "$CACHE" >/dev/null
 	cat "$CACHE"
 	exit 1
 	;;
 
 # Convertir documentos a texto
-*opendocument*) odt2txt "$1" | fold -w $(($(($4 - 2)) / 5 + 2)) ;;
+*opendocument*)
+	HASH="$(file_hash "$1")"
+	CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/lf/$HASH.txt"
+	[ ! -f "$CACHE" ] && odt2txt "$1" | tee "$CACHE" >/dev/null
+	cat "$CACHE"
+	exit 1
+	;;
 
 # Mostar información sobre las claves con pgp
-*/pgp-encrypted) gpg --list-packets "$1" ;;
+*/pgp-encrypted)
+	gpg --list-packets "$1"
+	exit 1
+	;;
 
 # Si no es ninguno de estos tipos, usar medianfo
-*) mediainfo "$1" | tr -s " " || exit 1 ;;
+*)
+	mediainfo "$1" | tr -s " "
+	exit 1
+	;;
 
 esac

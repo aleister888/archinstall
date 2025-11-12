@@ -3,7 +3,7 @@
   "position": "top",
   "height": 30,
   "margin": "0 16 0 16",
-  "modules-left": ["hyprland/workspaces"],
+  "modules-left": ["hyprland/workspaces", "hyprland/window"],
   //"modules-left": ["hyprland/workspaces", "custom/music-metadata"],
   "modules-center": ["clock", "privacy"],
   "modules-right": [
@@ -24,6 +24,15 @@
       "enable": true,
       "format": "{icon}",
       "icon-size": 18,
+    },
+  },
+  "hyprland/window": {
+    "rewrite": {
+      "(.*) - KeePassXC": "$1",
+      "(.*) - Nvim": "$1",
+      "(.*) - Obsidian.*": "$1",
+      "(.*) — Mozilla Firefox": "$1",
+      "(.*).pdf": "$1",
     },
   },
   "custom/music-metadata": {
