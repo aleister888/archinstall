@@ -18,7 +18,7 @@ set relativenumber
 set info size:time
 set ratios 3:5:4
 set autoquit true
-set hiddenfiles ".*:*.aux:*.toc:*.sty:*.out:*.log:*.bbl:*.blg:*.synctex.gz:_minted:*.bcf:*.nav:*.run.xml:*.snm:*.xwm:*.lrc:*-autosave.kra:*~"
+set hiddenfiles ".*:*.aux:*.toc:*.sty:*.out:*.log:*.bbl:*.blg:*.synctex.gz:_minted:*.bcf:*.nav:*.run.xml:*.snm:*.xwm:*.lrc:*-autosave.kra:*~:*.vpp.bak_*"
 
 set cleaner '~/.config/lf/cleaner'
 set previewer '~/.config/lf/scope'
@@ -94,13 +94,7 @@ cmd open ${{
 			')
 
 			# Pasar a nsxiv
-			printf '%s\n' "$ROTATED" |
-				nsxiv -aio |
-				while read -r FILE; do
-					[ -z "$FILE" ] && continue
-					lf -remote "send select \"$FILE\""
-					lf -remote "send toggle"
-				done &
+			printf '%s\n' "$ROTATED" | setsid -f nsxiv -aio >/dev/null 2>&1
 			;;
 
 		audio/*)
