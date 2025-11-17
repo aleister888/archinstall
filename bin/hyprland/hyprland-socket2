@@ -37,7 +37,7 @@ handle() {
 			# Nos aseguramos que sea una ventana de descargas
 			echo $WINDOW_TITLE | grep -q "Opening.*" || return
 
-			# Nos aseguramos que la ventana no este en pantalla completa
+			# Nos aseguramos que la ventana no esté en pantalla completa
 			while [ $WINDOW_FULLSCREEN -eq 1 ]; do
 				hyprctl dispatch fullscreenstate "0,pid:$WINDOW_PID"
 				WINDOW_FULLSCREEN=$(hyprctl clients -j | jq -r ".[] | select(.address == \"0x$WINDOW_ADDRESS\") | .fullscreen")

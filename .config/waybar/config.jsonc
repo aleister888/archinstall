@@ -23,7 +23,7 @@
     "workspace-taskbar": {
       "enable": true,
       "format": "{icon}",
-      "icon-size": 18,
+      "icon-size": 14,
     },
   },
   "hyprland/window": {

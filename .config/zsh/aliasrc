@@ -12,7 +12,7 @@ alias ls='eza -lagX --time-style iso --group-directories-first --smart-group'
 alias grep='grep --color=auto'
 
 # Actualizar el sistema
-alias update='yay -Syuu --answerclean --answerdiff --removemake --ignore "*-git"'
+alias update='yay -Syuu --sudoloop --answerclean --answerdiff --removemake'
 
 # Herramientas
 alias xdotool_table='xmodmap -pk'
