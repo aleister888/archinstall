@@ -83,5 +83,11 @@ while true; do
 	setsid -f hyprpaper
 done &
 
+# Si hay una tarjeta de audio USB y hay VST instalados, abrimos REAPER
+if lsusb | grep -i audio &&
+	[ -e "$WINEPREFIX/drive_c/Program Files/Common Files/VST3" ]; then
+	setsid -f /usr/bin/reaper
+fi
+
 # Limpiar directorio $HOME
 cleaner
