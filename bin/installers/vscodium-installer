@@ -1,0 +1,81 @@
+#!/bin/bash
+
+# Script para instalar/desinstalar Ryujinx
+
+INSTALL_DIR="$HOME/.local/opt/vscodium"
+RUN_SCRIPT="$HOME/.local/bin/vscodium"
+DESKTOP_FILE="$HOME/.local/share/applications/vscodium.desktop"
+
+install() {
+	local REPO REPLY DOWNLOAD_URL FILENAME TAR_LOCATION
+	REPO="VSCodium/vscodium"
+	REPLY="$(curl -s "https://api.github.com/repos/$REPO/releases/latest")"
+	DOWNLOAD_URL=$(
+		echo "$REPLY" | jq -r '.assets[] | select(.name | test("VSCodium-linux-x64-.*.tar.gz$")) | .browser_download_url' |
+			sort -r | head -n1
+	)
+	FILENAME="$(basename "$DOWNLOAD_URL")"
+	TAR_LOCATION="/tmp/$FILENAME"
+	EXTRACT_DIR="/tmp/${FILENAME%.tar.gz}"
+
+	# Descargar y descomprimir el archivo
+	curl -L "$DOWNLOAD_URL" -o "$TAR_LOCATION" || exit
+	tar -xzf "$TAR_LOCATION" -C "$EXTRACT_DIR" --strip-components=1 --no-same-owner --no-same-permissions
+
+	# Instalarlo en $HOME
+	mkdir -p "$(dirname "$INSTALL_DIR")"
+	mv "$EXTRACT_DIR" "$INSTALL_DIR"
+
+	# Crear script de inicio
+	cat <<-EOF >"$RUN_SCRIPT"
+		#!/bin/sh
+		$INSTALL_DIR/codium \$@
+	EOF
+	chmod +x "$RUN_SCRIPT"
+
+	cat <<-EOF >"$DESKTOP_FILE"
+		[Desktop Entry]
+		Name=VSCodium
+		Comment=Code Editing. Redefined.
+		GenericName=Text Editor
+		Exec=$INSTALL_DIR/codium %F
+		Icon=$INSTALL_DIR/resources/app/resources/linux/code.png
+		Type=Application
+		StartupNotify=false
+		StartupWMClass=VSCodium
+		Categories=Utility;Development;IDE;
+		MimeType=text/plain;inode/directory;
+		Actions=new-empty-window;
+		Keywords=vscode;
+
+		[Desktop Action new-empty-window]
+		Name=New Empty Window
+		Exec=$INSTALL_DIR/codium --new-window %F
+		Icon=vscodium
+	EOF
+}
+
+uninstall() {
+	rm -rf "$INSTALL_DIR"
+	rm -f "$RUN_SCRIPT"
+	rm -f "$DESKTOP_FILE"
+}
+
+clean() {
+	rm -rf "${XDG_CONFIG_HOME:-$HOME/.config}"/VSCodium
+	rm -rf "$HOME/.vscode-oss"
+}
+
+help_msg() {
+	echo "Uso:" >&2
+	echo "  $(basename "$0") [--install/--uninstall/--clean]" >&2
+	exit 1
+}
+
+# Manejo de argumentos
+case "$1" in
+--install) install ;;
+--uninstall) uninstall ;;
+--clean) clean ;;
+*) help_msg ;;
+esac

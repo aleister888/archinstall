@@ -17,8 +17,20 @@ IMAGE="/tmp/canvas-draw.png"
 
 LLAVE="$(cat "$XDG_CACHE_HOME"/gemini_key)"
 PROMPT="
-Esta es una imagen de una ecuación o expresión matemática escrita a mano. Convierte esta imagen a código LaTeX preciso y correcto.
-Responde únicamente con el código LaTeX de la ecuación sin estar rodeado por backtics:
+Esta es una imagen de una ecuación o expresión matemática escrita a mano.
+Convierte esta imagen a código LaTeX preciso y correcto.
+
+No uses $, el código es para poner entre \$\$ \$\$ en un documento markdown
+copiando la respuesta que me proporciones y pegando en mi texto, así que:
+
+No uses entornos como \`tabular\` que no están reconocidos por Markdown.
+En caso de tener que representar una tabla, usa un entorno \`matrix\` y \hline.
+
+Responde únicamente con el código LaTeX de la ecuación sin estar rodeado por
+backtics. Es decir, no uses:
+
+\`\`\`latex
+\`\`\`
 "
 
 IMAGE_DATA=$(base64 -w 0 "$IMAGE")
