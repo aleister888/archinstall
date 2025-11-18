@@ -28,6 +28,10 @@ local filetype_configs = {
 		tabstop = 4,
 		shiftwidth = 4,
 	},
+	hyprlang = {
+		tabstop = 4,
+		shiftwidth = 4,
+	},
 	["hjson"] = {
 		smartindent = true,
 		expandtab = true,

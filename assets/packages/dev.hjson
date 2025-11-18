@@ -18,6 +18,9 @@
     "python-pandas",
     "python-scikit-learn"
   ],
+  "database": [
+    "mysql"
+  ],
   "formateadores": [
     "astyle",
     "prettier",

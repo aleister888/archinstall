@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# Script para instalar/desinstalar Citrahold
+
+INSTALL_DIR="$HOME/.local/opt/osrmt"
+BIN_FILE="$INSTALL_DIR/run.sh"
+RUN_SCRIPT="$HOME/.local/bin/osrmt"
+DESKTOP_FILE="$HOME/.local/share/applications/osrmt.desktop"
+
+install() {
+	local DOWNLOAD_URL ZIP_LOCATION
+	REPO="osrmt/osrmt"
+	DOWNLOAD_URL="https://github.com/$REPO/releases/download/1.8/osrmt_1.8_desktop.zip"
+	ZIP_LOCATION="/tmp/$(basename $REPO).zip"
+	EXTRACT_DIR="/tmp/osrmt"
+
+	mkdir -p "$INSTALL_DIR"
+
+	# Descargamos el zipball
+	curl -L "$DOWNLOAD_URL" -o "$ZIP_LOCATION" || exit
+	unzip -o "$ZIP_LOCATION" -d "$EXTRACT_DIR" >/dev/null
+	rm "$ZIP_LOCATION"
+
+	mv "$EXTRACT_DIR"/* "$INSTALL_DIR"
+	chmod +x "$BIN_FILE"
+
+	cat <<-EOF >"$RUN_SCRIPT"
+		#!/bin/sh
+		cd "$INSTALL_DIR"
+		$BIN_FILE
+	EOF
+	chmod +x "$RUN_SCRIPT"
+
+	cat <<-EOF >"$DESKTOP_FILE"
+		[Desktop Entry]
+		Name=OSRMT
+		Comment=Open Source Requirements Management Tool
+		Exec=$RUN_SCRIPT
+		Icon=jd-gui
+		Terminal=false
+		Type=Application
+		Categories=Utility;
+	EOF
+}
+
+uninstall() {
+	rm -rf "$INSTALL_DIR"
+	rm -f "$BIN_FILE"
+	rm -f "$DESKTOP_FILE"
+	rm -f "$RUN_SCRIPT"
+}
+
+help_msg() {
+	echo "Uso:" >&2
+	echo "  $(basename "$0") [--install/--uninstall]" >&2
+	exit 1
+}
+
+# Manejo de argumentos
+case "$1" in
+--install) install ;;
+--uninstall) uninstall ;;
+--clean) clean ;;
+*) help_msg ;;
+esac
