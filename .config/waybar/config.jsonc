@@ -1,8 +1,8 @@
 {
   "layer": "bottom",
   "position": "top",
-  "height": 30,
-  "margin": "0 16 0 16",
+  "height": 0, // Dejamos que el tamaño de los módulos sea el que mande
+  "margin": "0 6 0 6",
   "modules-left": ["hyprland/workspaces", "hyprland/window"],
   //"modules-left": ["hyprland/workspaces", "custom/music-metadata"],
   "modules-center": ["clock", "privacy"],
