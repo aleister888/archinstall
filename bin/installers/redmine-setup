@@ -2,6 +2,8 @@
 # shellcheck disable=SC2164
 # shellcheck disable=SC2086
 
+set -e
+
 # Instala y configura redmine con usuario=admin contraseña=admin
 
 [ -z "${MYSQL_PASSWD}" ] && MYSQL_PASSWD=mysql
