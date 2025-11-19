@@ -1,0 +1,74 @@
+#!/bin/sh
+# shellcheck disable=SC2164
+# shellcheck disable=SC2086
+
+# Instala y configura redmine con usuario=admin contraseña=admin
+
+[ -z "${MYSQL_PASSWD}" ] && MYSQL_PASSWD=mysql
+[ -z "${REDMINE_PASSWD}" ] && REDMINE_PASSWD=redmine
+
+mysql_install() {
+	sudo pacman -Sy --noconfirm --needed mariadb
+	sudo mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
+	sudo systemctl enable --now mariadb
+
+	# Password configuration.
+	cat <<-EOF | sudo mysql_secure_installation
+
+		y
+		${MYSQL_PASSWD}
+		${MYSQL_PASSWD}
+		n
+		y
+		y
+		y
+	EOF
+
+	# Create user and database for redmine.
+	cat <<-EOF | sudo mysql -uroot -p${MYSQL_PASSWD}
+		CREATE DATABASE redmine CHARACTER SET UTF8;
+		CREATE USER 'redmine'@'localhost' IDENTIFIED BY '${REDMINE_PASSWD}';
+		GRANT ALL PRIVILEGES ON redmine.* TO 'redmine'@'localhost';
+	EOF
+}
+
+redmine_install() {
+	sudo pacman -Sy --noconfirm --needed redmine ruby-bundler postgresql-libs
+
+	# Ruby on Rails.
+	cd /usr/share/webapps/redmine/
+
+	cat <<-EOF | sudo tee config/database.yml
+		production:
+		  adapter: mysql2
+		  database: redmine
+		  host: localhost
+		  username: redmine
+		  password: "${REDMINE_PASSWD}"
+		  encoding: utf8
+	EOF
+
+	sudo chown -R http:http /usr/share/webapps/redmine/
+	sudo chmod -R 755 /usr/share/webapps/redmine/
+
+	sudo -u http bundle config set --local frozen false
+	sudo -u http bundle install --path vendor/bundle
+
+	sudo bundle exec rake generate_secret_token
+
+	sudo chown -R http:http db
+
+	sudo -u http -g http RAILS_ENV=production bundle exec rake db:migrate
+
+	sudo -u http -g http RAILS_ENV=production REDMINE_LANG=es \
+		bundle exec rake redmine:load_default_data
+
+	sudo systemctl enable --now redmine.service
+}
+
+redmine_main() {
+	mysql_install
+	redmine_install
+}
+
+redmine_main

@@ -23,12 +23,12 @@ fi
 # Activar servicio
 service_add() {
 	SERVICE="$1"
-	sudo /usr/bin/systemctl enable "$SERVICE"
+	sudo /usr/bin/systemctl enable --now "$SERVICE"
 }
 # Activar servicio para el usuario
 user_service_add() {
 	SERVICE="$1"
-	systemctl --user enable "$SERVICE"
+	systemctl --user enable --now "$SERVICE"
 }
 
 [ "$(id -u)" -eq 0 ] && exit 1
