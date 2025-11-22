@@ -1,0 +1,16 @@
+#!/bin/sh
+
+TIMEOUT=30
+
+if pgrep swayidle >/dev/null; then
+	pkill swayidle
+
+	notify-send -i preferences-system-notifications \
+		"Modo presentación activado" "La pantalla no se apagará"
+else
+	notify-send -i preferences-system-notifications \
+		"Modo presentación desactivado" "La pantalla se apagará tras ${TIMEOUT}s de inactividad"
+
+	swayidle -w timeout $TIMEOUT \
+		'hyprctl dispatch dpms off' resume 'hyprctl dispatch dpms on'
+fi

@@ -76,13 +76,6 @@ fi &
 # https://github.com/emersion/hydroxide?tab=readme-ov-file#usage
 [ -x /usr/bin/hydroxide ] && hydroxide imap &
 
-# Actualizar el fondo de pantalla automáticamente
-while true; do
-	inotifywait -e modify ~/.dotfiles/assets/images/wallpaper
-	pkill hyprpaper
-	setsid -f hyprpaper
-done &
-
 # Si hay una tarjeta de audio USB y hay VST instalados, abrimos REAPER
 if lsusb | grep -i audio &&
 	[ -e "$WINEPREFIX/drive_c/Program Files/Common Files/VST3" ]; then
@@ -91,3 +84,21 @@ fi
 
 # Limpiar directorio $HOME
 cleaner
+
+############
+# Watchers #
+############
+
+# Actualizar el fondo de pantalla automáticamente
+while true; do
+	inotifywait -e modify ~/.dotfiles/assets/images/wallpaper
+	pkill hyprpaper
+	setsid -f hyprpaper
+done &
+
+# Recargar la configuración de swaync
+while true; do
+	inotifywait -e modify ~/.config/swaync
+	systemctl --user restart swaync.service
+	notify-send -i preferences-system-notifications "swaync" "Configuración actualizada"
+done &

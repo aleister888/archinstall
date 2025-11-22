@@ -43,7 +43,7 @@
       "image-size": 96
     },
     "buttons-grid": {
-      "buttons-per-row": 4,
+      "buttons-per-row": 5,
       "actions": [
         {
           "label": "",
@@ -62,6 +62,12 @@
           "type": "toggle",
           "command": "bash -c '[[ $(powerprofilesctl get) == \"power-saver\" ]] && powerprofilesctl set performance || powerprofilesctl set power-saver'",
           "update-command": "bash -c '[[ $(powerprofilesctl get) == \"power-saver\" ]] && echo false || echo true'"
+        },
+        {
+          "label": "󰐯",
+          "type": "toggle",
+          "command": "~/.dotfiles/bin/swaync/presentation-toggle",
+          "update-command": "bash -c 'pgrep swayidle >/dev/null && echo false || echo true'"
         },
         {
           "label": "",
