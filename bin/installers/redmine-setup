@@ -1,6 +1,8 @@
 #!/bin/sh
-# shellcheck disable=SC2164
 # shellcheck disable=SC2086
+# shellcheck disable=SC2155
+# shellcheck disable=SC2164
+# shellcheck disable=SC3043
 
 set -e
 
@@ -34,7 +36,7 @@ mysql_install() {
 	EOF
 }
 
-redmine_install() {
+redmine_service_install() {
 	sudo pacman -Sy --noconfirm --needed redmine ruby-bundler postgresql-libs
 
 	# Ruby on Rails.
@@ -72,9 +74,95 @@ redmine_install() {
 	sudo systemctl enable --now redmine.service
 }
 
-redmine_main() {
+redmine_install() {
 	mysql_install
-	redmine_install
+	redmine_service_install
 }
 
-redmine_main
+redmine_backup() {
+	local BACKUP_DIR="$1"
+
+	mkdir -p "$BACKUP_DIR"
+
+	[ ! -d "$BACKUP_DIR" ] && {
+		echo "$BACKUP_DIR no es un directorio válido" >&2
+		help_msg
+	}
+
+	echo "Creando copia de seguridad en: $BACKUP_DIR"
+
+	# Hacemos una copia de seguridad de la base de datos CON eliminación manual
+	{
+		# Cabecera del dump
+		echo "-- Redmine Backup"
+		echo "-- Generated: $(date)"
+		echo "-- Database: redmine"
+		echo ""
+		# Eliminación completa de la base de datos
+		echo "/*!40000 DROP DATABASE IF EXISTS redmine */;"
+		echo "CREATE DATABASE redmine CHARACTER SET UTF8;"
+		echo "USE redmine;"
+		echo ""
+		# Dump de la estructura y datos
+		mariadb-dump -u redmine -p"${REDMINE_PASSWD}" \
+			--no-create-db \
+			--complete-insert \
+			--extended-insert \
+			--single-transaction \
+			redmine
+	} >"$BACKUP_DIR/database.sql"
+
+	# Hacemos una copia de seguridad de los archivos
+	rsync -av --delete /var/lib/redmine/files/ "$BACKUP_DIR/files/" >/dev/null 2>&1
+}
+
+redmine_restore() {
+	# Directorio donde se aloja la copia de seguridad
+	local BACKUP_DIR="$1"
+	# Aquí crearemos una copia de como estaba redmine antes de la restauración
+	local RESTORE_DIR="/tmp/redmine_backup_$(date +%Y%m%d_%H%M%S)"
+
+	# Nos aseguramos de que el directorio contega un backup
+	[ ! -e "$BACKUP_DIR/database.sql" ] && {
+		echo "El directorio no contiene una copia de seguridad" >&2
+		exit 1
+	}
+
+	# Creamos una copia de seguridad temporal en caso de fallo
+	redmine_backup $RESTORE_DIR
+
+	# Detenemos el servicio
+	echo "Deteniendo redmine"
+	sudo systemctl stop redmine.service && echo "Servicio redmine detenido"
+
+	# Restauramos la copia de seguridad de la base de datos y archivos
+	echo "Restaurando copia de seguridad desde: $BACKUP_DIR"
+	sudo mariadb <<-EOF
+		DROP DATABASE IF EXISTS redmine
+	EOF
+	mariadb -u redmine -p"${REDMINE_PASSWD}" <"$BACKUP_DIR/database.sql"
+	sudo rsync -av --delete "$BACKUP_DIR/files/" /var/lib/redmine/files/ >/dev/null 2>&1
+
+	echo "Reiniciando redmine"
+	if sudo systemctl restart redmine.service; then
+		echo "redmine reinciado correctamente"
+	else
+		echo "Error al reiniciar redmine"
+	fi
+}
+
+help_msg() {
+	echo "Uso: $(basename "$0"):" >&2
+	echo "       --install" >&2
+	echo "       --backup  [CARPETA]" >&2
+	echo "       --restore [CARPETA]" >&2
+	exit 1
+}
+
+# Manejo de argumentos
+case "$1" in
+--install) redmine_install ;;
+--backup) redmine_backup "$2" ;;
+--restore) redmine_restore "$2" ;;
+*) help_msg ;;
+esac
