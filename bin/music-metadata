@@ -83,7 +83,7 @@ NOTA:
   Puedes cambiar el máximo de caracteres para -d con la variable \$FACT y el máximo para -t/-a con la variable \$ALTFACT" >&2
 }
 
-if echo "$@" | grep "\-h\|--help" >/dev/null; then
+if echo "$@" | grep -q "\-h\|--help"; then
 	help_msg
 	exit
 fi

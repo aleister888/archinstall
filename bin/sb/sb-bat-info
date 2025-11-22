@@ -11,7 +11,7 @@ info-print() {
 	# Extraer e imprimir la información para cada batería
 	for ((i = 1; i <= NUM_BATERIAS; i++)); do
 		ESTADO=""
-		if echo "$OUT" | sed "${i}q;d" | grep Charging >/dev/null; then
+		if echo "$OUT" | sed "${i}q;d" | grep -q Charging; then
 			ESTADO=" "
 		fi
 		PORCENTAJE="$(echo "$OUT" | sed "${i}q;d" | grep -oP '\d+%')"
