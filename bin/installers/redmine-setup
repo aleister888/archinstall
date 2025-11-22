@@ -65,6 +65,10 @@ redmine_install() {
 	sudo -u http -g http RAILS_ENV=production REDMINE_LANG=es \
 		bundle exec rake redmine:load_default_data
 
+	sudo sed -i "s/127.0.0.1/0.0.0.0/" \
+		/usr/lib/systemd/system/redmine.service # Permitimos el acceso remoto
+	sudo systemctl daemon-reload
+
 	sudo systemctl enable --now redmine.service
 }
 
