@@ -29,6 +29,7 @@ Defaults:%wheel env_keep += "SUDO_USER SUDO_UID SUDO_GID LANG LC_ALL"
 
 # updater/install-conf
 %wheel ALL=(root) NOPASSWD: /usr/bin/tee /etc/modprobe.d/nobeep.conf
+%wheel ALL=(root) NOPASSWD: /usr/bin/sed ^.* /etc/systemd/logind.conf$
 %wheel ALL=(root) NOPASSWD: /usr/bin/cp ^-f .* /usr/lib/udev/rules.d/$
 
 # update.sh
