@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # shellcheck disable=SC2086
 # shellcheck disable=SC2155
 # shellcheck disable=SC2164
@@ -74,9 +74,34 @@ redmine_service_install() {
 	sudo systemctl enable --now redmine.service
 }
 
+repo_install() {
+	local NAME="$(basename "$1")"
+	local INSTALL_DIR="/usr/share/webapps/redmine/$2/$NAME"
+	local TMP_DIR="/tmp/$NAME"
+
+	[ -d "$INSTALL_DIR" ] && return
+	[ -d "$TMP_DIR" ] && rm -rf "$TMP_DIR"
+
+	git clone "https://github.com/$1.git" \
+		"$TMP_DIR"
+
+	sudo cp -r "$TMP_DIR" "$INSTALL_DIR"
+	sudo chown -R http:http "$INSTALL_DIR"
+}
+
+themes_install() {
+	THEMES=(
+		"gagnieray/opale"
+	)
+	for THEME in "${THEMES[@]}"; do
+		repo_install $THEME themes
+	done
+}
+
 redmine_install() {
 	mysql_install
 	redmine_service_install
+	themes_install
 }
 
 redmine_backup() {
@@ -114,6 +139,7 @@ redmine_backup() {
 
 	# Hacemos una copia de seguridad de los archivos
 	rsync -av --delete /var/lib/redmine/files/ "$BACKUP_DIR/files/" >/dev/null 2>&1
+	rsync -av --delete /usr/share/webapps/redmine/themes/ "$BACKUP_DIR/themes/" >/dev/null 2>&1
 }
 
 redmine_restore() {
@@ -142,6 +168,7 @@ redmine_restore() {
 	EOF
 	mariadb -u redmine -p"${REDMINE_PASSWD}" <"$BACKUP_DIR/database.sql"
 	sudo rsync -av --delete "$BACKUP_DIR/files/" /var/lib/redmine/files/ >/dev/null 2>&1
+	sudo rsync -av --delete "$BACKUP_DIR/themes/" /usr/share/webapps/redmine/themes/ >/dev/null 2>&1
 
 	echo "Reiniciando redmine"
 	if sudo systemctl restart redmine.service; then
@@ -164,5 +191,6 @@ case "$1" in
 --install) redmine_install ;;
 --backup) redmine_backup "$2" ;;
 --restore) redmine_restore "$2" ;;
+--themes) themes_install ;;
 *) help_msg ;;
 esac
