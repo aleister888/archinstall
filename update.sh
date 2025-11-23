@@ -84,8 +84,15 @@ mapfile -t REMOVED_PACKAGES < <(
 )
 
 if ((${#REMOVED_PACKAGES[@]})); then
-	echo -e "Los siguientes paquetes ya no son necesarios:\n"
-	printf '%s\n' "${REMOVED_PACKAGES[@]}"
+	REMOVED_FILE="/tmp/removed_packages.txt"
+
+	echo "Los siguientes paquetes ya no son necesarios:"
+	echo ""
+
+	printf '%s\n' "${REMOVED_PACKAGES[@]}" | tee "$REMOVED_FILE"
+
+	echo "Puedes eliminarlos cuando quieras con:"
+	echo "  sudo pacman -Rcns \$(cat \"$REMOVED_FILE\")"
 fi
 
 # Guardamos el hash tras hacer pull
