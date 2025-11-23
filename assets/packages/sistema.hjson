@@ -60,8 +60,7 @@
     "freerdp",
     "gtk-vnc",
     "libvncserver",
-    "remmina",
-    "tigervnc"
+    "remmina"
   ],
   "fuentes": [
     "cantarell-fonts",
