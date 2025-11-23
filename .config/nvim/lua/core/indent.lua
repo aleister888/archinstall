@@ -50,6 +50,11 @@ local filetype_configs = {
 		tabstop = 8,
 		shiftwidth = 8,
 	},
+	rasi = {
+		expandtab = true,
+		tabstop = 2,
+		shiftwidth = 2,
+	},
 	["*css"] = {
 		expandtab = true,
 		tabstop = 2,

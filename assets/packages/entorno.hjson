@@ -1,14 +1,15 @@
 {
   "general": [
+    "chaotic-aur/input-remapper-git",
     "feh",
     "grim",
     "hyprland",
     "hyprlock",
     "hyprpolkitagent",
-    "chaotic-aur/input-remapper-git",
     "kitty",
     "mediainfo",
     "nwg-look",
+    "rofi",
     "slurp",
     "swayidle",
     "tk",

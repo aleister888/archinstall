@@ -6,7 +6,8 @@
 
 NOTIFICATION_DURATION=750
 
-DMENU="wofi --show dmenu"
+DMENU="rofi -dmenu"
+DMENU_LINES="-l"
 
 # Lista con los sinks vinculados (Solo guarda un canal)
 ADDED_LIST=/tmp/pipewire-virtualmic
@@ -64,7 +65,7 @@ sink_edit() {
 	F_SINKS=$(echo "$SINKS" | sed 's/:.*//g' | sort -u)
 
 	# Elegir el sink con dmenu mostrando solo la información esencial
-	DMENU_SELECTED=$(echo "$F_SINKS" | $DMENU --lines "$(echo "$F_SINKS" | wc -l)")
+	DMENU_SELECTED=$(echo "$F_SINKS" | $DMENU $DMENU_LINES "$(echo "$F_SINKS" | wc -l)")
 	[ -z "$DMENU_SELECTED" ] && exit
 
 	# Elegir la primera coincidencia de nuestra elección con el array
@@ -125,7 +126,7 @@ pw-link my-combined-sink:monitor_FR my-virtualmic:input_FR 2>/dev/null
 # Elegir si vincular o desvincular sinks
 ADD="Añadir sink al micrófono virtual"
 DEL="Quitar sink del micrófono virtual"
-CHOSEN=$(echo -e "$ADD\n$DEL" | eval $DMENU -L 2)
+CHOSEN=$(echo -e "$ADD\n$DEL" | eval $DMENU $DMENU_LINES 2)
 
 [ -z "$CHOSEN" ] || sinks_eval
 

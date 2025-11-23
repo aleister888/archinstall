@@ -15,6 +15,7 @@ return {
 		formatters_by_ft = {
 			c = { "astyle" },
 			css = { "prettier" },
+			rasi = { "prettier_rasi" },
 			hjson = { "prettier_json" },
 			java = { "astyle" },
 			json = { "prettier" },
@@ -28,6 +29,11 @@ return {
 		},
 		format_on_save = { timeout_ms = 5000 },
 		formatters = {
+			prettier_rasi = {
+				command = "prettier",
+				args = { "--parser", "css" },
+				stdin = true,
+			},
 			prettier_json = {
 				command = "prettier",
 				-- Desactivar el wrap para archivos json
