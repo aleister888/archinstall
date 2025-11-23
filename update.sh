@@ -31,21 +31,8 @@ fi
 trap 'fc-cache -f' EXIT
 
 ################################################
-# Actualizar repo, informar cambios en sudoers #
+# Actualizar repo e informar sobre los cambios #
 ################################################
-
-# Guardamos el hash del script para comprobar mas adelante si este ha cambiado
-OG_HASH=$(sha256sum "$0" | awk '{print $1}')
-
-# Guardamos el hash del archivo sudoers para comprobar si este ha cambiado
-SUDOERS_HASH=$(sha256sum "$ASSETDIR/sudoers" | awk '{print $1}')
-
-# Comprobamos si tenemos conexión a Internet
-CONNECTED=false
-{
-	timeout -k 1s 3s ping -c 1 8.8.8.8 ||
-		timeout -k 1s 3s curl -s --head --request GET "https://dns.google/"
-} >/dev/null 2>&1 && CONNECTED=true
 
 notify_sudoers_change() {
 	echo "El archivo sudoers tiene cambios desde la última actualización"
@@ -55,15 +42,50 @@ notify_sudoers_change() {
 	echo -e "\t\t\"$HOME/.dotfiles/assets/configs/sudoers\" /etc/sudoers"
 }
 
+# Obtenemos la lista de paquetes para comparar antes y después del pull
+mapfile -t OLD_PACKAGE_LIST < <(
+	find "$HOME/.dotfiles/assets/packages" -name '*.hjson' \
+		-exec sh -c 'hjson -j "$1" | jq -r ".[] | .[]" ' _ {} \;
+)
+
+# Guardamos el hash del script para comprobar mas adelante si este ha cambiado
+OG_HASH=$(sha256sum "$0" | awk '{print $1}')
+# Guardamos el hash del archivo sudoers para comprobar si este ha cambiado
+SUDOERS_HASH=$(sha256sum "$ASSETDIR/sudoers" | awk '{print $1}')
+
+# Comprobamos si tenemos conexión a Internet
+if curl -s --connect-timeout 3 https://dns.google/ >/dev/null; then
+	CONNECTED=true
+else
+	CONNECTED=false
+fi
+
 # Si tenemos conexión a Internet y el repo. clonado, lo actualizamos
 if [ -d "$REPO_DIR/.git" ] && [ "$CONNECTED" == "true" ]; then
-	sh -c "cd $REPO_DIR && git pull" >/dev/null
+	git -C "$REPO_DIR" pull >/dev/null
+
 	# Si al actualizar el repo el archivo sudoers cambió, se lo haremos
 	# saber al usuario al terminar la ejecución
 	if [[ "$SUDOERS_HASH" != $(sha256sum "$ASSETDIR/sudoers" | awk '{print $1}') ]]; then
-		trap notify_sudoers_change EXIT
+		notify_sudoers_change
 	fi
+fi
 
+# Construimos la lista de paquetes
+mapfile -t PACKAGE_LIST < <(
+	find "$HOME/.dotfiles/assets/packages" -name '*.hjson' \
+		-exec sh -c 'hjson -j "$1" | jq -r ".[] | .[]" ' _ {} \;
+)
+
+# Detectar paquetes eliminados
+mapfile -t REMOVED_PACKAGES < <(
+	printf "%s\n" "${OLD_PACKAGE_LIST[@]}" |
+		grep -Fxv -f <(printf "%s\n" "${PACKAGE_LIST[@]:-}") || true
+)
+
+if ((${#REMOVED_PACKAGES[@]})); then
+	echo -e "Los siguientes paquetes ya no son necesarios:\n"
+	printf '%s\n' "${REMOVED_PACKAGES[@]}"
 fi
 
 # Guardamos el hash tras hacer pull
@@ -77,12 +99,6 @@ fi
 ###############################
 # Instalar paquetes faltantes #
 ###############################
-
-# Construimos la lista de paquetes dependiendo de la distro
-mapfile -t PACKAGE_LIST < <(
-	find "$HOME/.dotfiles/assets/packages" -name '*.hjson' \
-		-exec sh -c 'hjson -j "$1" | jq -r ".[] | .[]" ' _ {} \;
-)
 
 # Extraemos solo el nombre del paquete (sin prefijo repo/)
 REPO_PKGS=$(printf "%s\n" "${PACKAGE_LIST[@]}" | cut -d/ -f2)
