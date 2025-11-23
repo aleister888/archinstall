@@ -11,7 +11,7 @@ filetype_test() {
 	local MIMETYPE FILE_2_CHECK
 	FILE_2_CHECK="$1"
 	MIMETYPE="$2"
-	file --dereference --brief --mime-type -- "$FILE_2_CHECK" | grep "$MIMETYPE" >/dev/null 2>&1
+	file --dereference --brief --mime-type -- "$FILE_2_CHECK" | grep -q "$MIMETYPE"
 	return $?
 }
 

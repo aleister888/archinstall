@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 # Cambiamos el foco de las ventanas de forma cíclica en función de si estamos en
 # un espacio normal o en el espacio especial "scratch"
@@ -15,9 +15,11 @@ ACTIVE_WORKSPACE=$(hyprctl -j activewindow | jq -r '.workspace.name')
 index_scratch() {
 	mapfile -t SCRATCH_PIDS < <(
 		hyprctl -j clients |
-			jq -r '.[] | select( .workspace.name=="special:scratch") |
-				"\(.focusHistoryID):\(.pid)"' |
-			sort -n | cut -d':' -f2
+			jq -r '.[]
+				| select( .workspace.name=="special:scratch")
+				| select(.fullscreen == 0)
+				| "\(.focusHistoryID):\(.pid)"' |
+			sort | cut -d':' -f2
 	)
 }
 
@@ -31,9 +33,10 @@ cycle_regular() {
 
 cycle_scratch() {
 	index_scratch
+	local PID="${SCRATCH_PIDS[-1]}"
 	# Enfocamos la última ventana enfocada de la lista
-	hyprctl dispatch alterzorder top,"pid:${SCRATCH_PIDS[-1]}" &
-	hyprctl dispatch focuswindow "pid:${SCRATCH_PIDS[-1]}" &
+	hyprctl dispatch focuswindow "pid:$PID"
+	hyprctl dispatch alterzorder top,"pid:$PID"
 }
 
 # Si estamos en un espacio normal cambiamos ventanas con layoutmsg

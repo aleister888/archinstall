@@ -20,7 +20,7 @@ for ((i = 1; i <= NUM_BATERIAS; i++)); do
 		"$(echo "$OUT" | sed "${i}q;d" | grep -oP '\d+%' | tr -d '%')"
 	)
 	SUM=$((SUM + BATTERY_LEVEL[i - 1]))
-	echo "$OUT" | sed "${i}q;d" | grep Charging >/dev/null && CHARGING=true
+	echo "$OUT" | sed "${i}q;d" | grep -q Charging && CHARGING=true
 done
 
 ICON="  "

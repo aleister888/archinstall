@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Script para comprobar que los sinks vinculados con el micrófono virtual
+# no se han desvinculado. Muchas veces al pausar la aplicación que esta
+# pasando audio, el sink de esta se desvincula con el micrófono virtual.
+
+NOTIFICATION_DURATION=750
+
+ICON="bridge-constructor"
+
+# Lista con los sinks vinculados (Solo guarda un canal)
+ADDED_LIST=/tmp/pipewire-virtualmic
+
+while true; do
+	# Bloqueamos el proceso mientras se este eligiendo un sink
+	while pgrep virtualmic; do
+		sleep 0.2
+	done
+
+	# Sinks vinculados
+	DEL_DEVICES=$(
+		pw-link -l my-combined-sink |
+			pcre2grep -M 'my-combined-sink:playback_F[LR]\n(^ .*\n)*' |
+			grep -oP '\- \K.*'
+	)
+
+	# Para cada dispositivo supuestamente añadido,
+	# comprobamos que realmente lo está
+	while IFS= read -r DEVICE; do
+		# Si no lo está lo volvemos a vincular
+		if ! grep -qF "$DEVICE" <<<"$DEL_DEVICES"; then
+			~/.dotfiles/bin/virtualmic/sink-link add "$DEVICE" 2>/dev/null &&
+				notify-send -e -i $ICON \
+					-t $NOTIFICATION_DURATION \
+					"Dispositivo reconectado" "$DEVICE"
+		fi
+	done <"$ADDED_LIST"
+done

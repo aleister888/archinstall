@@ -19,7 +19,7 @@ help_msg() {
 USE_OG_OUTPUT=false
 INCLUDE_WEEKENDS=false
 
-if echo "$@" | grep "\-h" >/dev/null; then
+if echo "$@" | grep -q "\-h"; then
 	help_msg
 	exit
 fi

@@ -1,0 +1,24 @@
+#!/bin/bash
+# shellcheck disable=SC2086
+
+SINK_L=my-combined-sink:playback_FL
+SINK_R=my-combined-sink:playback_FR
+
+# Función para vincular/desvincular un sink del micrófono virtual
+sink_link() {
+	[ "$1" = "del" ] && FLAG="-d"
+	SINK="$2"
+
+	case "$SINK" in
+	*FL) CSINK="${SINK%FL}FR" ;;
+	*FR) CSINK="$SINK" SINK="${SINK%FR}FL" ;;
+	*1) CSINK="${SINK%1}2" ;;
+	*2) CSINK="$SINK" SINK="${SINK%2}1" ;;
+	*) CSINK="$SINK" ;;
+	esac
+
+	timeout -k 1s 3s pw-link $FLAG "$SINK" "$SINK_L"
+	timeout -k 1s 3s pw-link $FLAG "$CSINK" "$SINK_R"
+}
+
+sink_link "$@"

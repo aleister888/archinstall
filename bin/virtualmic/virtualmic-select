@@ -1,0 +1,146 @@
+#!/bin/bash -x
+# shellcheck disable=SC2086
+# shellcheck disable=SC2181
+
+# Script para vincular (dispositivos de entrada)|(aplicaciones) a un micrófono virtual para compartir audio
+
+NOTIFICATION_DURATION=750
+
+DMENU="wofi --show dmenu"
+
+# Lista con los sinks vinculados (Solo guarda un canal)
+ADDED_LIST=/tmp/pipewire-virtualmic
+
+# Variables para las notificaciones
+ICON="bridge-constructor"
+MSG="Micrófono Virtual"
+
+# Excluiremos los sinks cuyo nombre contenga alguno de estos patrones
+EXCLUDE_PATTERN="my-combined-sink\|my-virtualmic\|PulseAudio\|Midi\|v4l2\|WEBRTC\|Chromium\|bluez_input\|xdg.*portal"
+
+# Función para construir la lista de sinks
+sinks_eval() {
+	# Sinks candidadtos a añadir
+	DEVICES=$(
+		pw-link -o |
+			grep -P ':((capture)|(output)_((FL)|(FR)|(MONO)))|(out[12])' |
+			grep -v "$EXCLUDE_PATTERN" | sort -u
+	)
+
+	# Sinks candidatos a borrar (ya añadidos)
+	DEL_DEVICES=$(
+		pw-link -l my-combined-sink |
+			pcre2grep -M 'my-combined-sink:playback_F[LR]\n(^ .*\n)*' |
+			grep -oP '\- \K.*'
+	)
+
+	# Añadimos a los candidatos para desvinculación los sinks en la lista de sinks añadidos
+	while IFS= read -r CANDIDATE_SINK; do
+		if [ -z "$DEL_DEVICES" ]; then
+			DEL_DEVICES="$CANDIDATE_SINK"
+		else
+			DEL_DEVICES=$(echo -e "$DEL_DEVICES\n$CANDIDATE_SINK")
+		fi
+	done <"$ADDED_LIST"
+
+	# Eliminamos los sinks ya añadidos de la lista con los posibles sinks a añadir
+	for ADDED in $DEL_DEVICES; do
+		DEVICES=$(echo "$DEVICES" | grep -v "$ADDED")
+	done
+}
+
+# Función para vincular/desvincular dispositivos/aplicaciones
+sink_edit() {
+	local DMENU_SELECTED
+
+	# Lista con nuestros dispositivos/aplicaciones
+	if [ "$1" = "add" ]; then
+		SINKS=$DEVICES
+	else
+		SINKS=$DEL_DEVICES
+	fi
+
+	# Sinks formateados
+	F_SINKS=$(echo "$SINKS" | sed 's/:.*//g' | sort -u)
+
+	# Elegir el sink con dmenu mostrando solo la información esencial
+	DMENU_SELECTED=$(echo "$F_SINKS" | $DMENU --lines "$(echo "$F_SINKS" | wc -l)")
+	[ -z "$DMENU_SELECTED" ] && exit
+
+	# Elegir la primera coincidencia de nuestra elección con el array
+	SELECTED=$(echo "$SINKS" | grep "$DMENU_SELECTED" | sed '1q;d')
+
+	[ -z "$SELECTED" ] && exit
+
+	if [ "$1" = "add" ]; then
+		# Vinculamos el sink
+		~/.dotfiles/bin/virtualmic/sink-link "$1" "$SELECTED"
+
+		sinks_eval
+
+		# Comprobamos que el sink se vinculó correctamente
+		if echo $DEL_DEVICES | grep -q "$DMENU_SELECTED"; then
+			notify-send -e -i "$ICON" -t "$NOTIFICATION_DURATION" \
+				"$MSG" "Sink vinculado correctamente"
+		else
+			notify-send -e -i "$ICON" -t "$NOTIFICATION_DURATION" \
+				"$MSG" "Hubo un fallo al añadir el sink"
+		fi
+
+		# Añadimos el sink a la lista de sinks añadidos
+		echo $SELECTED >>$ADDED_LIST
+
+	elif [ "$1" = "del" ]; then
+		# Desvinculamos el sink
+		~/.dotfiles/bin/virtualmic/sink-link "$1" "$SELECTED"
+
+		# Borramos el sink de la lista de sinks añadidos
+		grep -v "$SELECTED" $ADDED_LIST >$ADDED_LIST.tmp
+		mv $ADDED_LIST.tmp $ADDED_LIST
+
+		sinks_eval
+
+		# Comprobamos que el sink se desvinculó correctamente
+		if ! echo $DEL_DEVICES | grep -q "$SELECTED"; then
+			notify-send -e -i "$ICON" -t "$NOTIFICATION_DURATION" \
+				"$MSG" "Sink desvinculado correctamente"
+		else
+			notify-send -e -i "$ICON" -t "$NOTIFICATION_DURATION" \
+				"$MSG" "Fallo al desvincular el sink"
+		fi
+	fi
+}
+
+##########
+# Script #
+##########
+
+# Si no existe todavía el micrófono virtual, nos salimos
+pactl list | grep -q my-virtualmic
+
+# Nos aeguramos que el sink combinado y el micrófono virtual estén conectados
+pw-link my-combined-sink:monitor_FL my-virtualmic:input_FL 2>/dev/null
+pw-link my-combined-sink:monitor_FR my-virtualmic:input_FR 2>/dev/null
+
+# Elegir si vincular o desvincular sinks
+ADD="Añadir sink al micrófono virtual"
+DEL="Quitar sink del micrófono virtual"
+CHOSEN=$(echo -e "$ADD\n$DEL" | eval $DMENU -L 2)
+
+[ -z "$CHOSEN" ] || sinks_eval
+
+if [ "$CHOSEN" = "$ADD" ]; then
+	[ -z "$DEVICES" ] && {
+		notify-send -e -i "$ICON" -t "$NOTIFICATION_DURATION" \
+			"$MSG" "No hay sinks que añadir"
+		exit
+	}
+	sink_edit add
+elif [ "$CHOSEN" = "$DEL" ]; then
+	[ -z "$DEL_DEVICES" ] && {
+		notify-send -e -i "$ICON" -t "$NOTIFICATION_DURATION" \
+			"$MSG" "No hay sinks que borrar"
+		exit
+	}
+	sink_edit del
+fi
