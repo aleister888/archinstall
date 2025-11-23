@@ -35,4 +35,6 @@ while true; do
 					"Dispositivo reconectado" "$DEVICE"
 		fi
 	done <"$ADDED_LIST"
+
+	sleep 0.2
 done

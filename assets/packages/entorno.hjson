@@ -84,8 +84,7 @@
     "mpv-mpris",
     "nsxiv",
     "qalculate-gtk",
-    "sxiv",
-    "wl-color-picker"
+    "sxiv"
   ],
   "aplicaciones_tui": [
     "htop"
