@@ -167,8 +167,12 @@ redmine_restore() {
 		DROP DATABASE IF EXISTS redmine
 	EOF
 	mariadb -u redmine -p"${REDMINE_PASSWD}" <"$BACKUP_DIR/database.sql"
+
 	sudo rsync -av --delete "$BACKUP_DIR/files/" /var/lib/redmine/files/ >/dev/null 2>&1
 	sudo rsync -av --delete "$BACKUP_DIR/themes/" /usr/share/webapps/redmine/themes/ >/dev/null 2>&1
+
+	sudo chown -R http:http /var/lib/redmine/files
+	sudo chown -R http:http /usr/share/webapps/redmine/themes
 
 	echo "Reiniciando redmine"
 	if sudo systemctl restart redmine.service; then
