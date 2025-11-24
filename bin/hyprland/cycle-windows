@@ -16,11 +16,20 @@ index_scratch() {
 	mapfile -t SCRATCH_PIDS < <(
 		hyprctl -j clients |
 			jq -r '.[]
-				| select( .workspace.name=="special:scratch")
-				| select(.fullscreen == 0)
-				| "\(.focusHistoryID):\(.pid)"' |
+			| select(.workspace.name=="special:scratch")
+			| select(.floating == true or .fullscreen != 0)
+			| "\(.focusHistoryID):\(.pid)"' |
 			sort | cut -d':' -f2
 	)
+}
+
+get_prop() {
+	hyprctl -j clients | jq -r ".[] | select(.pid == $1) | .$2"
+}
+
+focus() {
+	hyprctl dispatch focuswindow "pid:$1"
+	hyprctl dispatch alterzorder top, "pid:$1"
 }
 
 cycle_regular() {
@@ -33,10 +42,25 @@ cycle_regular() {
 
 cycle_scratch() {
 	index_scratch
-	local PID="${SCRATCH_PIDS[-1]}"
-	# Enfocamos la última ventana enfocada de la lista
-	hyprctl dispatch focuswindow "pid:$PID"
-	hyprctl dispatch alterzorder top,"pid:$PID"
+	local PID FULLSCREEN_STATE
+
+	# Última ventana enfocada cronológicamente
+	PID="${SCRATCH_PIDS[-1]}"
+
+	FULLSCREEN_STATE=$(get_prop "$PID" fullscreen)
+
+	# Si la ventana esta en pantalla completa, la volvemos tile
+	# otra vez para que pase a estar enfrente
+	[ "$FULLSCREEN_STATE" -ne 0 ] && {
+		hyprctl dispatch fullscreenstate 0 "pid:$PID"
+		sleep 0.1
+		hyprctl dispatch settiled "pid:$PID"
+		sleep 0.1
+		focus "${SCRATCH_PIDS[-2]}"
+		return
+	}
+
+	focus "$PID"
 }
 
 # Si estamos en un espacio normal cambiamos ventanas con layoutmsg

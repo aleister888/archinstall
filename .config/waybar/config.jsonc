@@ -24,7 +24,11 @@
       "enable": true,
       "format": "{icon}",
       "icon-size": 16,
-      "ignore-list": ["FX: Track .*"],
+      "ignore-list": [
+        "Abrir archivos",
+        "FX: Track .*",
+        "xdg-desktop-portal-gtk",
+      ],
     },
   },
   "hyprland/window": {
