@@ -1,12 +1,9 @@
 #!/bin/bash
-# shellcheck disable=SC2086
-# shellcheck disable=SC2155
-# shellcheck disable=SC2164
-# shellcheck disable=SC3043
-
-set -e
+# shellcheck disable=SC2086,SC2155,SC2164,SC3043
 
 # Instala y configura redmine con usuario=admin contraseña=admin
+
+set -e
 
 [ -z "${MYSQL_PASSWD}" ] && MYSQL_PASSWD=mysql
 [ -z "${REDMINE_PASSWD}" ] && REDMINE_PASSWD=redmine
@@ -142,11 +139,18 @@ redmine_backup() {
 	rsync -av --delete /usr/share/webapps/redmine/themes/ "$BACKUP_DIR/themes/" >/dev/null 2>&1
 }
 
+tmp_backup() {
+	# Aquí crearemos una copia de como estaba redmine antes de la restauración
+	local RESTORE_DIR="/tmp/redmine_backup_$(date +%Y%m%d_%H%M%S)"
+
+	# Creamos una copia de seguridad temporal en caso de fallo
+	redmine_backup $RESTORE_DIR
+
+}
+
 redmine_restore() {
 	# Directorio donde se aloja la copia de seguridad
 	local BACKUP_DIR="$1"
-	# Aquí crearemos una copia de como estaba redmine antes de la restauración
-	local RESTORE_DIR="/tmp/redmine_backup_$(date +%Y%m%d_%H%M%S)"
 
 	# Nos aseguramos de que el directorio contega un backup
 	[ ! -e "$BACKUP_DIR/database.sql" ] && {
@@ -154,8 +158,7 @@ redmine_restore() {
 		exit 1
 	}
 
-	# Creamos una copia de seguridad temporal en caso de fallo
-	redmine_backup $RESTORE_DIR
+	tmp_backup
 
 	# Detenemos el servicio
 	echo "Deteniendo redmine"
@@ -182,6 +185,17 @@ redmine_restore() {
 	fi
 }
 
+clean() {
+	sudo systemctl stop redmine
+	tmp_backup
+
+	mariadb -u redmine -p"${REDMINE_PASSWD}" redmine <<-EOF
+		DELETE FROM journal_details;
+	EOF
+
+	sudo systemctl start redmine
+}
+
 help_msg() {
 	echo "Uso: $(basename "$0"):" >&2
 	echo "       --install" >&2
@@ -196,5 +210,6 @@ case "$1" in
 --backup) redmine_backup "$2" ;;
 --restore) redmine_restore "$2" ;;
 --themes) themes_install ;;
+--clean) clean ;;
 *) help_msg ;;
 esac

@@ -40,6 +40,7 @@ return {
 				"latex",
 				"lua",
 				"markdown",
+				"prolog",
 				"ruby",
 				"scss",
 				"xml",
