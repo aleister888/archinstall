@@ -17,7 +17,7 @@ ICON="bridge-constructor"
 MSG="Micrófono Virtual"
 
 # Excluiremos los sinks cuyo nombre contenga alguno de estos patrones
-EXCLUDE_PATTERN="my-combined-sink\|my-virtualmic\|PulseAudio\|Midi\|v4l2\|WEBRTC\|Chromium\|bluez_input\|xdg.*portal"
+EXCLUDE_PATTERN="my-combined-sink\|my-virtualmic\|PulseAudio\|Midi\|v4l2\|WEBRTC\|Chromium\|bluez_input\|xdg.*portal\|ee_.*\|easyeffects.*"
 
 # Función para construir la lista de sinks
 sinks_eval() {

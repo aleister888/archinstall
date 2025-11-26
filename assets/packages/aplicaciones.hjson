@@ -12,6 +12,10 @@
     "cfitsio",
     "gimp"
   ],
+  "efectos_audio": [
+    "easyeffects",
+    "lsp-plugins"
+  ],
   "neovim": [
     "hunspell-en_us",
     "hunspell-es_es",

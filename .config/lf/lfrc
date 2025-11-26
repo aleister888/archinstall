@@ -49,10 +49,9 @@ cmd open ${{
 		printf "\033]0;$*\007" >/dev/tty
 	}
 	open_gui(){
-		# Informamos que la ventana esta ocupada
 		change_title "lf hidden"
 		killall -SIGUSR2 waybar
-		"$@"
+		"$@" >/dev/null 2>&1
 		change_title "lf"
 		killall -SIGUSR2 waybar
 	}
@@ -106,7 +105,7 @@ cmd open ${{
 			')
 
 			# Pasar a nsxiv
-			printf '%s\n' "$ROTATED" | open_gui nsxiv -aio >/dev/null 2>&1
+			printf '%s\n' "$ROTATED" | open_gui nsxiv -aio
 			;;
 
 		audio/*)
