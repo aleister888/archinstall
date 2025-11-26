@@ -26,6 +26,7 @@
       "icon-size": 16,
       "ignore-list": [
         "Abrir archivos",
+        "lf hidden",
         "FX: Track .*",
         "xdg-desktop-portal-gtk",
       ],

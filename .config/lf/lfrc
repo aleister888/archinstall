@@ -45,17 +45,29 @@ cmd myclear ${{
 
 # Abrir archivos en función del tipo
 cmd open ${{
+	change_title() {
+		printf "\033]0;$*\007" >/dev/tty
+	}
+	open_gui(){
+		# Informamos que la ventana esta ocupada
+		change_title "lf hidden"
+		killall -SIGUSR2 waybar
+		"$@"
+		change_title "lf"
+		killall -SIGUSR2 waybar
+	}
+
 	FILETYPE="$(xdg-mime query filetype "$(readlink -f $f)")"
 	{
 	case $FILETYPE in
 		*/x-7z-compressed | */vnd.rar | */*-tar | */zip | */gzip)
-			setsid -f xarchiver "$fx" ;;
+			open_gui setsid -f xarchiver "$fx" ;;
 
 		*/vnd.*document*)
-			setsid -f libreoffice "$fx" ;;
+			open_gui setsid -f libreoffice "$fx" ;;
 
 		*/pdf | */epub* | */vnd.comicbook*)
-			zathura "$f" ;;
+			open_gui zathura "$f" ;;
 
 		text/* | */xml | */json | inode/x-empty | */x-shellscript | */x-desktop | */yaml | */sql | */x-php)
 			$EDITOR "$fx" ;;
@@ -73,7 +85,7 @@ cmd open ${{
 			[ ! -f "$CACHE.jpg" ] && \
 				gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -r300 -dEPSCrop \
 					-sOutputFile="$CACHE.jpg" "$f"
-			nsxiv "$CACHE.jpg"
+			open_gui nsxiv "$CACHE.jpg"
 			;;
 
 		image/*)
@@ -94,23 +106,23 @@ cmd open ${{
 			')
 
 			# Pasar a nsxiv
-			printf '%s\n' "$ROTATED" | setsid -f nsxiv -aio >/dev/null 2>&1
+			printf '%s\n' "$ROTATED" | open_gui nsxiv -aio >/dev/null 2>&1
 			;;
 
 		audio/*)
-			mpv --audio-display=no "$f" ;;
+			open_gui mpv --audio-display=no "$f" ;;
 
 		video/*)
-			mpv "$f" ;;
+			open_gui mpv "$f" ;;
 
 		*/x-keepass2)
-			setsid -f keepassxc "$f" ;;
+			open_gui setsid -f keepassxc "$f" ;;
 
 		*/x-reaper-*)
-			setsid -f reaper "$f" ;;
+			open_gui setsid -f reaper "$f" ;;
 
 		*/x-tuxguitar | */gpx+xml | */x-gnuplot | */x-gtp)
-			setsid -f tuxguitar "$fx" ;;
+			open_gui setsid -f tuxguitar "$fx" ;;
 
 		# Si no tenemos configurada una forma de abrirlo, usamos xdg-open
 		*) for f in $fx; do setsid -f $OPENER $f; done ;;
