@@ -134,7 +134,7 @@ fi
 # Si DEBUG=true hacemos visible la salida
 if [ "$DEBUG" = true ]; then
 	# Instalar/actualizar archivos de configuración
-	"$HOME"/.dotfiles/updater/install-conf -d &
+	"$HOME"/.dotfiles/updater/install-conf -d
 	# Crear enlaces simbólicos en /usr/local/bin para ciertos scripts
 	"$HOME"/.dotfiles/updater/install-bin -d &
 	# Activar los servicios necesarios
@@ -143,7 +143,7 @@ if [ "$DEBUG" = true ]; then
 	"$HOME"/.dotfiles/updater/lf-dbus &
 else
 	# Instalar/actualizar archivos de configuración
-	"$HOME"/.dotfiles/updater/install-conf >/dev/null 2>&1 &
+	"$HOME"/.dotfiles/updater/install-conf >/dev/null 2>&1
 	# Crear enlaces simbólicos en /usr/local/bin para ciertos scripts
 	"$HOME"/.dotfiles/updater/install-bin >/dev/null 2>&1 &
 	# Activar los servicios necesarios

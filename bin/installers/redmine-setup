@@ -9,12 +9,12 @@ set -e
 [ -z "${REDMINE_PASSWD}" ] && REDMINE_PASSWD=redmine
 
 mysql_install() {
-	sudo pacman -Sy --noconfirm --needed mariadb
-	sudo mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
-	sudo systemctl enable --now mariadb
+	sudo /usr/bin/pacman -Sy --noconfirm --needed mariadb
+	sudo /usr/bin/mariadb-install-db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
+	sudo /usr/bin/systemctl enable --now mariadb
 
 	# Password configuration.
-	cat <<-EOF | sudo mysql_secure_installation
+	cat <<-EOF | sudo /usr/bin/mariadb-secure-installation
 
 		y
 		${MYSQL_PASSWD}
@@ -26,7 +26,7 @@ mysql_install() {
 	EOF
 
 	# Create user and database for redmine.
-	cat <<-EOF | sudo mysql -uroot -p${MYSQL_PASSWD}
+	cat <<-EOF | sudo /usr/bin/mariadb -uroot -p${MYSQL_PASSWD}
 		CREATE DATABASE redmine CHARACTER SET UTF8;
 		CREATE USER 'redmine'@'localhost' IDENTIFIED BY '${REDMINE_PASSWD}';
 		GRANT ALL PRIVILEGES ON redmine.* TO 'redmine'@'localhost';
@@ -34,12 +34,12 @@ mysql_install() {
 }
 
 redmine_service_install() {
-	sudo pacman -Sy --noconfirm --needed redmine ruby-bundler postgresql-libs
+	sudo /usr/bin/pacman -Sy --noconfirm --needed redmine ruby-bundler postgresql-libs
 
 	# Ruby on Rails.
 	cd /usr/share/webapps/redmine/
 
-	cat <<-EOF | sudo tee config/database.yml
+	cat <<-EOF | sudo /usr/bin/tee config/database.yml
 		production:
 		  adapter: mysql2
 		  database: redmine
@@ -49,26 +49,26 @@ redmine_service_install() {
 		  encoding: utf8
 	EOF
 
-	sudo chown -R http:http /usr/share/webapps/redmine/
-	sudo chmod -R 755 /usr/share/webapps/redmine/
+	sudo /usr/bin/chown -R http:http /usr/share/webapps/redmine/
+	sudo /usr/bin/chmod -R 755 /usr/share/webapps/redmine/
 
-	sudo -u http bundle config set --local frozen false
-	sudo -u http bundle install --path vendor/bundle
+	sudo -u http /usr/bin/bundle config set --local frozen false
+	sudo -u http /usr/bin/bundle install --path vendor/bundle
 
-	sudo bundle exec rake generate_secret_token
+	sudo /usr/bin/bundle exec rake generate_secret_token
 
-	sudo chown -R http:http db
+	sudo /usr/bin/chown -R http:http db
 
-	sudo -u http -g http RAILS_ENV=production bundle exec rake db:migrate
+	sudo -u http -g http RAILS_ENV=production /usr/bin/bundle exec rake db:migrate
 
 	sudo -u http -g http RAILS_ENV=production REDMINE_LANG=es \
-		bundle exec rake redmine:load_default_data
+		/usr/bin/bundle exec rake redmine:load_default_data
 
-	sudo sed -i "s/127.0.0.1/0.0.0.0/" \
+	sudo /usr/bin/sed -i "s/127.0.0.1/0.0.0.0/" \
 		/usr/lib/systemd/system/redmine.service # Permitimos el acceso remoto
-	sudo systemctl daemon-reload
 
-	sudo systemctl enable --now redmine.service
+	sudo /usr/bin/systemctl daemon-reload
+	sudo /usr/bin/systemctl enable --now redmine.service
 }
 
 repo_install() {
@@ -82,8 +82,8 @@ repo_install() {
 	git clone "https://github.com/$1.git" \
 		"$TMP_DIR"
 
-	sudo cp -r "$TMP_DIR" "$INSTALL_DIR"
-	sudo chown -R http:http "$INSTALL_DIR"
+	sudo /usr/bin/cp -r "$TMP_DIR" "$INSTALL_DIR"
+	sudo /usr/bin/chown -R http:http "$INSTALL_DIR"
 }
 
 themes_install() {
@@ -162,23 +162,23 @@ redmine_restore() {
 
 	# Detenemos el servicio
 	echo "Deteniendo redmine"
-	sudo systemctl stop redmine.service && echo "Servicio redmine detenido"
+	sudo /usr/binsystemctl stop redmine.service && echo "Servicio redmine detenido"
 
 	# Restauramos la copia de seguridad de la base de datos y archivos
 	echo "Restaurando copia de seguridad desde: $BACKUP_DIR"
-	sudo mariadb <<-EOF
+	sudo /usr/bin/mariadb <<-EOF
 		DROP DATABASE IF EXISTS redmine
 	EOF
 	mariadb -u redmine -p"${REDMINE_PASSWD}" <"$BACKUP_DIR/database.sql"
 
-	sudo rsync -av --delete "$BACKUP_DIR/files/" /var/lib/redmine/files/ >/dev/null 2>&1
-	sudo rsync -av --delete "$BACKUP_DIR/themes/" /usr/share/webapps/redmine/themes/ >/dev/null 2>&1
+	sudo /usr/bin/rsync -av --delete "$BACKUP_DIR/files/" /var/lib/redmine/files/ >/dev/null 2>&1
+	sudo /usr/bin/rsync -av --delete "$BACKUP_DIR/themes/" /usr/share/webapps/redmine/themes/ >/dev/null 2>&1
 
-	sudo chown -R http:http /var/lib/redmine/files
-	sudo chown -R http:http /usr/share/webapps/redmine/themes
+	sudo /usr/bin/chown -R http:http /var/lib/redmine/files
+	sudo /usr/bin/chown -R http:http /usr/share/webapps/redmine/themes
 
 	echo "Reiniciando redmine"
-	if sudo systemctl restart redmine.service; then
+	if sudo /usr/bin/systemctl restart redmine.service; then
 		echo "redmine reinciado correctamente"
 	else
 		echo "Error al reiniciar redmine"
@@ -186,14 +186,14 @@ redmine_restore() {
 }
 
 clean() {
-	sudo systemctl stop redmine
+	sudo /usr/bin/systemctl stop redmine
 	tmp_backup
 
 	mariadb -u redmine -p"${REDMINE_PASSWD}" redmine <<-EOF
 		DELETE FROM journal_details;
 	EOF
 
-	sudo systemctl start redmine
+	sudo /usr/bin/systemctl start redmine
 }
 
 help_msg() {

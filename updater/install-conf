@@ -48,9 +48,10 @@ echo "blacklist pcspkr" | sudo /usr/bin/tee /etc/modprobe.d/nobeep.conf >/dev/nu
 
 # No suspender el portátil al cerrar la tapa
 # si está enchufado o conectado a un monitor
-if ! grep -q "^HandleLidSwitch" /etc/systemd/logind.conf; then
-	sudo sed -i 's/^#HandleLidSwitchExternalPower=.*/HandleLidSwitchExternalPower=ignore/' /etc/systemd/logind.conf
-	sudo sed -i 's/^#HandleLidSwitchDocked=.*/HandleLidSwitchDocked=ignore/' /etc/systemd/logind.conf
+if ! grep -q "^HandleLidSwitchExternalPower=ignore" /etc/systemd/logind.conf; then
+	sudo /usr/bin/sed -i '/^#\?HandleLidSwitchExternalPower=/c\HandleLidSwitchExternalPower=ignore' /etc/systemd/logind.conf
+	sudo /usr/bin/sed -i '/^#\?HandleLidSwitchDocked=/c\HandleLidSwitchDocked=ignore' /etc/systemd/logind.conf
+	sudo /usr/bin/sed -i '/^#\?LidSwitchIgnoreInhibited=/c\LidSwitchIgnoreInhibited=yes' /etc/systemd/logind.conf
 fi
 
 # Si el dispositivo tiene una batería activar el servicio de auto-suspensión
