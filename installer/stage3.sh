@@ -1,6 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2068
-# shellcheck disable=SC2154
+# shellcheck disable=SC2068,SC2154
 
 # Auto-instalador para Arch Linux (Parte 3)
 # por aleister888 <pacoe1000@gmail.com>
@@ -16,39 +15,20 @@ yayinstall() {
 
 PACKAGES=()
 DRIVERS_VID=()
+
 driver_add() {
-	case $GRAPHIC_DRIVER in
-	vm) DRIVERS_VID+=("vulkan-virtio" "lib32-vulkan-virtio") ;;
-	intel) DRIVERS_VID+=(
-		"lib32-libva-intel-driver"
-		"lib32-vulkan-intel"
-		"libva-intel-driver"
-		"vulkan-intel"
-	) ;;
-	amd) DRIVERS_VID+=(
-		"mesa"
-		"lib32-mesa"
-		"vulkan-radeon"
-		"lib32-vulkan-radeon"
-	) ;;
-	nvidia) DRIVERS_VID+=(
-		"dkms"
-		"nvidia-dkms"
-		"nvidia-utils"
-		"lib32-nvidia-utils"
-		"libva-mesa-driver"
-		"libva-nvidia-driver"
-		"nvidia-prime"
-		"opencl-nvidia"
-	) ;;
-	esac
+	local PACKAGE_LIST JSON
+	PACKAGE_LIST=~/.dotfiles/assets/video_driver_packages.hjson
+	JSON="$(hjson -j $PACKAGE_LIST)"
+	# shellcheck disable=SC2207
+	DRIVERS_VID=($(echo "$JSON" | jq -r ".${GRAPHIC_DRIVER}[]"))
 }
 
 arr_packages() {
 	# Guardamos nuestros paquetes a instalar en un array
 	mapfile -t TMP_PACKAGES < <(
 		find "$HOME/.dotfiles/assets/packages" -name '*.hjson' \
-			-exec sh -c 'hjson -j "$1" | jq -r ".[] | .[]" ' _ {} \;
+			-exec sh -c 'hjson -j "$1" | jq -r ".[] | .[]"' _ {} \;
 	)
 	PACKAGES=("${TMP_PACKAGES[@]}" "${DRIVERS_VID[@]}")
 }
@@ -84,14 +64,15 @@ sudo /usr/bin/sed -i "s/-j2/-j$(nproc)/;/^#MAKEFLAGS/s/^#//" /etc/makepkg.conf
 # Instalamos yay (https://aur.archlinux.org/packages/yay)
 yay-install
 
-# Añadimos los drivers de video a la lista de paquetes
-# TODO: Re-evaluar en cada iteración del bucle para instalar los paquetes
-driver_add
-
 # Instalamos todos los paquetes a la vez
 while true; do
-	# En cada iteración se vuelven a leer los archivos con los paquetes a instalar
-	# De este modo en caso de error podemos intervenir más facilmente
+	# Añadimos los drivers de vídeo a la lista de paquetes. La lista de paquetes
+	# se obtiene del siguiente archivo en cada iteración para facilitar el depurado:
+	#     ~/.dotfiles/assets/video_driver_packages.hjson
+	driver_add
+	# Añadimos los demás paquetes a instalar. La lista de paquetes se obtiene
+	# de los siguientes archivos en cada iteración para facilitar el depurado:
+	#     ~/.dotfiles/assets/packages/*.hjson
 	arr_packages
 
 	yayinstall "${PACKAGES[@]}" && break
@@ -100,7 +81,7 @@ while true; do
 
 	# Preguntamos al usuario como continuar si hubo un fallo
 	while true; do
-		read -p "¿Deseas intentar la instalación nuevamente? [s/n]: " RESPUESTA_INSTALACION
+		read -rp "¿Deseas intentar la instalación nuevamente? [s/n]: " RESPUESTA_INSTALACION
 		case "$RESPUESTA_INSTALACION" in
 		[sS])
 			echo "Reintentando instalación..."
