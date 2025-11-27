@@ -76,7 +76,7 @@ repos_conf() {
 	pacinstall reflector
 
 	# Escoger mirrors más rápidos de los repositorios de Arch
-	reflector --verbose --fastest 10 --age 6 \
+	reflector --verbose --fastest 10 --age 6 --protocol https,ftp \
 		--connection-timeout 1 --download-timeout 1 \
 		--threads "$(nproc)" \
 		--save /etc/pacman.d/mirrorlist
@@ -87,7 +87,7 @@ repos_conf() {
 		PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 		# Escoger los mejores repositorios para Arch Linux
-		@hourly root ping gnu.org -c 1 && reflector --latest 10 --connection-timeout 1 --download-timeout 1 --sort rate --save /etc/pacman.d/mirrorlist
+		@hourly root ping gnu.org -c 1 && reflector --latest 10 --protocol https,ftp --connection-timeout 1 --download-timeout 1 --sort rate --save /etc/pacman.d/mirrorlist
 	EOF
 
 	# Añadir Chaotic AUR
