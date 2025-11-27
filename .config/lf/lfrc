@@ -50,10 +50,10 @@ cmd open ${{
 	}
 	open_gui(){
 		change_title "lf hidden"
-		killall -SIGUSR2 waybar
+		#killall -SIGUSR2 waybar
 		"$@" >/dev/null 2>&1
 		change_title "lf"
-		killall -SIGUSR2 waybar
+		#killall -SIGUSR2 waybar
 	}
 
 	FILETYPE="$(xdg-mime query filetype "$(readlink -f $f)")"

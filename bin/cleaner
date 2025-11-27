@@ -63,6 +63,7 @@ moveto_xdg "$HOME/.gitconfig" "$XDG_CONFIG_HOME/git/config"
 move_hardcoded_dir "$HOME/.java" "$XDG_CONFIG_HOME/java"
 move_hardcoded_dir "$HOME/.codetogether" "$HOME/.config/codetogether"
 move_hardcoded_dir "$HOME/.webclipse" "$HOME/.config/webclipse"
+move_hardcoded_dir "$HOME/wekafiles" "$XDG_DATA_HOME/weka"
 
 # Borrar archivos
 rm -f "$HOME/.wget-hsts"
