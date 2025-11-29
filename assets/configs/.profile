@@ -46,7 +46,7 @@ export XDG_STATE_HOME="$HOME/.local/state"
 # Apps
 export EDITOR="nvim"
 export SUDO_EDITOR="nvim"
-export READER="zathura"
+export READER="okular"
 export TERMINAL="kitty --single-instance"
 export SCRATCH_OPTS="--instance-group=scratchpad"
 export REGULAR_OPTS="--instance-group=kitty"

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Establece tu editor en okular como:
+# okular-inverse-search %l "%f"
+
+LINE=$1
+PDF_FILE=$2
+TEX_FILE="${PDF_FILE%.*}.tex"
+
+nvim --headless -c "VimtexInverseSearch $LINE '$TEX_FILE'"

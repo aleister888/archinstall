@@ -66,8 +66,8 @@ set_default_mime_types() {
 }
 
 set_default_mime_types "^image" "image"
-set_default_mime_types "^.*/pdf" "org.pwmt.zathura"
-set_default_mime_types "^.*/vnd.comicbook.*" "org.pwmt.zathura"
+set_default_mime_types "^.*/pdf" "org.kde.okular"
+set_default_mime_types "^.*/vnd.comicbook.*" "org.kde.okular"
 set_default_mime_types "^video" "mpv"
 set_default_mime_types "^audio" "mpv"
 set_default_mime_types "^text" "text"

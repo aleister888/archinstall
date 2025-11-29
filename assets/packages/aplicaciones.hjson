@@ -4,6 +4,7 @@
     "handbrake",
     "handbrake-cli",
     "keepassxc",
+    "okular",
     "qbittorrent",
     "seahorse",
     "vlc"
@@ -27,13 +28,6 @@
     "wine-gecko",
     "wine-mono",
     "winetricks"
-  ],
-  "zathura": [
-    "tesseract-data-spa",
-    "zathura",
-    "zathura-cb",
-    "libmupdf",
-    "zathura-pdf-mupdf"
   ],
   "mozilla": [
     "chaotic-aur/arkenfox-user.js-git",

@@ -45,7 +45,6 @@ return {
 				"scss",
 				"xml",
 				"yuck",
-				"zathurarc",
 			},
 		})
 	end,

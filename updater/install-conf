@@ -39,6 +39,16 @@ if [ ! -f "$HOME/.config/keepassxc/keepassxc.ini" ]; then
 		"$HOME"/.config/keepassxc/
 fi
 
+# Configurar el inverse search de vimtex para okular
+if [ ! -e "$HOME"/.config/okularpartrc ] ||
+	! grep -q okular-inverse-search "$HOME"/.config/okularpartrc; then
+	cat <<-EOF >~/.config/okularpartrc
+		[Core General]
+		ExternalEditor=Custom
+		ExternalEditorCommand=okular-inverse-search %l "%f"
+	EOF
+fi
+
 ##############
 # Miscelánea #
 ##############
