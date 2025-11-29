@@ -112,6 +112,37 @@ sink_edit() {
 	fi
 }
 
+set_max_samplerate() {
+	samplerate_error() {
+		notify-send -e -i system-error -t "$NOTIFICATION_DURATION" \
+			"$MSG" "Error al establecer el samplerate"
+		exit 1
+	}
+
+	AUDIO_ID=$(
+		pw-dump |
+			jq '.[] |
+			select(.info.props["node.name"]? // "" |
+			startswith("alsa_output.pci")) |
+			.id'
+	)
+
+	[ -z "$AUDIO_ID" ] && samplerate_error
+
+	MAX_RATE=$(
+		pw-dump |
+			jq ".[] |
+		select(.id == $AUDIO_ID) |
+		.info.params.EnumFormat[0].rate.max"
+	)
+
+	[ -z "$MAX_RATE" ] && samplerate_error
+
+	pw-metadata -n settings 0 clock.force-rate "$MAX_RATE" &&
+		notify-send -e -i audio-card -t "$((NOTIFICATION_DURATION * 3))" \
+			"$MSG" "Samplerate establecido a $MAX_RATE"
+}
+
 ##########
 # Script #
 ##########
@@ -126,7 +157,8 @@ pw-link my-combined-sink:monitor_FR my-virtualmic:input_FR 2>/dev/null
 # Elegir si vincular o desvincular sinks
 ADD="Añadir sink al micrófono virtual"
 DEL="Quitar sink del micrófono virtual"
-CHOSEN=$(echo -e "$ADD\n$DEL" | eval $DMENU $DMENU_LINES 2)
+RATE="Establecer el samplerate"
+CHOSEN=$(echo -e "$ADD\n$DEL\n$RATE" | eval $DMENU $DMENU_LINES 3)
 
 [ -z "$CHOSEN" ] || sinks_eval
 
@@ -144,4 +176,6 @@ elif [ "$CHOSEN" = "$DEL" ]; then
 		exit
 	}
 	sink_edit del
+elif [ "$CHOSEN" = "$RATE" ]; then
+	set_max_samplerate
 fi

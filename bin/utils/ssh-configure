@@ -13,22 +13,23 @@ fi
 
 # Instalar OpenSSH y habilitar el servicio
 pacman -Sy --noconfirm openssh
-systemctl enable sshd
+systemctl enable --now sshd
 
 # Generar las claves RSA y ED25519
-ssh-keygen -t rsa -b 4096 -f /etc/ssh/ssh_host_rsa_key -N ""
-ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -N ""
+yes y | ssh-keygen -t rsa -b 4096 -f /etc/ssh/ssh_host_rsa_key -N ""
+yes y | ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -N ""
 
 # Usar residuos mayores o iguales a 3071 bits
 awk '$5 >= 3071' /etc/ssh/moduli | tee /etc/ssh/moduli.safe
 mv -f /etc/ssh/moduli.safe /etc/ssh/moduli
 
 # Restringir los algoritmos soportados de intercambio de claves, cifrado y MAC
-echo -e "# Restrict key exchange, cipher, and MAC algorithms, as per sshaudit.com hardening guide.
-KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha256
+echo -e "# Restrict key exchange, cipher, and MAC algorithms, including post-quantum hybrid KEX.
+KexAlgorithms sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha256
 Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
 MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,umac-128-etm@openssh.com
-HostKeyAlgorithms ssh-ed25519,ssh-ed25519-cert-v01@openssh.com,sk-ssh-ed25519@openssh.com,sk-ssh-ed25519-cert-v01@openssh.com,rsa-sha2-256,rsa-sha2-512,rsa-sha2-256-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com" | tee /etc/ssh/sshd_config.d/ssh-audit_hardening.conf
+HostKeyAlgorithms ssh-ed25519,ssh-ed25519-cert-v01@openssh.com,sk-ssh-ed25519@openssh.com,sk-ssh-ed25519-cert-v01@openssh.com,rsa-sha2-256,rsa-sha2-512,rsa-sha2-256-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com" |
+	tee /etc/ssh/sshd_config.d/ssh-audit_hardening.conf
 
 # Deshabilitar el inicio de sesión como root
 sed -i 's|#PermitRootLogin prohibit-password|PermitRootLogin no|' \
@@ -41,7 +42,7 @@ sed -i 's|#ClientAliveInterval 0|ClientAliveInterval 300|' /etc/ssh/sshd_config
 # Instalar (si no lo está ya) y activar UFW
 if [ ! -x /usr/bin/ufw ]; then
 	pacman -Sy --noconfirm ufw
-	systemctl enable ufw
+	systemctl enable --now ufw
 	ufw enable
 fi
 
@@ -55,7 +56,7 @@ ufw default allow outgoing
 # Instalar (si no lo está ya) y activar fail2ban
 if [ ! -x /usr/bin/fail2ban-server ]; then
 	pacman -Sy --noconfirm fail2ban
-	systemctl enable fail2ban
+	systemctl enable --now fail2ban
 fi
 
 # Usar fail2ban con UFW
