@@ -23,6 +23,10 @@ virt_install() {
 	sudo /usr/bin/sed -i "s/^#user = .*/user = \"$USER\"/" /etc/libvirt/qemu.conf
 	sudo /usr/bin/sed -i "s/^#group = .*/group = \"$USER\"/" /etc/libvirt/qemu.conf
 
+	# Configurar QEMU para usar iptables
+	echo 'firewall_backend = "iptables"' |
+		sudo /usr/bin/tee -a /etc/libvirt/network.conf
+
 	# Configurar libvirt
 	sudo /usr/bin/sed -i "s/^#unix_sock_group = .*/unix_sock_group = \"$USER\"/" \
 		/etc/libvirt/libvirtd.conf
