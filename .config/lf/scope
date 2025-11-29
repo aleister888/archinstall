@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Visualizador de archivos para LF.
 
@@ -11,15 +11,39 @@ IFS="${IFS%_}"
 
 # Función para mostrar imágenes con ueberzug
 image() {
-	W="$2"
-	H="$3"
-	X="$4"
-	Y="$5"
+	local OG_FILE="$6"
+	local OG_FILETYPE="$7"
+	local W="$2"
+	local H="$3"
+	local X="$4"
+	local Y="$5"
 
-	if [ -f "$1" ] && [ -n "$WAYLAND_DISPLAY" ]; then
-		kitten icat --stdin no --transfer-mode memory --place "${W}x${H}@${X}x${Y}" "$1" </dev/null >/dev/tty
+	if [ -f "$1" ] && [ -n "$WAYLAND_DISPLAY" ] && [ -z "$SSH_CONNECTION" ]; then
+		kitten icat --stdin no --transfer-mode memory --place "${W}x${H}@${X}x${Y}" "$1" </dev/null >/dev/tty &
+		return 0
 	else
-		mediainfo "$6"
+		# Si el archivo original es un archivo de audio, mostramos sus propiedades
+		case $OG_FILETYPE in
+		image/*)
+			# shellcheck disable=SC2155
+			local INFO=$(mediainfo "$OG_FILE")
+			PROPERTIES=(
+				"Format"
+				"Width"
+				"Height"
+				"Display aspect ratio"
+				"Compression mode"
+			)
+			local OUT=""
+			for PROPERTY in "${PROPERTIES[@]}"; do
+				OUT_PART=$(echo "$INFO" | grep "${PROPERTY} " | head -1 | xargs | sed 's/ :/:/')
+				[ -n "$OUT_PART" ] && OUT+="$OUT_PART\n"
+			done
+			echo -e "$OUT"
+			;;
+		*) ;;
+		esac
+		return 1
 	fi
 }
 
@@ -86,7 +110,7 @@ text/* | */xml | */json | */x-shellscript | */x-xcursor | */x-theme | */x-deskto
 # Convertir con imagemagick a JPG
 */postscript | */x-xpixmap | */x-xcf | */heif | */bmp)
 	CACHE=$(magick_convert "$1")
-	image "$CACHE" "$2" "$3" "$4" "$5" &
+	image "$CACHE" "$2" "$3" "$4" "$5" "$1" "$FILETYPE" &
 	exit 1
 	;;
 
@@ -95,7 +119,7 @@ image/svg+xml*)
 	HASH="$(file_hash "$1")"
 	CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/lf/thumb.$HASH"
 	[ ! -f "$CACHE.png" ] && DISPLAY="" inkscape -o "$CACHE.png" --export-overwrite -D --export-width=256 "$1"
-	image "$CACHE.png" "$2" "$3" "$4" "$5" &
+	image "$CACHE.png" "$2" "$3" "$4" "$5" "$1" "$FILETYPE" &
 	exit 1
 	;;
 
@@ -104,13 +128,13 @@ image/x-eps)
 	HASH="$(file_hash "$1")"
 	CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/lf/thumb.$HASH"
 	[ ! -f "$CACHE.jpg" ] && gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -r300 -dEPSCrop -sOutputFile="$CACHE.jpg" "$1" >/dev/null 2>&1
-	image "$CACHE.jpg" "$2" "$3" "$4" "$5" &
+	image "$CACHE.jpg" "$2" "$3" "$4" "$5" "$1" "$FILETYPE" &
 	exit 1
 	;;
 
 # El resto de imágenes mostarlas tal cual con ueberzug
 image/*)
-	image "$1" "$2" "$3" "$4" "$5" &
+	image "$1" "$2" "$3" "$4" "$5" "$1" "$FILETYPE" &
 	exit 1
 	;;
 
@@ -121,21 +145,30 @@ audio/flac | audio/mpeg | audio/x-m4a | audio/mp4)
 	METADATA="$CACHE_DIR/metadata.txt"
 	COVER="$CACHE_DIR/cover.jpg"
 	[ ! -d "$CACHE_DIR" ] && mkdir -p "$CACHE_DIR"
-	[ ! -f "$METADATA" ] && ffmpeg -i "$1" -y -f ffmetadata "$METADATA"
+
+	[ ! -f "$METADATA" ] && {
+		TMP="$(mktemp /tmp/lf.XXXX)"
+		ffmpeg -i "$1" -y -f ffmetadata "$TMP"
+		[ "$FILETYPE" = "audio/flac" ] &&
+			mediainfo --Inform="Audio;%BitDepth% bit / %SamplingRate% Hz" "$1" >"$METADATA"
+		grep -ivE "(comment|encoder|ffmetadata1)" "$TMP" >>"$METADATA"
+		rm "$TMP"
+	}
+
 	if [ ! -f "$COVER" ]; then
 		ffmpeg -nostdin -i "$1" "$COVER" && thumbnail_resize "$COVER"
 	fi
 
-	image "$COVER" "$2" "$3" "$4" "$5" &
-	{
-		# Determinamos el número de saltos de línea necesarios teniendo en
-		# cuenta que las carátulas tienen un ratio de aspecto de 1:1
-		COUNT=$(echo "$4 / 4 + 1" | bc)
-		printf '\n%.0s' $(seq "$COUNT")
-		[ "$FILETYPE" = "audio/flac" ] &&
-			mediainfo --Inform="Audio;%BitDepth% bit / %SamplingRate% Hz" "$1"
-		grep -ivE "(comment|encoder|ffmetadata1)" "$METADATA"
-	}
+	# Si podemos mostrar imagenes calculamos cuanto tenemos que desplazar el texto
+	image "$COVER" "$2" "$3" "$4" "$5" "$1" "$FILETYPE" &&
+		{
+			# Determinamos el número de saltos de línea necesarios teniendo en
+			# cuenta que las carátulas tienen un ratio de aspecto de 1:1
+			COUNT=$(echo "$4 / 4 + 1" | bc)
+			printf '\n%.0s' $(seq "$COUNT")
+		}
+
+	cat "$METADATA"
 	exit 1
 	;;
 
@@ -152,7 +185,7 @@ audio/flac | audio/mpeg | audio/x-m4a | audio/mp4)
 		grep "Application id" "$TMP" | tee -a "$CACHE" >/dev/null
 		rm "$TMP"
 	fi
-	chafa /usr/share/icons/Papirus-Dark/128x128/devices/media-optical.svg
+	[ -z "$SSH_CONNECTION" ] && chafa /usr/share/icons/Papirus-Dark/128x128/devices/media-optical.svg
 	cat "$CACHE"
 	exit 1
 	;;
@@ -178,30 +211,32 @@ video/*)
 		rm "$TMP"
 	fi
 
-	image "$THUMB" "$2" "$3" "$4" "$5" &
-	{
-		HEIGHT=$(grep -oP "Height : \K.[0-9 ]*" "$METADATA" | tr -d ' ')
-		WIDTH=$(grep -oP "Width : \K.[0-9 ]*" "$METADATA" | tr -d ' ')
-		ROTATION=$(mediainfo "$1" | grep -oP "Rotation.*: \K[0-9]*")
-		DISPLAY_RATIO=$(mediainfo --Inform="Video;%DisplayAspectRatio%" "$1")
+	# Si podemos mostrar imagenes calculamos cuanto tenemos que desplazar el texto
+	image "$THUMB" "$2" "$3" "$4" "$5" "$1" "$FILETYPE" &&
+		{
+			HEIGHT=$(grep -oP "Height : \K.[0-9 ]*" "$METADATA" | tr -d ' ')
+			WIDTH=$(grep -oP "Width : \K.[0-9 ]*" "$METADATA" | tr -d ' ')
+			ROTATION=$(mediainfo "$1" | grep -oP "Rotation.*: \K[0-9]*")
+			DISPLAY_RATIO=$(mediainfo --Inform="Video;%DisplayAspectRatio%" "$1")
 
-		# Usamos el ratio proporcionado por los metadatos;
-		# si no está disponible, lo calculamos manualmente
-		if [ -n "$DISPLAY_RATIO" ]; then
-			RATIO="$DISPLAY_RATIO"
-		else
-			RATIO=$(echo "scale=3; $WIDTH / $HEIGHT " | bc)
-		fi
-		# Determinamos el número de saltos de línea en
-		# función de si el vídeo está rotado o no
-		if [ "$ROTATION" = "90" ] || [ "$ROTATION" = "270" ]; then
-			COUNT=$(echo "(${4}/4) * $RATIO + 1" | bc)
-		else
-			COUNT=$(echo "(${4}/4) / $RATIO + 1" | bc)
-		fi
-		printf '\n%.0s' $(seq "$COUNT")
-		cat "$METADATA"
-	}
+			# Usamos el ratio proporcionado por los metadatos;
+			# si no está disponible, lo calculamos manualmente
+			if [ -n "$DISPLAY_RATIO" ]; then
+				RATIO="$DISPLAY_RATIO"
+			else
+				RATIO=$(echo "scale=3; $WIDTH / $HEIGHT " | bc)
+			fi
+			# Determinamos el número de saltos de línea en
+			# función de si el vídeo está rotado o no
+			if [ "$ROTATION" = "90" ] || [ "$ROTATION" = "270" ]; then
+				COUNT=$(echo "(${4}/4) * $RATIO + 1" | bc)
+			else
+				COUNT=$(echo "(${4}/4) / $RATIO + 1" | bc)
+			fi
+			printf '\n%.0s' $(seq "$COUNT")
+		}
+
+	cat "$METADATA"
 	exit 1
 	;;
 
@@ -215,7 +250,7 @@ video/*)
 		# mantener el tamaño de página definido en el PDF
 		gs -sDEVICE=jpeg -dUseCropBox -dFirstPage=1 -dLastPage=1 -r300 -o "$CACHE.jpg" "$1" >/dev/null
 	fi
-	image "$CACHE.jpg" "$2" "$3" "$4" "$5" &
+	image "$CACHE.jpg" "$2" "$3" "$4" "$5" "$1" "$FILETYPE" &
 	exit 1
 	;;
 
@@ -235,7 +270,7 @@ video/*)
 		fi
 		rm -rf "$TMP_DIR"
 	fi
-	image "$CACHE" "$2" "$3" "$4" "$5" &
+	image "$CACHE" "$2" "$3" "$4" "$5" "$1" "$FILETYPE" &
 	exit 1
 	;;
 
