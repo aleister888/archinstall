@@ -257,57 +257,21 @@ EOF
 #####################
 
 # Ocultar archivos .desktop innecesarios
-DESKTOPENT=(
-	"Surge-XT"
-	"Surge-XT-FX"
-	"assistant"
-	"avahi-discover"
-	"blueman-manager"
-	"bssh"
-	"bvnc"
-	"cmake-gui"
-	"designer"
-	"echomixer"
-	"electron37"
-	"envy24control"
-	"fluid"
-	"hdajackretask"
-	"hdspconf"
-	"hdspmixer"
-	"hp-uiscan"
-	"htop"
-	"hwmixvolume"
-	"jconsole-java-openjdk"
-	"jconsole-java17-openjdk"
-	"jconsole-java21-openjdk"
-	"jshell-java-openjdk"
-	"jshell-java17-openjdk"
-	"jshell-java21-openjdk"
-	"lf"
-	"linguist"
-	"lstopo"
-	"nvim"
-	"nwg-look"
-	"picom"
-	"qdbusviewer"
-	"qv4l2"
-	"qvidcap"
-	"redshift"
-	"redshift-gtk"
-	"uuctl"
-	"winetricks"
-	"xdvi"
-	"xgps"
-	"xgpsspeed"
-	"yad-settings"
-)
+IGNORE_GENERAL="$REPO_DIR/assets/desktop-ignore/general.txt"
+IGNORE_LSP="$REPO_DIR/assets/desktop-ignore/lsp.txt"
+
+mapfile -t GENERAL_DESKTOP <"$IGNORE_GENERAL"
+mapfile -t LSP_DESKTOP <"$IGNORE_LSP"
+
+ALL_IGNORE=("${GENERAL_DESKTOP[@]}" "${LSP_DESKTOP[@]}")
 
 # Ocultamos estas entradas .desktop
-for ENTRY in "${DESKTOPENT[@]}"; do
+for ENTRY in "${ALL_IGNORE[@]}"; do
 	if [ -e "/usr/share/applications/$ENTRY.desktop" ]; then
 		sudo /usr/bin/cp -f "/usr/share/applications/$ENTRY.desktop" \
 			"/usr/local/share/applications/$ENTRY.desktop"
-		echo 'NoDisplay=true' | sudo /usr/bin/tee -a \
+
+		echo -e '\nNoDisplay=true' | sudo /usr/bin/tee -a \
 			"/usr/local/share/applications/$ENTRY.desktop"
 	fi
 done >/dev/null &

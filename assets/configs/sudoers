@@ -14,7 +14,7 @@ Defaults:%wheel env_keep += "SUDO_USER SUDO_UID SUDO_GID LANG LC_ALL"
 
 %wheel ALL=(root) NOPASSWD: /usr/bin/simple-mtpfs
 
-%wheel ALL=(root) NOPASSWD: /usr/bin/install ^-o root -g root -m 0755 .* /usr/local/bin/[a-zA-Z0-9-]+$
+%wheel ALL=(root) NOPASSWD: /usr/bin/install ^-o root -g root -m 0755 .* /usr/local/bin/[a-zA-Z0-9_-]+$
 
 # Activar/desactivar bluetooth
 %wheel ALL=(root) NOPASSWD: /usr/bin/rfkill unblock bluetooth
@@ -25,19 +25,23 @@ Defaults:%wheel env_keep += "SUDO_USER SUDO_UID SUDO_GID LANG LC_ALL"
 %wheel ALL=(root) NOPASSWD: /usr/bin/tee /sys/class/backlight/amdgpu_bl1/brightness
 
 # updater/install-bin
-%wheel ALL=(root) NOPASSWD: /usr/bin/rm ^/usr/local/bin/[a-zA-Z0-9-]+$
+%wheel ALL=(root) NOPASSWD: /usr/bin/rm ^/usr/local/bin/[a-zA-Z0-9_-]+$
 
 # updater/install-conf
 %wheel ALL=(root) NOPASSWD: /usr/bin/tee /etc/modprobe.d/nobeep.conf
 %wheel ALL=(root) NOPASSWD: /usr/bin/sed ^.* /etc/systemd/logind.conf$
 %wheel ALL=(root) NOPASSWD: /usr/bin/cp ^-f .* /usr/lib/udev/rules.d/$
 
-# update.sh
-%wheel ALL=(root) NOPASSWD: /usr/bin/tee ^-a /usr/local/share/applications/[a-zA-Z0-9-]+.desktop$
-%wheel ALL=(root) NOPASSWD: /usr/bin/mkdir -p /usr/local/share/themes
-%wheel ALL=(root) NOPASSWD: /usr/bin/rm ^-rf /usr/local/share/themes/[a-zA-Z0-9-]+$
-%wheel ALL=(root) NOPASSWD: /usr/bin/cp ^-rf .* /usr/local/share/themes/$
-%wheel ALL=(root) NOPASSWD: /usr/bin/cp ^-f .* /usr/local/share/applications/[a-zA-Z0-9-]+.desktop$
-
 # installer/modules/firefox-config
 %wheel ALL=(root) NOPASSWD: /usr/bin/chmod 755 /usr/local/lib/arkenfox-auto-update
+
+# update.sh
+%wheel ALL=(root) NOPASSWD: /usr/bin/mkdir -p /usr/local/share/themes
+%wheel ALL=(root) NOPASSWD: /usr/bin/rm ^-rf /usr/local/share/themes/[a-zA-Z0-9_-]+$
+%wheel ALL=(root) NOPASSWD: /usr/bin/cp ^-rf .* /usr/local/share/themes/$
+
+%wheel ALL=(root) NOPASSWD: /usr/bin/tee ^-a /usr/local/share/applications/[a-zA-Z0-9_-]+.desktop$
+%wheel ALL=(root) NOPASSWD: /usr/bin/cp ^-f .* /usr/local/share/applications/[a-zA-Z0-9_-]+.desktop$
+
+%wheel ALL=(root) NOPASSWD: /usr/bin/tee ^-a /usr/local/share/applications/in.lsp_plug.lsp_plugins_[a-zA-Z0-9_-]+.desktop$
+%wheel ALL=(root) NOPASSWD: /usr/bin/cp ^-f .* /usr/local/share/applications/in.lsp_plug.lsp_plugins_[a-zA-Z0-9_-]+.desktop$
