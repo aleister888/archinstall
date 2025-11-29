@@ -1,6 +1,5 @@
 #!/bin/bash -x
-# shellcheck disable=SC2086
-# shellcheck disable=SC2181
+# shellcheck disable=SC2086,SC2181
 
 # Script para vincular (dispositivos de entrada)|(aplicaciones) a un micrófono virtual para compartir audio
 
@@ -112,6 +111,7 @@ sink_edit() {
 	fi
 }
 
+# shellcheck disable=SC2155
 set_max_samplerate() {
 	samplerate_error() {
 		notify-send -e -i system-error -t "$NOTIFICATION_DURATION" \
@@ -119,17 +119,17 @@ set_max_samplerate() {
 		exit 1
 	}
 
-	AUDIO_ID=$(
-		pw-dump |
-			jq '.[] |
-			select(.info.props["node.name"]? // "" |
-			startswith("alsa_output.pci")) |
-			.id'
+	local DEFAULT_SINK=$(pactl info | awk -F': ' '/Default Sink/ {print $2}')
+
+	local AUDIO_ID=$(
+		pw-dump | jq -r ".[]
+			| select(.type==\"PipeWire:Interface:Node\" and .info.props[\"node.name\"]==\"$DEFAULT_SINK\")
+			| .id"
 	)
 
 	[ -z "$AUDIO_ID" ] && samplerate_error
 
-	MAX_RATE=$(
+	local MAX_RATE=$(
 		pw-dump |
 			jq ".[] |
 		select(.id == $AUDIO_ID) |
