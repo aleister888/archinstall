@@ -11,6 +11,9 @@ Chores
   - Modernize QT Theming
   - Find alternative to hyprsunset
 
+Fixes
+  - Fix VST plugins menus freezing system (yabridge)
+
 Refactor
   - bin/plot-macros
     - Improve logic and performance
