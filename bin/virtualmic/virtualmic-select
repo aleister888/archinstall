@@ -130,10 +130,14 @@ set_max_samplerate() {
 	[ -z "$AUDIO_ID" ] && samplerate_error
 
 	local MAX_RATE=$(
-		pw-dump |
-			jq ".[] |
+		pw-dump | jq ".[] |
 		select(.id == $AUDIO_ID) |
 		.info.params.EnumFormat[0].rate.max"
+	)
+	[ -z "$MAX_RATE" ] && MAX_RATE=$(
+		pw-dump | jq ".[] |
+			select(.id == $AUDIO_ID) |
+			.info.params.EnumFormat[0].rate"
 	)
 
 	[ -z "$MAX_RATE" ] && samplerate_error

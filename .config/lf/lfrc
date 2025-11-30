@@ -48,6 +48,7 @@ cmd open ${{
 	change_title() {
 		printf "\033]0;$*\007" >/dev/tty
 	}
+
 	open_gui(){
 		change_title "lf hidden"
 		#killall -SIGUSR2 waybar
@@ -121,7 +122,11 @@ cmd open ${{
 			open_gui setsid -f reaper "$f" ;;
 
 		*/x-tuxguitar | */gpx+xml | */x-gnuplot | */x-gtp)
-			open_gui setsid -f tuxguitar "$fx" ;;
+			if [ "${f##*.}" == "odt" ]; then
+				open_gui setsid -f libreoffice "$fx"
+			else
+				open_gui setsid -f tuxguitar "$fx"
+			fi ;;
 
 		# Si no tenemos configurada una forma de abrirlo, usamos xdg-open
 		*) for f in $fx; do setsid -f $OPENER $f; done ;;
