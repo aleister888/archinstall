@@ -39,13 +39,41 @@ if [ ! -f "$HOME/.config/keepassxc/keepassxc.ini" ]; then
 		"$HOME"/.config/keepassxc/
 fi
 
-# Configurar el inverse search de vimtex para okular
+# Configurar Okular
 if [ ! -e "$HOME"/.config/okularpartrc ] ||
 	! grep -q okular-inverse-search "$HOME"/.config/okularpartrc; then
 	cat <<-EOF >~/.config/okularpartrc
 		[Core General]
 		ExternalEditor=Custom
 		ExternalEditorCommand=okular-inverse-search %l "%f"
+
+		[Dlg Accessibility]
+		RecolorBackground=40,40,40
+		RecolorForeground=251,241,199
+
+		[Document]
+		ChangeColors=true
+		RenderMode=Recolor
+
+		[Main View]
+		ShowBottomBar=true
+
+		[PageView]
+		MouseMode=TextSelect
+	EOF
+fi
+if [ ! -e "$HOME"/.config/okularrc ] ||
+	! grep -q KritaDarkOrange "$HOME"/.config/okularrc; then
+	cat <<-EOF >~/.config/okularrc
+		[Desktop Entry]
+		FullScreen=false
+
+		[General]
+		LockSidebar=true
+		ShowSidebar=true
+
+		[UiSettings]
+		ColorScheme=KritaDarkOrange
 	EOF
 fi
 

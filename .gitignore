@@ -30,6 +30,7 @@ bookmarks
 .config/zsh/zsh-history-substring-search
 .config/zsh/zsh-syntax-highlighting
 .config/zsh/zsh-you-should-use
+.config/zsh/.zcompdump*
 
 *.log
 *.out
@@ -37,5 +38,3 @@ bookmarks
 qt5ct.conf
 qt6ct.conf
 .stfolder
-
-.zcompdump
