@@ -40,42 +40,38 @@ if [ ! -f "$HOME/.config/keepassxc/keepassxc.ini" ]; then
 fi
 
 # Configurar Okular
-if [ ! -e "$HOME"/.config/okularpartrc ] ||
-	! grep -q okular-inverse-search "$HOME"/.config/okularpartrc; then
-	cat <<-EOF >~/.config/okularpartrc
-		[Core General]
-		ExternalEditor=Custom
-		ExternalEditorCommand=okular-inverse-search %l "%f"
+cat <<-EOF >~/.config/okularpartrc
+	[Core General]
+	ExternalEditor=Custom
+	ExternalEditorCommand=okular-inverse-search %l "%f"
 
-		[Dlg Accessibility]
-		RecolorBackground=40,40,40
-		RecolorForeground=251,241,199
+	[Dlg Accessibility]
+	RecolorBackground=40,40,40
+	RecolorForeground=251,241,199
 
-		[Document]
-		ChangeColors=true
-		RenderMode=Recolor
+	[Document]
+	ChangeColors=true
+	RenderMode=Recolor
 
-		[Main View]
-		ShowBottomBar=true
+	[Main View]
+	ShowBottomBar=true
 
-		[PageView]
-		MouseMode=TextSelect
-	EOF
-fi
-if [ ! -e "$HOME"/.config/okularrc ] ||
-	! grep -q KritaDarkOrange "$HOME"/.config/okularrc; then
-	cat <<-EOF >~/.config/okularrc
-		[Desktop Entry]
-		FullScreen=false
+	[PageView]
+	BackgroundColor=29,32,33
+	MouseMode=TextSelect
+	UseCustomBackgroundColor=true
+EOF
+cat <<-EOF >~/.config/okularrc
+	[Desktop Entry]
+	FullScreen=false
 
-		[General]
-		LockSidebar=true
-		ShowSidebar=true
+	[General]
+	LockSidebar=true
+	ShowSidebar=true
 
-		[UiSettings]
-		ColorScheme=KritaDarkOrange
-	EOF
-fi
+	[UiSettings]
+	ColorScheme=KritaDarkOrange
+EOF
 
 ##############
 # Miscelánea #
