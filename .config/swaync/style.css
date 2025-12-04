@@ -10,6 +10,7 @@
   --image-radius: 10%;
   --icon-size: 96px;
   --shadow-opts: 1px 1px 3px 2px #151515;
+  --mpris-size: 128px; /* NOTA: Cambiar también en config.json */
 }
 
 /********************/
@@ -238,8 +239,8 @@ picture.mpris-background {
 
 /* Carátula del álbum */
 .widget-mpris-album-art {
-  min-width: 96px;
-  min-height: 96px;
+  min-width: var(--mpris-size);
+  min-height: var(--mpris-size);
   border-radius: var(--image-radius);
   margin-top: 18px;
   margin-bottom: 4px;
@@ -270,6 +271,7 @@ picture.mpris-background {
 /* Botones (Anterior, siguiente, etc.) */
 /*
 .widget-mpris .widget-mpris-player button {
+  margin-top: 12px;
   max-height: 28px;
   max-width: 28px;
   min-height: 28px;
@@ -278,17 +280,15 @@ picture.mpris-background {
   margin-bottom: 12px;
   background-color: var(--bg-light);
 }
-*/
-.widget-mpris .widget-mpris-player button {
-  background: transparent;
-  color: transparent;
-}
-
-/*
 .widget-mpris .widget-mpris-player button:hover {
   background-color: var(--bg-lighter);
 }
 */
+
+.widget-mpris .widget-mpris-player button {
+  background: transparent;
+  color: transparent;
+}
 
 /*******************/
 /* Rejilla botones */

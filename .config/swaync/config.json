@@ -40,7 +40,7 @@
     },
     "mpris": {
       "blacklist": ["firefox", "spotify"],
-      "image-size": 96
+      "image-size": 128
     },
     "buttons-grid": {
       "buttons-per-row": 5,
