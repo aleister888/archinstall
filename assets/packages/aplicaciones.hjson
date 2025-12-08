@@ -3,12 +3,13 @@
     "gnome-clocks",
     "handbrake",
     "handbrake-cli",
+    "hplip",
     "keepassxc",
+    "okular",
     "qbittorrent",
     "seahorse",
     "vlc",
-    "okular",
-    "hplip"
+    "yacreader" // lector comics
   ],
   "zathura": [
     "tesseract-data-spa",

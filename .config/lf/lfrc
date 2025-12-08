@@ -65,7 +65,7 @@ cmd open ${{
 
 		*/vnd.rar | */zip)
 			if [ "${f##*.}" == "cbr" ] || [ "${f##*.}" == "cbz" ]; then
-				open_gui setsid -f zathura "$f"
+				open_gui setsid -f YACReader "$f"
 			else
 				open_gui setsid -f xarchiver "$f"
 			fi ;;

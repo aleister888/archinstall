@@ -47,7 +47,11 @@ cat <<-EOF >~/.config/okularpartrc
 
 	[Dlg Accessibility]
 	RecolorBackground=40,40,40
-	RecolorForeground=251,241,199
+	RecolorForeground=251
+
+	[Document]
+	ChangeColors=true
+	RenderMode=Recolor,241,199
 
 	[Main View]
 	ShowBottomBar=true
