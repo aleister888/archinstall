@@ -34,6 +34,7 @@ user_service_add() {
 [ "$(id -u)" -eq 0 ] && exit 1
 
 SERVICES=(
+	"cups"
 	"earlyoom"
 	"fwupd"
 	"gdm"

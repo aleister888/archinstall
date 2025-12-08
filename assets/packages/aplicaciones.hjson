@@ -4,10 +4,18 @@
     "handbrake",
     "handbrake-cli",
     "keepassxc",
-    "okular",
     "qbittorrent",
     "seahorse",
-    "vlc"
+    "vlc",
+    "okular",
+    "hplip"
+  ],
+  "zathura": [
+    "tesseract-data-spa",
+    "zathura",
+    "zathura-cb",
+    "libmupdf",
+    "zathura-pdf-poppler"
   ],
   "gimp": [
     "cfitsio",

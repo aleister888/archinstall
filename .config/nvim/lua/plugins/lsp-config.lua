@@ -4,7 +4,7 @@ local servers = {
 	"clangd",
 	"cssls",
 	"jdtls",
-	"lua_ls",
+	"kotlin_language_server",
 	"markdown_oxide",
 	"texlab",
 }

@@ -33,9 +33,10 @@ cmd mkdir $mkdir -p "$(echo $* | tr ' ' '\ ')"
 # Limpiar todas las selecciones
 cmd clear_selection ${{
 	lf -remote "send $id clear"
-	lf -remote "send $id glob-unselect *"
-	lf -remote "send $id reload"
+	lf -remote "send $id unselect"
+	sleep 0.1
 	clear
+	lf -remote "send $id reload"
 }}
 
 cmd myclear ${{
@@ -57,24 +58,30 @@ cmd open ${{
 		#killall -SIGUSR2 waybar
 	}
 
-	FILETYPE="$(xdg-mime query filetype "$(readlink -f $f)")"
-	{
+	FILETYPE="$(file -b --mime-type "$(readlink -f $f)")"
 	case $FILETYPE in
-		*/x-7z-compressed | */vnd.rar | */*-tar | */zip | */gzip)
-			open_gui setsid -f xarchiver "$fx" ;;
+		*/x-7z-compressed | */*-tar | */gzip)
+			open_gui setsid -f xarchiver "$f" ;;
 
-		*/vnd.*document*)
-			open_gui setsid -f libreoffice "$fx" ;;
+		*/vnd.rar | */zip)
+			if [ "${f##*.}" == "cbr" ] || [ "${f##*.}" == "cbz" ]; then
+				open_gui setsid -f zathura "$f"
+			else
+				open_gui setsid -f xarchiver "$f"
+			fi ;;
 
 		*/pdf | */epub* | */vnd.comicbook*)
 			open_gui okular "$f" ;;
 
+		*/vnd.*document*)
+			open_gui setsid -f libreoffice "$f" ;;
+
 		text/* | */xml | */json | inode/x-empty | */x-shellscript | */x-desktop | */yaml | */sql | */x-php)
-			$EDITOR "$fx" ;;
+			$EDITOR "$f" ;;
 
 		# Aveces xdg-mime y file detectan los archivos Xresources como x-xcursor
 		image/x-xcursor)
-			$EDITOR "$fx" ;;
+			$EDITOR "$f" ;;
 
 		image/x-eps)
 			HASH=$(
@@ -92,10 +99,10 @@ cmd open ${{
 			DIR="$(dirname -- "$f")"
 			BASE="$(basename -- "$f")"
 
+			FORMATS="jpg|jpeg|png|gif|bmp|tiff|ppm|svg|webp|xpm"
+
 			# Listar imágenes en el directorio (ordenadas alfabéticamente)
-			IMAGES=$(printf '%s\n' "$DIR"/*.{jpg,jpeg,png,gif,bmp,tiff,ppm,svg,webp,xpm} |
-				grep -iE '\.(jpg|jpeg|png|gif|bmp|tiff|ppm|svg|webp|xpm)$' |
-				sort -f)
+			IMAGES=$(printf '%s\n' "$DIR"/* | grep -iE "\.($FORMATS)$" | sort -f)
 
 			# Rotar la lista para que empiece en $BASE
 			ROTATED=$(printf '%s\n' "$IMAGES" | awk -v start="$DIR/$BASE" '
@@ -110,10 +117,11 @@ cmd open ${{
 			;;
 
 		audio/*)
-			open_gui mpv --audio-display=no "$f" ;;
+			clear
+			mpv --audio-display=no $fx;;
 
 		video/*)
-			open_gui mpv "$f" ;;
+			open_gui mpv $fx ;;
 
 		*/x-keepass2)
 			open_gui setsid -f keepassxc "$f" ;;
@@ -122,16 +130,11 @@ cmd open ${{
 			open_gui setsid -f reaper "$f" ;;
 
 		*/x-tuxguitar | */gpx+xml | */x-gnuplot | */x-gtp)
-			if [ "${f##*.}" == "odt" ]; then
-				open_gui setsid -f libreoffice "$fx"
-			else
-				open_gui setsid -f tuxguitar "$fx"
-			fi ;;
+			open_gui setsid -f tuxguitar "$f" ;;
 
 		# Si no tenemos configurada una forma de abrirlo, usamos xdg-open
 		*) for f in $fx; do setsid -f $OPENER $f; done ;;
 	esac
-	} 2>/dev/null
 }}
 
 cmd on-cd &{{
@@ -148,6 +151,7 @@ cmd on-cd &{{
 
 # Muestra información del archivo seleccionado con eza
 cmd on-select &{{
+	# Añadimos el tamaño en disco y el tamaño real
 	INFO="[$(/usr/bin/du -chs "$(readlink -f "$fx")" | grep total | awk '{print $1}')"
 	TOTAL_BYTES="$(stat -c %s "$fx")"
 	if [ ! -d "$fx" ] && [ "$TOTAL_BYTES" -le 4096 ]; then
@@ -155,12 +159,15 @@ cmd on-select &{{
 	else
 		INFO+="] "
 	fi
-	# Añadimos los permisos, dueño, fecha y nombre
+
+	# Añadimos permisos, dueño, fecha y nombre
 	INFO+=$(
 		eza -dlo --color=always --time-style iso "$(basename "$f")" |
 			awk '{printf "%s %s %s %s %s %s", $1, $4, $5, $6, $7, $8; for (i=9; i<=NF; i++) printf " %s", $i; print ""}' |
 			sed 's/\\/\\\\/g;s/"/\\"/g'
 	)
+
+	# Mostramos la información
 	lf -remote "send $id set statfmt \"$INFO\""
 }}
 
@@ -215,12 +222,11 @@ cmd compress ${{
 
 	# Construimos una lista con los archivos a comprimir para que el usuario
 	# pueda verificar que todo está correcto
-	if [ "$(printf "%s\n" "$@" | wc -l)" -eq 1 ]; then
+	if [ "$(printf "%s\n" "$@" | wc -l)" -le 2 ]; then
 		LIST="$@"
 	else
-		# Si tenemos más de un archivo, imprimimos el 1o y el último
+		# Si tenemos más de 3 archivos, imprimimos el 1o y el último
 		LIST="$(printf "%s\n" "$@" | head -n1)\n"
-		LIST+="...\n"
 		LIST+="$(printf "%s\n" "$@" | tail -n1)"
 	fi
 
@@ -267,9 +273,11 @@ cmd compress ${{
 
 	# Si los archivos se comprimieron correctamente, informamos al usuario
 	if [ -e "$ARCHIVO" ]; then
-		notify-send -e -a lf -i ark "lf" "Archivo comprimido en\n<i>$OUT_DIR</i>"
+		notify-send -t 1200 -e -a lf -i ark \
+			"lf" "Archivo comprimido en\n<i>$OUT_DIR</i>"
 	else
-		notify-send -e -a lf -i system-error "lf" "Hubo un error al comprimir los archivos"
+		notify-send -t 1200 -e -a lf -i system-error \
+			"lf" "Hubo un error al comprimir los archivos"
 	fi
 
 	unset --
@@ -293,7 +301,7 @@ cmd cdterm &{{
 # Enviar una notificación con el tamaño del ítem seleccionado
 cmd size &{{
 	eval "$HIDE_NOTIFICATIONS"
-	notify-send -e -a lf -i system-file-manager \
+	notify-send -t 1200 -e -a lf -i system-file-manager \
 		"El tamaño es de $(/usr/bin/du -chs $fx | grep total | awk '{print $1}')"
 }}
 
@@ -353,7 +361,8 @@ cmd extract ${{
 	whiptail --title "¿Extraer archivo(s)?" \
 	--yesno "¿Quieres extraer el archivo $f?" 10 60 && \
 	{
-		case "$(xdg-mime query filetype "$f")" in
+		FILETYPE="$(file -b --mime-type "$(readlink -f $f)")"
+		case "$FILETYPE" in
 		*/x-zstd-compressed-tar)
 			unzstd "$f"
 			aunpack "$(basename -s .zst "$f")"
@@ -361,14 +370,14 @@ cmd extract ${{
 			;;
 		# Extraemos archivos con 7z para poder extraer archivos .zip fragmentados
 		*/zip)
-			OUT_DIR="${f%.zip}"
+			OUT_DIR="${f%.*}"
 			mkdir -p "$OUT_DIR"
 			7z x "$f" -o"$OUT_DIR"
 			;;
 		*) aunpack $f ;;
 		esac
 	} && \
-	notify-send -e -a lf -i ark "lf" "Extraído:\n<i>$(basename $f)</i>"
+	notify-send -t 1200 -e -a lf -i ark "lf" "Extraído:\n<i>$(basename $f)</i>"
 }}
 
 # Pegar archivos copiados/cortados
@@ -384,7 +393,7 @@ cmd trash ${{
 	printf "¿Mover archivo(s) a la papelera? [s/N] "
 	read ans
 	[ $ans = "s" ] && trash-put $fx &&
-	notify-send -e -a lf -i user-trash "lf" "Archivo(s) movido(s) a la papelera"
+	notify-send -t 1200 -e -a lf -i user-trash "lf" "Archivo(s) movido(s) a la papelera"
 	lf -remote "send $id reload"
 }}
 
@@ -400,7 +409,7 @@ cmd clean-trash ${{
 	read ans
 	if [ $ans = "s" ] || [ $ans = "S" ]; then
 		trash-empty -f && \
-		notify-send -e -a lf -i user-trash "lf" "Archivo(s) borrados"
+		notify-send -t 1200 -e -a lf -i user-trash "lf" "Archivo(s) borrados"
 	fi
 	lf -remote "send $id reload"
 }}
@@ -410,7 +419,7 @@ cmd restore-trash ${{
 	eval "$HIDE_NOTIFICATIONS"
 	TRASH_CONTENTS=$(trash-list)
 	if [ -z "$TRASH_CONTENTS" ]; then
-		notify-send -e -a lf -i system-error "lf" "La papelera esta vacía"
+		notify-send -t 1200 -e -a lf -i system-error "lf" "La papelera esta vacía"
 		exit 0
 	fi
 
@@ -423,7 +432,7 @@ cmd restore-trash ${{
 	[ $ans = "s" ]
 	if [ $ans = "s" ] || [ $ans = "S" ]; then
 		trash-restore
-		notify-send -e -a lf -i user-trash "lf" "Archivo(s) restaurado(s)"
+		notify-send -t 1200 -e -a lf -i user-trash "lf" "Archivo(s) restaurado(s)"
 	fi
 	lf -remote "send $id reload"
 }}
@@ -495,7 +504,7 @@ map m push %mkdir<space>
 map Y ${{
 	eval "$HIDE_NOTIFICATIONS"
 	printf '"%s"' "$(dirname "$fx")" | wl-copy
-	notify-send -e -a lf -i gpaste "lf" "Ruta copiada al portapapeles"
+	notify-send -t 1200 -e -a lf -i gpaste "lf" "Ruta copiada al portapapeles"
 }}
 
 # Salir del programa

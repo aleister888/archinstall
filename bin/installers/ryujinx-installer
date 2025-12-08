@@ -7,7 +7,7 @@ RUN_SCRIPT="$HOME/.local/bin/ryujinx"
 DESKTOP_FILE="$HOME/.local/share/applications/ryujinx.desktop"
 
 install() {
-	local REPO REPLY DOWNLOAD_URL FILENAME TAR_LOCATION
+	local REPLY DOWNLOAD_URL FILENAME TAR_LOCATION
 	REPLY="$(curl "https://git.ryujinx.app/api/v4/projects/ryubing%2Fryujinx/releases")"
 	DOWNLOAD_URL="$(echo "$REPLY" | jq -r '.[] | .assets.links[] | select(.name | test("linux_x64.tar.gz")) | .url' | sort -r | head -n1)"
 	FILENAME="$(basename "$DOWNLOAD_URL")"

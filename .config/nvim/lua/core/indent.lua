@@ -7,17 +7,18 @@ local default_config = {
 	expandtab = false,
 	copyindent = true,
 	preserveindent = true,
-	tabstop = 4,
-	shiftwidth = 4,
+	tabstop = 2,
+	shiftwidth = 2,
 	conceallevel = 2,
 }
 
 -- Configuraciones específicas por tipo de archivo
 local filetype_configs = {
-	java = {}, -- Usa la configuración por defecto
-	lf = {
-		tabstop = 2,
-		shiftwidth = 2,
+	["*"] = {},
+	kotlin = {
+		expandtab = true,
+		tabstop = 4,
+		shiftwidth = 4,
 	},
 	sql = {
 		expandtab = true,
@@ -35,15 +36,11 @@ local filetype_configs = {
 	["hjson"] = {
 		smartindent = true,
 		expandtab = true,
-		tabstop = 2,
-		shiftwidth = 2,
 		conceallevel = 0,
 	},
 	["json*"] = {
 		smartindent = true,
 		expandtab = true,
-		tabstop = 2,
-		shiftwidth = 2,
 		conceallevel = 0,
 	},
 	fstab = {
@@ -52,13 +49,9 @@ local filetype_configs = {
 	},
 	rasi = {
 		expandtab = true,
-		tabstop = 2,
-		shiftwidth = 2,
 	},
 	["*css"] = {
 		expandtab = true,
-		tabstop = 2,
-		shiftwidth = 2,
 	},
 	tex = {
 		smartindent = true,
@@ -68,13 +61,9 @@ local filetype_configs = {
 	},
 	xml = {
 		expandtab = true,
-		tabstop = 2,
-		shiftwidth = 2,
 	},
 	markdown = {
 		expandtab = true,
-		tabstop = 2,
-		shiftwidth = 2,
 		conceallevel = 0,
 	},
 	python = {

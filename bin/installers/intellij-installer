@@ -1,0 +1,80 @@
+#!/bin/bash
+
+# Script para instalar/desinstalar IntelliJ IDEA
+
+INSTALL_DIR="$HOME/.local/opt/IntelliJ"
+RUN_SCRIPT="$HOME/.local/bin/intellij"
+DESKTOP_FILE="$HOME/.local/share/applications/intellij.desktop"
+
+install() {
+	local REPO REPLY DOWNLOAD_URL FILENAME TAR_LOCATION EXTRACT_DIR
+	REPO="JetBrains/intellij-community"
+	REPLY="$(curl "https://api.github.com/repos/$REPO/releases")"
+	DOWNLOAD_URL=$(
+		echo "$REPLY" | jq -r '.[]
+			| .assets[]?
+			| select(.name | test(".tar.gz$"))
+			| .browser_download_url' |
+			sort -r | head -n1
+	)
+	FILENAME="$(basename "$DOWNLOAD_URL")"
+	TAR_LOCATION="/tmp/$FILENAME"
+
+	# Descargar y descomprimir el archivo
+	curl -L "$DOWNLOAD_URL" -o "$TAR_LOCATION" || exit
+
+	# Obtener el nombre de la carpeta creada
+	tar -xzf "$TAR_LOCATION" -C /tmp
+	EXTRACT_DIR=$(tar -tf "$TAR_LOCATION" | head -1 | cut -f1 -d"/")
+
+	# Instalar en $HOME
+	mkdir -p "$(dirname "$INSTALL_DIR")"
+	mv "/tmp/$EXTRACT_DIR" "$INSTALL_DIR"
+
+	# Crear script de inicio
+	cat <<-EOF >"$RUN_SCRIPT"
+		#!/bin/sh
+		$INSTALL_DIR/bin/idea \$@
+	EOF
+	chmod +x "$RUN_SCRIPT"
+
+	cat <<-EOF >"$DESKTOP_FILE"
+		[Desktop Entry]
+		Version=1.0
+		Type=Application
+		Name=IntelliJ IDEA Community Edition
+		Comment=Develop with pleasure!
+		Exec=$RUN_SCRIPT %f
+		Icon=idea
+		Terminal=false
+		StartupNotify=true
+		StartupWMClass=jetbrains-idea-ce
+		Categories=Development;IDE;Java;
+	EOF
+}
+
+uninstall() {
+	rm -rf "$INSTALL_DIR"
+	rm -f "$RUN_SCRIPT"
+	rm -f "$DESKTOP_FILE"
+}
+
+clean() {
+	rm -rf "${XDG_CONFIG_HOME:-$HOME/.config}"/JetBrains
+	rm -rf "${XDG_DATA_HOME:-$HOME/.local/share}"/JetBrains
+	rm -rf "${XDG_CACHE_HOME:-$HOME/.cache}"/JetBrains
+}
+
+help_msg() {
+	echo "Uso:" >&2
+	echo "  $(basename "$0") [--install/--uninstall/--clean]" >&2
+	exit 1
+}
+
+# Manejo de argumentos
+case "$1" in
+--install) install ;;
+--uninstall) uninstall ;;
+--clean) clean ;;
+*) help_msg ;;
+esac

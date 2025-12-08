@@ -28,6 +28,7 @@ return {
 			indent = { enable = true },
 			auto_install = true,
 			ensure_installed = {
+				"arduino",
 				"bash",
 				"c",
 				"cpp",
@@ -36,7 +37,9 @@ return {
 				"diff",
 				"gitattributes",
 				"gitcommit",
+				"hyprlang",
 				"json",
+				"kotlin",
 				"latex",
 				"lua",
 				"markdown",

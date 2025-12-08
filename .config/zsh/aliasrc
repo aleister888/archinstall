@@ -10,6 +10,7 @@ alias cp='cp -iv'
 alias cat='bat -p --tabs 8'
 alias ls='eza -lagX --time-style iso --group-directories-first --smart-group'
 alias grep='grep --color=auto'
+alias tree='exa --tree'
 
 # Actualizar el sistema
 alias update='yay -Syuu --sudoloop --answerclean --answerdiff --removemake'
@@ -38,6 +39,7 @@ function GCC() {
 # Para obtener archivos no reclamados por pacman
 function lostfiles() {
 	local IGNORAR=(
+		"/usr/share/webapps/redmine"
 		"/opt"
 		"/usr/lib/modules/"
 		".*\.cache$"

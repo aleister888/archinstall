@@ -26,9 +26,13 @@ return {
 			tex = { "latexindent" },
 			xml = { "xmllint" },
 			zsh = { "shfmt" },
+			kotlin = { "ktlint" },
 		},
 		format_on_save = { timeout_ms = 5000 },
 		formatters = {
+			ktlint = {
+				prepend_args = { "-F" },
+			},
 			prettier_rasi = {
 				command = "prettier",
 				args = { "--parser", "css" },

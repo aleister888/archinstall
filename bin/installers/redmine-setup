@@ -162,7 +162,7 @@ redmine_restore() {
 
 	# Detenemos el servicio
 	echo "Deteniendo redmine"
-	sudo /usr/binsystemctl stop redmine.service && echo "Servicio redmine detenido"
+	sudo /usr/bin/systemctl stop redmine.service && echo "Servicio redmine detenido"
 
 	# Restauramos la copia de seguridad de la base de datos y archivos
 	echo "Restaurando copia de seguridad desde: $BACKUP_DIR"
@@ -201,6 +201,8 @@ help_msg() {
 	echo "       --install" >&2
 	echo "       --backup  [CARPETA]" >&2
 	echo "       --restore [CARPETA]" >&2
+	echo "       --themes" >&2
+	echo "       --clean" >&2
 	exit 1
 }
 

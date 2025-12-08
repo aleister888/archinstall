@@ -3,7 +3,7 @@
 shopt -s extglob
 
 # Número máximo de caracteres del output
-[ -z "$FACT" ] && FACT=26
+[ -z "$FACT" ] && FACT=24
 [ -z "$ALTFACT" ] && ALTFACT=12
 
 # Establecemos el reproductor
@@ -32,11 +32,13 @@ statusbar() {
 	[ -z "$TITLE" ] && exit
 
 	if [ "$STATUS" == "Playing" ]; then
-		INDICATOR="Playing:"
+		#INDICATOR="Playing:"
+		INDICATOR=""
 	elif [ -n "$STATUS" ]; then
-		INDICATOR="Paused:"
+		#INDICATOR="Paused:"
+		INDICATOR=""
 	fi
-	INDICATOR="<b>$INDICATOR</b>"
+	#INDICATOR="<b>$INDICATOR</b>"
 
 	echo "$INDICATOR <i>$TITLE</i>"
 }

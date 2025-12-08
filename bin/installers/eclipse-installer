@@ -78,6 +78,14 @@ help_msg() {
 	exit 1
 }
 
+update() {
+	uninstall
+	rm -rf "${XDG_CACHE_HOME:-$HOME/.cache}"/Eclipse
+	rm -rf "${XDG_DATA_HOME:-$HOME/.local/share}"/Eclipse
+	rm -rf ~/.m2
+	install
+}
+
 # Manejo de argumentos
 case "$1" in
 --install) install ;;

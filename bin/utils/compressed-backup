@@ -2,7 +2,6 @@
 
 # Script para crear copias de seguridad como archivos comprimidos
 
-# Detener el script si cualquier comando falla
 set -e
 
 DAYS=7

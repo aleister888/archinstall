@@ -1,22 +1,30 @@
 #!/bin/bash
 
-# Recodifíca videos a h.264 (1440p máx.) con la opción de rotarlos
+# Recodifíca videos a h.264 con la opción de rotarlos
 
-FILE=$1
-ROTATION=$2
+IN_FILE=$1
 
-FILENAME="${FILE%.*}"
-EXTENSION="${FILE##*.}"
-FILE_RECODED="${FILENAME}_recoded.${EXTENSION}"
+MAX_RES="${MAX_RES:=1440}"
+FILENAME="${IN_FILE%.*}"
+
+RECODED_DIR="/tmp/recoded"
+BASE_NAME="$(basename "$FILENAME")"
+EXTENSION="${IN_FILE##*.}"
+
+OUT_FILE=${2:=$RECODED_DIR/${BASE_NAME}_recoded.${EXTENSION}}
+
+ROTATION=$3
 
 # Verificar que el archivo existe
-[ ! -e "$FILE" ] && exit 1
+[ ! -e "$IN_FILE" ] && exit 1
+
+mkdir -p "$(dirname "$OUT_FILE")"
 
 # Detectar altura del video
 HEIGHT=$(
 	ffprobe -v error -select_streams v:0 \
 		-show_entries stream=height \
-		-of default=nokey=1:noprint_wrappers=1 "$FILE"
+		-of default=nokey=1:noprint_wrappers=1 "$IN_FILE"
 )
 
 # Elegir filtro según rotación
@@ -29,27 +37,30 @@ esac
 
 # Construir cadena de filtros
 FILTER=""
-[ "$HEIGHT" -ge 1440 ] && FILTER+="scale=-2:1440,"
-[ -n "$ROTATE" ] && FILTER+="$ROTATE,"
-FILTER=${FILTER%,} # Eliminar la coma final si existe
+[ "$HEIGHT" -ge "$MAX_RES" ] && FILTER+="scale=-2:$MAX_RES"
+[ -n "$ROTATE" ] && [ -n "$FILTER" ] && FILTER+=","
+[ -n "$ROTATE" ] && FILTER+="$ROTATE"
 
-if lspci | grep -qi nvidia; then
-	# Configuración para NVIDIA NVENC
-	ffmpeg -hwaccel nvdec -i "$FILE" \
-		-vf "$FILTER" \
-		-c:v hevc_nvenc -preset p7 -tune hq -cq 18 \
-		-c:a copy "$FILE_RECODED"
-else
-	# Configuración para VAAPI
-	ffmpeg -hwaccel vaapi -hwaccel_output_format vaapi -i "$FILE" \
-		-vf "hwdownload,format=nv12,${FILTER}format=nv12,hwupload" \
-		-c:v hevc_vaapi \
-		-c:a copy "$FILE_RECODED"
-fi || {
-	rm -f "$FILE_RECODED"
+VAAPI_RENDER=$(/usr/bin/ls /dev/dri/renderD* 2>/dev/null | head -n1)
+if [ -z "$VAAPI_RENDER" ]; then
+	echo "No se encontró un dispositivo VAAPI."
 	exit 1
-}
+fi
 
-mkdir -p /tmp/video-transform
-mv "$FILE" "/tmp/video-transform/$FILENAME.$EXTENSION"
-mv "$FILE_RECODED" "$FILE"
+if ! {
+	# Configuración para VAAPI
+	VF="hwdownload,format=nv12"
+	[ -n "$FILTER" ] && VF+=",$FILTER"
+	VF+=",format=nv12,hwupload"
+
+	ffmpeg -init_hw_device vaapi="$VAAPI_RENDER" \
+		-hwaccel vaapi -hwaccel_output_format vaapi -i "$IN_FILE" \
+		-vf "$VF" \
+		-c:v hevc_vaapi \
+		-c:a copy "$OUT_FILE"
+}; then
+	rm -f "$OUT_FILE"
+	exit 1
+fi
+
+echo "Archivo guardado en $OUT_FILE"

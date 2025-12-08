@@ -19,6 +19,7 @@ image() {
 	local Y="$5"
 
 	if [ -f "$1" ] && [ -n "$WAYLAND_DISPLAY" ] && [ -z "$SSH_CONNECTION" ]; then
+		clear
 		kitten icat --stdin no --transfer-mode memory --place "${W}x${H}@${X}x${Y}" "$1" </dev/null >/dev/tty &
 		return 0
 	else
@@ -113,6 +114,7 @@ text/* | */xml | */json | */x-shellscript | */x-xcursor | */x-theme | */x-deskto
 */postscript | */x-xpixmap | */x-xcf | */heif | */bmp)
 	CACHE=$(magick_convert "$1")
 	image "$CACHE" "$2" "$3" "$4" "$5" "$1" "$FILETYPE" &
+	wait
 	exit 1
 	;;
 
@@ -122,6 +124,7 @@ image/svg+xml*)
 	CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/lf/thumb.$HASH"
 	[ ! -f "$CACHE.png" ] && DISPLAY="" inkscape -o "$CACHE.png" --export-overwrite -D --export-width=256 "$1"
 	image "$CACHE.png" "$2" "$3" "$4" "$5" "$1" "$FILETYPE" &
+	wait
 	exit 1
 	;;
 
@@ -131,12 +134,13 @@ image/x-eps)
 	CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/lf/thumb.$HASH"
 	[ ! -f "$CACHE.jpg" ] && gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -r300 -dEPSCrop -sOutputFile="$CACHE.jpg" "$1" >/dev/null 2>&1
 	image "$CACHE.jpg" "$2" "$3" "$4" "$5" "$1" "$FILETYPE" &
+	wait
 	exit 1
 	;;
 
-# El resto de imágenes mostarlas tal cual con ueberzug
 image/*)
 	image "$1" "$2" "$3" "$4" "$5" "$1" "$FILETYPE" &
+	wait
 	exit 1
 	;;
 
@@ -161,7 +165,7 @@ audio/flac | audio/mpeg | audio/x-m4a | audio/mp4)
 		ffmpeg -nostdin -i "$1" "$COVER" && thumbnail_resize "$COVER"
 	fi
 
-	# Si podemos mostrar imagenes calculamos cuanto tenemos que desplazar el texto
+	# Si podemos mostrar imagenes, calculamos cuanto tenemos que desplazar el texto
 	image "$COVER" "$2" "$3" "$4" "$5" "$1" "$FILETYPE" &&
 		{
 			# Determinamos el número de saltos de línea necesarios teniendo en
@@ -171,6 +175,7 @@ audio/flac | audio/mpeg | audio/x-m4a | audio/mp4)
 		}
 
 	cat "$METADATA"
+	wait
 	exit 1
 	;;
 
@@ -253,6 +258,7 @@ video/*)
 		gs -sDEVICE=jpeg -dUseCropBox -dFirstPage=1 -dLastPage=1 -r300 -o "$CACHE.jpg" "$1" >/dev/null
 	fi
 	image "$CACHE.jpg" "$2" "$3" "$4" "$5" "$1" "$FILETYPE" &
+	wait
 	exit 1
 	;;
 
@@ -273,6 +279,7 @@ video/*)
 		rm -rf "$TMP_DIR"
 	fi
 	image "$CACHE" "$2" "$3" "$4" "$5" "$1" "$FILETYPE" &
+	wait
 	exit 1
 	;;
 
