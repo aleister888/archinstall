@@ -6,7 +6,7 @@
 # Licencia: GNU GPLv3
 
 # Número máximo de codificaciones simultaneas
-MAX_JOBS=$(nproc)
+MAX_JOBS=$(($(nproc) / 4))
 # Segundos de espera entre cada verificación
 WAIT_TIME=$(echo "scale=4; 1/$(((MAX_JOBS + 1) / 2))" | bc)
 
