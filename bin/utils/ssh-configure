@@ -11,72 +11,102 @@ if [ "$(id -u)" -ne 0 ]; then
 	exit 1
 fi
 
-# Instalar OpenSSH y habilitar el servicio
-pacman -Sy --noconfirm openssh
-systemctl enable --now sshd
+install_ssh() {
+	# Instalar OpenSSH y habilitar el servicio
+	pacman -Sy --noconfirm openssh
+	systemctl enable --now sshd
+}
 
-# Generar las claves RSA y ED25519
-yes y | ssh-keygen -t rsa -b 4096 -f /etc/ssh/ssh_host_rsa_key -N ""
-yes y | ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -N ""
+reinstall_ssh() {
+	systemctl disable --now sshd
+	rm -rf /etc/ssh
+	sudo pacman -S --noconfirm openssh
+	systemctl enable --now sshd
+}
 
-# Usar residuos mayores o iguales a 3071 bits
-awk '$5 >= 3071' /etc/ssh/moduli | tee /etc/ssh/moduli.safe
-mv -f /etc/ssh/moduli.safe /etc/ssh/moduli
+configure_ssh() {
+	[ ! -e /etc/ssh/ssh_host_ed25519_key ] &&
+		yes y | ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -N ""
 
-# Restringir los algoritmos soportados de intercambio de claves, cifrado y MAC
-echo -e "# Restrict key exchange, cipher, and MAC algorithms, including post-quantum hybrid KEX.
-KexAlgorithms sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha256
-Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
-MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,umac-128-etm@openssh.com
-HostKeyAlgorithms ssh-ed25519,ssh-ed25519-cert-v01@openssh.com,sk-ssh-ed25519@openssh.com,sk-ssh-ed25519-cert-v01@openssh.com,rsa-sha2-256,rsa-sha2-512,rsa-sha2-256-cert-v01@openssh.com,rsa-sha2-512-cert-v01@openssh.com" |
-	tee /etc/ssh/sshd_config.d/ssh-audit_hardening.conf
+	[ ! -e /etc/ssh/ssh_host_rsa_key ] &&
+		ssh-keygen -t rsa -b 4096 -f /etc/ssh/ssh_host_rsa_key -N ""
 
-# Deshabilitar el inicio de sesión como root
-sed -i 's|#PermitRootLogin prohibit-password|PermitRootLogin no|' \
-	/etc/ssh/sshd_config
-# Numero de intentos 6->4
-sed -i 's|#MaxAuthTries 6|MaxAuthTries 4|' /etc/ssh/sshd_config
-# Máximo 5 minutos de inactividad
-sed -i 's|#ClientAliveInterval 0|ClientAliveInterval 300|' /etc/ssh/sshd_config
+	cat <<-'EOF' | tee /etc/ssh/sshd_config.d/ssh-audit_hardening.conf
+		KexAlgorithms sntrup761x25519-sha512@openssh.com
+		Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com
+		MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com
+		HostKeyAlgorithms ssh-ed25519,ssh-ed25519-cert-v01@openssh.com
+	EOF
 
-# Instalar (si no lo está ya) y activar UFW
-if [ ! -x /usr/bin/ufw ]; then
-	pacman -Sy --noconfirm ufw
-	systemctl enable --now ufw
-	ufw enable
+	sed -i 's|#PermitRootLogin prohibit-password|PermitRootLogin no|' /etc/ssh/sshd_config
+	sed -i 's|#MaxAuthTries 6|MaxAuthTries 4|' /etc/ssh/sshd_config
+	sed -i 's|#ClientAliveInterval 0|ClientAliveInterval 300|' /etc/ssh/sshd_config
+}
+
+configure_ufw() {
+	# Instalar (si no lo está ya) y activar UFW
+	if [ ! -x /usr/bin/ufw ]; then
+		pacman -Sy --noconfirm ufw
+		systemctl enable --now ufw
+		ufw enable
+	fi
+
+	# Configurar UFW
+	ufw allow 80/tcp
+	ufw allow 443/tcp
+	ufw allow 3020          # Redmine
+	ufw allow in on virbr0  # Libvirt (NAT)
+	ufw allow out on virbr0 # Libvirt (NAT)
+	ufw limit ssh
+	ufw default deny incoming
+	ufw default allow outgoing
+}
+
+configure_fail2ban() {
+	# Instalar (si no lo está ya) y activar fail2ban
+	if [ ! -x /usr/bin/fail2ban-server ]; then
+		pacman -Sy --noconfirm fail2ban
+		systemctl enable --now fail2ban
+	fi
+
+	cat <<-'EOF' | tee /etc/fail2ban/action.d/ufw.conf
+		[Definition]
+		actionstart =
+		actionstop =
+		actioncheck =
+		actionban = ufw insert 1 deny from <ip> to any
+		actionunban = ufw delete deny from <ip> to any
+	EOF
+
+	# Activar el banneo para SSH
+	cp /etc/fail2ban/fail2ban.conf /etc/fail2ban/jail.local
+
+	cat <<-'EOF' | tee -a /etc/fail2ban/jail.local
+		[sshd]
+		backend = polling
+		enabled = true
+		port = ssh
+		filter = sshd
+		logpath = /var/log/auth.log
+		maxretry = 2
+		action = ufw
+	EOF
+}
+
+install() {
+	install_ssh
+	configure_ssh
+	configure_ufw
+	configure_fail2ban
+}
+
+update() {
+	reinstall_ssh
+	configure_ssh
+}
+
+if [ "$1" = "-u" ]; then
+	update
+else
+	install
 fi
-
-# Configurar UFW
-ufw allow 80/tcp
-ufw allow 443/tcp
-ufw allow 3020          # Redmine
-ufw allow in on virbr0  # Libvirt (NAT)
-ufw allow out on virbr0 # Libvirt (NAT)
-ufw limit ssh
-ufw default deny incoming
-ufw default allow outgoing
-
-# Instalar (si no lo está ya) y activar fail2ban
-if [ ! -x /usr/bin/fail2ban-server ]; then
-	pacman -Sy --noconfirm fail2ban
-	systemctl enable --now fail2ban
-fi
-
-# Usar fail2ban con UFW
-echo "[Definition]
-actionstart =
-actionstop =
-actioncheck =
-actionban = ufw insert 1 deny from <ip> to any
-actionunban = ufw delete deny from <ip> to any" | tee /etc/fail2ban/action.d/ufw.conf
-
-# Activar el banneo para SSH
-cp /etc/fail2ban/fail2ban.conf /etc/fail2ban/jail.local
-echo '[sshd]
-backend = polling
-enabled = true
-port = ssh
-filter = sshd
-logpath = /var/log/auth.log
-maxretry = 2
-action = ufw' | tee -a /etc/fail2ban/jail.local
