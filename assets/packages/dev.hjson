@@ -1,6 +1,8 @@
 {
   "general": [
+    "android-tools",
     "bash-language-server",
+    "payload-dumper-go-bin", // para extraer vmbeta.img desde payload.bin
     "extra-cmake-modules",
     "extra/github-cli",
     "extra/libgit2",

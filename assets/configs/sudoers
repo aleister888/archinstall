@@ -36,6 +36,7 @@ Defaults:%wheel env_keep += "SUDO_USER SUDO_UID SUDO_GID LANG LC_ALL"
 %wheel ALL=(root) NOPASSWD: /usr/bin/chmod 755 /usr/local/lib/arkenfox-auto-update
 
 # update.sh
+%wheel ALL=(root) NOPASSWD: /usr/bin/pacman ^-D --asexplicit .*$
 %wheel ALL=(root) NOPASSWD: /usr/bin/mkdir -p /usr/local/share/themes
 %wheel ALL=(root) NOPASSWD: /usr/bin/rm ^-rf /usr/local/share/themes/[a-zA-Z0-9_-]+$
 %wheel ALL=(root) NOPASSWD: /usr/bin/cp ^-rf .* /usr/local/share/themes/$

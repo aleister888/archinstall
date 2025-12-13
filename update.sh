@@ -121,6 +121,12 @@ if [ -n "$PKGS_TO_INSTALL" ] && [ "$CONNECTED" == "true" ]; then
 	yay -Sy --noconfirm --needed --asexplicit $PKGS_TO_INSTALL
 fi
 
+# Marcamos todos los paquetes de la lista como instalados explicitamente
+# shellcheck disable=SC2046
+sudo /usr/bin/pacman -D --asexplicit $(xargs <<<$REPO_PKGS)
+
+REPO_PKGS=$(printf "%s\n" "${PACKAGE_LIST[@]}" | cut -d/ -f2)
+
 # Crear los directorios necesarios
 [ -d "$HOME/.local/bin" ] || mkdir -p "$HOME/.local/bin"
 [ -d "$HOME/.cache" ] || mkdir -p "$HOME/.cache"
