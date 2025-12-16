@@ -12,9 +12,6 @@ alias ls='eza -lagX --time-style iso --group-directories-first --smart-group'
 alias grep='grep --color=auto'
 alias tree='exa --tree'
 
-# Actualizar el sistema
-alias update='yay -Syuu --sudoloop --answerclean --answerdiff --removemake'
-
 # Herramientas
 alias xdotool_table='xmodmap -pk'
 alias du='BLOCKSIZE=1073741824 du -s * | sort -rnk 1'
@@ -83,6 +80,17 @@ deepcleanup() {
 		xargs yay --noconfirm -Rcns
 
 	sudo /usr/bin/paccache -rk1
+}
+
+# Embeber letras en las canciones
+lrcput() {
+	$HOME/.local/bin/lrcput -d "$1" -s -R -r
+}
+
+# Actualizar el sistema
+update() {
+	yay -Syuu --sudoloop --answerclean --answerdiff --removemake
+	deepcleanup
 }
 
 # Función para reinstalar todos los paquetes

@@ -1,0 +1,76 @@
+#!/bin/bash
+
+# Script para instalar/desinstalar MCA Selector
+
+INSTALL_DIR="$HOME/.local/opt/mcaselector"
+RUN_SCRIPT="$HOME/.local/bin/mcaselector"
+DESKTOP_FILE="$HOME/.local/share/applications/mcaselector.desktop"
+JRE_INSTALL_DIR="$HOME/.local/opt/zulu-jre"
+
+# MCASelector necesita una versión de java con javafx
+install_jre() {
+	local FILENAME="zulu21.32.17-ca-fx-jre21.0.2-linux_x64.tar.gz"
+	local JRE_URL="https://cdn.azul.com/zulu/bin/$FILENAME"
+	local TAR_LOCATION="/tmp/zulu_jre.tar.gz"
+
+	[ ! -e "$TAR_LOCATION" ] && {
+		curl -L "$JRE_URL" -o "$TAR_LOCATION" || exit
+	}
+
+	tar -xzf "$TAR_LOCATION" -C /tmp || exit
+	cp -rf "/tmp/${FILENAME%.tar.gz}" "$JRE_INSTALL_DIR"
+}
+
+install() {
+	local REPO REPLY DOWNLOAD_URL JAR_NAME JAR_LOCATION
+	REPO="Querz/mcaselector"
+	REPLY="$(curl -s "https://api.github.com/repos/$REPO/releases/latest")"
+	DOWNLOAD_URL="$(echo "$REPLY" | jq -r '.assets[] | select(.name | test(".*\\.jar$")) | .browser_download_url')"
+	JAR_NAME="$(basename "$DOWNLOAD_URL")"
+	JAR_LOCATION="$INSTALL_DIR/$JAR_NAME"
+
+	mkdir -p "$INSTALL_DIR"
+
+	[ ! -e "$JAR_LOCATION" ] && {
+		curl -L "$DOWNLOAD_URL" -o "$JAR_LOCATION" || exit
+	}
+
+	install_jre
+
+	# Crear script de inicio
+	cat <<-EOF >"$RUN_SCRIPT"
+		#!/bin/sh
+		$JRE_INSTALL_DIR/bin/java -jar $INSTALL_DIR/$JAR_NAME
+	EOF
+	chmod +x "$RUN_SCRIPT"
+
+	cat <<-EOF >"$DESKTOP_FILE"
+		[Desktop Entry]
+		Name=MCA Selector
+		Type=Application
+		Exec=$RUN_SCRIPT
+		Terminal=false
+		Icon=minecraft
+	EOF
+}
+
+uninstall() {
+	rm -rf "$INSTALL_DIR"
+	rm -rf "$JRE_INSTALL_DIR"
+	rm -f "$RUN_SCRIPT"
+	rm -f "$DESKTOP_FILE"
+}
+
+help_msg() {
+	echo "Uso:" >&2
+	echo "  $(basename "$0") [--install/--uninstall]" >&2
+	exit 1
+}
+
+# Manejo de argumentos
+case "$1" in
+--install) install ;;
+--uninstall) uninstall ;;
+--clean) clean ;;
+*) help_msg ;;
+esac

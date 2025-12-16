@@ -2,6 +2,9 @@
 # shellcheck disable=SC2155
 # shellcheck disable=SC2086
 
+# TODO: Separar función para añadir las letras
+# TODO: Añadir opcion para verificar la integridad de los archivos
+
 # Script para crear mirrors de una biblioteca de música en un formato distinto
 
 # por aleister888 <pacoe1000@gmail.com>
@@ -28,9 +31,9 @@ check_command "ffmpeg" "sudo /usr/bin/pacman -S ffmpeg"
 check_command "glyrc" "sudo /usr/bin/pacman -S glyrc"
 check_command "eyeD3" "yay -S python-eyed3"
 
-#::::::::::::::::::::::::::::::::::::::::::::::::::::::#
+#:::::::::::::::::::::::::::::::::::::::::::::::::::::::::#
 # Funciones
-#::::::::::::::::::::::::::::::::::::::::::::::::::::::#
+#:::::::::::::::::::::::::::::::::::::::::::::::::::::::::#
 
 usage() {
 	echo -e "Uso: $(basename "$0") [Flags] [Directorio original] [Directorio copia]"
@@ -43,22 +46,25 @@ usage() {
 }
 
 compare() {
-	local OG_FILE="$OG_DIR/$FILE"
-	local MIRROR_FILE="$MIRROR_DIR/${FILE%.*}.$EXTENSION"
+	local OG_FILE="$1"
+	local MIRROR_FILE="$2"
+
+	[ ! -f "$MIRROR_FILE" ] && return 0
 
 	local OG_TIME=$(date -r "$OG_FILE" +%Y%m%d%H%M%S 2>/dev/null)
 	local MIRROR_TIME=$(date -r "$MIRROR_FILE" +%Y%m%d%H%M%S 2>/dev/null)
 
 	# El original es mas nuevo -> Se necesita recodificar
 	[ "$OG_TIME" -gt "$MIRROR_TIME" ] && return 0
+
 	# El original es más antiguo
 	return 1
 }
 
 convert_file() {
-	local FILE="$1"
-	local OG_FILE="$OG_DIR/$FILE"
-	local MIRROR_FILE="$MIRROR_DIR/${FILE%.*}.$EXTENSION"
+	local OG_FILE="$1"
+	local MIRROR_FILE="$2"
+
 	local OPTS
 	[ "$EXTENSION" = "mp3" ] && local OPTS="-codec:a libmp3lame -q:a 0 -b:a 320k"
 	[ "$EXTENSION" = "m4a" ] && local OPTS="-codec:a aac"
@@ -75,8 +81,6 @@ convert_file() {
 
 	# Creamos el directorio del archivo destino
 	mkdir -p "$(dirname "$MIRROR_FILE")"
-
-	echo "Convirtiendo $(basename "$FILE") a $EXTENSION"
 
 	# Extraemos los datos de nuestro archivo original
 	local MDATA=$(ffmpeg -nostdin -i "$OG_FILE" -f ffmetadata - 2>/dev/null)
@@ -108,74 +112,100 @@ convert_file() {
 		-metadata track="$TRACK" \
 		-metadata disc="$DISC" \
 		"$MIRROR_FILE" >/dev/null 2>&1
+}
 
-	if [ "$LYRICS" = true ]; then
-		# Archivo temporal para guardar las letras
-		local TMPDIR="/tmp/$(basename "$0")"
-		local TMPLYRICS="$TMPDIR/$RANDOM$RANDOM.txt"
-		local LRC_FILE="$OG_DIR/${FILE%.*}.lrc"
+add_lyrics() {
+	local OG_FILE="$1"
+	local MIRROR_FILE="$2"
+	local RELATIVE_FILE="$3"
 
-		mkdir -p "$TMPDIR"
+	# Archivo temporal para guardar las letras
+	local TMPDIR="/tmp/$(basename "$0")"
+	local TMPLYRICS="$TMPDIR/$RANDOM$RANDOM.txt"
+	local LRC_FILE="$OG_DIR/${RELATIVE_FILE%.*}.lrc"
 
-		# Primero comprobamos si el archivo en el directorio original tiene
-		# la letra guardada en un archivo separado
-		#
-		# Si no existe, obtenemos la letra de los metadatos del propio archivo.
-		# Si tampoco tiene la letra guardada dentro, la obtenemos de internet
+	mkdir -p "$TMPDIR"
 
-		if [ -f "$LRC_FILE" ]; then
-			cp "$LRC_FILE" "$TMPLYRICS"
+	# Primero comprobamos si el archivo en el directorio original tiene
+	# la letra guardada en un archivo separado
+	#
+	# Si no existe, obtenemos la letra de los metadatos del propio archivo.
+	# Si tampoco tiene la letra guardada dentro, la obtenemos de internet
+
+	if [ -f "$LRC_FILE" ]; then
+		cp "$LRC_FILE" "$TMPLYRICS"
+	else
+		local LOCAL_LYRICS=$(
+			ffprobe -v error -show_entries format_tags=LYRICS \
+				-of default=noprint_wrappers=1:nokey=1 "$OG_FILE"
+		)
+
+		if [[ -n "$LOCAL_LYRICS" ]]; then
+			echo "$LOCAL_LYRICS" | tee "$TMPLYRICS" >/dev/null
 		else
-			local LOCAL_LYRICS=$(
-				ffprobe -v error -show_entries format_tags=LYRICS \
-					-of default=noprint_wrappers=1:nokey=1 "$OG_FILE"
-			)
-
-			if [[ -n "$LOCAL_LYRICS" ]]; then
-				echo "$LOCAL_LYRICS" | tee "$TMPLYRICS" >/dev/null
-			else
-				glyrc lyrics -8 \
-					-a "$ARTIST" \
-					-t "$TITLE" \
-					-b "$ALBUM" \
-					-l "en" \
-					--from "metallum;vagalume;elyrics" \
-					--write "$TMPLYRICS" >/dev/null 2>&1
-			fi
+			glyrc lyrics -8 \
+				-a "$ARTIST" \
+				-t "$TITLE" \
+				-b "$ALBUM" \
+				-l "en" \
+				--from "metallum;vagalume;elyrics" \
+				--write "$TMPLYRICS" >/dev/null 2>&1
 		fi
+	fi
 
-		# Aveces si la canción tiene el mismo nombre que el álbum glyrc puede
-		# devolver el tracklist en vez de la letra de la canción.
-		#
-		# Vamos a comprobar que no haya mas de 3 lineas numeradas para
-		# determinar si glyrc no ha devuelto un tracklist
+	# Aveces si la canción tiene el mismo nombre que el álbum glyrc puede
+	# devolver el tracklist en vez de la letra de la canción.
+	#
+	# Vamos a comprobar que no haya mas de 3 lineas numeradas para
+	# determinar si glyrc no ha devuelto un tracklist
 
-		if [ -f "$TMPLYRICS" ]; then
-			COUNT_NUMS=$(grep -cP '^[[:space:]]*[0-9]+\.' "$TMPLYRICS")
-			[ "$COUNT_NUMS" -ge 3 ] && {
-				rm -f "$TMPLYRICS"
-				return
-			}
-
-			if [ $EXTENSION = "mp3" ]; then
-				eyeD3 --add-lyrics="$TMPLYRICS" "$MIRROR_FILE" >/dev/null 2>&1
-
-			elif [ $EXTENSION = "flac" ]; then
-				metaflac --set-tag-from-file=LYRICS="$TMPLYRICS" "$MIRROR_FILE"
-
-			elif [ $EXTENSION = "m4a" ]; then
-				atomicparsley "$MIRROR_FILE" \
-					--lyrics "$(cat "$TMPLYRICS" | 2UTF8)" --overWrite >/dev/null 2>&1
-			fi
-
+	if [ -f "$TMPLYRICS" ]; then
+		COUNT_NUMS=$(grep -cP '^[[:space:]]*[0-9]+\.' "$TMPLYRICS")
+		[ "$COUNT_NUMS" -ge 3 ] && {
 			rm -f "$TMPLYRICS"
+			return
+		}
+
+		if [ $EXTENSION = "mp3" ]; then
+			eyeD3 --add-lyrics="$TMPLYRICS" "$MIRROR_FILE" >/dev/null 2>&1
+
+		elif [ $EXTENSION = "flac" ]; then
+			metaflac --set-tag-from-file=LYRICS="$TMPLYRICS" "$MIRROR_FILE"
+
+		elif [ $EXTENSION = "m4a" ]; then
+			atomicparsley "$MIRROR_FILE" \
+				--lyrics "$(cat "$TMPLYRICS" | 2UTF8)" --overWrite >/dev/null 2>&1
 		fi
+
+		rm -f "$TMPLYRICS"
 	fi
 }
 
-#::::::::::::::::::::::::::::::::::::::::::::::::::::::#
+process() {
+	local OG_FILE="$1"
+	local MIRROR_FILE="$2"
+	local RELATIVE_FILE="$3"
+
+	local FILE_EXTENSION
+	FILE_EXTENSION="${OG_FILE##*.}"
+	FILE_EXTENSION="${FILE_EXTENSION,,}"
+
+	# Si el archivo ya esta en el formato deseado, simplemente lo copiamos
+	if [ "$FILE_EXTENSION" = "$EXTENSION" ]; then
+		echo "Copiando $RELATIVE_FILE..."
+		mkdir -p "$(dirname "$MIRROR_FILE")"
+		cp -f "$OG_FILE" "$MIRROR_FILE"
+	else
+		echo "Convirtiendo $RELATIVE_FILE a $EXTENSION..."
+		convert_file "$OG_FILE" "$MIRROR_FILE"
+	fi
+
+	[ "$LYRICS" = true ] && add_lyrics "$OG_FILE" "$MIRROR_FILE" "$RELATIVE_FILE"
+}
+
+#:::::::::::::::::::::::::::::::::::::::::::::::::::::::::#
 # Procesar argumentos
-#::::::::::::::::::::::::::::::::::::::::::::::::::::::#
+#:::::::::::::::::::::::::::::::::::::::::::::::::::::::::#
 
 LYRICS=false
 EXTENSION="mp3"
@@ -217,50 +247,53 @@ MIRROR_DIR="$2"
 # Nos aseguramos que el directorio espejo exista
 [ ! -d "$MIRROR_DIR" ] && mkdir -p "$MIRROR_DIR"
 
-#::::::::::::::::::::::::::::::::::::::::::::::::::::::#
-# Identificar archivos de audio
-#::::::::::::::::::::::::::::::::::::::::::::::::::::::#
+#:::::::::::::::::::::::::::::::::::::::::::::::::::::::::#
+# Identificar archivos de audio en el directorio original
+#:::::::::::::::::::::::::::::::::::::::::::::::::::::::::#
 
 # Creamos un array con todos los elementos del directorio original
-FILES=()
+OG_FILES=()
 
 # Iteramos sobre cada archivo del directorio original, comprobamos si es un
 # archivo de audio, y si lo es, lo añadimos al array que contiene los archivos
-# a codificar (con su ruta relativa)
+# a codificar
 
 while IFS= read -r FILE; do
 	[[ $(file --dereference --brief --mime-type -- "$FILE") == audio/* ]] &&
-		FILES+=("$(realpath --relative-to="$OG_DIR" "$FILE")")
+		OG_FILES+=("$FILE")
 done < <(find "$OG_DIR" -type f)
 
-#::::::::::::::::::::::::::::::::::::::::::::::::::::::#
+#:::::::::::::::::::::::::::::::::::::::::::::::::::::::::#
 # Procesar archivos uno a uno
-#::::::::::::::::::::::::::::::::::::::::::::::::::::::#
+#:::::::::::::::::::::::::::::::::::::::::::::::::::::::::#
 
-for FILE in "${FILES[@]}"; do
+for OG_FILE in "${OG_FILES[@]}"; do
+	RELATIVE_FILE="$(realpath --relative-to="$OG_DIR" "$OG_FILE")" || continue
+	MIRROR_FILE="$MIRROR_DIR/${RELATIVE_FILE%.*}.$EXTENSION"
+
 	# Solo se permiten $MAX_JOBS codificaciones simultáneamente
 	while [ "$(jobs -rp | wc -l)" -ge "$MAX_JOBS" ]; do
 		sleep "${WAIT_TIME}s"
 	done
 
 	# 1. El archivo no esta en el directorio espejo
-	if [ ! -e "$MIRROR_DIR/${FILE%.*}.$EXTENSION" ]; then
-		convert_file "$FILE" &
+	if [ ! -e "$MIRROR_FILE" ]; then
+		process "$OG_FILE" "$MIRROR_FILE" "$RELATIVE_FILE" &
 		continue
 	fi
 
 	# 2. El archivo esta en el directorio espejo pero ha cambiado desde
 	#    que se convirtió
-	if compare "$FILE"; then
-		convert_file "$FILE" &
+	if compare "$OG_FILE" "$MIRROR_FILE"; then
+		process "$OG_FILE" "$MIRROR_FILE" "$RELATIVE_FILE" &
 	fi
 done
 
 wait
 
-#::::::::::::::::::::::::::::::::::::::::::::::::::::::#
+#:::::::::::::::::::::::::::::::::::::::::::::::::::::::::#
 # Borramos los archivos que ya no estan en el original
-#::::::::::::::::::::::::::::::::::::::::::::::::::::::#
+#:::::::::::::::::::::::::::::::::::::::::::::::::::::::::#
 
 # Iteramos sobre cada archivo del directorio espejo. Si no existe el archivo de
 # audio en el directorio original, borramos la copia del directorio espejo
@@ -272,7 +305,7 @@ while IFS= read -r MIRROR_FILE; do
 	MATCHES=$(
 		find "$OG_DIR" -type f -wholename "$OG_DIR/$BASENAME*" |
 			grep -vP ".*(lrc|txt)"
-	)
+	) >/dev/null 2>&1
 
 	[ -z "$MATCHES" ] && rm "$MIRROR_FILE"
 done < <(find "$MIRROR_DIR" -type f)

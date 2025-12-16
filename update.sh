@@ -123,7 +123,7 @@ fi
 
 # Marcamos todos los paquetes de la lista como instalados explicitamente
 # shellcheck disable=SC2046
-sudo /usr/bin/pacman -D --asexplicit $(xargs <<<$REPO_PKGS)
+sudo /usr/bin/pacman -D --asexplicit $(xargs <<<$REPO_PKGS) >/dev/null 2>&1
 
 REPO_PKGS=$(printf "%s\n" "${PACKAGE_LIST[@]}" | cut -d/ -f2)
 

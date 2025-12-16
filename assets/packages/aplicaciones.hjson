@@ -33,6 +33,7 @@
     "tree-sitter-cli"
   ],
   "wine": [
+    "mono",
     "wine",
     "wine-gecko",
     "wine-mono",
