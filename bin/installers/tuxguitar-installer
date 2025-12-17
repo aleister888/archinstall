@@ -1,0 +1,93 @@
+#!/bin/bash
+
+# Script para instalar/desinstalar TuxGuitar
+
+INSTALL_DIR="$HOME/.local/opt/tuxguitar"
+DESKTOP_FILE="$HOME/.local/share/applications/tuxguitar.desktop"
+MIME_XML_DIR="$HOME/.local/share/mime"
+
+install() {
+	local REPO REPLY DOWNLOAD_URL FILENAME TAR_LOCATION EXTRACT_DIR
+	REPO="helge17/tuxguitar"
+	REPLY="$(curl -s "https://api.github.com/repos/$REPO/releases")"
+	DOWNLOAD_URL=$(
+		echo "$REPLY" |
+			tr -d '\000-\037' |
+			jq -r '.[]
+				| .assets[]?
+				| select(.name | test("linux-swt-amd64.tar.gz$"))
+				| .browser_download_url' | head -n1
+	)
+	FILENAME="$(basename "$DOWNLOAD_URL")"
+	TAR_LOCATION="/tmp/$FILENAME"
+
+	# Descargar y descomprimir el archivo
+	[ ! -e "$TAR_LOCATION" ] && {
+		curl -L "$DOWNLOAD_URL" -o "$TAR_LOCATION" || exit
+	}
+
+	# Obtener el nombre de la carpeta creada
+	tar -xzf "$TAR_LOCATION" -C /tmp
+	EXTRACT_DIR=$(tar -tf "$TAR_LOCATION" | head -1 | cut -f1 -d"/")
+
+	# Instalar en $HOME
+	mkdir -p "$(dirname "$INSTALL_DIR")"
+	mv "/tmp/$EXTRACT_DIR" "$INSTALL_DIR"
+
+	cat <<-EOF >"$DESKTOP_FILE"
+		[Desktop Entry]
+		Name=TuxGuitar
+		GenericName=Guitar Tablature Editor
+		GenericName[es]=Editor de tablaturas de guitarra
+		Comment=Edit and playback guitar tablatures
+		Comment[es]=Edita y reproduce tablaturas de guitarra
+		Keywords=Guitar Pro;MIDI
+		Type=Application
+		MimeType=application/x-tuxguitar;application/x-gtp;application/x-ptb;application/x-tef
+		Categories=AudioVideo;Audio
+		Exec=$INSTALL_DIR/tuxguitar.sh %F
+		Icon=tuxguitar
+		Terminal=false
+		StartupNotify=false
+	EOF
+
+	mkdir -p "$MIME_XML_DIR/packages"
+	mkdir -p "$MIME_XML_DIR/application"
+
+	cp "$INSTALL_DIR/share/mime/packages/tuxguitar.xml" \
+		"$MIME_XML_DIR/packages/tuxguitar.xml"
+	update-mime-database ~/.local/share/mime
+}
+
+uninstall() {
+	rm -rf "$INSTALL_DIR"
+	rm -f "$DESKTOP_FILE"
+
+	rm -f "$MIME_XML_DIR/packages/tuxguitar.xml"
+	rm -f "$MIME_XML_DIR/application/x-tuxguitar.xml"
+	update-mime-database ~/.local/share/mime
+}
+
+clean() {
+	rm -rf "$XDG_CONFIG_HOME/tuxguitar"
+}
+
+update() {
+	uninstall
+	install
+}
+
+help_msg() {
+	echo "Uso:" >&2
+	echo "  $(basename "$0") [--install/--uninstall/--update/--clean]" >&2
+	exit 1
+}
+
+# Manejo de argumentos
+case "$1" in
+--install) install ;;
+--uninstall) uninstall ;;
+--update) update ;;
+--clean) clean ;;
+*) help_msg ;;
+esac

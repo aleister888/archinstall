@@ -11,6 +11,7 @@
   --icon-size: 96px;
   --shadow-opts: 1px 1px 3px 2px #151515;
   --mpris-size: 128px; /* NOTA: Cambiar también en config.json */
+  --art-margin: 24px; /* Margen para el módulo de MPRIS */
 }
 
 /********************/
@@ -229,12 +230,28 @@ progressbar progress {
 
 /* Carátula como fondo */
 picture.mpris-background {
-  opacity: 0.05;
+  opacity: 0.2;
 }
 
-/* Botones para cambiar de reproductor */
+/* Desactivar botones para cambiar de reproductor */
 .widget-mpris > box > button {
-  color: transparent;
+  opacity: 0;
+  padding: 0px;
+  margin-left: -99px;
+  margin-right: -99px;
+}
+
+carouselindicatordots {
+  margin-top: -24px;
+}
+
+/* Botones (Anterior, siguiente, etc.) */
+.widget-mpris .widget-mpris-player button {
+  max-width: 0px;
+  max-height: 0px;
+  opacity: 0;
+  padding: 0px;
+  margin: -99px;
 }
 
 /* Carátula del álbum */
@@ -242,52 +259,33 @@ picture.mpris-background {
   min-width: var(--mpris-size);
   min-height: var(--mpris-size);
   border-radius: var(--image-radius);
-  margin-top: 18px;
-  margin-bottom: 4px;
-  margin-left: 48px;
   border: 4px solid var(--accent-color);
   box-shadow: var(--shadow-opts);
+
+  margin-top: var(--art-margin);
+  margin-left: var(--art-margin);
+  margin-bottom: var(--art-margin);
 }
 
 .widget-mpris-title,
 .widget-mpris-subtitle {
   color: var(--fg);
-  margin-right: 50px;
-  margin-left: 12px;
+  margin-left: calc(var(--art-margin) / 4);
+  margin-right: var(--art-margin);
+  text-shadow: 0px 0px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* Título del contenido */
 .widget-mpris-title {
   font-size: 20px;
-  margin-top: 16px;
+  margin-top: 8px;
   font-weight: bold;
 }
 
 /* Subtítulo del contenido */
 .widget-mpris-subtitle {
+  margin-bottom: 8px;
   font-size: 16px;
-}
-
-/* Botones (Anterior, siguiente, etc.) */
-/*
-.widget-mpris .widget-mpris-player button {
-  margin-top: 12px;
-  max-height: 28px;
-  max-width: 28px;
-  min-height: 28px;
-  min-width: 28px;
-  border-radius: 100%;
-  margin-bottom: 12px;
-  background-color: var(--bg-light);
-}
-.widget-mpris .widget-mpris-player button:hover {
-  background-color: var(--bg-lighter);
-}
-*/
-
-.widget-mpris .widget-mpris-player button {
-  background: transparent;
-  color: transparent;
 }
 
 /*******************/

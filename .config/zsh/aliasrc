@@ -14,7 +14,6 @@ alias tree='exa --tree'
 
 # Herramientas
 alias xdotool_table='xmodmap -pk'
-alias du='BLOCKSIZE=1073741824 du -s * | sort -rnk 1'
 alias grub-update='sudo /usr/bin/grub-mkconfig -o /boot/grub/grub.cfg'
 
 # Alias para encontrar enlaces simbólicos rotos
@@ -33,9 +32,18 @@ function GCC() {
 	gcc "$1" -o "${1%.*}"
 }
 
+function du() {
+	{
+		export BLOCKSIZE=$((2 ** 30)) # GiB
+		/usr/bin/du -s *
+		/usr/bin/du -s .*
+	} 2>/dev/null | sort -rnk 1
+}
+
 # Para obtener archivos no reclamados por pacman
 function lostfiles() {
 	local IGNORAR=(
+		"/etc/libvirt/storage"
 		"/usr/share/webapps/redmine"
 		"/opt"
 		"/usr/lib/modules/"

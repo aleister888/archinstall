@@ -54,11 +54,19 @@ install() {
 	EOF
 }
 
+clean() {
+	rm -rf "$XDG_CACHE_HOME/mcaselector"
+	rm -rf "$XDG_CONFIG_HOME/mcaselector"
+	rm -rf "$XDG_DATA_HOME/mcaselector"
+}
+
 uninstall() {
 	rm -rf "$INSTALL_DIR"
 	rm -rf "$JRE_INSTALL_DIR"
 	rm -f "$RUN_SCRIPT"
 	rm -f "$DESKTOP_FILE"
+
+	clean
 }
 
 help_msg() {

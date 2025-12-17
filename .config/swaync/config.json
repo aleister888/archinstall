@@ -39,7 +39,6 @@
       "text": "No Molestar"
     },
     "mpris": {
-      "blacklist": ["firefox", "spotify"],
       "image-size": 128
     },
     "buttons-grid": {
