@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 # shellcheck disable=SC2086,SC2155,SC2164,SC3043
 
 # Instala y configura redmine con usuario=admin contraseña=admin
@@ -7,6 +7,16 @@ set -e
 
 [ -z "${MYSQL_PASSWD}" ] && MYSQL_PASSWD=mysql
 [ -z "${REDMINE_PASSWD}" ] && REDMINE_PASSWD=redmine
+
+# Loop para que sudo no haga timeout
+sudoloop() {
+	sudo -v
+	while true; do
+		sudo -n true
+		sleep 60
+		kill -0 "$$" || exit
+	done 2>/dev/null &
+}
 
 mysql_install() {
 	sudo /usr/bin/pacman -Sy --noconfirm --needed mariadb
@@ -96,6 +106,8 @@ themes_install() {
 }
 
 redmine_install() {
+	sudoloop
+
 	mysql_install
 	redmine_service_install
 	themes_install
@@ -196,6 +208,27 @@ clean() {
 	sudo /usr/bin/systemctl start redmine
 }
 
+update() {
+	sudoloop
+
+	sudo /usr/bin/systemctl stop redmine.service
+
+	cd /usr/share/webapps/redmine || exit 1
+
+	sudo /usr/bin/rm -rf vendor/bundle
+	sudo /usr/bin/chown -R http:http /usr/share/webapps/redmine
+	sudo -u http -g http /usr/bin/bundle config set frozen false
+	sudo -u http -g http /usr/bin/bundle install
+	sudo -u http -g http /usr/bin/bundle update
+	sudo -u http -g http /usr/bin/bundle config set frozen true
+	sudo -u http -g http RAILS_ENV=production /usr/bin/bundle exec rake db:migrate
+
+	sudo /usr/bin/sed -i "s/127.0.0.1/0.0.0.0/" \
+		/usr/lib/systemd/system/redmine.service # Permitimos el acceso remoto
+	sudo /usr/bin/systemctl daemon-reload
+	sudo /usr/bin/systemctl start redmine.service
+}
+
 help_msg() {
 	echo "Uso: $(basename "$0"):" >&2
 	echo "       --install" >&2
@@ -213,5 +246,6 @@ case "$1" in
 --restore) redmine_restore "$2" ;;
 --themes) themes_install ;;
 --clean) clean ;;
+--update) update ;;
 *) help_msg ;;
 esac

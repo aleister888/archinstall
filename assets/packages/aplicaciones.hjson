@@ -11,6 +11,10 @@
     "vlc",
     "yacreader" // lector comics
   ],
+  "krita": [
+    "krita",
+    "kseexpr"
+  ],
   "zathura": [
     "tesseract-data-spa",
     "zathura",

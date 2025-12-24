@@ -84,9 +84,8 @@ pw_restart() {
 
 # Limpiar las dependencias innecesarias y la caché de pacman
 deepcleanup() {
-	pacman -Qqd 2>/dev/null | pacman -Rsu --print - | sed 's/-[^-]*-[^-]*$//' |
-		xargs yay --noconfirm -Rcns
-
+	yay -Ycc --noconfirm
+	yay -Scc --noconfirm
 	sudo /usr/bin/paccache -rk1
 }
 
@@ -98,7 +97,6 @@ lrcput() {
 # Actualizar el sistema
 update() {
 	yay -Syuu --sudoloop --answerclean --answerdiff --removemake
-	deepcleanup
 }
 
 # Función para reinstalar todos los paquetes
