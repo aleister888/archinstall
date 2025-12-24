@@ -285,7 +285,7 @@ video/*)
 */x-tar | */x-compressed-tar)
 	HASH="$(file_hash "$1")"
 	CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/lf/$HASH.txt"
-	[ ! -f "$CACHE" ] && tar -tf "$1" && tee "$CACHE" >/dev/null
+	[ ! -f "$CACHE" ] && tar -tf "$1" | tee "$CACHE" >/dev/null
 	cat "$CACHE"
 	exit 1
 	;;
