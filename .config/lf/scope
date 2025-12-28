@@ -183,7 +183,7 @@ video/*)
 */vnd.rar | */zip | */vnd.android.package-archive | */x-7z-compressed) 7z l "$1" ;;
 */x-tar | */x-compressed-tar) tar -tf "$1" ;;
 *opendocument*) odt2txt "$1" ;;
-image/*) image "$1" ;;
+image/*) draw "$1" ;;
 *) mediainfo "$1" | tr -s " " ;;
 
 esac

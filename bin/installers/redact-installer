@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# Script para instalar/desinstalar Redact
+
+APPIMAGE_LOCATION="$HOME/.local/bin/Redact.AppImage"
+ICON_LOCATION="$HOME/.local/share/icons/redact.png"
+DESKTOP_FILE="$HOME/.local/share/applications/redact.desktop"
+
+install() {
+	local APPIMAGE_URL
+	APPIMAGE_URL="https://download.redact.dev/linux"
+	APPIMAGE_TMP_LOCATION=/tmp/redact.AppImage
+
+	[ ! -f "$BIN_FILE" ] && {
+		curl -L "$APPIMAGE_URL" -o "$APPIMAGE_TMP_LOCATION" || exit
+	}
+	chmod +x "$APPIMAGE_TMP_LOCATION"
+
+	(
+		cd /tmp || exit 1
+		"$APPIMAGE_TMP_LOCATION" --appimage-extract
+		cp /tmp/squashfs-root/redact.png "$ICON_LOCATION"
+		rm -rf /tmp/squashfs-root/
+	)
+
+	mv "$APPIMAGE_TMP_LOCATION" "$APPIMAGE_LOCATION"
+
+	cat <<-EOF >"$DESKTOP_FILE"
+		[Desktop Entry]
+		Name=Redact
+		Exec=$APPIMAGE_LOCATION %U
+		Terminal=false
+		Type=Application
+		Icon=$ICON_LOCATION
+		StartupWMClass=Redact
+		Comment=Mass delete your social media history
+		Categories=Utility;
+	EOF
+}
+
+uninstall() {
+	rm -f "$DESKTOP_FILE"
+	rm -f "$ICON_LOCATION"
+	rm -f "$APPIMAGE_LOCATION"
+}
+
+clean() {
+	rm -rf "$XDG_CONFIG_HOME/redact"
+}
+
+help_msg() {
+	echo "Uso:" >&2
+	echo "  $(basename "$0") [--install/--uninstall/--clean]" >&2
+	exit 1
+}
+
+# Manejo de argumentos
+case "$1" in
+--install) install ;;
+--uninstall) uninstall ;;
+--clean) clean ;;
+*) help_msg ;;
+esac

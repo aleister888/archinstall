@@ -115,6 +115,7 @@
     "icons": {
       "discord": "discord-tray",
       "easyeffects": "google-music-manager-panel",
+      "redact": "entry-delete",
     },
   },
 }
