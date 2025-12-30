@@ -20,7 +20,8 @@
 
 * {
   all: unset;
-  font-family: "Fira Sans Condensed", "Symbols Nerd Font";
+  font-family:
+    "Fira Sans Condensed", "Symbols Nerd Font", "Source Han Sans JP Light";
   transition: background 0.15s ease-in-out;
   font-size: 1.2rem;
 }

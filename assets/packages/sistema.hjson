@@ -63,6 +63,7 @@
     "remmina"
   ],
   "fuentes": [
+    "adobe-source-han-sans-jp-fonts",
     "cantarell-fonts",
     "gnu-free-fonts",
     "noto-fonts-cjk",
