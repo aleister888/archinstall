@@ -1,10 +1,6 @@
-#!/bin/bash
+#!/bin/bash -x
 
-#############
-# FUNCIONES #
-#############
-
-# Crea gráficos de barras para cada macro-nutriente
+# Crear gráficos de barras para cada macro-nutriente
 make_plot() {
 	local VALUE=$1  # Calorías/Gramos consumidos
 	local GOAL=$2   # Calorías/Gramos objetivo
@@ -23,7 +19,8 @@ make_plot() {
 		set boxwidth 0.4
 		set yrange [0:$(echo "$GOAL * 1.75" | bc)]
 
-		set arrow from graph 0, first $GOAL to graph 1, first $GOAL nohead lc rgb "black" lw 2 dashtype 2 front
+		set arrow from graph 0, first $GOAL to graph 1, \
+			first $GOAL nohead lc rgb "black" lw 2 dashtype 2 front
 
 		plot '-' using 2:xtic(1) lc rgb "$COLOR" with boxes title "$TITLE", \
 		     ''  using 6 lc rgb "$COLOR" dt 2 title "$TITLE Objetivo"
@@ -33,41 +30,15 @@ make_plot() {
 }
 
 help_msg() {
-	echo "USO:"
-	echo "  $(basename "$0") [-oh] <COMIDAS> <MACROS_OBJETIVO>"
-	echo ""
-	echo "OPCIONES:"
-	echo "  -o	Vuelve a procesar las entradas de los días anteriores"
-	echo "    	(por defecto solo lo hace para el último)"
-	echo "  -h	Muestra este mensaje"
+	cat <<-EOF
+		USO: $(basename "$0") [-oh] <COMIDAS.csv> <MACROS_OBJETIVO.csv>
+
+		OPCIONES:
+		  -o Vuelve a procesar las entradas de los días anteriores
+		     (por defecto solo lo hace para los no días no procesados)
+		  -h Muestra este mensaje
+	EOF
 }
-
-#########
-# CACHE #
-#########
-
-CACHE_FILE="$XDG_CACHE_HOME/plot-macros"
-
-if [ -f "$CACHE_FILE" ]; then
-	INPUT_FILE=$(head -n1 <"$CACHE_FILE")
-	TARGET_MACROS=$(tail -n1 <"$CACHE_FILE")
-else
-	# Guardamos en cache los archivos con las macros objetivo y diarias.
-	INPUT_FILE=$1
-	[ -f "$INPUT_FILE" ] && echo "$INPUT_FILE" >"$CACHE_FILE"
-	TARGET_MACROS=$2
-	[ -f "$TARGET_MACROS" ] && echo "$TARGET_MACROS" >>"$CACHE_FILE"
-fi
-
-# Comprobamos que ambos archivos existen
-if [ ! -f "$INPUT_FILE" ] || [ ! -f "$TARGET_MACROS" ]; then
-	help_msg >&2
-	exit 1
-fi
-
-DIRECTORY=$(dirname "$INPUT_FILE")
-TMP_DIR="/tmp"
-PROCESSED_MACROS="${DIRECTORY}/processed_macros.csv"
 
 OVERWRITE="false"
 
@@ -88,94 +59,104 @@ while getopts "oh" OPT; do
 done
 shift $((OPTIND - 1))
 
+CACHE_FILE="$XDG_CACHE_HOME/plot-macros"
+
+if [ -f "$CACHE_FILE" ]; then
+	INPUT_FILE=$(head -n1 <"$CACHE_FILE")
+	TARGET_MACROS=$(tail -n1 <"$CACHE_FILE")
+else
+	# Guardamos en cache los archivos con las macros objetivo y diarias.
+	INPUT_FILE=$1
+	TARGET_MACROS=$2
+	[ -f "$INPUT_FILE" ] && echo "$INPUT_FILE" >"$CACHE_FILE"
+	[ -f "$TARGET_MACROS" ] && echo "$TARGET_MACROS" >>"$CACHE_FILE"
+fi
+
+[ ! -f "$INPUT_FILE" ] || [ ! -f "$TARGET_MACROS" ] && {
+	help_msg >&2
+	exit 1
+}
+
+DIRECTORY=$(dirname "$INPUT_FILE")
+PROCESSED_MACROS="${DIRECTORY}/processed_macros.csv"
+
 [ ! -f "$PROCESSED_MACROS" ] && OVERWRITE="true"
 
-# Leemos las macros objetivo
-read -r CAL_TARGET FAT_TARGET CARB_TARGET PROT_TARGET < <(
-	tail -n +2 "$TARGET_MACROS" | head -1 |
-		awk -F',' '{gsub(/g/, "", $2); gsub(/g/, "", $3); gsub(/g/, "", $4); print $1,$2,$3,$4}'
-)
+if [ $OVERWRITE = "true" ]; then
+	echo "date,calories,fat,carbs,protein" >"$PROCESSED_MACROS"
+else
+	LAST_PROC_DATE=$(tail -n 1 "$PROCESSED_MACROS" | cut -d',' -f1)
+fi
 
-MACROS_EXCLUDING_LAST=$(head -n -1 "$PROCESSED_MACROS" 2>/dev/null | sort -u | grep -P "^20[0-9]{2}")
-
-########################
-# PROCESAMOS LOS DATOS #
-########################
-
-# Array asociativo con la fecha como índice
 declare -A DAILY_DATA
-while IFS=',' read -r DATE _ _ _ CAL FAT_ CARBS PROT STATUS NOTES; do
-	# Si es un día que ya está procesado, se omitirá (exceptuando que se
-	# ejecute el script con la opción para sobre-escribir los datos)
-	if echo "$MACROS_EXCLUDING_LAST" | grep -q "$DATE" && [ "$OVERWRITE" == "false" ]; then
-		continue
-	fi
 
-	# Nos saltamos las comidas con "nolog"
-	[[ "$STATUS" = "nolog" ]] && continue
+##
+# Procesamos los datos
 
-	# Limpiar espacios
-	CAL=${CAL//[[:space:]]/}
-	FAT_=${FAT_//[[:space:]]/}
-	CARBS=${CARBS//[[:space:]]/}
-	PROT=${PROT//[[:space:]]/}
+# Leemos en orden inverso para no procesar información innecesaria si
+# OVERWRITE=false
+while IFS=',' read -r DATE _ _ _ CAL FAT CARBS PROT PROT_PERC; do
 
-	# Damos la opción de no contar la proteína si esta no es completa
-	[[ "$STATUS" = "noprotein" ]] && PROT=0
+	# Ajustamos a el porcentaje de proteina completa
+	[[ -n "$PROT_PERC" ]] && {
+		PROT_CALC=$(awk "BEGIN { print $PROT * $PROT_PERC }" 2>/dev/null) &&
+			PROT=$PROT_CALC
+	}
 
-	# Leer valores previos con valores por defecto
+	# OVERWRITE=false => paramos al llegar al último día procesado
+	[ $OVERWRITE = "false" ] && [ "$DATE" = "$LAST_PROC_DATE" ] && break
+
+	# Cuando tenemos varias entradas por día, sumamos los valores
 	IFS=',' read -r OLD_CAL OLD_FAT OLD_CARBS OLD_PROT <<<"${DAILY_DATA[$DATE]-0,0,0,0}"
 
-	# Acumular
-	NEW_CAL=$(echo "$OLD_CAL + $CAL" | bc)
-	NEW_FAT=$(echo "$OLD_FAT + $FAT_" | bc)
-	NEW_CARBS=$(echo "$OLD_CARBS + $CARBS" | bc)
-	NEW_PROT=$(echo "$OLD_PROT + $PROT" | bc)
+	OLD_CAL=${OLD_CAL:-0}
+	OLD_FAT=${OLD_FAT:-0}
+	OLD_CARBS=${OLD_CARBS:-0}
+	OLD_PROT=${OLD_PROT:-0}
+	CAL=${CAL:-0}
+	FAT=${FAT:-0}
+	CARBS=${CARBS:-0}
+	PROT=${PROT:-0}
 
-	# Actualizar array
+	# shellcheck disable=SC2046
+	read -r NEW_CAL NEW_FAT NEW_CARBS NEW_PROT <<<"$(
+		bc <<<"$OLD_CAL+$CAL
+			$OLD_FAT+$FAT
+			$OLD_CARBS+$CARBS
+			$OLD_PROT+$PROT" | tr '\n' ' '
+	)"
+
 	DAILY_DATA[$DATE]="$NEW_CAL,$NEW_FAT,$NEW_CARBS,$NEW_PROT"
-done < <(tail -n +2 "$INPUT_FILE")
+done < <(
+	tac ~/Documentos/Gym/diet/comidas.csv | sed '$d'
+)
 
-TMP_DIR=$(mktemp -d)
-trap 'rm -rf "$TMP_DIR"' EXIT
-
-#######################
-# TABULAMOS LOS DATOS #
-#######################
-
-# Creamos un archivo con las macros totales de cada día
-echo "date,calories,fat,carbs,protein,cal_percentage,fat_percentage,carb_percentage,prot_percentage" >"$PROCESSED_MACROS"
-[ "$OVERWRITE" == "false" ] && echo "$MACROS_EXCLUDING_LAST" >>"$PROCESSED_MACROS"
+##
+# Tabulamos los datos
 
 for DATE in $(printf "%s\n" "${!DAILY_DATA[@]}" | sort); do
 	IFS=',' read -r CAL FAT CARB PROT <<<"${DAILY_DATA[$DATE]}"
 
-	# Calcular porcentajes
-	P_CAL=$(echo "scale=2; 100 * $CAL / $CAL_TARGET" | bc 2>/dev/null || echo "0.00")
-	P_FAT=$(echo "scale=2; 100 * $FAT / $FAT_TARGET" | bc 2>/dev/null || echo "0.00")
-	P_CARB=$(echo "scale=2; 100 * $CARB / $CARB_TARGET" | bc 2>/dev/null || echo "0.00")
-	P_PROT=$(echo "scale=2; 100 * $PROT / $PROT_TARGET" | bc 2>/dev/null || echo "0.00")
-
-	# Tabular
-	LC_NUMERIC=en_US.UTF-8 printf "%s,%s,%s,%s,%s,%s (%5.1f%%),%s (%5.1f%%),%s (%5.1f%%),%s (%5.1f%%)\n" \
-		"$DATE" "$CAL" "$FAT" "$CARB" "$PROT" \
-		"$CAL_TARGET" "$P_CAL" "$FAT_TARGET" "$P_FAT" "$CARB_TARGET" "$P_CARB" "$PROT_TARGET" "$P_PROT" \
-		>>"$PROCESSED_MACROS"
+	LC_NUMERIC=en_US.UTF-8 printf "%s,%s,%s,%s,%s\n" \
+		"$DATE" "$CAL" "$FAT" "$CARB" "$PROT" >>"$PROCESSED_MACROS"
 done
 
-##################################
-# GRÁFICO DE BARRAS (Último día) #
-##################################
+##
+# Gráfico de barras (Último día)
 
-# Leemos las macros del último día y creamos el gráfico de barras para cada macro-nutriente
-IFS=',' read -r DATE CAL FAT CARBS PROT _ _ _ _ < <(tail -n 1 "$PROCESSED_MACROS")
+TMP_DIR=$(mktemp -d)
+
+IFS=, read -r CAL_TARGET FAT_TARGET CARB_TARGET PROT_TARGET < <(
+	tail -n +2 "$TARGET_MACROS"
+)
+
+IFS=',' read -r _ CAL FAT CARBS PROT _ < <(tail -n 1 "$PROCESSED_MACROS")
 make_plot "$CAL" "$CAL_TARGET" "Calorías" "#e41a1c" "${TMP_DIR}/calories.png" &
 make_plot "$FAT" "$FAT_TARGET" "Grasa (g)" "#377eb8" "${TMP_DIR}/fat.png" &
 make_plot "$CARBS" "$CARB_TARGET" "Carbohidratos (g)" "#4daf4a" "${TMP_DIR}/carbs.png" &
 make_plot "$PROT" "$PROT_TARGET" "Proteína (g)" "#984ea3" "${TMP_DIR}/protein.png" &
 wait
 
-# Combinamos las imágenes horizontalmente
 OUTPUT_DAILY_COMBINED="${DIRECTORY}/daily.png"
 convert +append \
 	"${TMP_DIR}/calories.png" \
@@ -184,39 +165,6 @@ convert +append \
 	"${TMP_DIR}/protein.png" \
 	"$OUTPUT_DAILY_COMBINED" >/dev/null 2>&1
 
-#####################################
-# GRÁFICO DE BARRAS (Última semana) #
-#####################################
-
-# Calculamos la macros objetivo de la semana
-GOAL_7_CAL=$(echo "$CAL_TARGET * 7" | bc)
-GOAL_7_FAT=$(echo "$FAT_TARGET * 7" | bc)
-GOAL_7_CARB=$(echo "$CARB_TARGET * 7" | bc)
-GOAL_7_PROT=$(echo "$PROT_TARGET * 7" | bc)
-
-# Sumamos las macros de los últimos 7 días
-LAST_7=$(tail -n 7 "$PROCESSED_MACROS" | tail -n +2) # Ignora cabecera
-while IFS=',' read -r _ CAL_ FAT_ CARB_ PROT_ _ _ _ _; do
-	TOTAL_7_CAL=$(echo "${TOTAL_7_CAL:-0} + $CAL_" | bc)
-	TOTAL_7_FAT=$(echo "${TOTAL_7_FAT:-0} + $FAT_" | bc)
-	TOTAL_7_CARB=$(echo "${TOTAL_7_CARB:-0} + $CARB_" | bc)
-	TOTAL_7_PROT=$(echo "${TOTAL_7_PROT:-0} + $PROT_" | bc)
-done <<<"$LAST_7"
-
-# Creamos el gráfico de barras para cada macro-nutriente
-make_plot "$TOTAL_7_CAL" "$GOAL_7_CAL" "Calorías" "#ff7f00" "${TMP_DIR}/7d_calories.png" &
-make_plot "$TOTAL_7_FAT" "$GOAL_7_FAT" "Grasa (g)" "#6a5acd" "${TMP_DIR}/7d_fat.png" &
-make_plot "$TOTAL_7_CARB" "$GOAL_7_CARB" "Carbohidratos (g)" "#3cb371" "${TMP_DIR}/7d_carbs.png" &
-make_plot "$TOTAL_7_PROT" "$GOAL_7_PROT" "Proteína (g)" "#da70d6" "${TMP_DIR}/7d_protein.png" &
-wait
-
-# Combinamos las imágenes horizontalmente
-OUTPUT_WEEKLY_COMBINED="${DIRECTORY}/weekly.png"
-convert +append \
-	"${TMP_DIR}/7d_calories.png" \
-	"${TMP_DIR}/7d_fat.png" \
-	"${TMP_DIR}/7d_carbs.png" \
-	"${TMP_DIR}/7d_protein.png" \
-	"$OUTPUT_WEEKLY_COMBINED" >/dev/null 2>&1
+rm "$TMP_DIR"
 
 notify-send -e -i text-csv "$(basename "$0")" "Informe compilado"

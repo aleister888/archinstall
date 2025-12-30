@@ -13,7 +13,3 @@ Chores
 
 Fixes
   - Fix VST plugins menus freezing system (yabridge)
-
-Refactor
-  - bin/plot-macros
-    - Improve logic and performance
