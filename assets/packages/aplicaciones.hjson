@@ -39,7 +39,7 @@
   ],
   "wine": [
     "mono",
-    "wine",
+    "wine-staging",
     "wine-gecko",
     "wine-mono",
     "winetricks"

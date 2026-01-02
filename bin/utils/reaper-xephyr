@@ -1,0 +1,21 @@
+#!/bin/bash
+# shellcheck disable=SC2068
+
+Xephyr -br -ac -resizeable -screen 1920x1080 :1 &
+XE_PID=$!
+sleep 1
+
+export DISPLAY=:1
+
+openbox &
+OB_PID=$!
+sleep 1
+
+cleanup() {
+	kill $OB_PID 2>/dev/null
+	kill $XE_PID 2>/dev/null
+}
+
+trap cleanup EXIT
+
+/usr/lib/REAPER/reaper $@

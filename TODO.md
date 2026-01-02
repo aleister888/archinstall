@@ -10,6 +10,3 @@ Test
 Chores
   - Modernize QT Theming
   - Find alternative to hyprsunset
-
-Fixes
-  - Fix VST plugins menus freezing system (yabridge)

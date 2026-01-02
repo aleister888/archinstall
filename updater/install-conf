@@ -73,6 +73,23 @@ cat <<-EOF >~/.config/okularrc
 	ColorScheme=KritaDarkOrange
 EOF
 
+##########
+# REAPER #
+##########
+
+# Fix for: https://github.com/Supreeeme/xwayland-satellite/issues/306
+
+REAPER_DESKTOP="$HOME/.local/share/applications/cockos-reaper.desktop"
+if [ -x /usr/bin/reaper ]; then
+	rm -f "$REAPER_DESKTOP"
+	cp /usr/share/applications/cockos-reaper.desktop "$REAPER_DESKTOP"
+
+	REAPER_WRAPPER="$HOME/.local/bin/utils/reaper-xephyr"
+	sed -i "s|/usr/lib/REAPER/reaper|$REAPER_WRAPPER|" "$REAPER_DESKTOP"
+else
+	rm -f "$REAPER_DESKTOP"
+fi
+
 ##############
 # Miscelánea #
 ##############
