@@ -9,4 +9,3 @@ Test
 
 Chores
   - Modernize QT Theming
-  - Find alternative to hyprsunset

@@ -110,8 +110,9 @@ fi
 # Extraemos solo el nombre del paquete (sin prefijo repo/)
 REPO_PKGS=$(printf "%s\n" "${PACKAGE_LIST[@]}" | cut -d/ -f2)
 
-# Paquetes ya instalados
+# Paquetes y grupos ya instalados
 INSTALLED_PKGS=$(yay -Qq)
+INSTALLED_PKGS+=$(pacman -Qg | awk '{print $1}' | sort -u)
 
 # Filtramos los paquetes que aún no están instalados
 PKGS_TO_INSTALL=$(comm -23 <(printf "%s\n" "$REPO_PKGS" | sort -u) <(printf "%s\n" "$INSTALLED_PKGS" | sort))

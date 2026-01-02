@@ -43,7 +43,6 @@
   "funcionalidades": [
     "desktop-file-utils",
     "libqalculate",
-    "openbox", # Entorno dentro de Xephyr
     "pavucontrol",
     "perl-file-mimeinfo",
     "perl-image-exiftool",
