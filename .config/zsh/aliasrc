@@ -40,6 +40,19 @@ function du() {
 	} 2>/dev/null | sort -rnk 1
 }
 
+function reducePDF() {
+	gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 \
+		-dPDFSETTINGS=/screen \
+		-dDownsampleColorImages=true \
+		-dColorImageResolution=137 \
+		-dDownsampleGrayImages=true \
+		-dGrayImageResolution=137 \
+		-dDownsampleMonoImages=true \
+		-dMonoImageResolution=137 \
+		-dNOPAUSE -dBATCH -dQUIET \
+		-sOutputFile="${1%.*} (Reduced).pdf" "$1"
+}
+
 # Para obtener archivos no reclamados por pacman
 function lostfiles() {
 	local IGNORAR=(

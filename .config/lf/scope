@@ -14,7 +14,7 @@ linebreaks() {
 	HEIGHT=$(mediainfo "$PREVIEW" | grep -oP "Height[ ]*: \K.[0-9 ]*" | tr -d ' ')
 	WIDTH=$(mediainfo "$PREVIEW" | grep -oP "Width[ ]*: \K.[0-9 ]*" | tr -d ' ')
 	RATIO=$(echo "scale=3; $WIDTH / $HEIGHT " | bc)
-	COUNT=$(echo "(${X}/4) / $RATIO + 1" | bc)
+	COUNT=$(echo "(${X}/4) / $RATIO + 2" | bc)
 	printf '\n%.0s' $(seq "$COUNT")
 }
 
@@ -170,8 +170,11 @@ video/*)
 	PREVIEW="$CACHE_DIR/preview.png"
 	FILE_LIST="$CACHE_DIR/filelist.txt"
 	[ ! -d "$CACHE_DIR" ] && mkdir -p "$CACHE_DIR"
-	[ ! -f "$PREVIEW" ] && 7z e "$1" preview.png -o"$CACHE_DIR" >/dev/null 2>&1
 	[ ! -f "$FILE_LIST" ] && unzip -l "$1" | tee "$FILE_LIST" >/dev/null
+	[ ! -f "$PREVIEW" ] && {
+		7z e "$1" preview.png -o"$CACHE_DIR" >/dev/null 2>&1 &&
+			thumbnail_resize "$PREVIEW"
+	}
 
 	draw "$PREVIEW" && linebreaks "$PREVIEW"
 	cat "$FILE_LIST"

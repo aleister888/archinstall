@@ -66,6 +66,8 @@ cmd open ${{
 		*/vnd.rar | */zip)
 			if [ "${f##*.}" == "cbr" ] || [ "${f##*.}" == "cbz" ]; then
 				open_gui setsid -f YACReader "$f"
+			elif [ "${f##*.}" == "kra" ]; then
+				open_gui krita "$f"
 			else
 				open_gui setsid -f xarchiver "$f"
 			fi ;;

@@ -28,7 +28,8 @@
   ],
   "efectos_audio": [
     "easyeffects",
-    "lsp-plugins"
+    "lsp-plugins",
+    "lv2-plugins"
   ],
   "neovim": [
     "hunspell-en_us",

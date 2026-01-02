@@ -85,8 +85,10 @@ PROCESSED_MACROS="${DIRECTORY}/processed_macros.csv"
 if [ $OVERWRITE = "true" ]; then
 	echo "date,calories,fat,carbs,protein" >"$PROCESSED_MACROS"
 else
-	LAST_PROC_DATE=$(tail -n 1 "$PROCESSED_MACROS" | cut -d',' -f1)
+	SECOND_LAST_PROC_DATE=$(tail -n 2 "$PROCESSED_MACROS" | head -n 1 | cut -d',' -f1)
 fi
+
+LAST_PROC_DATE=$(tail -n 1 "$PROCESSED_MACROS" | cut -d',' -f1)
 
 declare -A DAILY_DATA
 
@@ -103,8 +105,8 @@ while IFS=',' read -r DATE _ _ _ CAL FAT CARBS PROT PROT_PERC; do
 			PROT=$PROT_CALC
 	}
 
-	# OVERWRITE=false => paramos al llegar al último día procesado
-	[ $OVERWRITE = "false" ] && [ "$DATE" = "$LAST_PROC_DATE" ] && break
+	# OVERWRITE=false => paramos al llegar al penúltimo día procesado
+	[ $OVERWRITE = "false" ] && [ "$DATE" = "$SECOND_LAST_PROC_DATE" ] && break
 
 	# Cuando tenemos varias entradas por día, sumamos los valores
 	IFS=',' read -r OLD_CAL OLD_FAT OLD_CARBS OLD_PROT <<<"${DAILY_DATA[$DATE]-0,0,0,0}"
@@ -137,8 +139,14 @@ done < <(
 for DATE in $(printf "%s\n" "${!DAILY_DATA[@]}" | sort); do
 	IFS=',' read -r CAL FAT CARB PROT <<<"${DAILY_DATA[$DATE]}"
 
-	LC_NUMERIC=en_US.UTF-8 printf "%s,%s,%s,%s,%s\n" \
-		"$DATE" "$CAL" "$FAT" "$CARB" "$PROT" >>"$PROCESSED_MACROS"
+	# En vez de reescribir todo el archivo, modificamos solo la fecha
+	# actualizada si ya estaba
+	if [ "$OVERWRITE" = "false" ] && [ "$DATE" = "$LAST_PROC_DATE" ]; then
+		sed -i "/^$DATE,/c\\$DATE,$CAL,$FAT,$CARB,$PROT" "$PROCESSED_MACROS"
+	else
+		LC_NUMERIC=en_US.UTF-8 printf "%s,%s,%s,%s,%s\n" \
+			"$DATE" "$CAL" "$FAT" "$CARB" "$PROT" >>"$PROCESSED_MACROS"
+	fi
 done
 
 ##
@@ -165,6 +173,6 @@ convert +append \
 	"${TMP_DIR}/protein.png" \
 	"$OUTPUT_DAILY_COMBINED" >/dev/null 2>&1
 
-rm "$TMP_DIR"
+rm -rf "$TMP_DIR"
 
 notify-send -e -i text-csv "$(basename "$0")" "Informe compilado"

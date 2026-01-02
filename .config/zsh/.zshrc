@@ -69,4 +69,4 @@ function git_prompt_info() {
 PROMPT='%F{magenta}%~%f $(git_prompt_info)%f$ '
 setopt promptsubst
 
-echo "$(uname -r) $(date '+%Y/%m/%d')"
+echo "$(uname -r) $(date '+%Y/%m/%d (%A)')"
