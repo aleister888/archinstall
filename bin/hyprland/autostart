@@ -77,3 +77,9 @@ while true; do
 	systemctl --user restart swaync.service
 	notify-send -i preferences-system-notifications "swaync" "Configuración actualizada"
 done &
+
+while true; do
+	POLKIT_STATUS="$(systemctl --user show hyprpolkitagent | grep ActiveState | cut -d'=' -f2)"
+	[ "$POLKIT_STATUS" != "active" ] &&
+		systemctl --user restart hyprpolkitagent
+done &
