@@ -1,6 +1,8 @@
 #!/bin/sh
 # shellcheck disable=SC2046
 
+[ "$(id -u)" -eq 0 ] && exit 1
+
 gcc -o /tmp/file-handler ~/.dotfiles/assets/file-handler.c \
 	$(pkg-config --cflags --libs dbus-1)
 

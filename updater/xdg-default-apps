@@ -5,17 +5,6 @@
 
 [ "$(id -u)" -eq 0 ] && exit 1
 
-DEBUG=false
-
-# Comprobamos si el script se ejecutó en modo debug
-while getopts "d" opt; do
-	case $opt in
-	d) DEBUG=true ;;
-	*) ;;
-	esac
-done
-
-# Si está en modo debug, activamos xtrace
 if [ "$DEBUG" = true ]; then
 	set -x
 fi
@@ -46,7 +35,6 @@ cp -f "$REPO_DIR/assets/desktop/nvimt.desktop" \
 echo "Exec=$TERMINAL_CMD nvim %F" | tee -a \
 	"$DATA_DIR/applications/text.desktop" >/dev/null
 
-# Visor de imágenes
 cp -f "$REPO_DIR/assets/desktop/image.desktop" \
 	"$DATA_DIR/applications/image.desktop" 2>/dev/null
 echo "Exec=setsid -f ${VIEWER:-nsxiv} %F" | tee -a \
@@ -60,10 +48,10 @@ set_default_mime_types() {
 	# Bloquear $XDG_LOCKFILE con flock para poder ejecutar xdg-mime en paralelo
 	awk -v pattern="$PATTERN" '$0 ~ pattern {print $1}' /etc/mime.types |
 		while read -r LINE; do
-			(
+			{
 				flock -x 200
 				xdg-mime default "$DESKTOP_FILE" "$LINE"
-			) 200>"$XDG_LOCKFILE" &
+			} 200>"$XDG_LOCKFILE" &
 		done
 }
 

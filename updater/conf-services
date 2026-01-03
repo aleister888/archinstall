@@ -3,19 +3,10 @@
 # Script para configurar los servicios del sistema y de usuario (systemd)
 # - Invocado por /update.sh
 
+source "$REPO_DIR/assets/shell/shell-utils"
+
 [ "$(id -u)" -eq 0 ] && exit 1
 
-DEBUG=false
-
-# Comprobamos si el script se ejecutó en modo debug
-while getopts "d" opt; do
-	case $opt in
-	d) DEBUG=true ;;
-	*) ;;
-	esac
-done
-
-# Si está en modo debug, activamos xtrace
 if [ "$DEBUG" = true ]; then
 	set -x
 fi
@@ -23,12 +14,14 @@ fi
 # Activar servicio
 service_add() {
 	SERVICE="$1"
-	sudo /usr/bin/systemctl enable --now "$SERVICE"
+	sudo /usr/bin/systemctl enable --now "$SERVICE" >/dev/null 2>&1 ||
+		log "no se pudo inciar el servicio: $SERVICE" WARN
 }
 # Activar servicio para el usuario
 user_service_add() {
 	SERVICE="$1"
-	systemctl --user enable --now "$SERVICE"
+	systemctl --user enable --now "$SERVICE" >/dev/null 2>&1 ||
+		log "no se pudo inciar el servicio: $SERVICE" WARN
 }
 
 [ "$(id -u)" -eq 0 ] && exit 1
@@ -52,10 +45,10 @@ USER_SERVICES=(
 
 # Activar los servicios del sistema del runlevel default
 for SERVICE in "${SERVICES[@]}"; do
-	service_add "$SERVICE" >/dev/null 2>&1
+	service_add "$SERVICE" >/dev/null &
 done
 
 # Activar los servicios del usuario del runlevel default
 for USER_SERVICE in "${USER_SERVICES[@]}"; do
-	user_service_add "$USER_SERVICE" >/dev/null 2>&1
+	user_service_add "$USER_SERVICE" &
 done

@@ -1,3 +1,13 @@
+amsynth
+ardour8
+carla
+carla-control
+carla-jack-multi
+carla-jack-single
+carla-patchbay
+carla-rack
+fltk-options
+fluid
 in.lsp_plug.lsp_plugins_ab_tester_x2_mono
 in.lsp_plug.lsp_plugins_ab_tester_x2_stereo
 in.lsp_plug.lsp_plugins_ab_tester_x4_mono
@@ -62,6 +72,8 @@ in.lsp_plug.lsp_plugins_limiter_mono
 in.lsp_plug.lsp_plugins_limiter_stereo
 in.lsp_plug.lsp_plugins_loud_comp_mono
 in.lsp_plug.lsp_plugins_loud_comp_stereo
+in.lsp_plug.lsp_plugins_matcher_mono
+in.lsp_plug.lsp_plugins_matcher_stereo
 in.lsp_plug.lsp_plugins_mb_clipper_mono
 in.lsp_plug.lsp_plugins_mb_clipper_stereo
 in.lsp_plug.lsp_plugins_mb_compressor_lr
@@ -150,6 +162,8 @@ in.lsp_plug.lsp_plugins_sc_gott_compressor_ms
 in.lsp_plug.lsp_plugins_sc_gott_compressor_stereo
 in.lsp_plug.lsp_plugins_sc_limiter_mono
 in.lsp_plug.lsp_plugins_sc_limiter_stereo
+in.lsp_plug.lsp_plugins_sc_matcher_mono
+in.lsp_plug.lsp_plugins_sc_matcher_stereo
 in.lsp_plug.lsp_plugins_sc_mb_compressor_lr
 in.lsp_plug.lsp_plugins_sc_mb_compressor_mono
 in.lsp_plug.lsp_plugins_sc_mb_compressor_ms
@@ -184,3 +198,9 @@ in.lsp_plug.lsp_plugins_trigger_midi_mono
 in.lsp_plug.lsp_plugins_trigger_midi_stereo
 in.lsp_plug.lsp_plugins_trigger_mono
 in.lsp_plug.lsp_plugins_trigger_stereo
+patchmatrix
+wolf-spectrum
+zynaddsubfx-alsa
+zynaddsubfx-jack
+zynaddsubfx-jack-multi
+zynaddsubfx-oss

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+LOGS_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles"
+
+log() {
+	[ ! -d "$LOGS_DIR" ] && mkdir -p "$LOGS_DIR"
+	MSG="$1"
+	LEVEL="${2:-ERROR}"
+	echo "$(date '+%Y-%m-%d %H:%M:%S') [$LEVEL] $MSG" | tee -a "$LOGS_DIR/update.log"
+}

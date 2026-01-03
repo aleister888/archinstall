@@ -5,17 +5,6 @@
 
 [ "$(id -u)" -eq 0 ] && exit 1
 
-DEBUG=false
-
-# Comprobamos si el script se ejecutó en modo debug
-while getopts "d" opt; do
-	case $opt in
-	d) DEBUG=true ;;
-	*) ;;
-	esac
-done
-
-# Si está en modo debug, activamos xtrace
 if [ "$DEBUG" = true ]; then
 	set -x
 fi
@@ -105,10 +94,8 @@ if ! grep -q "^HandleLidSwitchExternalPower=ignore" /etc/systemd/logind.conf; th
 	sudo /usr/bin/sed -i '/^#\?LidSwitchIgnoreInhibited=/c\LidSwitchIgnoreInhibited=yes' /etc/systemd/logind.conf
 fi
 
-# Si el dispositivo tiene una batería activar el servicio de auto-suspensión
 if [ -e /sys/class/power_supply/BAT0 ]; then
 	sudo /usr/bin/systemctl enable auto-suspend
-# Si no la tiene, desactivarlo
 else
 	sudo /usr/bin/systemctl disable auto-suspend
 fi

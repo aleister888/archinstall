@@ -11,23 +11,14 @@ if [ ! -d /sys/firmware/efi ]; then
 	exit 1
 fi
 
-# Configuramos el servidor de claves y actualizamos las claves
 grep ubuntu /etc/pacman.d/gnupg/gpg.conf ||
 	echo 'keyserver hkp://keyserver.ubuntu.com' |
 	sudo /usr/bin/tee -a /etc/pacman.d/gnupg/gpg.conf >/dev/null
 
-# Instalamos los paquetes necesarios:
-# - whiptail: para la interfaz TUI
-# - parted: para gestionar particiones
-# - xkeyboard-config: para seleccionar el layout del teclado
-# - bc: para calcular el DPI de la pantalla
-# - git: para clonar el repositorio
-# - lvm2: para gestionar volúmenes lógicos
 sudo /usr/bin/pacman -Sy
 sudo /usr/bin/pacman -Sc --noconfirm
 sudo /usr/bin/pacman -S --noconfirm --needed parted libnewt xkeyboard-config bc git lvm2
 
-# Clonamos el repositorio solo si es necesario
 if [ -d ./installer ]; then
 	cd ./installer || exit 1
 else
