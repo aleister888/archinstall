@@ -41,7 +41,7 @@ case $CHOSEN in
 		sudo /usr/local/bin/wakeat "$HORA" now
 	fi
 	;;
-"${OPTIONS[3]}") pkill hyprland ;;
+"${OPTIONS[3]}") pkill start-hyprland ;;
 "${OPTIONS[4]}") sudo /usr/bin/systemctl reboot ;;
 "${OPTIONS[5]}") sudo /usr/bin/systemctl poweroff ;;
 "${OPTIONS[6]}") systemctl hibernate ;;

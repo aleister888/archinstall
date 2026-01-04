@@ -7,52 +7,7 @@ handle() {
 	case $1 in
 	#monitoradded*) ;;
 	#focusedmon*) ;;
-	openwindow*)
-		# La ventana para desbloquear las bases de datos en KeePassXC se abre por defecto
-		# en el mismo espacio que la ventana padre. Para poder moverla al espacio actual
-		# con hyprctl necesitamos que la ventana no obtenga el foco al iniciarse
-		if echo $1 | grep -q "Desbloquear base de datos - KeePassXC"; then
-			CURRENT_WORKSPACE="$(hyprctl activeworkspace | head -n1 | awk '{print $3}')"
-			hyprctl dispatch focuswindow "title:Desbloquear base de datos - KeePassXC"
-			sleep 0.2
-			hyprctl dispatch movetoworkspace "$CURRENT_WORKSPACE"
-		fi
-
-		# Aveces hyprland se equivoca y maximiza la ventana de descargas de
-		# Firefox. Para evitar esto, vamos a minimizar la ventana manualmente
-		if echo $1 | grep -q "firefox"; then
-
-			WINDOW_ADDRESS=$(echo $1 | grep -oP ">>\K[a-f0-9]+")
-
-			WINDOW_PID=$(hyprctl clients -j | jq -r ".[] | select(.address == \"0x$WINDOW_ADDRESS\") | .pid")
-			WINDOW_TITLE=$(hyprctl clients -j | jq -r ".[] | select(.address == \"0x$WINDOW_ADDRESS\") | .title")
-			WINDOW_FULLSCREEN=$(hyprctl clients -j | jq -r ".[] | select(.address == \"0x$WINDOW_ADDRESS\") | .fullscreen")
-
-			# Aveces la ventana cuando aparece no tiene título y hay que esperar
-			while [ -z "$WINDOW_TITLE" ]; do
-				WINDOW_TITLE=$(hyprctl clients -j | jq -r ".[] | select(.address == \"0x$WINDOW_ADDRESS\") | .title")
-			done
-
-			# Nos aseguramos que sea una ventana de descargas
-			echo $WINDOW_TITLE | grep -q "Abriendo.*" || return
-
-			# Aveces la ventana tiene fullscreenstate != 0 aunque no esta a pantalla completa
-			# para solucionar estos casos, maximizamos la ventana manualmente
-			hyprctl dispatch fullscreenstate 1,pid:$WINDOW_PID
-
-			sleep 0.2
-			# Nos aseguramos que la ventana no esté en pantalla completa
-			COUNTER=0
-			while [ $WINDOW_FULLSCREEN -eq 1 ] && [ $COUNTER -lt 3 ]; do
-				hyprctl dispatch fullscreenstate 0, pid:$WINDOW_PID
-				WINDOW_FULLSCREEN=$(hyprctl clients -j | jq -r ".[] | select(.address == \"0x$WINDOW_ADDRESS\") | .fullscreen")
-				COUNTER=$((COUNTER + 1))
-			done
-
-			sleep 0.2
-			hyprctl dispatch alterzorder top, pid:$WINDOW_PID
-		fi
-		;;
+	#openwindow*) ;;
 	esac
 }
 

@@ -54,7 +54,7 @@ fi &
 # Si hay una tarjeta de audio USB y hay VST instalados, abrimos REAPER
 if lsusb | grep -i audio &&
 	[ -e "$WINEPREFIX/drive_c/Program Files/Common Files/VST3" ]; then
-	setsid -f /usr/bin/reaper
+	setsid -f "$HOME/.local/bin/utils/reaper-xephyr"
 fi
 
 # Limpiar directorio $HOME
