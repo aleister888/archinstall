@@ -63,17 +63,17 @@ cmd open ${{
 		*/x-7z-compressed | */*-tar | */gzip)
 			open_gui setsid -f xarchiver "$f" ;;
 
-		*/vnd.rar | */zip)
+		*/vnd.rar | */zip | */vnd.comicbook*)
 			if [ "${f##*.}" == "cbr" ] || [ "${f##*.}" == "cbz" ]; then
-				open_gui setsid -f YACReader "$f"
+				open_gui YACReader "$f"
 			elif [ "${f##*.}" == "kra" ]; then
 				open_gui krita "$f"
 			else
 				open_gui setsid -f xarchiver "$f"
 			fi ;;
 
-		*/pdf | */epub* | */vnd.comicbook*)
-			open_gui okular "$f" ;;
+		*/pdf | */epub*)
+			open_gui zathura "$f" ;;
 
 		*/vnd.*document*)
 			open_gui setsid -f libreoffice "$f" ;;
