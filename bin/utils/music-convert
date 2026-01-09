@@ -2,7 +2,6 @@
 # shellcheck disable=SC2155
 # shellcheck disable=SC2086
 
-# TODO: Separar función para añadir las letras
 # TODO: Añadir opcion para verificar la integridad de los archivos
 
 # Script para crear mirrors de una biblioteca de música en un formato distinto
@@ -36,12 +35,15 @@ check_command "eyeD3" "yay -S python-eyed3"
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::#
 
 usage() {
-	echo -e "Uso: $(basename "$0") [Flags] [Directorio original] [Directorio copia]"
-	echo -e "     Flags:"
-	echo -e "       -h: Mostrar este mensaje"
-	echo -e "       -mp3: Conviertir a mp3 (Default)"
-	echo -e "       -m4a: Conviertir a m4a"
-	echo -e "       -flac: Conviertir a flac"
+	cat <<-EOF
+		Uso: $(basename "$0") [Flags] [Directorio original] [Directorio copia]
+		     Flags:
+		       -l: Embeber letras
+		       -h: Mostrar este mensaje
+		       -mp3: Conviertir a mp3 (Default)
+		       -m4a: Conviertir a m4a
+		       -flac: Conviertir a flac
+	EOF
 	exit
 }
 
