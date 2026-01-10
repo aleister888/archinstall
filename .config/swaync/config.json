@@ -39,6 +39,7 @@
       "text": "No Molestar"
     },
     "mpris": {
+      "blacklist": ["Telegram"],
       "image-size": 128
     },
     "buttons-grid": {

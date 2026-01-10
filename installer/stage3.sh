@@ -220,6 +220,10 @@ WINEPREFIX="$HOME/.config/wineprefixes" winetricks -q mfc42
 rm "$HOME"/.bash* 2>/dev/null
 rm "$HOME"/.wget-hsts 2>/dev/null
 
+# Actualizamos al configuracion de GRUB
+# (para iniciar con el núcleo instalado en este script)
+sudo /usr/bin/grub-mkconfig -o /boot/grub/grub.cfg
+
 # Configuramos sudo de forma segura
 sudo /usr/bin/install -o root -g root -m 440 \
 	"$HOME/.dotfiles/assets/configs/sudoers" /etc/sudoers

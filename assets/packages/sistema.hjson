@@ -102,6 +102,7 @@
   "java": [
     "java-environment-common",
     "jdk-openjdk",
+    "jdk11-openjdk",
     "jdk17-openjdk",
     "jdk21-openjdk",
     "maven"

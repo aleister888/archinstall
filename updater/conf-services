@@ -30,7 +30,6 @@ SERVICES=(
 	"cups"
 	"earlyoom"
 	"fwupd"
-	"gdm"
 	"input-remapper"
 	"power-profiles-daemon"
 	"syslog-ng@default.service"

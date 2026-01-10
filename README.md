@@ -23,7 +23,10 @@ bash <(curl https://raw.githubusercontent.com/aleister888/archinstall/main/insta
 ```
 
 > [!NOTE]
-> ⚠️ La instalación toma unos `30-45 minutos` aproximadamente.
+> La instalación toma unos `30-45 minutos` aproximadamente.
+
+> [!WARNING]
+> Se recomienda usar la ultima versión de la ISO: [Mirror](https://fastly.mirror.pkgbuild.com/iso/), [Torrent](https://archlinux.org/releng/releases/)
 
 ---
 

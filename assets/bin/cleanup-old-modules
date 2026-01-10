@@ -12,7 +12,7 @@ kernel_cleanup() {
 	local VERSION="$1"
 	if pacman -Q "linux-$VERSION" >/dev/null 2>&1; then
 		KERNELS+=("$VERSION")
-	else
+	elif [ -e "/etc/mkinitcpio.d/linux-$VERSION.preset" ]; then
 		rm -f "/etc/mkinitcpio.d/linux-$VERSION.preset"
 		rm -f "/boot/initramfs-linux-$VERSION"*
 		rm -f "/boot/vmlinuz-linux-$VERSION"

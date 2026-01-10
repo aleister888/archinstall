@@ -204,7 +204,7 @@ for ENTRY in "${ALL_IGNORE[@]}"; do
 			fi
 		) &
 	else
-		log "desktop file not found: $ENTRY"
+		log "desktop file not found: $ENTRY" WARN
 	fi
 done &
 
