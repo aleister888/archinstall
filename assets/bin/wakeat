@@ -64,7 +64,7 @@ fi
 if command -v virsh >/dev/null 2>&1; then
 	VM_COUNT="$(virsh list --state-running --id | grep -cv '^$')"
 	if [ "$VM_COUNT" -ge 1 ]; then
-		notify "Suspensión cancelada (Máquina virtual activa)"
+		notify "Suspensión cancelada" "Máquina virtual activa"
 		exit
 	fi
 fi
@@ -72,7 +72,7 @@ fi
 # Si el usuario pasa "now", suspende inmediatamente, en el caso
 # contrario, se esperan $WAIT_MINS antes de suspender el equipo.
 if [ "$2" != "now" ]; then
-	notify "El sistema se suspenderá en $WAIT_MINS minutos"
+	notify "$(basename "$0")" "El sistema se suspenderá en $WAIT_MINS minutos"
 	sleep $((WAIT_MINS * 60))
 fi
 
