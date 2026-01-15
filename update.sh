@@ -68,7 +68,7 @@ fi
 
 if [ -d "$REPO_DIR/.git" ] && [ "$CONNECTED" == "true" ]; then
 	OG_SUDOERS_HASH=$(sha256sum "$ASSETDIR/sudoers" | awk '{print $1}')
-	git -C "$REPO_DIR" pull >/dev/null || log "couldn't pull repo"
+	git -C "$REPO_DIR" pull >/dev/null 2>&1 || log "couldn't pull repo"
 	if [[ "$OG_SUDOERS_HASH" != $(sha256sum "$ASSETDIR/sudoers" | awk '{print $1}') ]]; then
 		notify_sudoers_change
 	fi
