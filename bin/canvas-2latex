@@ -70,8 +70,8 @@ fi
 # Extramos solo el código latex
 jq -r '.candidates[0].content.parts[0].text' "$OUTPUT_JSON" >"$LATEX_OUTPUT"
 
-if [ "$LATEX_OUTPUT" = "null" ] || [ -z "$LATEX_OUTPUT" ]; then
-	notify-send -e -i system-error "$(basename "$0")" "Error al convertir a código"
+if [ "$(cat $LATEX_OUTPUT)" = "null" ] || [ -z "$LATEX_OUTPUT" ]; then
+	notify-send -e -i system-error "$(basename "$0")" "Error al convertir a código\n<i>Respuesta: null</i>"
 else
 	notify-send -e -i texmaker "$(basename "$0")" "Texto copiado al portapapeles"
 	wl-copy "$(cat $LATEX_OUTPUT)"

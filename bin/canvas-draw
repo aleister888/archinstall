@@ -14,21 +14,19 @@ args = parser.parse_args()
 willLatex = args.latex
 quiet = args.quiet
 
-STROKE_WIDTH = 4
+canvas_width = 1600
+canvas_height = 900
+
+STROKE_WIDTH = 3
 
 if willLatex:
-    canvas_width = 1800
-    canvas_height = 400
     BG_COLOR = "#ffffff"
     GRID_COLOR = "#f4f4f4"
     STROKE_COLOR = "#000000"
 else:
-    canvas_width = 1600
-    canvas_height = canvas_width // 16 * 9
     BG_COLOR = "#282828"
     GRID_COLOR = "#3c3836"
     STROKE_COLOR = "#fbf1c7"
-
 
 # Canvas
 WINTITLE = "Lienzo en blanco"
