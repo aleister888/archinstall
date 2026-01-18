@@ -8,6 +8,7 @@
 # Calculamos el tamaño del cursor necesario
 ACTIVE_MONITOR=$(hyprctl monitors -j | jq '.[] | select(.focused == true)')
 SCALE=$(echo "$ACTIVE_MONITOR" | jq -r '.scale')
+SCALE=$(echo "scale=0; (2*$SCALE + 0.5)/1 / 2" | bc) # Aproximamos a un multipo de 0.5
 CURSOR_SIZE=$(echo "($XCURSOR_SIZE / $SCALE + 0.5)/1" | bc)
 
 # Iniciamos keepassxc

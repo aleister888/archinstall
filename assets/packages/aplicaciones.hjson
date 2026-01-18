@@ -1,6 +1,7 @@
 {
   "general": [
     "gnome-clocks",
+    "gwenview",
     "handbrake",
     "handbrake-cli",
     "hplip",

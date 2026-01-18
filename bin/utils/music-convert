@@ -102,7 +102,7 @@ convert_file() {
 		$OPTS \
 		-field_order tt -r 1 \
 		-vcodec mjpeg \
-		-vf scale=480:480 \
+		-vf scale=1000:1000 \
 		-metadata:s:v title="Album cover" \
 		-metadata:s:v comment="Cover (front)" \
 		-map_metadata -1 \
