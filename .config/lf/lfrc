@@ -58,6 +58,8 @@ cmd open ${{
 		#killall -SIGUSR2 waybar
 	}
 
+	set -- $fx
+
 	FILETYPE="$(file -b --mime-type "$(readlink -f $f)")"
 	case $FILETYPE in
 		*/x-7z-compressed | */*-tar | */gzip)
@@ -120,10 +122,12 @@ cmd open ${{
 
 		audio/*)
 			clear
-			mpv --audio-display=no $fx;;
+			IFS=$'\n'
+			mpv --audio-display=no "$@";;
 
 		video/*)
-			open_gui mpv $fx ;;
+			IFS=$'\n'
+			open_gui vlc "$@" ;;
 
 		*/x-keepass2)
 			open_gui setsid -f keepassxc "$f" ;;

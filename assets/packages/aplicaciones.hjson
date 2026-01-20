@@ -9,12 +9,17 @@
     "okular",
     "qbittorrent",
     "seahorse",
-    "vlc",
     "yacreader" // lector comics
   ],
   "krita": [
     "krita",
     "kseexpr"
+  ],
+  "vlc": [
+    "vlc",
+    "vlc-plugin-ffmpeg",
+    "vlc-plugin-x264",
+    "vlc-plugin-x265"
   ],
   "zathura": [
     "tesseract-data-spa",

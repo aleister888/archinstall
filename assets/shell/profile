@@ -53,7 +53,7 @@ export REGULAR_OPTS="--instance-group=kitty"
 export TERMTITLE="-T"
 export TERMEXEC=""
 export BROWSER="firefox"
-export VIDEO="mpv"
+export VIDEO="vlc"
 export PAGER="less"
 export VIEWER="nsxiv"
 
