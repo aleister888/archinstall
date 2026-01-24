@@ -24,6 +24,9 @@
     "uwsm",
     "wl-clip-persist"
   ],
+  "nix": [
+    "nix"
+  ],
   "sys_ficheros": [
     "exfat-utils",
     "f2fs-tools",

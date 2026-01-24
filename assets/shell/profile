@@ -1,6 +1,8 @@
 #!/bin/sh
 # shellcheck disable=SC1091
 
+export REPO_DIR="$HOME/.dotfiles"
+
 # Abreviaciones
 . "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/aliasrc"
 
@@ -14,6 +16,7 @@ fi
 # Añadir scripts a $PATH
 [ -d "$HOME/.local/bin/utils" ] && PATH="$HOME/.local/bin/utils:$PATH"
 [ -d "$HOME/.local/bin/installers/" ] && PATH="$HOME/.local/bin/installers:$PATH"
+[ -d "$HOME/.nix-profile/bin" ] && PATH="$HOME/.nix-profile/bin:$PATH"
 
 # Definir cursor usado por X11
 export XCURSOR_PATH="/usr/share/icons:${XDG_DATA_HOME}/icons"

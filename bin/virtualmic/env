@@ -1,0 +1,15 @@
+#!/bin/sh
+# shellcheck disable=SC2034
+
+. "$REPO_DIR/assets/shell/shell-utils"
+
+TMP_DIR="$(get_tmp virtualmic)"
+ADDED_LIST=$TMP_DIR/pipewire-virtualmic # Lista con los sinks vinculados (Solo guarda un canal)
+
+ICON="bridge-constructor"
+NOTIFICATION_DURATION=750
+
+notify() {
+	notify-send -e -t "$NOTIFICATION_DURATION" -i "$1" \
+		"$2" "$3"
+}

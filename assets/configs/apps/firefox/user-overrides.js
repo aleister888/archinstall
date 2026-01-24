@@ -1,3 +1,8 @@
+// Descargas automaticas en el directorio temporal
+user_pref("browser.download.dir", "/tmp/01_firefox_downloads");
+user_pref("browser.download.useDownloadDir", true);
+user_pref("browser.download.folderList", 2);
+
 // Desactivar cuentas de firefox
 user_pref("identity.fxaccounts.enabled", false);
 user_pref("identity.fxaccounts.toolbar.enabled", false);

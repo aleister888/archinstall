@@ -18,7 +18,7 @@ return {
 			rasi = { "prettier_rasi" },
 			hjson = { "prettier_json" },
 			java = { "astyle" },
-			json = { "prettier" },
+			json = { "prettier_json" },
 			jsonc = { "prettier" },
 			lua = { "stylua" },
 			scss = { "prettier" },

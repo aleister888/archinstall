@@ -1,15 +1,17 @@
-#!/bin/bash
-# shellcheck disable=SC2086
+#!/bin/bash -x
+# shellcheck disable=SC2086,2012,2116
 
 # Recodifíca videos a h.264 con la opción de rotarlos
 
-IN_FILE=$1
+source "$REPO_DIR/assets/shell/shell-utils"
+
 MAX_RES="${MAX_RES:=1440}"
+
+IN_FILE=$1
 FILENAME="${IN_FILE%.*}"
-RECODED_DIR="/tmp/recoded"
 BASE_NAME="$(basename "$FILENAME")"
 EXTENSION="${IN_FILE##*.}"
-OUT_FILE=${2:=$RECODED_DIR/${BASE_NAME}_recoded.${EXTENSION}}
+OUT_FILE=${2:-$(get_tmp video_transform)/${BASE_NAME}_recoded.${EXTENSION}}
 ROTATION=$3
 TERM_OUTPUT=$(mktemp)
 
@@ -27,7 +29,7 @@ detect_error() {
 	for pattern in "${!ERROR_MAP[@]}"; do
 		if FILTER_ERR=$(grep "$pattern" <<<"$LOG"); then
 			echo -e "${ERROR_MAP[$pattern]}"
-			echo -e "\t$FILTER_ERR"
+			echo -e "$(echo "$FILTER_ERR" | grep -oP "\[.*\] \K.*")\n"
 			ERROR=true
 		fi
 	done
@@ -54,55 +56,61 @@ case "$ROTATION" in
 *) ROTATE="" ;;
 esac
 
-FILTER=""
-[ "$HEIGHT" -ge "$MAX_RES" ] && FILTER+="scale=-2:$MAX_RES"
-[ -n "$ROTATE" ] && [ -n "$FILTER" ] && FILTER+=","
-[ -n "$ROTATE" ] && FILTER+="$ROTATE"
-
 HW_ACCEL="software"
 if command -v nvidia-smi >/dev/null 2>&1; then
 	HW_ACCEL="nvidia"
-elif [ -d /dev/dri ]; then
-	VAAPI_RENDER=$(ls /dev/dri/renderD* 2>/dev/null | head -n1)
-	[ -n "$VAAPI_RENDER" ] && HW_ACCEL="vaapi"
+elif [ -d /dev/dri ] && VAAPI_RENDER=$(find /dev/dri/renderD* | head -n1); then
+	HW_ACCEL="vaapi"
 fi
+
+# Los filtros de procesamiento transpose y scale solo funcionan en la CPU, para
+# poder aplicarlos correctamente debemos ordenar los argumentos en este orden:
+#
+#     1. hwdownload  - descarga frames GPU -> CPU
+#     2. format=nv12 - formato píxeles
+#     3. filtros
+#     4. hwupload    - frames CPU -> GPU
+
+CPU_FILTERS=()
+[ "$HEIGHT" -ge "$MAX_RES" ] && CPU_FILTERS+=("scale=-2:$MAX_RES")
+[ -n "$ROTATE" ] && CPU_FILTERS+=("$ROTATE")
 
 case "$HW_ACCEL" in
 nvidia)
-	VIDEO_CODEC="-c:v h264_nvenc -preset p5 -cq 23"
-	VF="format=nv12"
-	[ -n "$FILTER" ] && VF+=",$FILTER"
+	VIDEO_CODEC=(-c:v h264_nvenc -preset p5 -cq 23)
+	# el encoder acepta nv12 desde CPU
+	if [ ${#CPU_FILTERS[@]} -gt 0 ]; then
+		CPU_VF=$(IFS=, echo "${CPU_FILTERS[*]}")
+		VF="$CPU_VF,format=nv12"
+	else
+		VF=""
+	fi
 	;;
 vaapi)
-	VIDEO_CODEC="-c:v h264_vaapi -qp 23"
-	VF="hwdownload,format=nv12"
-	[ -n "$FILTER" ] && VF+=",$FILTER"
-	VF="$FILTER"
+	VIDEO_CODEC=(-c:v h264_vaapi -qp 23)
+	if [ ${#CPU_FILTERS[@]} -gt 0 ]; then
+		CPU_VF=$(IFS=, echo "${CPU_FILTERS[*]}")
+		VF="hwdownload,format=nv12,$CPU_VF,format=nv12,hwupload"
+	else
+		VF=""
+	fi
 	;;
 software)
-	VIDEO_CODEC="-c:v libx264 -preset medium -crf 23"
-	VF="$FILTER"
+	VIDEO_CODEC=(-c:v libx264 -preset medium -crf 23)
+	CPU_VF=$(IFS=, echo "${CPU_FILTERS[*]}")
 	;;
 esac
 
-if [ "$HW_ACCEL" = "vaapi" ]; then
-	ffmpeg -hide_banner -y \
-		-init_hw_device vaapi="$VAAPI_RENDER" \
-		-hwaccel vaapi -hwaccel_output_format vaapi \
-		-i "$IN_FILE" \
-		-vf "$VF" \
-		$VIDEO_CODEC \
-		-c:a copy \
-		"$OUT_FILE" 2>"$TERM_OUTPUT"
-else
-	ffmpeg -hide_banner -y \
-		-i "$IN_FILE" \
-		-vf "$VF" \
-		$VIDEO_CODEC \
-		-c:a copy \
-		"$OUT_FILE" 2>"$TERM_OUTPUT"
-fi
+FFMPEG_CMD=(-hide_banner -y -i "$IN_FILE")
 
+[ "$HW_ACCEL" = "vaapi" ] &&
+	FFMPEG_CMD=(-init_hw_device vaapi=va:"$VAAPI_RENDER" -hwaccel vaapi -hwaccel_output_format vaapi "${FFMPEG_CMD[@]}")
+
+[ -n "$VF" ] && FFMPEG_CMD+=(-vf "$VF")
+FFMPEG_CMD+=("${VIDEO_CODEC[@]}" -c:a copy "$OUT_FILE")
+
+ffmpeg "${FFMPEG_CMD[@]}" 2>"$TERM_OUTPUT"
 detect_error "$(cat "$TERM_OUTPUT")"
 
+rm "$TERM_OUTPUT"
 echo "Archivo guardado en $OUT_FILE"

@@ -3,7 +3,7 @@
 
 [ "$(id -u)" -eq 0 ] && exit 1
 
-gcc -o /tmp/file-handler ~/.dotfiles/assets/file-handler.c \
+gcc -o "$TMP_DIR"/file-handler ~/.dotfiles/assets/file-handler.c \
 	$(pkg-config --cflags --libs dbus-1)
 
-install -m 755 /tmp/file-handler "$HOME/.local/bin/file-handler"
+install -m 755 "$TMP_DIR"/file-handler "$HOME/.local/bin/file-handler"

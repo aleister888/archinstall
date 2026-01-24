@@ -4,12 +4,7 @@
 # no se han desvinculado. Muchas veces al pausar la aplicación que esta
 # pasando audio, el sink de esta se desvincula con el micrófono virtual.
 
-NOTIFICATION_DURATION=750
-
-ICON="bridge-constructor"
-
-# Lista con los sinks vinculados (Solo guarda un canal)
-ADDED_LIST=/tmp/pipewire-virtualmic
+source "$REPO_DIR/bin/virtualmic/env"
 
 while true; do
 	# Bloqueamos el proceso mientras se este eligiendo un sink
@@ -30,9 +25,7 @@ while true; do
 		# Si no lo está lo volvemos a vincular
 		if ! grep -qF "$DEVICE" <<<"$DEL_DEVICES"; then
 			~/.dotfiles/bin/virtualmic/sink-link add "$DEVICE" 2>/dev/null &&
-				notify-send -e -i $ICON \
-					-t $NOTIFICATION_DURATION \
-					"Dispositivo reconectado" "$DEVICE"
+				notify "$ICON" "Dispositivo reconectado" "$DEVICE"
 		fi
 	done <"$ADDED_LIST"
 

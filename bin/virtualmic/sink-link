@@ -4,7 +4,7 @@
 SINK_L=my-combined-sink:playback_FL
 SINK_R=my-combined-sink:playback_FR
 
-# Función para vincular/desvincular un sink del micrófono virtual
+# Vincular/desvincular un sink del micrófono virtual
 sink_link() {
 	[ "$1" = "del" ] && FLAG="-d"
 	SINK="$2"

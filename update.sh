@@ -1,17 +1,21 @@
 #!/bin/bash
 # shellcheck disable=SC2086
+# shellcheck disable=SC2155
+# shellcheck disable=SC1094
 
 # Instalador de ajustes para Arch Linux
 # por aleister888 <pacoe1000@gmail.com>
 # Licencia: GNU GPLv3
 
-# Variables
 export DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}"
 export CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
-export REPO_DIR="$HOME/.dotfiles"
 export ASSETDIR="$REPO_DIR/assets/configs"
 
 source "$REPO_DIR/assets/shell/shell-utils"
+
+export TMP_DIR="$(get_tmp updater)"
+
+LOG_DIR=$(init_log updater)
 
 DEBUG=false
 
@@ -87,7 +91,7 @@ mapfile -t REMOVED_PACKAGES < <(
 )
 
 if ((${#REMOVED_PACKAGES[@]})); then
-	REMOVED_FILE="/tmp/uneeded_packages_$(date '+%Y-%m-%d_%H-%M-%S').txt"
+	REMOVED_FILE="$TMP_DIR/uneeded_packages_$(date '+%Y-%m-%d_%H-%M-%S').txt"
 	printf '%s\n' "${REMOVED_PACKAGES[@]}" | tee "$REMOVED_FILE"
 	log "$(wc -l <"$REMOVED_FILE") paquetes huérfanos detectados: $REMOVED_FILE"
 fi
@@ -166,11 +170,13 @@ if [ "$DEBUG" = true ]; then
 	"$HOME"/.dotfiles/updater/install-bin -d &
 	"$HOME"/.dotfiles/updater/install-conf -d
 	"$HOME"/.dotfiles/updater/lf-dbus &
+	"$HOME"/.dotfiles/updater/nix-conf -d &
 else
 	"$HOME"/.dotfiles/updater/conf-services 2>/dev/null
 	"$HOME"/.dotfiles/updater/install-bin 2>/dev/null &
 	"$HOME"/.dotfiles/updater/install-conf 2>/dev/null
 	"$HOME"/.dotfiles/updater/lf-dbus 2>/dev/null &
+	"$HOME"/.dotfiles/updater/nix-conf 2>/dev/null &
 fi
 wait
 
@@ -248,13 +254,12 @@ fi
 
 if [ ! -d /usr/local/share/themes/Gruvbox-Dark ]; then
 	# https://www.pling.com/p/1681313/
-	unzip "$ASSETDIR/gtk/Gruvbox-Dark-BL-LB.zip" -d /tmp/
-	# Borramos cualquier otra versión de Gruvbox
+	unzip "$ASSETDIR/gtk/Gruvbox-Dark-BL-LB.zip" -d "$TMP_DIR"/
 	sudo /usr/bin/mkdir -p /usr/local/share/themes
 	sudo /usr/bin/rm -rf /usr/local/share/themes/Gruvbox-*
-	sudo /usr/bin/cp -rf /tmp/Gruvbox-Dark/ /usr/local/share/themes/
-	sudo /usr/bin/cp -rf /tmp/Gruvbox-Dark-hdpi /usr/local/share/themes/
-	sudo /usr/bin/cp -rf /tmp/Gruvbox-Dark-xhdpi /usr/local/share/themes/
+	sudo /usr/bin/cp -rf "$TMP_DIR"/Gruvbox-Dark/ /usr/local/share/themes/
+	sudo /usr/bin/cp -rf "$TMP_DIR"/Gruvbox-Dark-hdpi /usr/local/share/themes/
+	sudo /usr/bin/cp -rf "$TMP_DIR"/Gruvbox-Dark-xhdpi /usr/local/share/themes/
 fi &
 
 mkdir -p "$CONF_DIR/qt5ct" "$CONF_DIR/qt6ct"
@@ -278,3 +283,9 @@ LF_ETC="https://raw.githubusercontent.com/gokcehan/lf/master/etc"
 	curl "$LF_ETC/colors.example" -o "$CONF_DIR/lf/colors" 2>/dev/null &
 [ ! -f "$CONF_DIR/lf/icons" ] &&
 	curl "$LF_ETC/icons.example" -o "$CONF_DIR/lf/icons" 2>/dev/null &
+
+###
+
+[ ! -f "$WINEPREFIX/drive_c/windows/syswow64/mfc42.dll" ] && winetricks -q mfc42
+
+arkenfox-auto-update >/dev/null 2>&1

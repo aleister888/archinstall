@@ -2,12 +2,18 @@
 # shellcheck disable=SC2155
 # shellcheck disable=SC2086
 
-# TODO: Añadir opcion para verificar la integridad de los archivos
+# TODO: Añadir opcion para verificar la integridad de los archivos, podemos
+# reutilizar la lógica dentro de flac-corruption-check y separarla en otro
+# script con funciones en común
 
 # Script para crear mirrors de una biblioteca de música en un formato distinto
 
 # por aleister888 <pacoe1000@gmail.com>
 # Licencia: GNU GPLv3
+
+source "$REPO_DIR/assets/shell/shell-utils"
+
+TMP_DIR=$(get_random_tmp)
 
 # Número máximo de codificaciones simultaneas
 MAX_JOBS=$(nproc)
@@ -122,11 +128,9 @@ add_lyrics() {
 	local RELATIVE_FILE="$3"
 
 	# Archivo temporal para guardar las letras
-	local TMPDIR="/tmp/$(basename "$0")"
-	local TMPLYRICS="$TMPDIR/$RANDOM$RANDOM.txt"
+	local TMPDIR="$TMP_DIR/$(basename "$0")"
+	local TMPLYRICS="$TMP_DIR/$RANDOM$RANDOM.txt"
 	local LRC_FILE="$OG_DIR/${RELATIVE_FILE%.*}.lrc"
-
-	mkdir -p "$TMPDIR"
 
 	# Primero comprobamos si el archivo en el directorio original tiene
 	# la letra guardada en un archivo separado
@@ -315,3 +319,5 @@ done < <(find "$MIRROR_DIR" -type f)
 # Borramos los directorios vacíos que pueden haber quedado
 find "$MIRROR_DIR" \
 	-type d -empty -not -path "*/.stfolder" -delete -print 2>/dev/null
+
+rm -rf "$TMP_DIR"

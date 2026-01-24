@@ -18,5 +18,9 @@ for PROFILE in $PROFILES; do
 	USERJS=${PROFILE%%/user.js*}
 	USER=$(stat -c '%U' "$USERJS") || continue
 
-	su -l "$USER" -c "arkenfox-updater -c -p $USERJS -s"
+	if [ "$(id -u)" -eq 0 ]; then
+		su -l "$USER" -c "arkenfox-updater -c -p $USERJS -s"
+	else
+		arkenfox-updater -c -p "$USERJS" -s
+	fi
 done

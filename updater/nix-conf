@@ -1,0 +1,76 @@
+#!/bin/bash
+
+# Script para instalar paquetes de nixpkgs
+# - Invocado por /update.sh
+
+[ "$(id -u)" -eq 0 ] && exit 1
+
+if [ "$DEBUG" = true ]; then
+	set -x
+fi
+
+source "$REPO_DIR/assets/shell/shell-utils"
+
+LOG_DIR=$(init_log nixpkgs)
+
+#-------------------------------------------------------------------------------
+
+CHANNELS=(
+	"https://nixos.org/channels/nixpkgs-unstable"
+)
+
+for CHANNEL in "${CHANNELS[@]}"; do
+	nix-channel --add "$CHANNEL" >/dev/null 2>&1
+done
+nix-channel --update >/dev/null 2>&1
+
+#-------------------------------------------------------------------------------
+
+PACKAGE_FILE="$HOME/.dotfiles/assets/packages/nix.json"
+
+mapfile -t TARGET_PACKAGES < <(jq -c '.[] | .[] | select(has("name"))' "$PACKAGE_FILE")
+
+# Obtener paquetes instalados y sus versiones
+declare -A INSTALLED_MAP
+while IFS= read -r line; do
+	NAME=$(echo "$line" | jq -r '.value.attrPath' | grep -oP 'linux\.\K.*')
+	ORIGINAL_URL=$(echo "$line" | jq -r '.value.originalUrl // empty')
+	VERSION=$(echo "$ORIGINAL_URL" | grep -oP "nixpkgs/\K.*")
+	INSTALLED_MAP["$NAME"]="$VERSION"
+done < <(nix profile list --json | jq -c '.elements | to_entries[]')
+
+declare -A TARGET_MAP
+for pkg in "${TARGET_PACKAGES[@]}"; do
+	NAME=$(echo "$pkg" | jq -r '.name')
+	TARGET_MAP["$NAME"]=1
+done
+
+for pkg in "${!INSTALLED_MAP[@]}"; do
+	if [ -z "${TARGET_MAP[$pkg]:-}" ]; then
+		log "borrando $pkg" WARN
+		nix profile remove "$pkg" >/dev/null 2>&1
+	fi
+done
+
+# Instalar o actualizar
+for pkg in "${TARGET_PACKAGES[@]}"; do
+	NAME=$(echo "$pkg" | jq -r '.name')
+	TARGET_VERSION=$(echo "$pkg" | jq -r '.version // empty')
+
+	if [[ -n "$TARGET_VERSION" ]]; then
+		# usar flake con commit si se especifica versión
+		FLAKE_REF="github:NixOS/nixpkgs/$TARGET_VERSION#$NAME"
+	else
+		FLAKE_REF="nixpkgs#$NAME"
+	fi
+
+	INSTALLED_VERSION="${INSTALLED_MAP[$NAME]:-}"
+
+	if [[ -z "$INSTALLED_VERSION" ]]; then
+		nix profile add "$FLAKE_REF" >/dev/null
+	elif [[ "$INSTALLED_VERSION" != "$TARGET_VERSION" ]]; then
+		log "actualizando $NAME: $INSTALLED_VERSION -> $TARGET_VERSION" WARN
+		nix profile remove "$NAME" >/dev/null 2>&1
+		nix profile add "$FLAKE_REF" >/dev/null 2>&1
+	fi
+done

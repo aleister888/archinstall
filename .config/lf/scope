@@ -61,7 +61,7 @@ case $FILETYPE in
 
 text/troff) man ./ "$1" | col -b ;;
 
-text/* | */xml | */x-shellscript | */x-xcursor | */x-theme | */x-desktop | */x-troff-man | */x-ruby | */yaml | */toml | */sql | */x-php | inode/x-empty)
+text/* | */xml | */x-shellscript | */x-xcursor | */x-theme | */x-desktop | */x-troff-man | */x-ruby | */yaml | */toml | */sql | */x-php | inode/x-empty | */x-xbel)
 	# Comprobar si es un archivo de texto
 	case "$(file --dereference --brief --mime-type -- "$1")" in
 	application/pgp-keys) gpg --list-packets "$1" ;;

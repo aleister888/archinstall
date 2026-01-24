@@ -7,15 +7,18 @@
 # - Quién de tus seguidos no te sigue de vuelta
 # - Tus solicitudes de seguimiento pendientes
 
-# Verifica si se pasó el argumento
+source "$REPO_DIR/assets/shell/shell-utils"
+
 if [ -z "$1" ]; then
-	echo "Uso:
-  $(basename "$0") <informe_instagram_comprimido>"
+	cat <<-EOF
+		Uso:
+		  $(basename "$0") <informe_instagram_comprimido>
+	EOF
 	exit 1
 fi
 
-IN="$1"       # Informe de Instagram comprimido proporcionado como primer argumento
-OUT="/tmp/$$" # Directorio temporal para extraer el informe
+IN="$1" # Informe de Instagram comprimido
+OUT="$(get_random_tmp)"
 
 # Descomprime el informe
 aunpack -fq "$IN" -X "$OUT"

@@ -1,10 +1,45 @@
-#!/bin/bash
+#!/bin/sh
 
-LOGS_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles"
+ensure_dir() {
+	[ ! -d "$1" ] && mkdir -p "$1"
+	echo "$1"
+}
+
+# Utilidades para guardar los logs en un solo directorio
+#
+# Podemos guardar los logs en un directorio relativo al base usando:
+#     initlog <directorio>
+#       => logs guardados en $LOG_BASE_DIR/<directorio>
+#
+# o para que la actualización de la variable LOG_DIR sea más explícita:
+#     LOG_DIR=$(initlog <directorio>)
+#
+
+LOG_BASE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles"
 
 log() {
-	[ ! -d "$LOGS_DIR" ] && mkdir -p "$LOGS_DIR"
 	MSG="$1"
 	LEVEL="${2:-ERROR}"
-	echo "$(date '+%Y-%m-%d %H:%M:%S') [$LEVEL] $MSG" | tee -a "$LOGS_DIR/update.log"
+	ensure_dir "${LOG_DIR:-$LOG_BASE_DIR}" >/dev/null
+	echo "$(date '+%Y-%m-%d %H:%M:%S') [$LEVEL] $MSG" |
+		tee -a "${LOG_DIR:-$LOG_BASE_DIR}/errors.log"
+}
+
+init_log() {
+	LOG_DIR="$LOG_BASE_DIR/$1"
+	ensure_dir "$LOG_DIR"
+}
+
+# Utilidades para guardar los archivos temporales en un solo directorio
+#
+
+TMP_BASE_DIR="/tmp/00_dotfiles"
+
+get_tmp() {
+	ensure_dir "$TMP_BASE_DIR/$1"
+}
+
+get_random_tmp() {
+	ensure_dir "$TMP_BASE_DIR" >/dev/null
+	mktemp -d -p "$TMP_BASE_DIR" XXXXXX
 }

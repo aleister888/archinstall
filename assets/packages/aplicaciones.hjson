@@ -18,6 +18,7 @@
   "vlc": [
     "vlc",
     "vlc-plugin-ffmpeg",
+    "vlc-plugin-freetype",
     "vlc-plugin-x264",
     "vlc-plugin-x265"
   ],
@@ -27,10 +28,6 @@
     "zathura-cb",
     "libmupdf",
     "zathura-pdf-poppler"
-  ],
-  "gimp": [
-    "cfitsio",
-    "chaotic-aur/gimp-git"
   ],
   "efectos_audio": [
     "easyeffects",
@@ -42,13 +39,6 @@
     "hunspell-es_es",
     "python-pynvim",
     "tree-sitter-cli"
-  ],
-  "wine": [
-    "mono",
-    "wine-staging",
-    "wine-gecko",
-    "wine-mono",
-    "winetricks"
   ],
   "mozilla": [
     "chaotic-aur/arkenfox-user.js-git",

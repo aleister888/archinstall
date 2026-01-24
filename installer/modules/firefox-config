@@ -28,7 +28,7 @@ makeuserjs() {
 	# Instalar el script de actualizado.
 	sudo /usr/bin/mkdir -p /usr/local/lib
 	sudo /usr/bin/mkdir -p /etc/pacman.d/hooks
-	sudo /usr/bin/cp "$HOME/.dotfiles/bin/arkenfox-auto-update" /usr/local/lib/arkenfox-auto-update
+	sudo /usr/bin/ln -s "$HOME/.dotfiles/bin/arkenfox-auto-update" /usr/local/lib/arkenfox-auto-update
 	sudo /usr/bin/chmod 755 /usr/local/lib/arkenfox-auto-update
 
 	# Ejecutar la actualización cuando sea necesario mediante un hook de pacman.

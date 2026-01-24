@@ -1,11 +1,8 @@
-#!/bin/sh -x
+#!/bin/sh
 
 # Script para crear un micrófono virtual que cogera el
 # sonido de nuestro micrófono real y de las aplicaciones
 # cuyo audio queremos compartir.
-
-# Lista con los sinks vinculados (Solo guarda un canal)
-ADDED_LIST=/tmp/pipewire-virtualmic
 
 mic_setup() {
 	# Comprobamos que no existe el micrófono virtual
@@ -25,23 +22,19 @@ mic_setup() {
 		pw-link my-combined-sink:monitor_FR my-virtualmic:input_FR
 
 		# Reiniciamos la lista con los sinks vinculados
-		install /dev/null $ADDED_LIST
+		install /dev/null "$ADDED_LIST"
 	fi
 
 	# Más tarde asociaremos el audio de las aplicaciones/dispositivos a nuestro
-	# sink virtual con ~/.dotfiles/bin/virtualmic/virtualmic-select
+	# sink virtual con virtualmic-select
 }
 
 sleep 1
 
-# Contador para evitar bucles infinitos
 COUNTER=0
 
 while [ $COUNTER -lt 20 ]; do
 	pgrep wireplumber && mic_setup && exit 1
-
 	COUNTER=$((COUNTER + 1))
-
-	# Esperar antes del siguiente intento
 	sleep 1
 done

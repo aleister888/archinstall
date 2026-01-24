@@ -1,0 +1,40 @@
+{
+  "general": [
+    {
+      "name": "pinta",
+      "version": "25.11"
+    },
+    {
+      "name": "github-desktop",
+      "version": "25.11"
+    }
+  ],
+  "universidad": [
+    {
+      "name": "weka",
+      "version": "e6f23dc08d3624daab7094b701aa3954923c6bbb"
+    },
+    {
+      "name": "digital",
+      "version": "e6f23dc08d3624daab7094b701aa3954923c6bbb"
+    }
+  ],
+  "audio_prod": [
+    {
+      "name": "winetricks",
+      "version": "e6f23dc08d3624daab7094b701aa3954923c6bbb"
+    },
+    {
+      "name": "wineWowPackages.staging",
+      "version": "c792c60b8a97daa7efe41a6e4954497ae410e0c1"
+    },
+    {
+      "name": "yabridge",
+      "version": "e6f23dc08d3624daab7094b701aa3954923c6bbb"
+    },
+    {
+      "name": "yabridgectl",
+      "version": "e6f23dc08d3624daab7094b701aa3954923c6bbb"
+    }
+  ]
+}

@@ -17,11 +17,10 @@ PACKAGES=()
 DRIVERS_VID=()
 
 driver_add() {
-	local PACKAGE_LIST JSON
-	PACKAGE_LIST=~/.dotfiles/assets/video_driver_packages.hjson
-	JSON="$(hjson -j $PACKAGE_LIST)"
+	local PACKAGE_LIST
+	PACKAGE_LIST="$HOME/.dotfiles/assets/packages/video_drivers.json"
 	# shellcheck disable=SC2207
-	DRIVERS_VID=($(echo "$JSON" | jq -r ".${GRAPHIC_DRIVER}[]"))
+	DRIVERS_VID=($(jq -r ".${GRAPHIC_DRIVER}[]" "$PACKAGE_LIST"))
 }
 
 arr_packages() {
@@ -213,8 +212,6 @@ sudo /usr/bin/usermod -aG uucp "$USER"
 
 # Sincronizar las bases de datos de los paquetes
 sudo /usr/bin/pacman -Fy
-
-WINEPREFIX="$HOME/.config/wineprefixes" winetricks -q mfc42
 
 # Borrar archivos innecesarios
 rm "$HOME"/.bash* 2>/dev/null

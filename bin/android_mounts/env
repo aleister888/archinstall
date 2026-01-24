@@ -1,0 +1,25 @@
+#!/bin/sh
+# shellcheck disable=SC2034
+
+. "$REPO_DIR/assets/shell/shell-utils"
+
+DMENU="wofi --show dmenu -L 5"
+TMP_DIR="$(get_tmp android_mount)"
+MOUNT_LOG="$TMP_DIR/mount.log"
+UNMOUNT_LOG="$TMP_DIR/unmount.log"
+BASENAME="$TMP_DIR/mount_"
+
+notify() {
+	notify-send -e -i usb "$1" "$2"
+}
+
+clean_mtpfs_dirs() {
+	ls /tmp/simple-mtpfs-* || return
+
+	if pgrep simple-mtpfs; then
+		pkexec pkill simple-mtpfs
+		pkexec rm -rf /tmp/simple-mtpfs-*
+	else
+		rm -rf /tmp/simple-mtpfs-*
+	fi
+}

@@ -1,14 +1,16 @@
 #!/bin/bash -x
 
-trap 'rm -f "$TMP"' EXIT
+source "$REPO_DIR/assets/shell/shell-utils"
 
 [ "$(pgrep screenshot | wc -l)" -ge 3 ] && exit 1
 
-FILENAME="$(date +"%Y-%m-%d_%H-%M-%S").png"
+EXTENSION="jpeg"
+FILENAME="$(date +"%Y-%m-%d_%H-%M-%S").$EXTENSION"
 SCREENSHOTS_DIR="$HOME/Imágenes/Screenshots"
 FILEPATH=${FILEPATH:-$SCREENSHOTS_DIR/$FILENAME}
 SOUND="/usr/share/sounds/freedesktop/stereo/camera-shutter.oga"
-TMP="/tmp/screenshot.png"
+TMP_DIR=$(get_tmp screenshots)
+TMP="$TMP_DIR/screenshot.$EXTENSION"
 MSG="Captura de Pantalla"
 
 mkdir -p "$SCREENSHOTS_DIR"
@@ -18,27 +20,23 @@ capture() {
 	MODE=$2
 
 	if [ "$AREA" = "all" ]; then
-		grim "$TMP"
+		grim -t "$EXTENSION" "$TMP"
 	else
-		grim -g "$(slurp)" "$TMP"
+		grim -t "$EXTENSION" -g "$(slurp)" "$TMP"
 	fi
 
-	if [ -s "$TMP" ]; then # El archivo existe y no es vacío
+	if [ -s "$TMP" ]; then
 		if [ "$MODE" = "clipboard" ]; then
-			# Copiar al portapapeles con wl-copy
 			wl-copy <"$TMP"
-			[ "$QUIET" ] ||
-				notify-send -e -i "$TMP" "$MSG" "Copiada al Portapapeles"
+			[ "$QUIET" ] || setsid -f notify-send -e -i "$TMP" "$MSG" "Copiada al Portapapeles"
 		else
 			mv "$TMP" "$FILEPATH"
-			[ "$QUIET" ] ||
-				notify-send -e -i "$FILEPATH" "$MSG" "$FILENAME"
+			[ "$QUIET" ] || setsid -f notify-send -e -i "$FILEPATH" "$MSG" "$FILENAME"
 		fi
-		pw-play "$SOUND"
+		setsid -f pw-play "$SOUND"
 	else
-		notify-send -e -i system-error "$MSG" "Error al capturar"
+		setsid -f notify-send -e -i system-error "$MSG" "Error al capturar"
 	fi
-
 }
 
 [ "$2" = "-q" ] && QUIET=true
@@ -48,5 +46,5 @@ all_clip) capture all clipboard ;;
 selection_clip) capture selection clipboard ;;
 all_save) capture all disk ;;
 selection_save) capture selection disk ;;
-*) echo "Uso: $0 {all_clip|selection_clip|all_save|selection_save}" ;;
+*) echo "Uso: $0 {all_clip|selection_clip|all_save|selection_save}" && exit 1 ;;
 esac

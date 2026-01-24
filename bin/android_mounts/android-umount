@@ -1,0 +1,31 @@
+#!/bin/sh
+# shellcheck disable=SC2086
+
+# Script para desmontar dispositivos android
+
+. "$REPO_DIR/bin/android_mounts/env"
+
+cleanup_mountpoints() {
+	for DIR in "$BASENAME"*; do
+		mountpoint $DIR || {
+			/usr/bin/rm -rf "$DIR"
+		}
+	done
+}
+
+MOUNTED="$(awk '/simple-mtpfs/ {print $2}' /etc/mtab)"
+if [ -z "$MOUNTED" ]; then
+	clean_mtpfs_dirs
+	notify "$(basename "$0")" "No hay ningún dispositivo montado"
+	exit 1
+fi
+
+CHOSEN="$(echo "$MOUNTED" | $DMENU -p "Que dispositivo desmontar?")"
+[ -z "$CHOSEN" ] && exit 1
+
+if sudo /usr/bin/umount -l "$CHOSEN" 2>$UNMOUNT_LOG; then
+	notify "$(basename "$0")" "Desmontado: $CHOSEN"
+	cleanup_mountpoints
+else
+	notify "$(basename "$0")" "Error al desmontar: $CHOSEN"
+fi

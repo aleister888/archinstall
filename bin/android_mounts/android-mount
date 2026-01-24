@@ -1,0 +1,58 @@
+#!/bin/bash
+# shellcheck disable=SC2086
+
+# Script para montar dispositivos android
+
+source "$REPO_DIR/bin/android_mounts/env"
+
+create_mountpoint() {
+	local N=0
+	while mountpoint $BASENAME$N >/dev/null 2>&1; do
+		N=$((N + 1))
+	done
+	local MOUNTPOINT="$BASENAME$N"
+	if [ ! -e "$MOUNTPOINT" ]; then
+		/usr/bin/mkdir $MOUNTPOINT
+		/usr/bin/chown $USER $MOUNTPOINT
+	fi
+
+	echo "$MOUNTPOINT"
+}
+
+escape_name() {
+	echo "$@" |
+		iconv -cf UTF-8 -t ASCII//TRANSLIT |
+		tr -d '[:punct:]' |
+		tr ' ' '-' |
+		sed "s/-\+/-/g;s/\(^-\|-\$\)//g"
+}
+
+CONNECTED_ANDROID=$(simple-mtpfs -l 2>/dev/null)
+MOUNTED_ANDROID="$(grep -oP 'simple-mtpfs-\K[0-9]+' /etc/mtab || true)"
+for NUM in $MOUNTED_ANDROID; do
+	CONNECTED_ANDROID="$(echo "$CONNECTED_ANDROID" | grep -v "^$NUM:")"
+done
+
+if [ -z "$CONNECTED_ANDROID" ]; then
+	[ -z "$MOUNTED_ANDROID" ] && clean_mtpfs_dirs
+	notify "$(basename "$0")" "No hay ningún dispositivo disponible"
+	exit 1
+fi
+
+CHOSEN="$(echo "$CONNECTED_ANDROID" | $DMENU -p "¿Qué dispositivo montar?")"
+[ -z "$CHOSEN" ] && exit 1
+NUMBER="${CHOSEN%%:*}"
+MOUNTPOINT=$(create_mountpoint)
+
+if sudo /usr/bin/simple-mtpfs -o allow_other \
+	-o fsname="simple-mtpfs-$(escape_name "$CHOSEN")" \
+	--device "$NUMBER" "$MOUNTPOINT" 2>$MOUNT_LOG; then
+
+	DEVICE="$(echo $CHOSEN | grep -oP "[0-9]: \K.*(?= \(MTP\))")"
+	notify "$(basename "$0")" "<i>$DEVICE</i>\nMontado: $MOUNTPOINT"
+	xdg-open "$MOUNTPOINT"
+
+else
+	notify "$(basename "$0")" "$(cat $MOUNT_LOG)"
+	rm -rf "$MOUNTPOINT"
+fi

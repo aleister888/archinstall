@@ -1,53 +1,45 @@
 #!/bin/bash
 # shellcheck disable=SC1091
+# shellcheck disable=SC2155
 
 # Script Iniciador del entorno de escritorio
 # por aleister888 <pacoe1000@gmail.com>
 
-source "$HOME/.dotfiles/.profile"
-# Leemos nuestro perfil de zsh
-. "$XDG_CONFIG_HOME/zsh/.zprofile"
+source "$REPO_DIR/assets/shell/shell-utils"
 
-XDG_RUNTIME_DIR=/run/user/$(id -u)
-export XDG_RUNTIME_DIR
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
 
 # Cerrar instancias previas del script
-PROCESSLIST=/tmp/startScript_processes
-MY_ID=$BASHPID
+TMP_DIR="$(get_tmp hyprland_autostart)"
+PROCESSLIST=$TMP_DIR/startScript_processes
 
-grep -v "^$MY_ID$" "$PROCESSLIST" | while read -r ID; do
+grep -v "^$BASHPID$" "$PROCESSLIST" | while read -r ID; do
 	kill -9 "$ID" 2>/dev/null
 done
+echo $BASHPID | tee "$PROCESSLIST" >/dev/null
 
-echo $MY_ID | tee $PROCESSLIST >/dev/null
+#-------------------------------------------------------------------------------
 
-##########
-# Script #
-##########
+# Directorio de descargas (firefox)
+ensure_dir /tmp/01_firefox_downloads >/dev/null
 
-# Joycond para emuladores
-if [ -x /usr/bin/joycond ] && ! pgrep -x joycond; then
-	/usr/bin/joycond &
-fi
-if [ -x /usr/bin/joycond-cemuhook ] && ! pgrep -f joycond-cemuhook; then
-	/usr/bin/joycond-cemuhook &
-fi
+[ -x /usr/bin/joycond ] && ! pgrep -x joycond && setsid -f /usr/bin/joycond
+[ -x /usr/bin/joycond-cemuhook ] && ! pgrep -f joycond-cemuhook && setsid -f /usr/bin/joycond-cemuhook
 
 # Corregir el nivel del micrófono en portátiles
 if [ -e /sys/class/power_supply/BAT0 ]; then
-	sleep 10 # Esperamos para que se carguen los sinks reales
+	sleep 10 # Esperamos a que carguen los sinks reales
 
 	MIC=$(pactl list short sources |
 		grep -E "alsa_input.pci-[0-9]*_[0-9]*_[0-9].\.[0-9].analog-stereo" |
 		awk '{print $1}')
 
 	while true; do
-		pactl set-source-volume "$MIC" 20%
+		pactl set-source-volume "$MIC" 25%
 		sleep 0.5
 	done
 fi &
 
-# Iniciar hydroxide si está instalado
 # https://github.com/emersion/hydroxide?tab=readme-ov-file#usage
 [ -x /usr/bin/hydroxide ] && hydroxide imap &
 
@@ -57,14 +49,12 @@ if lsusb | grep -i audio &&
 	setsid -f "$HOME/.local/bin/utils/reaper-xephyr"
 fi
 
-# Limpiar directorio $HOME
 cleaner
 
-############
-# Watchers #
-############
+# Watchers
+#-------------------------------------------------------------------------------
 
-# Actualizar el fondo de pantalla automáticamente
+# Actualizar el fondo de pantalla
 while true; do
 	inotifywait -e modify ~/.dotfiles/assets/images/wallpaper
 	pkill hyprpaper
@@ -78,6 +68,7 @@ while true; do
 	notify-send -i preferences-system-notifications "swaync" "Configuración actualizada"
 done &
 
+# Asegurarse de que el polkit agent esta siempre activo
 while true; do
 	POLKIT_STATUS="$(systemctl --user show hyprpolkitagent | grep ActiveState | cut -d'=' -f2)"
 	[ "$POLKIT_STATUS" != "active" ] &&

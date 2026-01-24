@@ -1,15 +1,17 @@
-#!/bin/sh -x
+#!/bin/sh
 
 # Script para instalar los drivers de:
 # https://www.asus.com/networking-iot-servers/adapters/all-series/usbbt400/
 
-# Detener el script si cualquier comando falla
 set -e
+
+. "$REPO_DIR/assets/shell/shell-utils"
 
 # Variables
 DRIVER_URL="https://dlcdnets.asus.com/pub/ASUS/wireless/USB-BT400/DR_USB_BT400_1201710_Windows.zip"
-ZIP_PATH="/tmp/bt400-driver.zip"
-EXTRACT_PATH="/tmp/windows_driver"
+TMP_DIR="$(get_random_tmp)"
+ZIP_PATH="$TMP_DIR/bt400-driver.zip"
+EXTRACT_PATH="$TMP_DIR/windows_driver"
 HEX_FILE="BCM20702A1_001.002.014.1443.1467.hex"
 HCD_FILE="/lib/firmware/brcm/BCM20702A1-0b05-17cb.hcd"
 FIRMWARE_DIR="/lib/firmware/brcm/"
@@ -30,5 +32,7 @@ sudo /usr/bin/mkdir -p "$FIRMWARE_DIR"
 # Convertir el archivo .hex a .hcd y moverlo al directorio de firmware
 cd "$EXTRACT_PATH/Win10_USB-BT400_DRIVERS/Win10_USB-BT400_Driver_Package/64"
 sudo /usr/bin/hex2hcd "$HEX_FILE" -o "$HCD_FILE"
+
+rm -rf "$TMP_DIR"
 
 echo "Driver instalado correctamente."

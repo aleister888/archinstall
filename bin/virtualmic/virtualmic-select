@@ -1,19 +1,15 @@
-#!/bin/bash -x
+#!/bin/bash
 # shellcheck disable=SC2086,SC2181
 
 # Script para vincular (dispositivos de entrada)|(aplicaciones) a un micrófono virtual para compartir audio
+
+source "$REPO_DIR/bin/virtualmic/env"
 
 NOTIFICATION_DURATION=750
 
 DMENU="rofi -dmenu"
 DMENU_LINES="-l"
-
-# Lista con los sinks vinculados (Solo guarda un canal)
-ADDED_LIST=/tmp/pipewire-virtualmic
-
-# Variables para las notificaciones
-ICON="bridge-constructor"
-MSG="Micrófono Virtual"
+NOTIFICATION_TITLE="Micrófono Virtual"
 
 # Excluiremos los sinks cuyo nombre contenga alguno de estos patrones
 EXCLUDE_PATTERN="my-combined-sink\|my-virtualmic\|PulseAudio\|Midi\|v4l2\|WEBRTC\|Chromium\|bluez_input\|xdg.*portal\|ee_.*\|easyeffects.*"
@@ -80,11 +76,9 @@ sink_edit() {
 
 		# Comprobamos que el sink se vinculó correctamente
 		if echo $DEL_DEVICES | grep -q "$DMENU_SELECTED"; then
-			notify-send -e -i "$ICON" -t "$NOTIFICATION_DURATION" \
-				"$MSG" "Sink vinculado correctamente"
+			notify "$ICON" "$NOTIFICATION_TITLE" "Sink vinculado correctamente"
 		else
-			notify-send -e -i "$ICON" -t "$NOTIFICATION_DURATION" \
-				"$MSG" "Hubo un fallo al añadir el sink"
+			notify "$ICON" "$NOTIFICATION_TITLE" "Hubo un fallo al añadir el sink"
 		fi
 
 		# Añadimos el sink a la lista de sinks añadidos
@@ -102,11 +96,9 @@ sink_edit() {
 
 		# Comprobamos que el sink se desvinculó correctamente
 		if ! echo $DEL_DEVICES | grep -q "$SELECTED"; then
-			notify-send -e -i "$ICON" -t "$NOTIFICATION_DURATION" \
-				"$MSG" "Sink desvinculado correctamente"
+			notify "$ICON" "$NOTIFICATION_TITLE" "Sink desvinculado correctamente"
 		else
-			notify-send -e -i "$ICON" -t "$NOTIFICATION_DURATION" \
-				"$MSG" "Fallo al desvincular el sink"
+			notify "$ICON" "$NOTIFICATION_TITLE" "Fallo al desvincular el sink"
 		fi
 	fi
 }
@@ -114,8 +106,7 @@ sink_edit() {
 # shellcheck disable=SC2155
 set_max_samplerate() {
 	samplerate_error() {
-		notify-send -e -i system-error -t "$NOTIFICATION_DURATION" \
-			"$MSG" "Error al establecer el samplerate"
+		notify system-error "$NOTIFICATION_TITLE" "Error al establecer el samplerate"
 		exit 1
 	}
 
@@ -143,8 +134,7 @@ set_max_samplerate() {
 	[ -z "$MAX_RATE" ] && samplerate_error
 
 	pw-metadata -n settings 0 clock.force-rate "$MAX_RATE" &&
-		notify-send -e -i audio-card -t "$((NOTIFICATION_DURATION * 3))" \
-			"$MSG" "Samplerate establecido a $MAX_RATE"
+		notify audio-card "$NOTIFICATION_TITLE" "Samplerate establecido a $MAX_RATE"
 }
 
 ##########
@@ -168,15 +158,13 @@ CHOSEN=$(echo -e "$ADD\n$DEL\n$RATE" | eval $DMENU $DMENU_LINES 3)
 
 if [ "$CHOSEN" = "$ADD" ]; then
 	[ -z "$DEVICES" ] && {
-		notify-send -e -i "$ICON" -t "$NOTIFICATION_DURATION" \
-			"$MSG" "No hay sinks que añadir"
+		notify "$ICON" "$NOTIFICATION_TITLE" "No hay sinks que añadir"
 		exit
 	}
 	sink_edit add
 elif [ "$CHOSEN" = "$DEL" ]; then
 	[ -z "$DEL_DEVICES" ] && {
-		notify-send -e -i "$ICON" -t "$NOTIFICATION_DURATION" \
-			"$MSG" "No hay sinks que borrar"
+		notify "$ICON" "$NOTIFICATION_TITLE" "No hay sinks que borrar"
 		exit
 	}
 	sink_edit del

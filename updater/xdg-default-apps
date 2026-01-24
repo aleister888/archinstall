@@ -9,7 +9,9 @@ if [ "$DEBUG" = true ]; then
 	set -x
 fi
 
-XDG_LOCKFILE="/tmp/xdg-mime.lock"
+source "$REPO_DIR/assets/shell/shell-utils"
+
+XDG_LOCKFILE="$TMP_DIR/xdg-mime.lock"
 
 trap 'update-desktop-database $DATA_DIR/applications' EXIT
 

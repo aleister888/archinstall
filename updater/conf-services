@@ -33,6 +33,7 @@ SERVICES=(
 	"input-remapper"
 	"power-profiles-daemon"
 	"syslog-ng@default.service"
+	"nix-daemon"
 )
 
 USER_SERVICES=(
