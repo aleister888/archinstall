@@ -110,6 +110,7 @@ lrcput() {
 # Actualizar el sistema
 update() {
 	yay -Syuu --sudoloop --answerclean --answerdiff --removemake
+	~/.dotfiles/updater/nix-conf -d
 }
 
 # Función para reinstalar todos los paquetes
