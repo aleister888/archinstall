@@ -70,4 +70,4 @@ PROMPT='%F{magenta}%~%f $(git_prompt_info)%f$ '
 setopt promptsubst
 
 echo "$(date '+%A %d de %B'); $(uptime -p)"
-echo "pacman: $(yay -Q | wc -l), nix: $(nix profile list --json | jq -c '.elements | to_entries[]' | wc -l)"
+echo "pacman: $(yay -Q | wc -l) (aur: $(yay -Qm | wc -l)), nix: $(nix profile list --json | jq -c '.elements | to_entries[]' | wc -l)"
