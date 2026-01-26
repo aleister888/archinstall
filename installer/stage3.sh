@@ -157,8 +157,6 @@ trash_dir
 XRES_FILE="$HOME/.config/Xresources"
 cp "$HOME/.dotfiles/assets/configs/Xresources" "$XRES_FILE"
 
-tauon-config
-firefox-config
 vim_spell_download
 
 "$HOME/.dotfiles/update.sh"

@@ -1,5 +1,5 @@
 #!/bin/sh
-# shellcheck disable=SC1091
+# shellcheck disable=SC1091,SC2164
 
 export REPO_DIR="$HOME/.dotfiles"
 
@@ -19,21 +19,6 @@ fi
 [ -d "$HOME/.local/bin/installers/" ] && PATH="$HOME/.local/bin/installers:$PATH"
 [ -d "$HOME/.nix-profile/bin" ] && PATH="$HOME/.nix-profile/bin:$PATH"
 
-export XCURSOR_PATH="/usr/share/icons:${XDG_DATA_HOME}/icons"
-export XCURSOR_PATH=/usr/share/icons/
-export XCURSOR_THEME=capitaine-cursors
-export XCURSOR_SIZE=64
-
-export GDK_SCALE=1
-export GTK_USE_PORTAL=1
-
-# Hacer que las aplicaciones QT sigan los ajustes de QT5CT
-export QT_QPA_PLATFORMTHEME="qt6ct"
-
-export OPENER="xdg-open"
-
-export _JAVA_AWT_WM_NONREPARENTING=1
-
 export XDG_SESSION_TYPE=wayland
 export XDG_CURRENT_DESKTOP=Hyprland
 export XDG_SESSION_DESKTOP=Hyprland
@@ -41,6 +26,17 @@ export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_STATE_HOME="$HOME/.local/state"
+export OPENER="xdg-open"
+
+export GDK_SCALE=1
+export GTK_USE_PORTAL=1
+
+# Hacer que las aplicaciones QT sigan los ajustes de QT5CT
+export QT_QPA_PLATFORMTHEME="qt6ct"
+
+export XCURSOR_PATH="/usr/share/icons:${XDG_DATA_HOME}/icons"
+export XCURSOR_THEME=capitaine-cursors
+export XCURSOR_SIZE=64
 
 export EDITOR="nvim"
 export SUDO_EDITOR="nvim"
@@ -54,6 +50,8 @@ export BROWSER="firefox"
 export VIDEO="vlc"
 export PAGER="less"
 export VIEWER="nsxiv"
+
+export _JAVA_AWT_WM_NONREPARENTING=1
 
 # Limpiar el directorio ~/ de archivos de configuración
 alias wget='wget --hsts-file="$XDG_CONFIG_HOME"/wget-hsts'
@@ -78,7 +76,12 @@ if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
 	# En el primer arranque real del sistema se ejecutará update.sh de nuevo
 	# para completar las tareas que no pueden realizarse dentro del chroot
 	[ -f "$HOME/.system_not_initialized" ] && (
-		cd "$REPO_DIR" && ./update.sh
+		cd "$REPO_DIR"
+		~/.dotfiles/installer/post_install/tauon-config &
+		~/.dotfiles/installer/post_install/firefox-config &
+		./update.sh &
+		wait
+		rm "$HOME/.system_not_initialized"
 	)
 	exec start-hyprland
 fi
