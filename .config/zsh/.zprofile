@@ -1,1 +1,0 @@
-/home/aleister/.dotfiles/assets/shell/profile

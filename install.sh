@@ -16,7 +16,6 @@ grep ubuntu /etc/pacman.d/gnupg/gpg.conf ||
 	sudo /usr/bin/tee -a /etc/pacman.d/gnupg/gpg.conf >/dev/null
 
 sudo /usr/bin/pacman -Sy archlinux-keyring --noconfirm
-sudo /usr/bin/pacman -Su --noconfirm
 sudo /usr/bin/pacman -Sc --noconfirm
 
 sudo /usr/bin/pacman -S --noconfirm --needed parted libnewt xkeyboard-config bc git lvm2

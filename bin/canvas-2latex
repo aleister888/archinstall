@@ -1,7 +1,7 @@
 #!/bin/sh
 # shellcheck disable=SC2181
 
-IMAGE="/tmp/canvas-draw.png"
+IMAGE="$TMP_BASE_DIR/canvas-draw.png"
 
 # Comprobamos que se dibujo una ecuación
 [ ! -e "$IMAGE" ] && {

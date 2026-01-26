@@ -4,12 +4,13 @@ from PIL import Image, ImageDraw
 import argparse
 import os
 import subprocess
-import tempfile
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-l", "--latex", action="store_true")
 parser.add_argument("-q", "--quiet", action="store_true")
 args = parser.parse_args()
+tmp_dir = os.environ.get("TMP_BASE_DIR", "/tmp")
+save_path = os.path.join(tmp_dir, "canvas-draw.png")
 
 willLatex = args.latex
 quiet = args.quiet
@@ -148,8 +149,6 @@ def redraw_image():
             draw.line([x1, y1, x2, y2], fill=STROKE_COLOR, width=STROKE_WIDTH)
 
 def save_to_tmp(event=None):
-    save_path = "/tmp/canvas-draw.png"
-
     # Si no se dibujo nada, salimos del script informado del error y sin guardar
     # nada en disco o en el portapapeles
     if not strokes:

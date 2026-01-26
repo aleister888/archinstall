@@ -3,23 +3,19 @@
 # Script para configurar diversas partes del sistema
 # - Invocado por /update.sh
 
+source "$HOME/.dotfiles/assets/shell/shell-utils"
+
 [ "$(id -u)" -eq 0 ] && exit 1
 
-if [ "$DEBUG" = true ]; then
-	set -x
-fi
-
-########
-# UDEV #
-########
+# UDEV
+#-------------------------------------------------------------------------------
 
 # Permitir a Steam controlar mandos de PlayStation 4
 sudo /usr/bin/cp -f "$HOME/.dotfiles/assets/system/udev/99-steam-controller-perms.rules" \
 	/usr/lib/udev/rules.d/
 
-################
-# Aplicaciones #
-################
+# Aplicaciones
+#-------------------------------------------------------------------------------
 
 # Configurar keepassxc para que siga el tema de QT (Si no está ya configurado)
 if [ ! -f "$HOME/.config/keepassxc/keepassxc.ini" ]; then
@@ -62,9 +58,8 @@ cat <<-EOF >~/.config/okularrc
 	ColorScheme=KritaDarkOrange
 EOF
 
-##########
-# REAPER #
-##########
+# REAPER
+#-------------------------------------------------------------------------------
 
 # Fix for: https://github.com/Supreeeme/xwayland-satellite/issues/306
 
@@ -79,9 +74,7 @@ else
 	rm -f "$REAPER_DESKTOP"
 fi
 
-##############
-# Miscelánea #
-##############
+#-------------------------------------------------------------------------------
 
 # Desactivar el altavoz del PC
 echo "blacklist pcspkr" | sudo /usr/bin/tee /etc/modprobe.d/nobeep.conf >/dev/null

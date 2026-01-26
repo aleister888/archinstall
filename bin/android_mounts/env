@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 # shellcheck disable=SC2034
 
-. "$REPO_DIR/assets/shell/shell-utils"
+source "$REPO_DIR/assets/shell/shell-utils"
 
 DMENU="wofi --show dmenu -L 5"
 TMP_DIR="$(get_tmp android_mount)"

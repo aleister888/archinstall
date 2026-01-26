@@ -4,7 +4,9 @@
 export REPO_DIR="$HOME/.dotfiles"
 
 # Abreviaciones
-. "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/aliasrc"
+if [ -e "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/aliasrc" ]; then
+	. "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/aliasrc"
+fi
 
 # Aquí puedes colocar alias sin que estos esten
 # dentro de la estructura del repositorio
@@ -13,31 +15,25 @@ if [ -e "${XDG_CONFIG_HOME:-$HOME/.config}/useralias" ]; then
 fi
 
 [ -d "$HOME/.local/bin" ] && PATH="$HOME/.local/bin:$PATH"
-# Añadir scripts a $PATH
 [ -d "$HOME/.local/bin/utils" ] && PATH="$HOME/.local/bin/utils:$PATH"
 [ -d "$HOME/.local/bin/installers/" ] && PATH="$HOME/.local/bin/installers:$PATH"
 [ -d "$HOME/.nix-profile/bin" ] && PATH="$HOME/.nix-profile/bin:$PATH"
 
-# Definir cursor usado por X11
 export XCURSOR_PATH="/usr/share/icons:${XDG_DATA_HOME}/icons"
 export XCURSOR_PATH=/usr/share/icons/
 export XCURSOR_THEME=capitaine-cursors
 export XCURSOR_SIZE=64
 
-# Usar el filechooser del portal GTK
 export GDK_SCALE=1
 export GTK_USE_PORTAL=1
 
 # Hacer que las aplicaciones QT sigan los ajustes de QT5CT
 export QT_QPA_PLATFORMTHEME="qt6ct"
 
-# Apps
 export OPENER="xdg-open"
 
-# Arreglar aplicaciones de java
 export _JAVA_AWT_WM_NONREPARENTING=1
 
-# XDG
 export XDG_SESSION_TYPE=wayland
 export XDG_CURRENT_DESKTOP=Hyprland
 export XDG_SESSION_DESKTOP=Hyprland
@@ -46,7 +42,6 @@ export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_STATE_HOME="$HOME/.local/state"
 
-# Apps
 export EDITOR="nvim"
 export SUDO_EDITOR="nvim"
 export READER="okular"

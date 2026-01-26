@@ -1,9 +1,25 @@
-#!/bin/sh
+#!/bin/bash
+
+set -Eeuo pipefail
+
+export LOG_BASE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles"
+export TMP_BASE_DIR="/tmp/00_dotfiles"
 
 ensure_dir() {
 	[ ! -d "$1" ] && mkdir -p "$1"
 	echo "$1"
 }
+
+# Utilidad para facilitar el depurado de los scripts
+# Todos los scripts que importen el archivo deberán usar bash para poder
+# hacer uso de variables como $BASH_COMMAND
+
+error_trap() {
+	local exit_code=$?
+	log "($exit_code) [$(basename "$0")] en línea $1: $2" ERROR
+}
+
+trap 'error_trap $LINENO "$BASH_COMMAND"' ERR
 
 # Utilidades para guardar los logs en un solo directorio
 #
@@ -13,15 +29,12 @@ ensure_dir() {
 #
 # o para que la actualización de la variable LOG_DIR sea más explícita:
 #     LOG_DIR=$(initlog <directorio>)
-#
-
-LOG_BASE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles"
 
 log() {
 	MSG="$1"
 	LEVEL="${2:-ERROR}"
 	ensure_dir "${LOG_DIR:-$LOG_BASE_DIR}" >/dev/null
-	echo "$(date '+%Y-%m-%d %H:%M:%S') [$LEVEL] $MSG" |
+	echo -n "$(date '+%Y-%m-%d %H:%M:%S') [$LEVEL] $MSG" |
 		tee -a "${LOG_DIR:-$LOG_BASE_DIR}/errors.log"
 }
 
@@ -31,9 +44,6 @@ init_log() {
 }
 
 # Utilidades para guardar los archivos temporales en un solo directorio
-#
-
-TMP_BASE_DIR="/tmp/00_dotfiles"
 
 get_tmp() {
 	ensure_dir "$TMP_BASE_DIR/$1"

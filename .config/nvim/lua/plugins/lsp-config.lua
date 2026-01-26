@@ -1,5 +1,5 @@
 local servers = {
-	"basedpyright",
+	"pylsp",
 	"bashls",
 	"clangd",
 	"cssls",

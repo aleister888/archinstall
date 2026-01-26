@@ -1,6 +1,8 @@
-#!/bin/bash -x
+#!/bin/bash
 
 source "$REPO_DIR/assets/shell/shell-utils"
+
+set +u
 
 [ "$(pgrep screenshot | wc -l)" -ge 3 ] && exit 1
 

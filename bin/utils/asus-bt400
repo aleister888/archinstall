@@ -1,11 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
 # Script para instalar los drivers de:
 # https://www.asus.com/networking-iot-servers/adapters/all-series/usbbt400/
 
 set -e
 
-. "$REPO_DIR/assets/shell/shell-utils"
+source "$REPO_DIR/assets/shell/shell-utils"
 
 # Variables
 DRIVER_URL="https://dlcdnets.asus.com/pub/ASUS/wireless/USB-BT400/DR_USB_BT400_1201710_Windows.zip"

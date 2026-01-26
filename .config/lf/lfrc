@@ -18,7 +18,7 @@ set relativenumber
 set info size:time
 set ratios 2:6:4
 set autoquit true
-set hiddenfiles ".*:*.aux:*.toc:*.sty:*.out:*.log:*.bbl:*.blg:*.synctex.gz:_minted:*.bcf:*.nav:*.run.xml:*.snm:*.xwm:*.lrc:*-autosave.kra:*~:*.vpp.bak_*:systemd-private-*"
+set hiddenfiles ".*:*.aux:*.toc:*.sty:*.out:*.bbl:*.blg:*.synctex.gz:_minted:*.bcf:*.nav:*.run.xml:*.snm:*.xwm:*.lrc:*-autosave.kra:*~:*.vpp.bak_*:systemd-private-*"
 
 set cleaner '~/.config/lf/cleaner'
 set previewer '~/.config/lf/scope'

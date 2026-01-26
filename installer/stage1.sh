@@ -217,7 +217,7 @@ basestrap_install() {
 	BASESTRAP_PACKAGES+=" pciutils usbutils"
 
 	BASESTRAP_PACKAGES+=" git libjpeg-turbo dosfstools freetype2 dialog"
-	BASESTRAP_PACKAGES+=" wget libnewt neovim opendoas"
+	BASESTRAP_PACKAGES+=" wget libnewt neovim"
 
 	# Instalamos pipewire para evitar conflictos (p.e. se isntala jack2 y no
 	# pipewire-jack). Los paquetes para 32 bits se instalarán una vez

@@ -2,14 +2,11 @@
 
 # Script para instalar paquetes de nixpkgs
 # - Invocado por /update.sh
+# TODO: Add support for non-versioned packages
+
+source "$HOME/.dotfiles/assets/shell/shell-utils"
 
 [ "$(id -u)" -eq 0 ] && exit 1
-
-if [ "$DEBUG" = true ]; then
-	set -x
-fi
-
-source "$REPO_DIR/assets/shell/shell-utils"
 
 LOG_DIR=$(init_log nixpkgs)
 
@@ -23,6 +20,12 @@ for CHANNEL in "${CHANNELS[@]}"; do
 	nix-channel --add "$CHANNEL" >/dev/null 2>&1
 done
 nix-channel --update >/dev/null 2>&1
+
+#-------------------------------------------------------------------------------
+
+nix profile wipe-history >/dev/null 2>&1
+nix-env --delete-generations old >/dev/null 2>&1
+nix-collect-garbage -d >/dev/null 2>&1
 
 #-------------------------------------------------------------------------------
 
@@ -69,8 +72,8 @@ for pkg in "${TARGET_PACKAGES[@]}"; do
 	if [[ -z "$INSTALLED_VERSION" ]]; then
 		nix profile add "$FLAKE_REF" >/dev/null
 	elif [[ "$INSTALLED_VERSION" != "$TARGET_VERSION" ]]; then
-		log "actualizando $NAME: $INSTALLED_VERSION -> $TARGET_VERSION" WARN
-		nix profile remove "$NAME" >/dev/null 2>&1
-		nix profile add "$FLAKE_REF" >/dev/null 2>&1
+		log "cambiando versión $NAME: $INSTALLED_VERSION -> $TARGET_VERSION" WARN
+		nix profile remove "${NAME##*.}" >/dev/null 2>&1
+		nix profile add "$FLAKE_REF"
 	fi
 done

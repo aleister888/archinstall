@@ -3,13 +3,9 @@
 # Script para configurar los servicios del sistema y de usuario (systemd)
 # - Invocado por /update.sh
 
-source "$REPO_DIR/assets/shell/shell-utils"
+source "$HOME/.dotfiles/assets/shell/shell-utils"
 
 [ "$(id -u)" -eq 0 ] && exit 1
-
-if [ "$DEBUG" = true ]; then
-	set -x
-fi
 
 # Activar servicio
 service_add() {

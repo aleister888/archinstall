@@ -1,25 +1,22 @@
 #!/bin/bash
-# shellcheck disable=SC2086
-# shellcheck disable=SC2155
-# shellcheck disable=SC1094
+# shellcheck disable=SC2086,SC2155,SC1094
 
 # Instalador de ajustes para Arch Linux
 # por aleister888 <pacoe1000@gmail.com>
 # Licencia: GNU GPLv3
 
+source "$HOME/.dotfiles/assets/shell/profile"
+source "$HOME/.dotfiles/assets/shell/shell-utils"
+
 export DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}"
 export CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
 export ASSETDIR="$REPO_DIR/assets/configs"
 
-source "$REPO_DIR/assets/shell/shell-utils"
-
 export TMP_DIR="$(get_tmp updater)"
 
 LOG_DIR=$(init_log updater)
-
 DEBUG=false
 
-# Comprobamos si el script se ejecutó en modo debug
 while getopts "d" opt; do
 	case $opt in
 	d) DEBUG=true ;;
@@ -29,18 +26,12 @@ done
 
 export DEBUG
 
-# Si está en modo debug, activamos xtrace
-# Además, los scripts de "$HOME"/.dotfiles/updater no se ejecutarán
-# en modo silencioso
 if [ "$DEBUG" = true ]; then
 	export PS4='+ $(date "+%H:%M:%S"): '
 	set -x
 fi
 
-trap 'fc-cache -f' EXIT
-
-###
-# Actualizar repo
+#-------------------------------------------------------------------------------
 
 notify_sudoers_change() {
 	cat <<-'EOF'
@@ -53,16 +44,13 @@ notify_sudoers_change() {
 	log "sudoers file outdated"
 }
 
-# Obtenemos la lista de paquetes para comparar antes y después del pull
 mapfile -t OLD_PACKAGE_LIST < <(
 	find "$HOME/.dotfiles/assets/packages" -name '*.hjson' \
 		-exec sh -c 'hjson -j "$1" | jq -r ".[] | .[]" ' _ {} \;
 )
 
-# Guardamos el hash del script para comprobar mas adelante si este ha cambiado
 OG_HASH=$(sha256sum "$0" | awk '{print $1}')
 
-# Comprobamos si tenemos conexión a Internet
 if curl -s --connect-timeout 3 https://dns.google/ >/dev/null; then
 	CONNECTED=true
 else
@@ -78,7 +66,6 @@ if [ -d "$REPO_DIR/.git" ] && [ "$CONNECTED" == "true" ]; then
 	fi
 fi
 
-# Construimos la lista de paquetes
 mapfile -t PACKAGE_LIST < <(
 	find "$HOME/.dotfiles/assets/packages" -name '*.hjson' \
 		-exec sh -c 'hjson -j "$1" | jq -r ".[] | .[]" ' _ {} \;
@@ -104,13 +91,9 @@ if [ "$OG_HASH" != "$NEW_HASH" ]; then
 	exec "$0" "$@"
 fi
 
-###
-# Instalar paquetes faltantes
-
-# Extraemos sin prefijo "repo/"
-REPO_PKGS=$(printf "%s\n" "${PACKAGE_LIST[@]}" | cut -d/ -f2)
-INSTALLED_PKGS=$(yay -Qq)                                  # Paquetes
-INSTALLED_PKGS+=$(pacman -Qg | awk '{print $1}' | sort -u) # Grupos
+REPO_PKGS=$(printf "%s\n" "${PACKAGE_LIST[@]}" | cut -d/ -f2) # Quitamos "repo/"
+INSTALLED_PKGS=$(yay -Qq)                                     # Paquetes
+INSTALLED_PKGS+=$(pacman -Qg | awk '{print $1}' | sort -u)    # Grupos
 
 PKGS_TO_INSTALL=$(comm -23 <(printf "%s\n" "$REPO_PKGS" | sort -u) \
 	<(printf "%s\n" "$INSTALLED_PKGS" | sort))
@@ -118,22 +101,22 @@ PKGS_TO_INSTALL=$(comm -23 <(printf "%s\n" "$REPO_PKGS" | sort -u) \
 if [ -n "$PKGS_TO_INSTALL" ] && [ "$CONNECTED" == "true" ]; then
 	yay -Sy --noconfirm --needed --asexplicit $PKGS_TO_INSTALL
 fi
+
 # shellcheck disable=SC2046
-sudo /usr/bin/pacman -D --asexplicit $(xargs <<<$REPO_PKGS) >/dev/null 2>&1
+# pacman -D falla si todos los paquetes de la lista ya estában marcados
+sudo /usr/bin/pacman -D --asexplicit $(xargs <<<$REPO_PKGS) >/dev/null 2>&1 || true
 
 REPO_PKGS=$(printf "%s\n" "${PACKAGE_LIST[@]}" | cut -d/ -f2)
 
 # Crear los directorios necesarios
-[ -d "$HOME/.local/bin" ] || mkdir -p "$HOME/.local/bin"
-[ -d "$HOME/.cache" ] || mkdir -p "$HOME/.cache"
-[ -d "$CONF_DIR" ] || mkdir -p "$CONF_DIR"
-[ -d "$DATA_DIR" ] || mkdir -p "$DATA_DIR"
+ensure_dir "$HOME/.local/bin" >/dev/null
+ensure_dir "$HOME/.cache" >/dev/null
+ensure_dir "$CONF_DIR" >/dev/null
+ensure_dir "$DATA_DIR" >/dev/null
 
-###
-# Neovim
+#-------------------------------------------------------------------------------
 
-[ ! -d "$DATA_DIR/nvim/site/spell" ] &&
-	mkdir -p "$DATA_DIR/nvim/site/spell"
+ensure_dir "$DATA_DIR/nvim/site/spell" >/dev/null
 
 [ ! -f "$DATA_DIR/nvim/site/spell/es.utf-8.spl" ] &&
 	wget 'https://ftp.nluug.nl/pub/vim/runtime/spell/es.utf-8.spl' -q -O \
@@ -143,14 +126,15 @@ REPO_PKGS=$(printf "%s\n" "${PACKAGE_LIST[@]}" | cut -d/ -f2)
 	wget 'https://ftp.nluug.nl/pub/vim/runtime/spell/es.utf-8.sug' -q -O \
 		"$DATA_DIR/nvim/site/spell/es.utf-8.sug" &
 
-###
-# Archivos de configuración y scripts
+#-------------------------------------------------------------------------------
 
 (cd $REPO_DIR && stow --adopt --target=${HOME}/.local/bin/ bin/) >/dev/null &
 (cd $REPO_DIR && stow --adopt --target=${HOME}/.config/ .config/) >/dev/null &
+
+mkdir -p "$CONF_DIR/zsh"
+ln -sf "$REPO_DIR/assets/shell/profile" "$CONF_DIR/zsh/.zprofile"
 ln -sf "$REPO_DIR/assets/shell/profile" "$HOME/.profile"
 ln -sf "$REPO_DIR/assets/shell/profile" "$HOME/.bash_profile"
-ln -sf "$REPO_DIR/assets/shell/profile" "$CONF_DIR/zsh/.zprofile"
 
 # Borrar enlaces rotos
 find "$HOME/.local/bin" -type l ! -exec test -e {} \; -delete &
@@ -162,30 +146,27 @@ cat <<-EOF >~/.config/xdg-desktop-portal/portals.conf
 	default=hyprland
 EOF
 
-###
-# Módulos
+#-------------------------------------------------------------------------------
 
 if [ "$DEBUG" = true ]; then
-	"$HOME"/.dotfiles/updater/conf-services -d
-	"$HOME"/.dotfiles/updater/install-bin -d &
-	"$HOME"/.dotfiles/updater/install-conf -d
+	"$HOME"/.dotfiles/updater/conf-services
+	"$HOME"/.dotfiles/updater/install-bin &
+	"$HOME"/.dotfiles/updater/install-conf
 	"$HOME"/.dotfiles/updater/lf-dbus &
-	"$HOME"/.dotfiles/updater/nix-conf -d &
 else
 	"$HOME"/.dotfiles/updater/conf-services 2>/dev/null
 	"$HOME"/.dotfiles/updater/install-bin 2>/dev/null &
 	"$HOME"/.dotfiles/updater/install-conf 2>/dev/null
 	"$HOME"/.dotfiles/updater/lf-dbus 2>/dev/null &
-	"$HOME"/.dotfiles/updater/nix-conf 2>/dev/null &
 fi
 wait
 
-###
+fc-cache -f &
 
+"$HOME"/.dotfiles/updater/nix-conf &
 "$HOME"/.dotfiles/updater/xdg-default-apps &
 
-###
-# Archivos .desktop
+#-------------------------------------------------------------------------------
 
 IGNORE_GENERAL="$REPO_DIR/assets/desktop-ignore/general.txt"
 IGNORE_LSP="$REPO_DIR/assets/desktop-ignore/lsp.txt"
@@ -214,22 +195,19 @@ for ENTRY in "${ALL_IGNORE[@]}"; do
 	fi
 done &
 
+ensure_dir "${XDG_DATA_HOME:-$HOME/.local/share}/applications"
+
 # Copiamos archivos .desktop
 cp -f "$HOME/.dotfiles/assets/desktop/rdp.desktop" \
 	"${XDG_DATA_HOME:-$HOME/.local/share}/applications/rdp.desktop"
 
-###
-# Configurar apariencia
+#-------------------------------------------------------------------------------
 
-# Configurar el tema del cursor
 if [ ! -e "$REPO_DIR/assets/configs/index.theme" ]; then
 	mkdir -p "$DATA_DIR/icons/default"
 	cp "$REPO_DIR/assets/configs/index.theme" \
 		"$DATA_DIR/icons/default/index.theme"
 fi &
-
-###
-# GTK y QT
 
 rm -rf ~/.config/gtk-4.0/* ~/.config/gtk-3.0/settings.ini
 
@@ -275,8 +253,7 @@ cat <<-EOF | tee "$CONF_DIR/qt5ct/qt5ct.conf" "$CONF_DIR/qt6ct/qt6ct.conf" >/dev
 	general="Fira Sans Condensed,12,0,0,0,0,0,0,0,0,Bold"
 EOF
 
-###
-# Actualizar iconos y colores (lf)
+#-------------------------------------------------------------------------------
 
 LF_ETC="https://raw.githubusercontent.com/gokcehan/lf/master/etc"
 [ ! -f "$CONF_DIR/lf/colors" ] &&
@@ -284,7 +261,7 @@ LF_ETC="https://raw.githubusercontent.com/gokcehan/lf/master/etc"
 [ ! -f "$CONF_DIR/lf/icons" ] &&
 	curl "$LF_ETC/icons.example" -o "$CONF_DIR/lf/icons" 2>/dev/null &
 
-###
+wait # Esperamos a que nix-conf termine para que wine este disponible
 
 [ ! -f "$WINEPREFIX/drive_c/windows/syswow64/mfc42.dll" ] && winetricks -q mfc42
 

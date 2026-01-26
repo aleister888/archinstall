@@ -6,22 +6,22 @@
     },
     {
       "name": "hydroxide",
-      "version": "e6f23dc08d3624daab7094b701aa3954923c6bbb"
+      "version": "25.11"
     },
     {
       "name": "lrcget",
-      "version": "e6f23dc08d3624daab7094b701aa3954923c6bbb"
+      "version": "25.11"
     }
   ],
   "entorno": [
     {
       "_comment": "drag and drop support for lf file manager",
       "name": "dragon-drop",
-      "version": "e6f23dc08d3624daab7094b701aa3954923c6bbb"
+      "version": "25.11"
     },
     {
       "name": "wl-color-picker",
-      "version": "e6f23dc08d3624daab7094b701aa3954923c6bbb"
+      "version": "25.11"
     },
     {
       "name": "looking-glass-client",
@@ -31,12 +31,16 @@
   "dev": [
     {
       "name": "dmg2img",
-      "version": "e6f23dc08d3624daab7094b701aa3954923c6bbb"
+      "version": "25.11"
     },
     {
       "_comment": "android: para extraer vmbeta.img desde payload.bin",
       "name": "payload-dumper-go",
-      "version": "e6f23dc08d3624daab7094b701aa3954923c6bbb"
+      "version": "25.11"
+    },
+    {
+      "name": "jetbrains.idea-community",
+      "version": "25.11"
     },
     {
       "name": "github-desktop",
@@ -46,25 +50,29 @@
   "universidad": [
     {
       "name": "weka",
-      "version": "e6f23dc08d3624daab7094b701aa3954923c6bbb"
+      "version": "25.11"
     },
     {
       "name": "digital",
-      "version": "e6f23dc08d3624daab7094b701aa3954923c6bbb"
+      "version": "25.11"
     }
   ],
   "guitarra": [
     {
+      "name": "gmetronome",
+      "version": "25.11"
+    },
+    {
       "name": "winetricks",
-      "version": "e6f23dc08d3624daab7094b701aa3954923c6bbb"
+      "version": "25.11"
+    },
+    {
+      "name": "mono",
+      "version": "25.11"
     },
     {
       "name": "wineWowPackages.staging",
       "version": "c792c60b8a97daa7efe41a6e4954497ae410e0c1"
-    },
-    {
-      "name": "gmetronome",
-      "version": "e6f23dc08d3624daab7094b701aa3954923c6bbb"
     },
     {
       "name": "yabridge",

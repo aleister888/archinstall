@@ -31,6 +31,7 @@ bookmarks
 .config/zsh/zsh-syntax-highlighting
 .config/zsh/zsh-you-should-use
 .config/zsh/.zcompdump*
+.config/zsh/.zprofile
 
 *.log
 *.out

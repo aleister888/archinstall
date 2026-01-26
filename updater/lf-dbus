@@ -1,5 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 # shellcheck disable=SC2046
+
+source "$HOME/.dotfiles/assets/shell/shell-utils"
 
 [ "$(id -u)" -eq 0 ] && exit 1
 

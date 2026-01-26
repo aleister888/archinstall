@@ -5,11 +5,7 @@
 
 [ "$(id -u)" -eq 0 ] && exit 1
 
-if [ "$DEBUG" = true ]; then
-	set -x
-fi
-
-source "$REPO_DIR/assets/shell/shell-utils"
+source "$HOME/.dotfiles/assets/shell/shell-utils"
 
 XDG_LOCKFILE="$TMP_DIR/xdg-mime.lock"
 

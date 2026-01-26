@@ -1,9 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 # shellcheck disable=SC2086
 
 # Script para desmontar dispositivos android
 
-. "$REPO_DIR/bin/android_mounts/env"
+source "$REPO_DIR/bin/android_mounts/env"
 
 cleanup_mountpoints() {
 	for DIR in "$BASENAME"*; do

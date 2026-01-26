@@ -3,38 +3,38 @@
 # Script para auto-configurar TauonMusicBox
 # https://github.com/Taiko2k/TauonMusicBox
 
+source "$HOME/.dotfiles/assets/shell/shell-utils"
+
 [ "$(id -u)" -eq 0 ] && exit 1
 
-mkdir -p "$HOME"/.local/share
-rm "$HOME"/.local/share/TauonMusicBox/tauon.conf
+CONF="$HOME/.local/share/TauonMusicBox/tauon.conf"
+BASE_FONT="Fira Sans Condensed"
+
+rm -f "$HOME"/.local/share/TauonMusicBox/tauon.conf
 
 # Iniciamos tauon para que se cree el archivo de configuración
-timeout -k 1s 10s xvfb-run tauon >/dev/null &
-sleep 12
+for ((i = 1; i <= 4; i++)); do
+	timeout -k 15s 5s xvfb-run tauon >/dev/null 2>&1 || true
+	[ -e "$CONF" ] && break
+done
 
-# Extraemos los temas
+# Si Tauon no puede iniciarse hasta crear el archivo de configuración no
+# detenemos la instalación
+[ ! -e "$CONF" ] && exit 0
+
+ensure_dir "$HOME/.local/share/TauonMusicBox/theme/" >/dev/null
 aunpack "$HOME/.dotfiles/assets/themes.tar.gz" \
-	-X "$HOME/.local/share/TauonMusicBox/theme/"
+	-X "$HOME/.local/share/TauonMusicBox/theme/" >/dev/null
 
 # Archivo de configuración
-CONF="$HOME/.local/share/TauonMusicBox/tauon.conf"
-
-# Activar Opciones
-sed -i 's/auto-dl-artist-data = false/auto-dl-artist-data = true/g' "$CONF"
-sed -i 's/auto-update-playlists = false/auto-update-playlists = true/g' "$CONF"
-sed -i 's/auto-search-lyrics = false/auto-search-lyrics = true/g' "$CONF"
-
-# Desactivar el recordar la posición (Útil para los tiling window managers)
-sed -i 's/restore-window-position = true/restore-window-position = false/g' "$CONF"
-
-# Establecer el tema
-sed -i 's/theme-name = ".*"/theme-name = "aleister-gruvbox"/g' "$CONF"
-
-# Cambiar las fuentes usadas
-BASE_FONT="Fira Sans Condensed"
 sed -i "s/use-custom-fonts = false/use-custom-fonts = true/g" "$CONF"
 sed -i "s/font-main-standard = \".*\"/font-main-standard = \"$BASE_FONT\"/g" "$CONF"
 sed -i "s/font-main-medium = \".*\"/font-main-medium = \"$BASE_FONT Medium\"/g" "$CONF"
 sed -i "s/font-main-bold = \".*\"/font-main-bold = \"$BASE_FONT Bold\"/g" "$CONF"
 sed -i "s/font-main-condensed = \".*\"/font-main-condensed = \"$BASE_FONT\"/g" "$CONF"
 sed -i "s/font-main-condensed-bold = \".*\"/font-main-condensed-bold = \"$BASE_FONT Bold\"/g" "$CONF"
+sed -i 's/auto-dl-artist-data = false/auto-dl-artist-data = true/g' "$CONF"
+sed -i 's/auto-update-playlists = false/auto-update-playlists = true/g' "$CONF"
+sed -i 's/auto-search-lyrics = false/auto-search-lyrics = true/g' "$CONF"
+sed -i 's/restore-window-position = true/restore-window-position = false/g' "$CONF"
+sed -i 's/theme-name = ".*"/theme-name = "aleister-gruvbox"/g' "$CONF"

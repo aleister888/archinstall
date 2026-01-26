@@ -5,10 +5,6 @@
 
 [ "$(id -u)" -eq 0 ] && exit 1
 
-if [ "$DEBUG" = true ]; then
-	set -x
-fi
-
 FILES=(
 	"cleanup-old-modules"
 	"rdp-connect"
@@ -17,5 +13,6 @@ FILES=(
 )
 for FILE in "${FILES[@]}"; do
 	[ -e "/usr/local/bin/$FILE" ] && sudo /usr/bin/rm /usr/local/bin/"$FILE"
-	sudo /usr/bin/install -o root -g root -m 0755 "$HOME/.dotfiles/assets/bin/$FILE" "/usr/local/bin/$FILE"
+	sudo /usr/bin/install -o root -g root -m 0755 \
+		"$HOME/.dotfiles/assets/bin/$FILE" "/usr/local/bin/$FILE"
 done
