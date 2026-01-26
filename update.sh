@@ -268,4 +268,4 @@ wait # Esperamos a que nix-conf termine para que wine este disponible
 	is_chroot || winetricks -q mfc42
 }
 
-arkenfox-auto-update >/dev/null 2>&1
+is_chroot || arkenfox-auto-update >/dev/null 2>&1
