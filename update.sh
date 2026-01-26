@@ -195,7 +195,7 @@ for ENTRY in "${ALL_IGNORE[@]}"; do
 	fi
 done &
 
-ensure_dir "${XDG_DATA_HOME:-$HOME/.local/share}/applications"
+ensure_dir "${XDG_DATA_HOME:-$HOME/.local/share}/applications" >/dev/null
 
 # Copiamos archivos .desktop
 cp -f "$HOME/.dotfiles/assets/desktop/rdp.desktop" \
@@ -214,7 +214,8 @@ rm -rf ~/.config/gtk-4.0/* ~/.config/gtk-3.0/settings.ini
 mkdir -p "$HOME/.local/share/nwg-look" "$HOME/.config/gtk-3.0" "$HOME/.config/gtk-4.0"
 install "$ASSETDIR/gtk/gsettings" "$HOME/.local/share/nwg-look/gsettings"
 
-dconf write /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
+# El comando falla cuando se invoca el script desde stage3.sh ($DISPLAY = nil)
+dconf write /org/gnome/desktop/interface/color-scheme "'prefer-dark'" || true
 
 nwg-look -a 2>/dev/null
 nwg-look -x 2>/dev/null
@@ -256,10 +257,9 @@ EOF
 #-------------------------------------------------------------------------------
 
 LF_ETC="https://raw.githubusercontent.com/gokcehan/lf/master/etc"
-[ ! -f "$CONF_DIR/lf/colors" ] &&
-	curl "$LF_ETC/colors.example" -o "$CONF_DIR/lf/colors" 2>/dev/null &
-[ ! -f "$CONF_DIR/lf/icons" ] &&
-	curl "$LF_ETC/icons.example" -o "$CONF_DIR/lf/icons" 2>/dev/null &
+
+download "$LF_ETC/colors.example" "$CONF_DIR/lf/colors" &
+download "$LF_ETC/icons.example" "$CONF_DIR/lf/icons" &
 
 wait # Esperamos a que nix-conf termine para que wine este disponible
 

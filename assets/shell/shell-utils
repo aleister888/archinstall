@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2155
 
 set -Eeuo pipefail
 
@@ -16,7 +17,7 @@ ensure_dir() {
 
 error_trap() {
 	local exit_code=$?
-	log "($exit_code) [$(basename "$0")] en línea $1: $2" ERROR
+	log "{$exit_code} en línea $1: $2" ERROR
 }
 
 trap 'error_trap $LINENO "$BASH_COMMAND"' ERR
@@ -31,11 +32,14 @@ trap 'error_trap $LINENO "$BASH_COMMAND"' ERR
 #     LOG_DIR=$(initlog <directorio>)
 
 log() {
-	MSG="$1"
-	LEVEL="${2:-ERROR}"
+	local msg="$1"
+	local level="${2:-ERROR}"
+	local date="$(date '+%Y-%m-%d %H:%M:%S')"
+	local module="$(basename "$0")"
 	ensure_dir "${LOG_DIR:-$LOG_BASE_DIR}" >/dev/null
-	echo -n "$(date '+%Y-%m-%d %H:%M:%S') [$LEVEL] $MSG" |
+	echo -n "$date [$level] ($module) $msg" |
 		tee -a "${LOG_DIR:-$LOG_BASE_DIR}/errors.log"
+	echo # tee no respeta los saltos de linea
 }
 
 init_log() {
@@ -52,4 +56,18 @@ get_tmp() {
 get_random_tmp() {
 	ensure_dir "$TMP_BASE_DIR" >/dev/null
 	mktemp -d -p "$TMP_BASE_DIR" XXXXXX
+}
+
+#-------------------------------------------------------------------------------
+
+download() {
+	local url="$1"
+	local file="$2"
+	if [ ! -f "$file" ]; then
+		ensure_dir "$(dirname "$file")"
+		curl "$url" -o "$file" 2>/dev/null
+		return
+	fi
+
+	#log "file already exists: $file" WARN
 }
