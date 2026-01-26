@@ -165,7 +165,7 @@ fc-cache -f &
 
 "$HOME"/.dotfiles/updater/xdg-default-apps &
 
-is_chroot || "$HOME"/.dotfiles/upr/nix-conf &
+is_chroot || "$HOME"/.dotfiles/updater/nix-conf &
 
 #-------------------------------------------------------------------------------
 
