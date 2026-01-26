@@ -185,9 +185,6 @@ service_add cronie
 service_add acpid
 service_add cups
 
-ln -sf /usr/bin/nvim /usr/local/bin/vim
-ln -sf /usr/bin/nvim /usr/local/bin/vi
-
 # Configuramos sudo temporalmente para stage3.sh
 cp /etc/sudoers /etc/sudoers.bak
 echo "root ALL=(ALL:ALL) ALL

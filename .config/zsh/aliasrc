@@ -1,5 +1,8 @@
 #!/bin/zsh
 
+alias vi='nvim'
+alias vim='nvim'
+
 # Moverse rápidamente entre directorios
 alias ..='cd ..'
 alias ...='cd ../..'

@@ -11,6 +11,10 @@
     {
       "name": "lrcget",
       "version": "25.11"
+    },
+    {
+      "name": "neovim",
+      "version": "25.11"
     }
   ],
   "entorno": [
@@ -21,6 +25,10 @@
     },
     {
       "name": "wl-color-picker",
+      "version": "25.11"
+    },
+    {
+      "name": "eyed3",
       "version": "25.11"
     },
     {

@@ -1,13 +1,9 @@
 return {
 	"nvim-treesitter/nvim-treesitter",
-	event = { "BufReadPre", "BufNewFile" },
-	dependencies = {
-		"nvim-treesitter/nvim-treesitter-textobjects",
-	},
+	lazy = false,
+	branch = "main",
 	config = function()
-		local treesitter = require("nvim-treesitter.configs")
-
-		treesitter.setup({
+		require("nvim-treesitter.configs").setup({
 			highlight = {
 				enable = true,
 				-- Desactiva el highlighting para archivos grandes
