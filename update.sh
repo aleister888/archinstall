@@ -163,8 +163,9 @@ wait
 
 fc-cache -f &
 
-"$HOME"/.dotfiles/updater/nix-conf &
 "$HOME"/.dotfiles/updater/xdg-default-apps &
+
+is_chroot || "$HOME"/.dotfiles/upr/nix-conf &
 
 #-------------------------------------------------------------------------------
 
@@ -215,7 +216,7 @@ mkdir -p "$HOME/.local/share/nwg-look" "$HOME/.config/gtk-3.0" "$HOME/.config/gt
 install "$ASSETDIR/gtk/gsettings" "$HOME/.local/share/nwg-look/gsettings"
 
 # El comando falla cuando se invoca el script desde stage3.sh ($DISPLAY = nil)
-dconf write /org/gnome/desktop/interface/color-scheme "'prefer-dark'" || true
+is_chroot || dconf write /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
 
 nwg-look -a 2>/dev/null
 nwg-look -x 2>/dev/null
@@ -263,6 +264,8 @@ download "$LF_ETC/icons.example" "$CONF_DIR/lf/icons" &
 
 wait # Esperamos a que nix-conf termine para que wine este disponible
 
-[ ! -f "$WINEPREFIX/drive_c/windows/syswow64/mfc42.dll" ] && winetricks -q mfc42
+[ ! -f "$WINEPREFIX/drive_c/windows/syswow64/mfc42.dll" ] && {
+	is_chroot || winetricks -q mfc42
+}
 
 arkenfox-auto-update >/dev/null 2>&1

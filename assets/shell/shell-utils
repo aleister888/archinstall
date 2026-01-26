@@ -71,3 +71,7 @@ download() {
 
 	#log "file already exists: $file" WARN
 }
+
+is_chroot() {
+	sudo /usr/bin/systemd-detect-virt --chroot >/dev/null 2>&1
+}
