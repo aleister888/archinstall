@@ -13,9 +13,6 @@
 #   - Nombre de la partición desencriptada abierta ($CRYPT_NAME)
 #   - Nombre del grupo LVM ($VG_NAME)
 #   - Nombre del host ($HOSTNAME)
-#   - Driver de vídeo a usar ($GRAPHIC_DRIVER)
-#   - Variables con el software opcional elegido
-#     - $CHOSEN_AUDIO_PROD, $CHOSEN_LATEX, $CHOSEN_MUSIC, $CHOSEN_VIRT
 
 whip_msg() {
 	whiptail --backtitle "$REPO_URL" --title "$1" --msgbox "$2" 10 60
@@ -91,7 +88,7 @@ scheme_show() {
 }
 
 # Función para elegir como se formatearán nuestros discos
-scheme_setup() {
+disk_scheme_setup() {
 	while true; do
 		while true; do
 			ROOT_DISK=$(
@@ -366,92 +363,9 @@ timezone_set() {
 	SYSTEM_TIMEZONE="/usr/share/zoneinfo/$REGION/$TIMEZONE"
 }
 
-# Elegimos el driver de vídeo
-driver_choose() {
-	local DRIVER_OPTIONS
+#-------------------------------------------------------------------------------
 
-	# Opciones posibles
-	DRIVER_OPTIONS=(
-		"amd" "AMD" "nvidia" "NVIDIA" "intel" "INTEL" "vm" "VM"
-	)
-
-	# Elegimos nuestra tarjeta gráfica
-	while true; do
-		GRAPHIC_DRIVER=$(
-			whip_menu "Selecciona tu tarjeta grafica" "Elige una opcion:" \
-				${DRIVER_OPTIONS[@]}
-		)
-
-		# Si se cancela o está vacío, preguntar si quiere salir
-		if [ -z "$GRAPHIC_DRIVER" ]; then
-			cancel_installation
-		else
-			break
-		fi
-	done
-
-}
-
-packages_choose() {
-	while true; do
-		VARIABLES=(
-			"CHOSEN_AUDIO_PROD"
-			"CHOSEN_LATEX"
-			"CHOSEN_MUSIC"
-			"CHOSEN_VIRT"
-		)
-
-		# Reiniciamos las variables si no confirmamos la selección
-		for VAR in "${VARIABLES[@]}"; do eval "$VAR=false"; done
-
-		whip_yes "Virtualización" \
-			"¿Quieres instalar libvirt para ejecutar máquinas virtuales?" &&
-			CHOSEN_VIRT="true"
-
-		whip_yes "Música" \
-			"¿Deseas instalar software para manejar tu coleccion de música?" &&
-			CHOSEN_MUSIC="true"
-
-		whip_yes "laTeX" \
-			"¿Deseas instalar laTeX?" &&
-			CHOSEN_LATEX="true"
-
-		whip_yes "DAW" \
-			"¿Deseas instalar software de produccion de audio?" &&
-			CHOSEN_AUDIO_PROD="true"
-
-		# Confirmamos la selección de paquetes a instalar (o no)
-		if packages_show; then
-			break
-		else
-			whip_msg "Operación cancelada" \
-				"Se te volverá a preguntar que software desea instalar"
-		fi
-	done
-}
-
-# Elegimos que paquetes instalar
-packages_show() {
-	local SCHEME # Variable con la lista de paquetes a instalar
-	SCHEME="Se instalará:\n"
-	[ "$CHOSEN_AUDIO_PROD" == "true" ] && SCHEME+="    Softw. Prod. Musical\n"
-	[ "$CHOSEN_MUSIC" == "true" ] && SCHEME+="    Softw. Gestión de Música\n"
-	[ "$CHOSEN_LATEX" == "true" ] && SCHEME+="    laTeX\n"
-	[ "$CHOSEN_VIRT" == "true" ] && SCHEME+="    libvirt\n"
-
-	whiptail --backtitle "$REPO_URL" \
-		--title "Confirmar paquetes" \
-		--yesno "$SCHEME" 15 60
-}
-
-##########
-# SCRIPT #
-##########
-
-# Elegimos como se formatearán nuestros discos
-scheme_setup
-
-# Formateamos, creamos la swap y montamos los discos
+disk_scheme_setup
 disk_setup
 
 ROOT_PASSWORD=$(
@@ -497,12 +411,6 @@ while true; do
 	fi
 done
 
-# Elegimos el driver de video y lo guardamos en la variable $GRAPHIC_DRIVER
-driver_choose
-
-# Elegimos que software opcional instalar
-packages_choose
-
 # Avisamos al usuario de que ya puede relajarse y dejar que el haga su trabajo
 whip_msg "Hora del cafe" \
 	"El instalador ya tiene toda la información necesaria, puedes dejar el ordenador desatendido. La instalacion tomara 30-45min aproximadamente."
@@ -538,12 +446,7 @@ arch-chroot /mnt sh -c "
 	ROOT_PART_NAME=$ROOT_PART_NAME \
 	CRYPT_NAME=$CRYPT_NAME \
 	VG_NAME=$VG_NAME \
-	HOSTNAME=$HOSTNAME \
-	GRAPHIC_DRIVER=$GRAPHIC_DRIVER \
-	CHOSEN_VIRT=$CHOSEN_VIRT \
-	CHOSEN_MUSIC=$CHOSEN_MUSIC \
-	CHOSEN_LATEX=$CHOSEN_LATEX \
-	CHOSEN_AUDIO_PROD=$CHOSEN_AUDIO_PROD
+	HOSTNAME=$HOSTNAME
 
 	chown $USERNAME:$USERNAME -R \
 	   /home/$USERNAME/.dotfiles

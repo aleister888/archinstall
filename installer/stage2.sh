@@ -7,11 +7,6 @@
 
 # Esta parte del script se ejecuta ya dentro de la instalación (chroot).
 
-# - Pasa como variables los siguientes parámetros al siguiente script:
-#   - Driver de video a usar ($GRAPHIC_DRIVER)
-#   - Variables con el software opcional elegido
-#     - $CHOSEN_AUDIO_PROD, $CHOSEN_LATEX, $CHOSEN_MUSIC, $CHOSEN_VIRT
-
 pacinstall() {
 	pacman -Sy --noconfirm --disable-download-timeout --needed "$@"
 }
@@ -190,15 +185,4 @@ cp /etc/sudoers /etc/sudoers.bak
 echo "root ALL=(ALL:ALL) ALL
 %wheel ALL=(ALL) NOPASSWD: ALL" | tee /etc/sudoers
 
-# Ejecutamos la siguiente parte del script pasandole las variables
-# correspondientes
-su "$USERNAME" -c "
-	export \
-	GRAPHIC_DRIVER=$GRAPHIC_DRIVER \
-	CHOSEN_AUDIO_PROD=$CHOSEN_AUDIO_PROD \
-	CHOSEN_LATEX=$CHOSEN_LATEX \
-	CHOSEN_MUSIC=$CHOSEN_MUSIC \
-	CHOSEN_VIRT=$CHOSEN_VIRT \
-
-	cd /home/$USERNAME/.dotfiles/installer && ./stage3.sh
-"
+su "$USERNAME" -c "cd /home/$USERNAME/.dotfiles/installer && ./stage3.sh"

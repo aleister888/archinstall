@@ -10,10 +10,6 @@ virt_install() {
 	# Creamos un directorio para nuestros archivos .desktop customizados
 	sudo mkdir -p /usr/local/share/applications
 
-	# Instalar paquetes
-	xargs yay -S --noconfirm --disable-download-timeout --needed \
-		<"$HOME/.dotfiles/assets/packages/opt/virt"
-
 	# Añadimos un .desktop para looking-glass-client
 	sudo /usr/bin/cp "$HOME/.dotfiles/assets/desktop/looking-glass-client.desktop" \
 		/usr/local/share/applications/looking-glass-client.desktop

@@ -21,11 +21,29 @@ yayinstall() {
 PACKAGES=()
 DRIVERS_VID=()
 
-driver_add() {
-	local PACKAGE_LIST
-	PACKAGE_LIST="$HOME/.dotfiles/assets/packages/video_drivers.json"
-	# shellcheck disable=SC2207
-	DRIVERS_VID=($(jq -r ".${GRAPHIC_DRIVER}[]" "$PACKAGE_LIST"))
+# shellcheck disable=SC2155,SC2207
+graphic_driver_add() {
+	local PACKAGE_LIST="$HOME/.dotfiles/assets/packages/video_drivers.json"
+	local GRAPHIC_DRIVER
+	local DRIVERS=$(lsmod | grep -oE "nvidia|amdgpu|i915|virtio_gpu" | sort -u)
+
+	for driver in $DRIVERS; do
+		case "$driver" in
+		i915) GRAPHIC_DRIVER=intel ;;
+		virtio_gpu) GRAPHIC_DRIVER=vm ;;
+		nvidia) GRAPHIC_DRIVER=nvidia ;;
+		amdgpu) GRAPHIC_DRIVER=amd ;;
+		*) continue ;;
+		esac
+		DRIVERS_VID+=($(jq -r ".${GRAPHIC_DRIVER}[]" "$PACKAGE_LIST"))
+	done
+
+	if [ "${#DRIVERS_VID[@]}" -eq 0 ]; then
+		DRIVERS_VID+=(mesa)
+	else
+		# Eliminar duplicados
+		DRIVERS_VID=($(printf "%s\n" "${DRIVERS_VID[@]}" | sort -u))
+	fi
 }
 
 arr_packages() {
@@ -71,7 +89,7 @@ while true; do
 	# Añadimos los drivers de vídeo a la lista de paquetes. La lista de paquetes
 	# se obtiene del siguiente archivo en cada iteración para facilitar el depurado:
 	#     ~/.dotfiles/assets/video_driver_packages.hjson
-	driver_add
+	graphic_driver_add
 	# Añadimos los demás paquetes a instalar. La lista de paquetes se obtiene
 	# de los siguientes archivos en cada iteración para facilitar el depurado:
 	#     ~/.dotfiles/assets/packages/*.hjson
@@ -108,6 +126,7 @@ echo "KEYMAP=es" | sudo /usr/bin/tee -a /etc/vconsole.conf
 sudo /usr/bin/archlinux-java set java-21-openjdk
 
 audio-setup
+libvirt-setup
 
 # Instalar un servicio de systemd para suspender el equipo cuando la batería
 # esta por debajo del 10%
@@ -163,10 +182,17 @@ vim_spell_download
 
 #-------------------------------------------------------------------------------
 
-[ "$CHOSEN_AUDIO_PROD" == "true" ] && opt_audio_prod
-[ "$CHOSEN_LATEX" == "true" ] && opt_latex
-[ "$CHOSEN_MUSIC" == "true" ] && opt_music
-[ "$CHOSEN_VIRT" == "true" ] && opt_virt
+LRCPUT_TARGET="$HOME/.local/bin/lrcput"
+
+ensure_dir "$HOME/.local/bin" >/dev/null
+download \
+	"https://raw.githubusercontent.com/JustOptimize/lrcput/refs/heads/main/lrcput.py" \
+	"$LRCPUT_TARGET"
+
+if [ -f "$LRCPUT_TARGET" ]; then
+	sed -i '1i #!/usr/bin/python' "$LRCPUT_TARGET"
+	chmod +x "$LRCPUT_TARGET"
+fi
 
 #-------------------------------------------------------------------------------
 

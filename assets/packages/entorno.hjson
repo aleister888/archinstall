@@ -28,6 +28,14 @@
     "glyr",
     "python-eyed3"
   ],
+  "audio_prod": [
+    "suil",
+    "reaper",
+    "drumgizmo",
+    "surge-xt-clap",
+    "surge-xt-vst3",
+    "surge-xt"
+  ],
   "servicios": [
     "gnome-keyring",
     "hyprsunset",

@@ -15,6 +15,14 @@
     "krita",
     "kseexpr"
   ],
+  "music_library": [
+    "easytag",
+    "picard",
+    "sox",
+    "flacon",
+    "cuetools",
+    "python-tqdm"
+  ],
   "vlc": [
     "vlc",
     "vlc-plugin-ffmpeg",
