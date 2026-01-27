@@ -3,7 +3,7 @@ return {
 	lazy = false,
 	branch = "main",
 	config = function()
-		require("nvim-treesitter.configs").setup({
+		require("nvim-treesitter.config").setup({
 			highlight = {
 				enable = true,
 				-- Desactiva el highlighting para archivos grandes

@@ -13,8 +13,8 @@ export CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
 export ASSETDIR="$REPO_DIR/assets/configs"
 
 export TMP_DIR="$(get_tmp updater)"
+export LOG_DIR="$(init_log updater)"
 
-LOG_DIR=$(init_log updater)
 DEBUG=false
 
 while getopts "d" opt; do
@@ -176,6 +176,8 @@ mapfile -t GENERAL_DESKTOP <"$IGNORE_GENERAL"
 mapfile -t LSP_DESKTOP <"$IGNORE_LSP"
 
 ALL_IGNORE=("${LSP_DESKTOP[@]}" "${GENERAL_DESKTOP[@]}")
+
+# TODO: add support for nix pkgs .desktop files
 
 # Ocultamos estas entradas .desktop
 for ENTRY in "${ALL_IGNORE[@]}"; do

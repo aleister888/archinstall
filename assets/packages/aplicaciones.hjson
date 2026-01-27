@@ -34,12 +34,6 @@
     "lsp-plugins",
     "lv2-plugins"
   ],
-  "neovim": [
-    "hunspell-en_us",
-    "hunspell-es_es",
-    "python-pynvim",
-    "tree-sitter-cli"
-  ],
   "mozilla": [
     "chaotic-aur/arkenfox-user.js-git",
     "ca-certificates",
