@@ -7,7 +7,7 @@ source "$HOME/.dotfiles/assets/shell/shell-utils"
 # No queremos que el instalador se detenga en caso de que este script falle
 set +e
 
-BROWSER_DIR="$HOME/.mozilla/firefox"
+BROWSER_DIR="$HOME/.config/mozilla/firefox"
 PROFILES_INI="$BROWSER_DIR/profiles.ini"
 
 LOG_DIR=$(init_log firefox-config)
@@ -113,9 +113,10 @@ installtheme() {
 
 # Ejecutar Firefox en modo headless para generar un perfil predeterminado
 for ((i = 1; i <= 3; i++)); do
-	FIREFOX_LOG=$(timeout -k 25s 5s firefox --headless 2>&1)
+	export MOZ_LOG_FILE="$LOG_DIR/firefox.log"
+	timeout -k 25s 5s firefox --headless 2>&1
 	[ -d "$BROWSER_DIR" ] && break
-	log "(intento: $i) firefox no pudo iniciarse:\n$FIREFOX_LOG"
+	log "(intento: $i) firefox no pudo iniciarse"
 	sleep 5
 done
 
