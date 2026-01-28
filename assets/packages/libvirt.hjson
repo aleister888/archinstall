@@ -1,6 +1,5 @@
 {
   "libvirt": [
-    "bridge-utils",
     "dnsmasq",
     "edk2-ovmf",
     "libvirt",

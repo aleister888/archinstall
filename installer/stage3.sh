@@ -47,7 +47,6 @@ graphic_driver_add() {
 }
 
 arr_packages() {
-	# Guardamos nuestros paquetes a instalar en un array
 	mapfile -t TMP_PACKAGES < <(
 		find "$REPO_DIR/assets/packages" -name '*.hjson' \
 			-exec sh -c 'hjson -j "$1" | jq -r ".[] | .[]"' _ {} \;
@@ -55,7 +54,6 @@ arr_packages() {
 	PACKAGES=("${TMP_PACKAGES[@]}" "${DRIVERS_VID[@]}")
 }
 
-# Descargar los archivos de diccionario
 vim_spell_download() {
 	mkdir -p "$HOME/.local/share/nvim/site/spell/"
 	wget "https://ftp.nluug.nl/pub/vim/runtime/spell/es.utf-8.spl" \
@@ -64,8 +62,7 @@ vim_spell_download() {
 		-q -O "$HOME/.local/share/nvim/site/spell/es.utf-8.sug"
 }
 
-# Crear el directorio /.Trash con permisos adecuados
-trash_dir() {
+create_trash_dir() {
 	sudo /usr/bin/mkdir --parent /.Trash
 	sudo /usr/bin/chmod a+rw /.Trash
 	sudo /usr/bin/chmod +t /.Trash
@@ -156,17 +153,16 @@ EOF
 
 #-------------------------------------------------------------------------------
 
+ln -s /tmp/ "$HOME/Descargas"
+mkdir -p "$HOME/.config"
+
 # Creamos los directorios básicos del usuario
 for DIR in Documentos Música Imágenes Público Vídeos; do
 	mkdir -p "$HOME/$DIR"
 done
-ln -s /tmp/ "$HOME/Descargas"
-mkdir -p "$HOME/.config"
 
-# Crear el directorio /.Trash con permisos adecuados
-trash_dir
+create_trash_dir
 
-# Creamos el directorio para los archivos .desktop locales
 [ -d /usr/local/share/applications ] ||
 	sudo /usr/bin/mkdir -p /usr/local/share/applications
 
@@ -204,7 +200,6 @@ sudo /usr/bin/rfkill unblock wifi
 { lspci | grep -qi bluetooth || lsusb | grep -qi bluetooth; } &&
 	sudo /usr/bin/rfkill unblock bluetooth
 
-# Añadimos al usuario a los grupos correspondientes
 GROUPS=(
 	"storage"
 	"input"

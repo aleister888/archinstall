@@ -71,8 +71,8 @@ scheme_show() {
 	# Creamos el esquema que whiptail nos mostrará
 	SCHEME="
 /dev/$ROOT_DISK [$(lsblk -dn -o size /dev/"$ROOT_DISK")]
-├── /dev/$BOOT_PART (/boot)
-└── /dev/$ROOT_PART (LUKS)
+├── /boot (/dev/$BOOT_PART)
+└── LUKS  (/dev/$ROOT_PART)
     └── LVM
         ├── SWAP
         └── /
@@ -200,9 +200,7 @@ basestrap_install() {
 
 	BASESTRAP_PACKAGES+=" cronie lvm2 cups networkmanager cryptsetup acpid"
 
-	# Instalamos los paquetes del grupo base-devel manualmente para luego
-	# poder borrar sudo facilmente. (Si en su lugar instalamos el grupo,
-	# luego será más complicado desinstalarlo)
+	# Instalamos los paquetes del grupo base-devel
 	BASESTRAP_PACKAGES+=" autoconf automake bison debugedit fakeroot flex"
 	BASESTRAP_PACKAGES+=" gc gcc groff guile libisl libmpc libtool m4 make"
 	BASESTRAP_PACKAGES+=" patch pkgconf texinfo which"
@@ -218,11 +216,11 @@ basestrap_install() {
 
 	# Instalamos pipewire para evitar conflictos (p.e. se isntala jack2 y no
 	# pipewire-jack). Los paquetes para 32 bits se instalarán una vez
-	# activados el repo multilib de Arch Linux (s3)
+	# activados el repo multilib de Arch Linux (stage3.sh)
 	BASESTRAP_PACKAGES+=" pipewire-pulse wireplumber pipewire pipewire-alsa"
 	BASESTRAP_PACKAGES+=" pipewire-audio pipewire-jack"
 
-	# Instalamos go y sudo para poder compilar yay más adelante (s3)
+	# Instalamos go y sudo para poder compilar yay más adelante (stage3.sh)
 	BASESTRAP_PACKAGES+=" go sudo"
 
 	# Para procesar los .json con los paquetes a instalar
