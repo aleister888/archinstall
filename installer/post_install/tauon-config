@@ -38,10 +38,9 @@ rm -f "$CONF"
 
 # Iniciamos tauon para que se cree el archivo de configuración
 for ((i = 1; i <= 4; i++)); do
-	xvfb-run tauon >/dev/null 2>&1 &
-	pid=$!
+	tauon >/dev/null 2>&1 &
 	sleep 10
-	kill -9 $pid
+	pkill tauonmb
 	[ -e "$CONF" ] && break
 done
 
