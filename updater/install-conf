@@ -68,7 +68,7 @@ REAPER_DESKTOP="/usr/share/applications/cockos-reaper.desktop"
 REAPER_WRAPPER="$HOME/.local/bin/utils/reaper-xephyr"
 
 if [ -x /usr/bin/reaper ]; then
-	ensure_dir "$(dirname "$REAPER_LOCAL_DESKTOP")"
+	ensure_dir "$(dirname "$REAPER_LOCAL_DESKTOP")" >/dev/null
 	rm -f "$REAPER_LOCAL_DESKTOP"
 	cp "$REAPER_DESKTOP" "$REAPER_LOCAL_DESKTOP"
 	sed -i "s|/usr/lib/REAPER/reaper|$REAPER_WRAPPER|" "$REAPER_LOCAL_DESKTOP"

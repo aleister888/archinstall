@@ -2,9 +2,10 @@
 
 # Configurar firefox e instalar nuestras extensiones
 
+[ "$(id -u)" -eq 0 ] && exit 1
+
 source "$HOME/.dotfiles/assets/shell/shell-utils"
 
-# No queremos que el instalador se detenga en caso de que este script falle
 set +e
 
 BROWSER_DIR="$HOME/.config/mozilla/firefox"
@@ -29,18 +30,11 @@ makeuserjs() {
 		"$OVERRIDES"
 
 	[ ! -f "$ARKENFOX" ] &&
-		curl -sL "https://raw.githubusercontent.com/arkenfox/user.js/master/user.js" >"$ARKENFOX"
+		download "https://raw.githubusercontent.com/arkenfox/user.js/master/user.js" \
+			"$ARKENFOX"
 
 	cat "$ARKENFOX" "$OVERRIDES" >"$USERJS"
 	chown "$USER:wheel" "$ARKENFOX" "$USERJS"
-
-	sudo /usr/bin/mkdir -p /usr/local/lib
-	sudo /usr/bin/mkdir -p /etc/pacman.d/hooks
-	sudo /usr/bin/cp -f "$HOME/.dotfiles/bin/arkenfox-auto-update" /usr/local/lib/arkenfox-auto-update
-	sudo /usr/bin/chmod 755 /usr/local/lib/arkenfox-auto-update
-
-	sudo /usr/bin/cp -f "$HOME/.dotfiles/assets/system/arkenfox.hook" \
-		/etc/pacman.d/hooks/arkenfox.hook
 }
 
 installffaddons() {
@@ -114,14 +108,14 @@ installtheme() {
 # Ejecutar Firefox en modo headless para generar un perfil predeterminado
 for ((i = 1; i <= 3; i++)); do
 	export MOZ_LOG_FILE="$LOG_DIR/firefox.log"
-	timeout -k 25s 5s firefox --headless 2>&1
+	timeout -k 25s 5s firefox --headless 2>&1 || true
 	[ -d "$BROWSER_DIR" ] && break
 	log "(intento: $i) firefox no pudo iniciarse"
 	sleep 5
 done
 
 # Nos salimos si no se puedo obtener un perfil de usuario
-PROFILE=$(get_profile) || exit 0
+PROFILE=$(get_profile) || exit 1
 PROFILE_DIR="$BROWSER_DIR/$PROFILE"
 
 makeuserjs

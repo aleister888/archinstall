@@ -3,38 +3,49 @@
 # Script para auto-configurar TauonMusicBox
 # https://github.com/Taiko2k/TauonMusicBox
 
+[ "$(id -u)" -eq 0 ] && exit 1
+
 source "$HOME/.dotfiles/assets/shell/shell-utils"
 
-[ "$(id -u)" -eq 0 ] && exit 1
+set +e
 
 CONF="$HOME/.local/share/TauonMusicBox/tauon.conf"
 BASE_FONT="Fira Sans Condensed"
 
-rm -f "$HOME"/.local/share/TauonMusicBox/tauon.conf
+install_themes() {
+	ensure_dir "$HOME/.local/share/TauonMusicBox/theme/" >/dev/null
+	aunpack "$HOME/.dotfiles/assets/themes.tar.gz" \
+		-X "$HOME/.local/share/TauonMusicBox/theme/" >/dev/null
+}
+
+modify_config() {
+	sed -i \
+		-e 's/use-custom-fonts = false/use-custom-fonts = true/' \
+		-e "s/font-main-standard = \".*\"/font-main-standard = \"$BASE_FONT\"/" \
+		-e "s/font-main-medium = \".*\"/font-main-medium = \"$BASE_FONT Medium\"/" \
+		-e "s/font-main-bold = \".*\"/font-main-bold = \"$BASE_FONT Bold\"/" \
+		-e "s/font-main-condensed = \".*\"/font-main-condensed = \"$BASE_FONT\"/" \
+		-e "s/font-main-condensed-bold = \".*\"/font-main-condensed-bold = \"$BASE_FONT Bold\"/" \
+		-e 's/auto-dl-artist-data = false/auto-dl-artist-data = true/' \
+		-e 's/auto-update-playlists = false/auto-update-playlists = true/' \
+		-e 's/auto-search-lyrics = false/auto-search-lyrics = true/' \
+		-e 's/restore-window-position = true/restore-window-position = false/' \
+		-e 's/theme-name = ".*"/theme-name = "aleister-gruvbox"/' \
+		"$CONF"
+}
+
+rm -f "$CONF"
 
 # Iniciamos tauon para que se cree el archivo de configuración
 for ((i = 1; i <= 4; i++)); do
-	timeout -k 15s 5s xvfb-run tauon >/dev/null 2>&1 || true
+	xvfb-run tauon >/dev/null 2>&1 &
+	pid=$!
+	sleep 10
+	kill -9 $pid
 	[ -e "$CONF" ] && break
 done
 
-# Si Tauon no puede iniciarse hasta crear el archivo de configuración no
-# detenemos la instalación
-[ ! -e "$CONF" ] && exit 0
+[ ! -e "$CONF" ] && exit 1
 
-ensure_dir "$HOME/.local/share/TauonMusicBox/theme/" >/dev/null
-aunpack "$HOME/.dotfiles/assets/themes.tar.gz" \
-	-X "$HOME/.local/share/TauonMusicBox/theme/" >/dev/null
-
-# Archivo de configuración
-sed -i "s/use-custom-fonts = false/use-custom-fonts = true/g" "$CONF"
-sed -i "s/font-main-standard = \".*\"/font-main-standard = \"$BASE_FONT\"/g" "$CONF"
-sed -i "s/font-main-medium = \".*\"/font-main-medium = \"$BASE_FONT Medium\"/g" "$CONF"
-sed -i "s/font-main-bold = \".*\"/font-main-bold = \"$BASE_FONT Bold\"/g" "$CONF"
-sed -i "s/font-main-condensed = \".*\"/font-main-condensed = \"$BASE_FONT\"/g" "$CONF"
-sed -i "s/font-main-condensed-bold = \".*\"/font-main-condensed-bold = \"$BASE_FONT Bold\"/g" "$CONF"
-sed -i 's/auto-dl-artist-data = false/auto-dl-artist-data = true/g' "$CONF"
-sed -i 's/auto-update-playlists = false/auto-update-playlists = true/g' "$CONF"
-sed -i 's/auto-search-lyrics = false/auto-search-lyrics = true/g' "$CONF"
-sed -i 's/restore-window-position = true/restore-window-position = false/g' "$CONF"
-sed -i 's/theme-name = ".*"/theme-name = "aleister-gruvbox"/g' "$CONF"
+install_themes
+modify_config

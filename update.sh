@@ -51,7 +51,7 @@ mapfile -t OLD_PACKAGE_LIST < <(
 
 OG_HASH=$(sha256sum "$0" | awk '{print $1}')
 
-if curl -s --connect-timeout 3 https://dns.google/ >/dev/null; then
+if check_connection; then
 	CONNECTED=true
 else
 	CONNECTED=false

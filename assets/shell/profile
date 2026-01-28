@@ -72,14 +72,19 @@ export LESSHISTFILE="$XDG_CACHE_HOME"/less/history
 export CARGO_HOME="$XDG_DATA_HOME"/cargo
 export NPM_CONFIG_USERCONFIG="${XDG_CONFIG_HOME:-$HOME/.config}"/npm/npmrc
 
+check_connection() {
+	curl -s --connect-timeout 3 https://dns.google/ >/dev/null
+}
+
 if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
 	# En el primer arranque real del sistema se ejecutará update.sh de nuevo
 	# para completar las tareas que no pueden realizarse dentro del chroot
-	[ -f "$HOME/.system_not_initialized" ] && (
+	[ -f "$HOME/.system_not_initialized" ] && check_connection && (
 		cd "$REPO_DIR"
-		~/.dotfiles/installer/post_install/tauon-config &
-		~/.dotfiles/installer/post_install/firefox-config &
 		./update.sh &
+		~/.dotfiles/installer/post_install/tauon-config
+		~/.dotfiles/installer/post_install/firefox-config
+		nvim --headless +qa >/dev/null 2>&1
 		wait
 		rm "$HOME/.system_not_initialized"
 	)

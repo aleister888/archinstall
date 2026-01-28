@@ -23,7 +23,7 @@ DRIVERS_VID=()
 
 # shellcheck disable=SC2155,SC2207
 graphic_driver_add() {
-	local PACKAGE_LIST="$HOME/.dotfiles/assets/packages/video_drivers.json"
+	local PACKAGE_LIST="$REPO_DIR/assets/packages/video_drivers.json"
 	local GRAPHIC_DRIVER
 	local DRIVERS=$(lsmod | grep -oE "nvidia|amdgpu|i915|virtio_gpu" | sort -u)
 
@@ -49,7 +49,7 @@ graphic_driver_add() {
 arr_packages() {
 	# Guardamos nuestros paquetes a instalar en un array
 	mapfile -t TMP_PACKAGES < <(
-		find "$HOME/.dotfiles/assets/packages" -name '*.hjson' \
+		find "$REPO_DIR/assets/packages" -name '*.hjson' \
 			-exec sh -c 'hjson -j "$1" | jq -r ".[] | .[]"' _ {} \;
 	)
 	PACKAGES=("${TMP_PACKAGES[@]}" "${DRIVERS_VID[@]}")
@@ -131,17 +131,17 @@ libvirt-setup
 # Instalar un servicio de systemd para suspender el equipo cuando la batería
 # esta por debajo del 10%
 sudo /usr/bin/install -o root -g root -m 0755 \
-	"$HOME/.dotfiles/assets/system/services/auto-suspend/auto-suspend-loop" \
+	"$REPO_DIR/assets/system/services/auto-suspend/auto-suspend-loop" \
 	/usr/local/bin/auto-suspend-loop
 sudo /usr/bin/install -o root -g root -m 0644 \
-	"$HOME/.dotfiles/assets/system/services/auto-suspend/systemd-service" \
+	"$REPO_DIR/assets/system/services/auto-suspend/systemd-service" \
 	/etc/systemd/system/auto-suspend.service
 
 # Permitir al usuario escanear redes Wi-Fi y cambiar ajustes de red sin
 # introducir la contraseña
 sudo /usr/bin/usermod -aG network "$USER"
 sudo /usr/bin/cp -f \
-	"$HOME/.dotfiles/assets/system/udev/50-org.freedesktop.NetworkManager.rules" \
+	"$REPO_DIR/assets/system/udev/50-org.freedesktop.NetworkManager.rules" \
 	/etc/polkit-1/rules.d/
 
 # Configuramos crond para borrar los módulos del kernel antiguos
@@ -174,11 +174,11 @@ trash_dir
 
 # Añadimos el Xresources
 XRES_FILE="$HOME/.config/Xresources"
-cp "$HOME/.dotfiles/assets/configs/Xresources" "$XRES_FILE"
+cp "$REPO_DIR/assets/configs/Xresources" "$XRES_FILE"
 
 vim_spell_download
 
-"$HOME/.dotfiles/update.sh"
+"$REPO_DIR/update.sh"
 
 #-------------------------------------------------------------------------------
 
@@ -226,14 +226,22 @@ rm "$HOME"/.wget-hsts 2>/dev/null
 # (para iniciar con el núcleo instalado en este script)
 sudo /usr/bin/grub-mkconfig -o /boot/grub/grub.cfg
 
+# Instalar el hook de pacman para firefox (arkenfox)
+sudo /usr/bin/mkdir -p /usr/local/lib /etc/pacman.d/hooks
+sudo /usr/bin/cp -f "$REPO_DIR/bin/arkenfox-auto-update" \
+	/usr/local/lib/arkenfox-auto-update
+sudo /usr/bin/cp -f "$REPO_DIR/assets/system/arkenfox.hook" \
+	/etc/pacman.d/hooks/arkenfox.hook
+sudo /usr/bin/chmod 755 /usr/local/lib/arkenfox-auto-update
+
 # Configuramos sudo de forma segura
 sudo /usr/bin/install -o root -g root -m 440 \
-	"$HOME/.dotfiles/assets/configs/sudoers" /etc/sudoers
+	"$REPO_DIR/assets/configs/sudoers" /etc/sudoers
 
 # Hacemos que el repositorio local siga los cambios en
 # caso de que se usase el instalador en un tag concreto
 sh -c "
-	cd $HOME/.dotfiles
+	cd $REPO_DIR
 	git fetch origin main
 	git checkout main
 	git pull

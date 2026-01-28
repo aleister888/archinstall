@@ -20,6 +20,7 @@ require("core.options")
 require("core.indent")
 require("core.keymaps")
 require("core.spell")
+require("core.misc")
 
 require("lazy").setup("plugins", {
 	change_detection = {

@@ -11,10 +11,6 @@
     {
       "name": "lrcget",
       "version": "25.11"
-    },
-    {
-      "name": "neovim",
-      "version": "25.11"
     }
   ],
   "entorno": [
