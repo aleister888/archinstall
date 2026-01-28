@@ -9,13 +9,14 @@ source "$HOME/.dotfiles/assets/shell/shell-utils"
 
 set +e
 
-CONF="$HOME/.local/share/TauonMusicBox/tauon.conf"
+APP_DIR="$HOME/.local/share/TauonMusicBox"
+CONF="$APP_DIR/tauon.conf"
 BASE_FONT="Fira Sans Condensed"
 
 install_themes() {
-	ensure_dir "$HOME/.local/share/TauonMusicBox/theme/" >/dev/null
+	ensure_dir "$APP_DIR/theme/" >/dev/null
 	aunpack "$HOME/.dotfiles/assets/themes.tar.gz" \
-		-X "$HOME/.local/share/TauonMusicBox/theme/" >/dev/null
+		-X "$APP_DIR/theme/" >/dev/null
 }
 
 modify_config() {
@@ -38,10 +39,12 @@ rm -f "$CONF"
 
 # Iniciamos tauon para que se cree el archivo de configuración
 for ((i = 1; i <= 4; i++)); do
-	tauon >/dev/null 2>&1 &
+	XDG_SESSION_TYPE=x11 tauon >/dev/null 2>&1 &
 	sleep 10
 	pkill tauonmb
 	[ -e "$CONF" ] && break
+	log "(intento $i) tauon no pudo iniciarse"
+	rm -rf "$APP_DIR"
 done
 
 [ ! -e "$CONF" ] && exit 1

@@ -1,11 +1,12 @@
 #!/bin/bash
-# shellcheck disable=SC1091
-# shellcheck disable=SC2155
+# shellcheck disable=SC1091,SC2155
 
 # Script Iniciador del entorno de escritorio
 # por aleister888 <pacoe1000@gmail.com>
 
 source "$REPO_DIR/assets/shell/shell-utils"
+
+set +e
 
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
 
@@ -71,6 +72,7 @@ done &
 # Asegurarse de que el polkit agent esta siempre activo
 while true; do
 	POLKIT_STATUS="$(systemctl --user show hyprpolkitagent | grep ActiveState | cut -d'=' -f2)"
-	[ "$POLKIT_STATUS" != "active" ] &&
-		systemctl --user restart hyprpolkitagent
+	[ "$POLKIT_STATUS" != "active" ] && systemctl --user restart hyprpolkitagent
 done &
+
+wait

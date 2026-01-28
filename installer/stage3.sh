@@ -78,7 +78,6 @@ mkdir -p "$HOME"/.local/share/gnupg/private-keys-v1.d
 chmod 700 -R ~/.local/share/gnupg
 mkdir -p "$HOME"/.local/share/cargo
 
-# Instalamos yay (https://aur.archlinux.org/packages/yay)
 yay-install
 
 # Instalamos todos los paquetes a la vez
