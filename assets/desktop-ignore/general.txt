@@ -33,7 +33,6 @@ qvidcap
 rofi
 rofi-theme-selector
 uuctl
-winetricks
 xdvi
 xgps
 xgpsspeed

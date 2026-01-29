@@ -77,7 +77,6 @@ disk_scheme_show() {
 	fi
 }
 
-# Función para elegir como se formatearán nuestros discos
 disk_scheme_setup() {
 	while true; do
 		[ -z "$ROOT_DISK" ] &&
@@ -107,7 +106,6 @@ disk_scheme_setup() {
 	done
 }
 
-# Encriptar el disco duro
 disk_encrypt() {
 	local DISPLAY_NAME="$1"
 	local DEVICE="$2"
@@ -123,7 +121,6 @@ disk_encrypt() {
 			--type luks2 \
 			--verify-passphrase -q luksFormat "/dev/$DEVICE" && break
 
-		# Cambiar la contraseña si hubo un error
 		unset LUKS_PASSWORD
 
 		wait_return
@@ -160,11 +157,9 @@ disk_setup() {
 	mkswap "/dev/$VG_NAME/swap"
 	swapon "/dev/$VG_NAME/swap"
 
-	# Formateamos y montamos nuestras particiones
 	mkfs.btrfs -f "/dev/$ROOT_PART"
 
 	mount "/dev/$ROOT_PART" /mnt
-
 	btrfs subvolume create /mnt/@
 	btrfs subvolume create /mnt/@home
 	btrfs subvolume create /mnt/@images
@@ -269,14 +264,12 @@ get_timezone() {
 		fi
 
 		# Verificar si la zona horaria seleccionada es válida
-		if [ -f "/usr/share/zoneinfo/$TIMEZONE" ]; then
-			break
-		else
-			unset REGION TIMEZONE
-			wait_return
-			whip_msg "Zona horaria no valida" \
-				"Zona horaria no valida. Asegúrate de elegir una zona horaria valida."
-		fi
+		[ -f "/usr/share/zoneinfo/$TIMEZONE" ] && break
+
+		unset REGION TIMEZONE
+		wait_return
+		whip_msg "Zona horaria no valida" \
+			"Zona horaria no valida. Asegúrate de elegir una zona horaria valida."
 	done
 }
 
