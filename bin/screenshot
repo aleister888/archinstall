@@ -4,7 +4,8 @@ source "$REPO_DIR/assets/shell/shell-utils"
 
 [ "$(pgrep screenshot | wc -l)" -ge 3 ] && exit 1
 
-EXTENSION="jpeg"
+# Alungas aplicaciones solo pueden pegar del portapapeles si la imagen es png
+EXTENSION="png"
 FILENAME="$(date +"%Y-%m-%d_%H-%M-%S").$EXTENSION"
 SCREENSHOTS_DIR="$HOME/Imágenes/Screenshots"
 FILEPATH=${FILEPATH:-$SCREENSHOTS_DIR/$FILENAME}

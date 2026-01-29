@@ -58,6 +58,7 @@ wait_return() {
 
 # Muestra como quedarían las particiones de nuestra instalación para confirmar
 # los cambios. También prepara las variables para formatear los discos
+#-------------------------------------------------------------------------------
 disk_scheme_show() {
 	local DISK_SIZE
 	local SCHEME_PREVIEW
@@ -186,6 +187,7 @@ disk_setup() {
 # Ejecutamos basestrap en un bucle hasta que se ejecute correctamente
 # porque el comando no tiene la opción --disable-download-timeout.
 # Lo que podría hacer que la operación falle con conexiones muy lentas.
+#-------------------------------------------------------------------------------
 basestrap_packages_install() {
 	local BASESTRAP_PACKAGES
 	local MANUFACTURER=$(grep vendor_id /proc/cpuinfo | awk '{print $3}' | head -1)
@@ -209,27 +211,8 @@ basestrap_packages_install() {
 	done
 }
 
-get_password() {
-	local PASSWORD_1 PASSWORD_2
-	local TITLE_1=$1
-	local TITLE_2=$2
-	local BOX_1=$3
-	local BOX_2=$4
-
-	while true; do
-		PASSWORD_1=$(whip_password "$TITLE_1" "$BOX_1")
-		PASSWORD_2=$(whip_password "$TITLE_2" "$BOX_2")
-
-		# Si ambas contraseñas coinciden devolver el resultado
-		if [ "$PASSWORD_1" == "$PASSWORD_2" ] && [ -n "$PASSWORD_1" ]; then
-			echo "$PASSWORD_1" && return
-		else
-			whip_msg "Error" "Las contraseñas no coinciden. Inténtalo de nuevo."
-		fi
-	done
-}
-
 # Establecer zona horaria
+#-------------------------------------------------------------------------------
 list() {
 	local DIR_PATH="$1"
 	local TYPE="$2"
@@ -246,7 +229,7 @@ select_from_list() {
 
 	while true; do
 		SELECTION=$(
-			whip_menu "Selecciona una $MSG" "Por favor, elige una $MSG" ${ARRAY[@]}
+			whip_menu "Selecciona una $MSG" "Elige una $MSG" ${ARRAY[@]}
 		)
 
 		[ -n "$SELECTION" ] && break
@@ -273,6 +256,27 @@ get_timezone() {
 	done
 }
 
+#-------------------------------------------------------------------------------
+get_password() {
+	local PASSWORD_1 PASSWORD_2
+	local TITLE_1=$1
+	local TITLE_2=$2
+	local BOX_1=$3
+	local BOX_2=$4
+
+	while true; do
+		PASSWORD_1=$(whip_password "$TITLE_1" "$BOX_1")
+		PASSWORD_2=$(whip_password "$TITLE_2" "$BOX_2")
+
+		# Si ambas contraseñas coinciden devolver el resultado
+		if [ "$PASSWORD_1" == "$PASSWORD_2" ] && [ -n "$PASSWORD_1" ]; then
+			echo "$PASSWORD_1" && return
+		else
+			whip_msg "Error" "Las contraseñas no coinciden. Inténtalo de nuevo."
+		fi
+	done
+}
+
 get_root_password() {
 	[ -n "$ROOT_PASSWORD" ] && return
 	ROOT_PASSWORD=$(
@@ -280,16 +284,6 @@ get_root_password() {
 			"Introduce la contraseña del superusuario:" \
 			"Re-introduce la contraseña del superusuario:"
 	)
-}
-
-get_username() {
-	[ -n "$USERNAME" ] && return
-	while true; do
-		USERNAME=$(whip_input "Nombre usuario" "Por favor, ingresa el nombre del usuario:")
-
-		[ -n "$USERNAME" ] && break
-		ask_cancel_installation
-	done
 }
 
 get_user_password() {
@@ -301,26 +295,40 @@ get_user_password() {
 	)
 }
 
+#-------------------------------------------------------------------------------
+confirm_input() {
+	whip_yes "Confirmación" "Estas seguro de que quiere que el $1 sea: $2"
+}
+
+get_username() {
+	[ -n "$USERNAME" ] && return
+	while true; do
+		USERNAME=$(whip_input "Nombre usuario" "Ingresa el nombre del usuario:")
+
+		[ -n "$USERNAME" ] && confirm_input username "$USERNAME" && break
+		ask_cancel_installation
+	done
+}
+
 get_hostname() {
 	[ -n "$HOSTNAME" ] && return
 	while true; do
 		HOSTNAME=$(whip_input "Configuracion de hostname" "Introduce el nombre del equipo:")
 
-		[ -n "$HOSTNAME" ] && break
+		[ -n "$HOSTNAME" ] && confirm_input hostname "$HOSTNAME" && break
 		ask_cancel_installation
 	done
 }
 
 #-------------------------------------------------------------------------------
-
-disk_scheme_setup
-disk_setup
-
 get_root_password
 get_username
 get_user_password
 get_timezone
 get_hostname
+
+disk_scheme_setup
+disk_setup
 
 basestrap_packages_install
 

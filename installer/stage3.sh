@@ -83,7 +83,7 @@ yay-install
 while true; do
 	# Añadimos los drivers de vídeo a la lista de paquetes. La lista de paquetes
 	# se obtiene del siguiente archivo en cada iteración para facilitar el depurado:
-	#     ~/.dotfiles/assets/video_driver_packages.hjson
+	#     ~/.dotfiles/assets/video_drivers.json
 	graphic_driver_add
 	# Añadimos los demás paquetes a instalar. La lista de paquetes se obtiene
 	# de los siguientes archivos en cada iteración para facilitar el depurado:
