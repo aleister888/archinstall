@@ -52,6 +52,10 @@ ask_cancel_installation() {
 	whip_yes "Cancelar" "¿Deseas cancelar la instalación?" && exit 1
 }
 
+wait_return() {
+	[ "$DEBUG" = true ] && read -rp "Presiona Enter para continuar..."
+}
+
 # Muestra como quedarían las particiones de nuestra instalación para confirmar
 # los cambios. También prepara las variables para formatear los discos
 scheme_show() {
@@ -121,11 +125,9 @@ disk_encrypt() {
 
 		# Cambiar la contraseña si hubo un error
 		unset LUKS_PASSWORD
-		if [ "$DEBUG" = true ]; then
-			read -rp "Presiona Enter para continuar..."
-		else
-			whip_msg "LUKS" "Error al encriptar el disco, introduce otra contraseña"
-		fi
+
+		wait_return
+		whip_msg "LUKS" "Error al encriptar el disco, introduce otra contraseña"
 	done
 
 	echo -ne "$LUKS_PASSWORD" | cryptsetup open "/dev/$DEVICE" "$DECRYPTED_NAME" && return
@@ -206,7 +208,7 @@ basestrap_packages_install() {
 	has_bluetooth_device && BASESTRAP_PACKAGES+=("blueman")
 
 	while true; do
-		pacstrap /mnt ${BASESTRAP_PACKAGES[@]} && break
+		if pacstrap /mnt ${BASESTRAP_PACKAGES[@]}; then break; else wait_return; fi
 	done
 }
 
