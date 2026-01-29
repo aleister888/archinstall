@@ -62,7 +62,7 @@ grep ubuntu /etc/pacman.d/gnupg/gpg.conf ||
 sudo /usr/bin/pacman -Sy archlinux-keyring --noconfirm
 sudo /usr/bin/pacman -Sc --noconfirm
 sudo /usr/bin/pacman -S --noconfirm --needed \
-	parted libnewt xkeyboard-config bc git lvm2 jq python-hjson
+	parted libnewt xkeyboard-config bc git lvm2 jq
 
 if [ -d ./installer ]; then
 	REPO_CLONE_DIR="$PWD"
