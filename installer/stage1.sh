@@ -100,6 +100,7 @@ disk_scheme_setup() {
 		if scheme_show; then
 			return # Salir del bucle si se confirman los cambios
 		else
+			unset ROOT_DISK
 			whip_msg "ERROR" "Error al confirmar el esquema de particiones ¿Cancelo el usuario la operación?"
 		fi
 	done
