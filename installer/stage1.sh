@@ -139,8 +139,6 @@ disk_setup() {
 	# existente sin conflictos
 	CRYPT_NAME=$(openssl rand -base64 4 | tr -dc 'a-zA-Z' | head -c5)
 	VG_NAME=$(openssl rand -base64 4 | tr -dc 'a-zA-Z' | head -c5)
-	LVM_DEVICE="/dev/mapper/$CRYPT_NAME"
-	ROOT_PART="$VG_NAME/root"
 
 	# Borramos la firma del disco y creamos una nueva tabla con dos particiones
 	wipefs --all "/dev/$ROOT_DISK"
@@ -149,11 +147,13 @@ disk_setup() {
 	mkfs.fat -F32 "/dev/$BOOT_PART"
 
 	disk_encrypt "/" "$ROOT_PART" "$CRYPT_NAME"
+	LVM_DEVICE="/dev/mapper/$CRYPT_NAME"
 
 	pvcreate "$LVM_DEVICE"
 	vgcreate "$VG_NAME" "$LVM_DEVICE"
 	lvcreate -L 16G -n swap "$VG_NAME"
 	lvcreate -l 100%FREE -n root "$VG_NAME"
+	ROOT_PART="$VG_NAME/root"
 
 	mkswap "/dev/$VG_NAME/swap"
 	swapon "/dev/$VG_NAME/swap"
