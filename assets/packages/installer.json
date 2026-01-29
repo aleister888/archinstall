@@ -20,12 +20,12 @@
     "dialog",
     "wget",
     "libnewt",
-    /* Para dectectar si hay algun dispositivo bluetooth */
+    // Para dectectar si hay algun dispositivo bluetooth
     "pciutils",
     "usbutils",
-    /* Para compilar yay en stage3 */
+    // Para compilar yay en stage3
     "go",
-    /* Para procesar los paquetes a instalar en stage3 */
+    // Para procesar los paquetes a instalar en stage3
     "jq",
     "python-hjson"
   ],
@@ -51,10 +51,8 @@
     "which",
     "sudo"
   ],
-  /*
-    Instalamos pipewire antes para evitar conflictos. Por ejemplo, jack2 podria
-    instalarse como dependencia antes de pipewire-jack y generar conflictos
-  */
+  // Instalamos pipewire antes para evitar conflictos. Por ejemplo, jack2 podria
+  // instalarse como dependencia antes de pipewire-jack y generar conflictos
   "pipewire": [
     "pipewire-pulse",
     "wireplumber",
