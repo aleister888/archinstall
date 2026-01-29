@@ -235,54 +235,36 @@ get_password() {
 }
 
 # Establecer zona horaria
+list() {
+	local PATH="$1"
+	local TYPE="$2"
+	find "$PATH" -mindepth 1 -type "$TYPE" \
+		-printf "%f\n" | grep -v '^[a-z]\|Etc' | sort -u
+}
+select_from_list() {
+	local PATH="$1" TYPE="$2" MSG="$3" SELECTION
+	local -a ARRAY
+
+	while read -r ENTRY; do
+		ARRAY+=("$ENTRY" "$ENTRY")
+	done < <(list "$PATH" "$TYPE" "$FILTER")
+
+	while true; do
+		SELECTION=$(
+			whip_menu "Selecciona una $MSG" "Por favor, elige una $MSG" ${ARRAY[@]}
+		)
+
+		[ -n "$SELECTION" ] && break
+		ask_cancel_installation
+	done
+
+	echo "$SELECTION"
+}
 get_timezone() {
 	while true; do
 		if [ -z "$TIMEZONE" ]; then # TIMEZONE puede estar asignado desde install.sh
-			# Obtener la lista de regiones disponibles
-			REGIONS=$(
-				find /usr/share/zoneinfo -mindepth 1 -type d \
-					-printf "%f\n" | grep -v '^[a-z]\|Etc' | sort -u
-			)
-			REGIONS_ARRAY=()
-			for REGION in $REGIONS; do
-				REGIONS_ARRAY+=("$REGION" "$REGION")
-			done
-
-			while true; do
-				REGION=$(
-					whip_menu "Selecciona una región" \
-						"Por favor, elige una región" \
-						${REGIONS_ARRAY[@]}
-				)
-				if [ -z "$REGION" ]; then
-					ask_cancel_installation
-				else
-					break
-				fi
-			done
-
-			TIMEZONES=$(
-				find "/usr/share/zoneinfo/$REGION" -mindepth 1 -type f \
-					-printf "%f\n" | sort -u
-			)
-			TIMEZONES_ARRAY=()
-			for TIMEZONE in $TIMEZONES; do
-				TIMEZONES_ARRAY+=("$TIMEZONE" "$TIMEZONE")
-			done
-
-			while true; do
-				TIMEZONE=$(
-					whip_menu "Selecciona una zona horaria en $REGION" \
-						"Por favor, elige una zona horaria en $REGION:" \
-						${TIMEZONES_ARRAY[@]}
-				)
-				if [ -z "$TIMEZONE" ]; then
-					ask_cancel_installation
-				else
-					break
-				fi
-			done
-
+			REGION=$(select_from_list /usr/share/zoneinfo d "región")
+			TIMEZONE=$(select_from_list "/usr/share/zoneinfo/$REGION" f "zona horaria")
 			TIMEZONE="$REGION/$TIMEZONE"
 		fi
 
@@ -290,8 +272,7 @@ get_timezone() {
 		if [ -f "/usr/share/zoneinfo/$TIMEZONE" ]; then
 			break
 		else
-			unset REGION
-			unset TIMEZONE
+			unset REGION TIMEZONE
 			whip_msg "Zona horaria no valida" \
 				"Zona horaria no valida. Asegúrate de elegir una zona horaria valida."
 		fi
