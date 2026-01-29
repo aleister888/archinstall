@@ -137,9 +137,10 @@ disk_setup() {
 	local LVM_DEVICE=
 	ROOT_PART_NAME="$ROOT_PART"
 
-	# Nombres aleatorios para poder usar el instalado desde una instalación ya existente
-	CRYPT_NAME=$(tr -dc 'a-zA-Z' </dev/urandom | fold -w 5 | head -n 1)
-	VG_NAME=$(tr -dc 'a-zA-Z' </dev/urandom | fold -w 5 | head -n 1)
+	# Nombres aleatorios para poder usar el instalador desde una instalación ya
+	# existente sin conflictos
+	CRYPT_NAME=$(openssl rand -base64 4 | tr -dc 'a-zA-Z' | head -c5)
+	VG_NAME=$(openssl rand -base64 4 | tr -dc 'a-zA-Z' | head -c5)
 
 	# Borramos la firma del disco
 	wipefs --all "/dev/$ROOT_DISK"
