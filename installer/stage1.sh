@@ -49,7 +49,11 @@ whip_input() {
 }
 
 ask_cancel_installation() {
-	whip_yes "Cancelar" "¿Deseas cancelar la instalación?" && exit 1
+	if whip_yes "Cancelar" "¿Deseas cancelar la instalación?"; then
+		exit 1
+	else
+		return 0
+	fi
 }
 
 wait_return() {
