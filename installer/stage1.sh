@@ -273,6 +273,7 @@ get_timezone() {
 			break
 		else
 			unset REGION TIMEZONE
+			wait_return
 			whip_msg "Zona horaria no valida" \
 				"Zona horaria no valida. Asegúrate de elegir una zona horaria valida."
 		fi
