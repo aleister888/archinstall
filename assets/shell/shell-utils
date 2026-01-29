@@ -3,7 +3,7 @@
 
 if [ "$DEBUG" = true ]; then
 	export PS4='+ $(date "+%H:%M:%S"): '
-	set -xEeuo pipefail
+	set -xEeo pipefail
 fi
 
 export LOG_BASE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles"
