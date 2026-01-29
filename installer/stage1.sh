@@ -105,7 +105,6 @@ part_encrypt() {
 	local DISPLAY_NAME="$1"
 	local DEVICE="$2"
 	local DECRYPTED_NAME="$3"
-	local LUKS_PASSWORD
 	while true; do
 		[ -z "$LUKS_PASSWORD" ] &&
 			LUKS_PASSWORD=$(
