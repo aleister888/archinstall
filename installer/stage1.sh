@@ -18,11 +18,11 @@
 source "$REPO_CLONE_DIR/assets/shell/shell-utils"
 
 whip_msg() {
-	whiptail --backtitle "$REPO_URL" --title "$1" --msgbox "$2" 10 60
+	whiptail --backtitle "$REPO_URL" --title "$1" --msgbox "$2" 15 60
 }
 
 whip_yes() {
-	whiptail --backtitle "$REPO_URL" --title "$1" --yesno "$2" 10 60
+	whiptail --backtitle "$REPO_URL" --title "$1" --yesno "$2" 15 60
 }
 
 whip_menu() {
@@ -48,25 +48,8 @@ cancel_installation() {
 # Muestra como quedarían las particiones de nuestra instalación para confirmar
 # los cambios. También prepara las variables para formatear los discos
 scheme_show() {
-	local SCHEME # Variable con el esquema de particiones completo
-	BOOT_PART=   # Partición de arranque
-	ROOT_PART=   # Partición con el sistema
-
-	# Definimos el nombre de las particiones de nuestro disco principal
-	# (Los NVME tienen un sistema de nombrado distinto)
-	case "$ROOT_DISK" in
-	*"nvme"* | *"mmcblk"*)
-		BOOT_PART="$ROOT_DISK"p1
-		ROOT_PART="$ROOT_DISK"p2
-		;;
-	*)
-		BOOT_PART="$ROOT_DISK"1
-		ROOT_PART="$ROOT_DISK"2
-		;;
-	esac
-
-	# Creamos el esquema que whiptail nos mostrará
-	SCHEME="
+	# shellcheck disable=SC2155
+	local SCHEME="
 /dev/$ROOT_DISK [$(lsblk -dn -o size /dev/"$ROOT_DISK")]
 ├── /boot (/dev/$BOOT_PART)
 └── LUKS  (/dev/$ROOT_PART)
@@ -74,12 +57,7 @@ scheme_show() {
         ├── SWAP
         └── /
 "
-
-	# Mostramos el esquema para confirmar los cambios
-	if ! whiptail \
-		--backtitle "$REPO_URL" \
-		--title "Confirmar particionado" \
-		--yesno "$SCHEME" 15 60; then
+	if ! whip_yes "Confirmar particionado" "$SCHEME"; then
 		cancel_installation
 	fi
 }
@@ -95,6 +73,20 @@ disk_scheme_setup() {
 						"$(lsblk -dn -o name,size | tr '\n' ' ')"
 				) && break
 			done
+
+		BOOT_PART= # Partición de arranque
+		ROOT_PART= # Partición con el sistema
+
+		case "$ROOT_DISK" in
+		*"nvme"* | *"mmcblk"*)
+			BOOT_PART="$ROOT_DISK"p1
+			ROOT_PART="$ROOT_DISK"p2
+			;;
+		*)
+			BOOT_PART="$ROOT_DISK"1
+			ROOT_PART="$ROOT_DISK"2
+			;;
+		esac
 
 		[ "$DISK_NO_CONFIRM" = true ] && return
 
