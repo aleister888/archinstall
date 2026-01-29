@@ -96,9 +96,11 @@ disk_scheme_setup() {
 				) && break
 			done
 
+		[ "$DISK_NO_CONFIRM" = true ] && return
+
 		# Confirmamos los cambios
 		if scheme_show; then
-			return # Salir del bucle si se confirman los cambios
+			return
 		else
 			unset ROOT_DISK
 			whip_msg "ERROR" "Error al confirmar el esquema de particiones ¿Cancelo el usuario la operación?"

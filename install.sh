@@ -15,6 +15,7 @@ error() {
 #-------------------------------------------------------------------------------
 
 export DEBUG=false
+export DISK_NO_CONFIRM=false
 
 while getopts ":du:r:D:l:t:U:h:" opt; do
 	case "$opt" in
@@ -26,6 +27,7 @@ while getopts ":du:r:D:l:t:U:h:" opt; do
 	U) export USERNAME="$OPTARG" ;;
 	h) export HOSTNAME="$OPTARG" ;;
 	D)
+		export DISK_NO_CONFIRM=true
 		if lsblk "/dev/$OPTARG" &>/dev/null; then
 			export ROOT_DISK="$OPTARG"
 		elif lsblk "$OPTARG" &>/dev/null; then
@@ -68,11 +70,14 @@ fi
 export REPO_CLONE_DIR
 
 sudo env \
+	REPO_CLONE_DIR="$REPO_CLONE_DIR" \
 	DEBUG="$DEBUG" \
+	DISK_NO_CONFIRM="$DISK_NO_CONFIRM" \
 	USER_PASSWORD="$USER_PASSWORD" \
 	ROOT_PASSWORD="$ROOT_PASSWORD" \
-	ROOT_DISK="$ROOT_DISK" \
+	LUKS_PASSWORD="$LUKS_PASSWORD" \
 	TIMEZONE="$TIMEZONE" \
 	USERNAME="$USERNAME" \
 	HOSTNAME="$HOSTNAME" \
+	ROOT_DISK="$ROOT_DISK" \
 	./stage1.sh
