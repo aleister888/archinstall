@@ -33,15 +33,10 @@ local filetype_configs = {
 		tabstop = 4,
 		shiftwidth = 4,
 	},
-	["hjson"] = {
+	json = {
 		smartindent = true,
 		expandtab = true,
-		conceallevel = 0,
-	},
-	["json*"] = {
-		smartindent = true,
-		expandtab = true,
-		conceallevel = 0,
+		conceallevel = 2,
 	},
 	fstab = {
 		tabstop = 8,

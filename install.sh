@@ -12,6 +12,20 @@ error() {
 	exit 1
 }
 
+validate_drive() {
+	local DISK="$1"
+
+	if lsblk "/dev/$DISK" &>/dev/null; then
+		export ROOT_DISK="$DISK"
+	elif lsblk "$DISK" &>/dev/null; then
+		export ROOT_DISK="${DISK#/dev/}"
+	else
+		error "disco no válido"
+	fi
+
+	export DISK_NO_CONFIRM=true
+}
+
 #-------------------------------------------------------------------------------
 
 export DEBUG=false
@@ -26,16 +40,7 @@ while getopts ":du:r:D:l:t:U:h:" opt; do
 	t) export TIMEZONE="$OPTARG" ;;
 	U) export USERNAME="$OPTARG" ;;
 	h) export HOSTNAME="$OPTARG" ;;
-	D)
-		export DISK_NO_CONFIRM=true
-		if lsblk "/dev/$OPTARG" &>/dev/null; then
-			export ROOT_DISK="$OPTARG"
-		elif lsblk "$OPTARG" &>/dev/null; then
-			export ROOT_DISK="${OPTARG#/dev/}"
-		else
-			error "disco no válido"
-		fi
-		;;
+	D) validate_drive "$OPTARG" ;;
 	:) error "la opción -$OPTARG requiere un argumento" ;;
 	\?) error "Error: opción inválida -$OPTARG" ;;
 	esac
@@ -57,7 +62,7 @@ grep ubuntu /etc/pacman.d/gnupg/gpg.conf ||
 sudo /usr/bin/pacman -Sy archlinux-keyring --noconfirm
 sudo /usr/bin/pacman -Sc --noconfirm
 sudo /usr/bin/pacman -S --noconfirm --needed \
-	parted libnewt xkeyboard-config bc git lvm2
+	parted libnewt xkeyboard-config bc git lvm2 jq python-hjson
 
 if [ -d ./installer ]; then
 	REPO_CLONE_DIR="$PWD"

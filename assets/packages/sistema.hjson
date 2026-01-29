@@ -49,7 +49,6 @@
     "mesa-utils"
   ],
   "utilidades": [
-    "dosfstools",
     "gawk",
     "glow"
   ],

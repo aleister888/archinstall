@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2068
+# shellcheck disable=SC2068,SC2155
 
 # Auto-instalador para Arch Linux (Parte 1)
 # por aleister888 <pacoe1000@gmail.com>
@@ -25,6 +25,13 @@ whip_yes() {
 	whiptail --backtitle "$REPO_URL" --title "$1" --yesno "$2" 15 60
 }
 
+whip_password() {
+	whiptail --backtitle "$REPO_URL" \
+		--title "$1" \
+		--passwordbox "$2" \
+		10 60 3>&1 1>&2 2>&3
+}
+
 whip_menu() {
 	local TITLE=$1
 	local MENU=$2
@@ -48,16 +55,20 @@ cancel_installation() {
 # Muestra como quedarían las particiones de nuestra instalación para confirmar
 # los cambios. También prepara las variables para formatear los discos
 scheme_show() {
-	# shellcheck disable=SC2155
-	local SCHEME="
-/dev/$ROOT_DISK [$(lsblk -dn -o size /dev/"$ROOT_DISK")]
-├── /boot (/dev/$BOOT_PART)
-└── LUKS  (/dev/$ROOT_PART)
-    └── LVM
-        ├── SWAP
-        └── /
-"
-	if ! whip_yes "Confirmar particionado" "$SCHEME"; then
+	local DISK_SIZE
+	local SCHEME_PREVIEW
+	DISK_SIZE="$(lsblk -dn -o size /dev/"$ROOT_DISK")"
+	SCHEME_PREVIEW=$(
+		cat <<-EOF
+			/dev/$ROOT_DISK [$DISK_SIZE]
+			├── /boot (/dev/$BOOT_PART)
+			└── LUKS  (/dev/$ROOT_PART)
+			    └── LVM
+			        ├── SWAP
+			        └── /
+		EOF
+	)
+	if ! whip_yes "Confirmar particionado" "$SCHEME_PREVIEW"; then
 		cancel_installation
 	fi
 }
@@ -74,9 +85,6 @@ disk_scheme_setup() {
 				) && break
 			done
 
-		BOOT_PART= # Partición de arranque
-		ROOT_PART= # Partición con el sistema
-
 		case "$ROOT_DISK" in
 		*"nvme"* | *"mmcblk"*)
 			BOOT_PART="$ROOT_DISK"p1
@@ -88,20 +96,15 @@ disk_scheme_setup() {
 			;;
 		esac
 
-		[ "$DISK_NO_CONFIRM" = true ] && return
+		[ "$DISK_NO_CONFIRM" = true ] || scheme_show && return
 
-		# Confirmamos los cambios
-		if scheme_show; then
-			return
-		else
-			unset ROOT_DISK
-			whip_msg "ERROR" "Error al confirmar el esquema de particiones ¿Cancelo el usuario la operación?"
-		fi
+		unset ROOT_DISK
+		whip_msg "ERROR" "Error al confirmar el esquema de particiones"
 	done
 }
 
 # Encriptar el disco duro
-part_encrypt() {
+disk_encrypt() {
 	local DISPLAY_NAME="$1"
 	local DEVICE="$2"
 	local DECRYPTED_NAME="$3"
@@ -118,7 +121,7 @@ part_encrypt() {
 
 		# Cambiar la contraseña si hubo un error
 		unset LUKS_PASSWORD
-		whip_msg "LUKS" "Hubo un error, deberá introducir la contraseña otra vez"
+		whip_msg "LUKS" "Error al encriptar el disco, introduce otra contraseña"
 	done
 
 	echo -ne "$LUKS_PASSWORD" | cryptsetup open "/dev/$DEVICE" "$DECRYPTED_NAME" && return
@@ -126,33 +129,27 @@ part_encrypt() {
 
 disk_setup() {
 	local LVM_DEVICE=
-	ROOT_PART_NAME="$ROOT_PART"
+	ROOT_PART_NAME="$ROOT_PART" # Definido en disk_scheme_setup
 
 	# Nombres aleatorios para poder usar el instalador desde una instalación ya
 	# existente sin conflictos
 	CRYPT_NAME=$(openssl rand -base64 4 | tr -dc 'a-zA-Z' | head -c5)
 	VG_NAME=$(openssl rand -base64 4 | tr -dc 'a-zA-Z' | head -c5)
+	LVM_DEVICE="/dev/mapper/$CRYPT_NAME"
+	ROOT_PART="$VG_NAME/root"
 
-	# Borramos la firma del disco
+	# Borramos la firma del disco y creamos una nueva tabla con dos particiones
 	wipefs --all "/dev/$ROOT_DISK"
-	# Creamos nuestra tabla de particionado y las dos particiones necesarias
 	printf "label: gpt\n,1G,U\n,,\n" | sfdisk "/dev/$ROOT_DISK"
 
-	# Formateamos la primera partición como EFI
 	mkfs.fat -F32 "/dev/$BOOT_PART"
 
-	# Encriptamos la partición
-	part_encrypt "/" "$ROOT_PART" "$CRYPT_NAME"
-	LVM_DEVICE="/dev/mapper/$CRYPT_NAME"
+	disk_encrypt "/" "$ROOT_PART" "$CRYPT_NAME"
 
-	# Inicializamos LVM
 	pvcreate "$LVM_DEVICE"
 	vgcreate "$VG_NAME" "$LVM_DEVICE"
-
 	lvcreate -L 16G -n swap "$VG_NAME"
 	lvcreate -l 100%FREE -n root "$VG_NAME"
-
-	ROOT_PART="$VG_NAME/root"
 
 	mkswap "/dev/$VG_NAME/swap"
 	swapon "/dev/$VG_NAME/swap"
@@ -188,61 +185,24 @@ disk_setup() {
 # Ejecutamos basestrap en un bucle hasta que se ejecute correctamente
 # porque el comando no tiene la opción --disable-download-timeout.
 # Lo que podría hacer que la operación falle con conexiones muy lentas.
-basestrap_install() {
+basestrap_packages_install() {
 	local BASESTRAP_PACKAGES
+	local MANUFACTURER=$(grep vendor_id /proc/cpuinfo | awk '{print $3}' | head -1)
 
-	BASESTRAP_PACKAGES="base linux linux-headers linux-firmware mkinitcpio"
-
-	BASESTRAP_PACKAGES+=" cronie lvm2 cups networkmanager cryptsetup acpid"
-
-	# Instalamos los paquetes del grupo base-devel
-	BASESTRAP_PACKAGES+=" autoconf automake bison debugedit fakeroot flex"
-	BASESTRAP_PACKAGES+=" gc gcc groff guile libisl libmpc libtool m4 make"
-	BASESTRAP_PACKAGES+=" patch pkgconf texinfo which"
-
-	BASESTRAP_PACKAGES+=" efibootmgr grub wpa_supplicant btrfs-progs"
-
-	# Con estos paquetes podemos usar lspci y lsusb para dectectar si hay algún
-	# dispositivo bluetooth y debemos instalar bluez
-	BASESTRAP_PACKAGES+=" pciutils usbutils"
-
-	BASESTRAP_PACKAGES+=" git libjpeg-turbo dosfstools freetype2 dialog"
-	BASESTRAP_PACKAGES+=" wget libnewt neovim"
-
-	# Instalamos pipewire para evitar conflictos (p.e. se isntala jack2 y no
-	# pipewire-jack). Los paquetes para 32 bits se instalarán una vez
-	# activados el repo multilib de Arch Linux (stage3.sh)
-	BASESTRAP_PACKAGES+=" pipewire-pulse wireplumber pipewire pipewire-alsa"
-	BASESTRAP_PACKAGES+=" pipewire-audio pipewire-jack"
-
-	# Instalamos go y sudo para poder compilar yay más adelante (stage3.sh)
-	BASESTRAP_PACKAGES+=" go sudo"
-
-	# Para procesar los .json con los paquetes a instalar
-	BASESTRAP_PACKAGES+=" jq python-hjson"
-
-	# Añadimos el paquete con el microcódigo de CPU correspodiente
-	local MANUFACTURER
-	MANUFACTURER=$(
-		grep vendor_id /proc/cpuinfo | awk '{print $3}' | head -1
+	mapfile -t BASESTRAP_PACKAGES < <(
+		hjson -j "$REPO_CLONE_DIR/assets/packages/installer.hjson" | jq -r ".[] | .[]"
 	)
+
 	if [ "$MANUFACTURER" == "GenuineIntel" ]; then
-		BASESTRAP_PACKAGES+=" intel-ucode"
+		BASESTRAP_PACKAGES+=("intel-ucode")
 	elif [ "$MANUFACTURER" == "AuthenticAMD" ]; then
-		BASESTRAP_PACKAGES+=" amd-ucode"
+		BASESTRAP_PACKAGES+=("amd-ucode")
 	fi
 
-	# Si el dispositivo tiene bluetooth, instalaremos blueman
-	if echo "$(
-		lspci
-		lsusb
-	)" | grep -i bluetooth; then
-		BASESTRAP_PACKAGES+=" blueman"
-	fi
+	has_bluetooth_device && BASESTRAP_PACKAGES+=("blueman")
 
-	# shellcheck disable=SC2086
 	while true; do
-		pacstrap /mnt $BASESTRAP_PACKAGES && break
+		pacstrap /mnt ${BASESTRAP_PACKAGES[@]} && break
 	done
 }
 
@@ -254,39 +214,20 @@ get_password() {
 	local BOX_2=$4
 
 	while true; do
-
-		# Pedir la contraseña la primera vez
-		PASSWORD_1=$(
-			whiptail --backtitle "$REPO_URL" \
-				--title "$TITLE_1" \
-				--passwordbox "$BOX_1" \
-				10 60 3>&1 1>&2 2>&3
-		)
-
-		# Pedir la contraseña una segunda vez
-		PASSWORD_2=$(
-			whiptail --backtitle "$REPO_URL" \
-				--title "$TITLE_2" \
-				--passwordbox "$BOX_2" \
-				10 60 3>&1 1>&2 2>&3
-		)
+		PASSWORD_1=$(whip_password "$TITLE_1" "$BOX_1")
+		PASSWORD_2=$(whip_password "$TITLE_2" "$BOX_2")
 
 		# Si ambas contraseñas coinciden devolver el resultado
 		if [ "$PASSWORD_1" == "$PASSWORD_2" ] && [ -n "$PASSWORD_1" ]; then
-			echo "$PASSWORD_1" && break
+			echo "$PASSWORD_1" && return
 		else
-			# Mostrar un mensaje de error si las contraseñas no coinciden
-			whiptail --backtitle "$REPO_URL" \
-				--title "Error" \
-				--msgbox "Las contraseñas no coinciden. Inténtalo de nuevo." \
-				10 60 3>&1 1>&2 2>&3
+			whip_msg "Error" "Las contraseñas no coinciden. Inténtalo de nuevo."
 		fi
-
 	done
 }
 
 # Establecer zona horaria
-timezone_set() {
+get_timezone() {
 	while true; do
 		if [ -z "$TIMEZONE" ]; then # TIMEZONE puede estar asignado desde install.sh
 			# Obtener la lista de regiones disponibles
@@ -349,69 +290,65 @@ timezone_set() {
 	done
 }
 
-#-------------------------------------------------------------------------------
-
-disk_scheme_setup
-disk_setup
-
-[ -z "$ROOT_PASSWORD" ] &&
+get_root_password() {
+	[ -n "$ROOT_PASSWORD" ] && return
 	ROOT_PASSWORD=$(
 		get_password "Entrada de contraseña" "Confirmación de contraseña" \
 			"Introduce la contraseña del superusuario:" \
 			"Re-introduce la contraseña del superusuario:"
 	)
+}
 
-[ -z "$USERNAME" ] &&
+get_username() {
+	[ -n "$USERNAME" ] && return
 	while true; do
-		USERNAME=$(
-			whiptail --backtitle "$REPO_URL" \
-				--inputbox "Por favor, ingresa el nombre del usuario:" \
-				10 60 3>&1 1>&2 2>&3
-		)
+		USERNAME=$(whip_input "Nombre usuario" "Por favor, ingresa el nombre del usuario:")
 
-		# Si se cancela o está vacío, preguntar si quiere salir
 		if [ -z "$USERNAME" ]; then
 			cancel_installation
 		else
-			break
+			return
 		fi
 	done
+}
 
-[ -z "$USER_PASSWORD" ] &&
+get_user_password() {
+	[ -n "$USER_PASSWORD" ] && return
 	USER_PASSWORD=$(
 		get_password "Entrada de contraseña" "Confirmación de contraseña" \
 			"Introduce la contraseña del usuario $USERNAME:" \
 			"Re-introduce la contraseña del usuario $USERNAME:"
 	)
+}
 
-timezone_set
-
-[ -z "$HOSTNAME" ] &&
+get_hostname() {
+	[ -n "$HOSTNAME" ] && return
 	while true; do
-		HOSTNAME=$(
-			whip_input "Configuracion de hostname" \
-				"Por favor, introduce el nombre que deseas darle al equipo:"
-		)
+		HOSTNAME=$(whip_input "Configuracion de hostname" "Introduce el nombre del equipo:")
 
-		# Si se cancela o está vacío, preguntar si quiere salir
 		if [ -z "$HOSTNAME" ]; then
 			cancel_installation
 		else
 			break
 		fi
 	done
+}
 
-# Avisamos al usuario de que ya puede relajarse y dejar que el haga su trabajo
-whip_msg "Hora del cafe" \
-	"El instalador ya tiene toda la información necesaria, puedes dejar el ordenador desatendido. La instalacion tomara 30-45min aproximadamente."
+#-------------------------------------------------------------------------------
 
-# Instalamos paquetes en la nueva instalación
-basestrap_install
+disk_scheme_setup
+disk_setup
 
-# Creamos el fstab
+get_root_password
+get_username
+get_user_password
+get_timezone
+get_hostname
+
+basestrap_packages_install
+
 genfstab -U /mnt >/mnt/etc/fstab
 
-# Montamos los directorios necesarios para el chroot
 for DIR in dev proc sys run; do
 	mount --rbind /$DIR /mnt/$DIR
 	mount --make-rslave /mnt/$DIR

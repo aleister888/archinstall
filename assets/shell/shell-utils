@@ -39,10 +39,11 @@ log() {
 	local level="${2:-ERROR}"
 	local date="$(date '+%Y-%m-%d %H:%M:%S')"
 	local module="$(basename "$0")"
+
 	ensure_dir "${LOG_DIR:-$LOG_BASE_DIR}" >/dev/null
-	echo -n "$date [$level] ($module) $msg" |
+
+	printf "%s [%s] (%s) %s\n" "$date" "$level" "$module" "$msg" |
 		tee -a "${LOG_DIR:-$LOG_BASE_DIR}/errors.log"
-	echo # tee no respeta los saltos de linea
 }
 
 init_log() {
@@ -77,4 +78,11 @@ download() {
 
 is_chroot() {
 	sudo /usr/bin/systemd-detect-virt --chroot >/dev/null 2>&1
+}
+
+has_bluetooth_device() {
+	grep -qi bluetooth <(
+		lspci
+		lsusb
+	)
 }

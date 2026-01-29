@@ -13,10 +13,6 @@ pacinstall() {
 	pacman -Sy --noconfirm --disable-download-timeout --needed "$@"
 }
 
-service_add() {
-	systemctl enable "$1"
-}
-
 install_grub() {
 	local -r SWAP_UUID=$(lsblk -nd -o UUID /dev/mapper/"$VG_NAME-swap")
 
@@ -138,9 +134,9 @@ grep ubuntu /etc/pacman.d/gnupg/gpg.conf ||
 pacman -Sc --noconfirm
 #pacman-key --populate && pacman-key --refresh-keys
 
-if { lspci | grep -qi bluetooth || lsusb | grep -qi bluetooth; }; then
+if has_bluetooth_device; then
 	pacinstall bluez bluez-utils bluez-obex
-	service_add bluetooth
+	systemctl enable bluetooth
 fi
 
 install_grub
@@ -148,11 +144,6 @@ hostname_conf
 pacman_conf
 locale_conf
 mkinitcpio_conf
-
-service_add NetworkManager
-service_add cronie
-service_add acpid
-service_add cups
 
 # Configuración provisional de sudo para stage3.sh
 cp /etc/sudoers /etc/sudoers.bak

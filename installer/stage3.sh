@@ -195,8 +195,7 @@ sudo /usr/bin/chsh -s /bin/zsh "$USER"
 
 # Activar WiFi y Bluetooth
 sudo /usr/bin/rfkill unblock wifi
-{ lspci | grep -qi bluetooth || lsusb | grep -qi bluetooth; } &&
-	sudo /usr/bin/rfkill unblock bluetooth
+has_bluetooth_device && sudo /usr/bin/rfkill unblock bluetooth
 
 GROUPS=(
 	"storage"

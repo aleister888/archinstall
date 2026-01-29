@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2086,SC2155,SC1094
+# shellcheck disable=SC2086,SC2155,SC1094,SC1091
 
 # Instalador de ajustes para Arch Linux
 # por aleister888 <pacoe1000@gmail.com>
@@ -73,9 +73,9 @@ mapfile -t REMOVED_PACKAGES < <(
 )
 
 if ((${#REMOVED_PACKAGES[@]})); then
-	REMOVED_FILE="$TMP_DIR/uneeded_packages_$(date '+%Y-%m-%d_%H-%M-%S').txt"
+	REMOVED_FILE="$LOG_DIR/uneeded_packages_$(date '+%Y-%m-%d_%H-%M-%S').txt"
 	printf '%s\n' "${REMOVED_PACKAGES[@]}" | tee "$REMOVED_FILE"
-	log "$(wc -l <"$REMOVED_FILE") paquetes huérfanos detectados: $REMOVED_FILE"
+	log "${#REMOVED_PACKAGES[@]} paquetes huérfanos detectados: $REMOVED_FILE"
 fi
 
 # Guardamos el hash tras hacer pull

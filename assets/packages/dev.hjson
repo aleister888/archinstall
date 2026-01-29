@@ -5,13 +5,11 @@
     "extra-cmake-modules",
     "extra/github-cli",
     "extra/libgit2",
-    "go",
     "heimdall",
     "lua51",
     "luarocks",
     "nodejs-lts-jod",
     "npm",
-    "python-hjson",
     "smartmontools",
     "time",
     "yarn"

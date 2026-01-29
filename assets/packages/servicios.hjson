@@ -1,6 +1,7 @@
 {
   "general": [
     "cups",
+    "cronie",
     "geoclue",
     "syncthing",
     "timeshift"
@@ -14,11 +15,8 @@
     "lib32-pipewire",
     "lib32-pipewire-jack",
     "lib32-pipewire-v4l2",
-    "pipewire",
-    "pipewire-pulse",
     "pipewire-v4l2",
-    "sof-firmware",
-    "wireplumber"
+    "sof-firmware"
   ],
   "init": [
     "earlyoom",
