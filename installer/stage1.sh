@@ -96,7 +96,7 @@ disk_scheme_setup() {
 			;;
 		esac
 
-		[ "$DISK_NO_CONFIRM" = true ] || scheme_show && return
+		{ [ "$DISK_NO_CONFIRM" = true ] || scheme_show; } && return
 
 		unset ROOT_DISK
 		whip_msg "ERROR" "Error al confirmar el esquema de particiones"
@@ -121,7 +121,11 @@ disk_encrypt() {
 
 		# Cambiar la contraseña si hubo un error
 		unset LUKS_PASSWORD
-		whip_msg "LUKS" "Error al encriptar el disco, introduce otra contraseña"
+		if [ "$DEBUG" = true ]; then
+			read -rp "Presiona Enter para continuar..."
+		else
+			whip_msg "LUKS" "Error al encriptar el disco, introduce otra contraseña"
+		fi
 	done
 
 	echo -ne "$LUKS_PASSWORD" | cryptsetup open "/dev/$DEVICE" "$DECRYPTED_NAME" && return
