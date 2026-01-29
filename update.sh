@@ -15,7 +15,7 @@ export ASSETDIR="$REPO_DIR/assets/configs"
 export TMP_DIR="$(get_tmp updater)"
 export LOG_DIR="$(init_log updater)"
 
-DEBUG=false
+[ -z "$DEBUG" ] && DEBUG=false
 
 while getopts "d" opt; do
 	case $opt in
@@ -25,11 +25,6 @@ while getopts "d" opt; do
 done
 
 export DEBUG
-
-if [ "$DEBUG" = true ]; then
-	export PS4='+ $(date "+%H:%M:%S"): '
-	set -x
-fi
 
 #-------------------------------------------------------------------------------
 

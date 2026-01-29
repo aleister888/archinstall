@@ -1,7 +1,10 @@
 #!/bin/bash
 # shellcheck disable=SC2155
 
-set -Eeuo pipefail
+if [ "$DEBUG" = true ]; then
+	export PS4='+ $(date "+%H:%M:%S"): '
+	set -xEeuo pipefail
+fi
 
 export LOG_BASE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles"
 export TMP_BASE_DIR="/tmp/00_dotfiles"

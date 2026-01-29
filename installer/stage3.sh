@@ -10,8 +10,7 @@
 source "$HOME/.dotfiles/assets/shell/profile"
 source "$HOME/.dotfiles/assets/shell/shell-utils"
 
-# Importamos todos los componentes en los que se separa el script
-PATH="$PATH:$(find ~/.dotfiles/installer/modules -type d | paste -sd ':' -)"
+PATH="$PATH:$HOME/.dotfiles/installer/modules"
 
 # Instalar paquetes con yay
 yayinstall() {

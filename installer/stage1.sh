@@ -6,13 +6,16 @@
 # Licencia: GNU GPLv3
 
 # - Pasa como variables los siguientes parámetros al siguiente script:
+#   - ¿Script en modo debugging? ($DEBUG)
 #   - Nombre del usuario regular ($USERNAME)
-#   - Zona horaria del sistema ($SYSTEM_TIMEZONE)
+#   - Zona horaria del sistema ($TIMEZONE)
 #   - Nombre del disco utilizado ($ROOT_DISK)
 #   - Nombre de la partición principal ($ROOT_PART_NAME)
 #   - Nombre de la partición desencriptada abierta ($CRYPT_NAME)
 #   - Nombre del grupo LVM ($VG_NAME)
 #   - Nombre del host ($HOSTNAME)
+
+source "$REPO_CLONE_DIR/assets/shell/shell-utils"
 
 whip_msg() {
 	whiptail --backtitle "$REPO_URL" --title "$1" --msgbox "$2" 10 60
@@ -36,12 +39,6 @@ whip_input() {
 	whiptail --backtitle "$REPO_URL" \
 		--title "$TITLE" --inputbox "$INPUTBOX" \
 		10 60 3>&1 1>&2 2>&3
-}
-
-echo_msg() {
-	clear
-	echo "$1"
-	sleep 1
 }
 
 cancel_installation() {
@@ -90,13 +87,14 @@ scheme_show() {
 # Función para elegir como se formatearán nuestros discos
 disk_scheme_setup() {
 	while true; do
-		while true; do
-			ROOT_DISK=$(
-				whip_menu "Discos disponibles" \
-					"Selecciona un disco para la instalación:" \
-					"$(lsblk -dn -o name,size | tr '\n' ' ')"
-			) && break
-		done
+		[ -z "$ROOT_DISK" ] &&
+			while true; do
+				ROOT_DISK=$(
+					whip_menu "Discos disponibles" \
+						"Selecciona un disco para la instalación:" \
+						"$(lsblk -dn -o name,size | tr '\n' ' ')"
+				) && break
+			done
 
 		# Confirmamos los cambios
 		if scheme_show; then
@@ -114,16 +112,18 @@ part_encrypt() {
 	local DECRYPTED_NAME="$3"
 	local LUKS_PASSWORD
 	while true; do
-		LUKS_PASSWORD=$(
-			get_password "Entrada de contraseña" "Confirmación de contraseña" \
-				"Introduce la contraseña de encriptación del disco $DISPLAY_NAME:" \
-				"Re-introduce la contraseña de encriptación del disco $DISPLAY_NAME:"
-		)
+		[ -z "$LUKS_PASSWORD" ] &&
+			LUKS_PASSWORD=$(
+				get_password "Entrada de contraseña" "Confirmación de contraseña" \
+					"Introduce la contraseña de encriptación del disco $DISPLAY_NAME:" \
+					"Re-introduce la contraseña de encriptación del disco $DISPLAY_NAME:"
+			)
 		echo -ne "$LUKS_PASSWORD" | cryptsetup \
 			--type luks2 \
 			--verify-passphrase -q luksFormat "/dev/$DEVICE" && break
 
 		# Cambiar la contraseña si hubo un error
+		unset LUKS_PASSWORD
 		whip_msg "LUKS" "Hubo un error, deberá introducir la contraseña otra vez"
 	done
 
@@ -293,72 +293,65 @@ get_password() {
 # Establecer zona horaria
 timezone_set() {
 	while true; do
-		# Obtener la lista de regiones disponibles
-		REGIONS=$(
-			find /usr/share/zoneinfo -mindepth 1 -type d \
-				-printf "%f\n" | grep -v '^[a-z]\|Etc' | sort -u
-		)
-
-		# Crear un array con las regiones
-		REGIONS_ARRAY=()
-		for REGION in $REGIONS; do
-			REGIONS_ARRAY+=("$REGION" "$REGION")
-		done
-
-		# Elegir la región
-		while true; do
-			REGION=$(
-				whip_menu "Selecciona una región" \
-					"Por favor, elige una región" \
-					${REGIONS_ARRAY[@]}
+		if [ -z "$TIMEZONE" ]; then # TIMEZONE puede estar asignado desde install.sh
+			# Obtener la lista de regiones disponibles
+			REGIONS=$(
+				find /usr/share/zoneinfo -mindepth 1 -type d \
+					-printf "%f\n" | grep -v '^[a-z]\|Etc' | sort -u
 			)
+			REGIONS_ARRAY=()
+			for REGION in $REGIONS; do
+				REGIONS_ARRAY+=("$REGION" "$REGION")
+			done
 
-			# Si se cancela o está vacío, preguntar si quiere salir
-			if [ -z "$REGION" ]; then
-				cancel_installation
-			else
-				break
-			fi
-		done
+			while true; do
+				REGION=$(
+					whip_menu "Selecciona una región" \
+						"Por favor, elige una región" \
+						${REGIONS_ARRAY[@]}
+				)
+				if [ -z "$REGION" ]; then
+					cancel_installation
+				else
+					break
+				fi
+			done
 
-		# Obtener la lista de zonas horarias de la región seleccionada
-		TIMEZONES=$(
-			find "/usr/share/zoneinfo/$REGION" -mindepth 1 -type f \
-				-printf "%f\n" | sort -u
-		)
-
-		# Crear un array con las distintas zonas horarias
-		TIMEZONES_ARRAY=()
-		for TIMEZONE in $TIMEZONES; do
-			TIMEZONES_ARRAY+=("$TIMEZONE" "$TIMEZONE")
-		done
-
-		# Elegir la zona horaria dentro de la región seleccionada
-		while true; do
-			TIMEZONE=$(
-				whip_menu "Selecciona una zona horaria en $REGION" \
-					"Por favor, elige una zona horaria en $REGION:" \
-					${TIMEZONES_ARRAY[@]}
+			TIMEZONES=$(
+				find "/usr/share/zoneinfo/$REGION" -mindepth 1 -type f \
+					-printf "%f\n" | sort -u
 			)
+			TIMEZONES_ARRAY=()
+			for TIMEZONE in $TIMEZONES; do
+				TIMEZONES_ARRAY+=("$TIMEZONE" "$TIMEZONE")
+			done
 
-			# Si se cancela o está vacío, preguntar si quiere salir
-			if [ -z "$TIMEZONE" ]; then
-				cancel_installation
-			else
-				break
-			fi
-		done
+			while true; do
+				TIMEZONE=$(
+					whip_menu "Selecciona una zona horaria en $REGION" \
+						"Por favor, elige una zona horaria en $REGION:" \
+						${TIMEZONES_ARRAY[@]}
+				)
+				if [ -z "$TIMEZONE" ]; then
+					cancel_installation
+				else
+					break
+				fi
+			done
+
+			TIMEZONE="$REGION/$TIMEZONE"
+		fi
 
 		# Verificar si la zona horaria seleccionada es válida
-		if [ -f "/usr/share/zoneinfo/$REGION/$TIMEZONE" ]; then
+		if [ -f "/usr/share/zoneinfo/$TIMEZONE" ]; then
 			break
 		else
+			unset REGION
+			unset TIMEZONE
 			whip_msg "Zona horaria no valida" \
 				"Zona horaria no valida. Asegúrate de elegir una zona horaria valida."
 		fi
 	done
-
-	SYSTEM_TIMEZONE="/usr/share/zoneinfo/$REGION/$TIMEZONE"
 }
 
 #-------------------------------------------------------------------------------
@@ -366,48 +359,52 @@ timezone_set() {
 disk_scheme_setup
 disk_setup
 
-ROOT_PASSWORD=$(
-	get_password "Entrada de contraseña" "Confirmación de contraseña" \
-		"Introduce la contraseña del superusuario:" \
-		"Re-introduce la contraseña del superusuario:"
-)
-
-while true; do
-	USERNAME=$(
-		whiptail --backtitle "$REPO_URL" \
-			--inputbox "Por favor, ingresa el nombre del usuario:" \
-			10 60 3>&1 1>&2 2>&3
+[ -z "$ROOT_PASSWORD" ] &&
+	ROOT_PASSWORD=$(
+		get_password "Entrada de contraseña" "Confirmación de contraseña" \
+			"Introduce la contraseña del superusuario:" \
+			"Re-introduce la contraseña del superusuario:"
 	)
 
-	# Si se cancela o está vacío, preguntar si quiere salir
-	if [ -z "$USERNAME" ]; then
-		cancel_installation
-	else
-		break
-	fi
-done
+[ -z "$USERNAME" ] &&
+	while true; do
+		USERNAME=$(
+			whiptail --backtitle "$REPO_URL" \
+				--inputbox "Por favor, ingresa el nombre del usuario:" \
+				10 60 3>&1 1>&2 2>&3
+		)
 
-USER_PASSWORD=$(
-	get_password "Entrada de contraseña" "Confirmación de contraseña" \
-		"Introduce la contraseña del usuario $USERNAME:" \
-		"Re-introduce la contraseña del usuario $USERNAME:"
-)
+		# Si se cancela o está vacío, preguntar si quiere salir
+		if [ -z "$USERNAME" ]; then
+			cancel_installation
+		else
+			break
+		fi
+	done
+
+[ -z "$USER_PASSWORD" ] &&
+	USER_PASSWORD=$(
+		get_password "Entrada de contraseña" "Confirmación de contraseña" \
+			"Introduce la contraseña del usuario $USERNAME:" \
+			"Re-introduce la contraseña del usuario $USERNAME:"
+	)
 
 timezone_set
 
-while true; do
-	HOSTNAME=$(
-		whip_input "Configuracion de hostname" \
-			"Por favor, introduce el nombre que deseas darle al equipo:"
-	)
+[ -z "$HOSTNAME" ] &&
+	while true; do
+		HOSTNAME=$(
+			whip_input "Configuracion de hostname" \
+				"Por favor, introduce el nombre que deseas darle al equipo:"
+		)
 
-	# Si se cancela o está vacío, preguntar si quiere salir
-	if [ -z "$HOSTNAME" ]; then
-		cancel_installation
-	else
-		break
-	fi
-done
+		# Si se cancela o está vacío, preguntar si quiere salir
+		if [ -z "$HOSTNAME" ]; then
+			cancel_installation
+		else
+			break
+		fi
+	done
 
 # Avisamos al usuario de que ya puede relajarse y dejar que el haga su trabajo
 whip_msg "Hora del cafe" \
@@ -438,8 +435,9 @@ cp -r "$(dirname "$0")/.." "/mnt/home/$USERNAME/.dotfiles"
 # parte del script pasandole las variables correspondientes.
 arch-chroot /mnt sh -c "
 	export \
+	DEBUG=$DEBUG \
 	USERNAME=$USERNAME \
-	SYSTEM_TIMEZONE=$SYSTEM_TIMEZONE \
+	TIMEZONE=$TIMEZONE \
 	ROOT_DISK=$ROOT_DISK \
 	ROOT_PART_NAME=$ROOT_PART_NAME \
 	CRYPT_NAME=$CRYPT_NAME \

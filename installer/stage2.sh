@@ -1,11 +1,13 @@
 #!/bin/bash
-# shellcheck disable=SC2154
+# shellcheck disable=SC2154,SC1090
 
 # Auto-instalador para Arch Linux (Parte 2)
 # por aleister888 <pacoe1000@gmail.com>
 # Licencia: GNU GPLv3
 
 # Esta parte del script se ejecuta ya dentro de la instalación (chroot).
+
+source "/home/$USERNAME/.dotfiles/assets/shell/shell-utils"
 
 pacinstall() {
 	pacman -Sy --noconfirm --disable-download-timeout --needed "$@"
@@ -127,14 +129,14 @@ mkinitcpio_conf() {
 
 #-------------------------------------------------------------------------------
 
-ln -sf "$SYSTEM_TIMEZONE" /etc/localtime
+ln -sf "/usr/share/zoneinfo/$TIMEZONE" /etc/localtime
 hwclock --systohc
 
 # Configurar el servidor de claves y limpiar la cache
 grep ubuntu /etc/pacman.d/gnupg/gpg.conf ||
 	echo 'keyserver hkp://keyserver.ubuntu.com' >>/etc/pacman.d/gnupg/gpg.conf
 pacman -Sc --noconfirm
-pacman-key --populate && pacman-key --refresh-keys
+#pacman-key --populate && pacman-key --refresh-keys
 
 if { lspci | grep -qi bluetooth || lsusb | grep -qi bluetooth; }; then
 	pacinstall bluez bluez-utils bluez-obex
@@ -157,4 +159,6 @@ cp /etc/sudoers /etc/sudoers.bak
 echo "root ALL=(ALL:ALL) ALL
 %wheel ALL=(ALL) NOPASSWD: ALL" >/etc/sudoers
 
-su "$USERNAME" -c "cd /home/$USERNAME/.dotfiles/installer && ./stage3.sh"
+su "$USERNAME" -c "
+	export DEBUG=$DEBUG; cd /home/$USERNAME/.dotfiles/installer && ./stage3.sh
+"
