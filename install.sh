@@ -7,6 +7,11 @@ export REPO_URL="https://github.com/aleister888/$REPO_NAME"
 
 REPO_CLONE_DIR="/tmp/archinstall"
 
+error() {
+	echo "ERROR: $1" >&2
+	exit 1
+}
+
 #-------------------------------------------------------------------------------
 
 export DEBUG=false
@@ -16,19 +21,21 @@ while getopts ":du:r:D:l:t:U:h:" opt; do
 	d) export DEBUG=true ;;
 	u) export USER_PASSWORD="$OPTARG" ;;
 	r) export ROOT_PASSWORD="$OPTARG" ;;
-	D) export ROOT_DISK="$OPTARG" ;;
 	l) export LUKS_PASSWORD="$OPTARG" ;;
 	t) export TIMEZONE="$OPTARG" ;;
 	U) export USERNAME="$OPTARG" ;;
 	h) export HOSTNAME="$OPTARG" ;;
-	:)
-		echo "Error: la opción -$OPTARG requiere un argumento" >&2
-		exit 1
+	D)
+		if lsblk "/dev/$OPTARG" &>/dev/null; then
+			export ROOT_DISK="$OPTARG"
+		elif lsblk "$OPTARG" &>/dev/null; then
+			export ROOT_DISK="${OPTARG#/dev/}"
+		else
+			error "disco no válido"
+		fi
 		;;
-	\?)
-		echo "Error: opción inválida -$OPTARG" >&2
-		exit 1
-		;;
+	:) error "la opción -$OPTARG requiere un argumento" ;;
+	\?) error "Error: opción inválida -$OPTARG" ;;
 	esac
 done
 
