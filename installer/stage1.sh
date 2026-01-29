@@ -48,7 +48,7 @@ whip_input() {
 		10 60 3>&1 1>&2 2>&3
 }
 
-cancel_installation() {
+ask_cancel_installation() {
 	whip_yes "Cancelar" "¿Deseas cancelar la instalación?" && exit 1
 }
 
@@ -69,7 +69,7 @@ scheme_show() {
 		EOF
 	)
 	if ! whip_yes "Confirmar particionado" "$SCHEME_PREVIEW"; then
-		cancel_installation
+		ask_cancel_installation
 	fi
 }
 
@@ -251,7 +251,7 @@ get_timezone() {
 						${REGIONS_ARRAY[@]}
 				)
 				if [ -z "$REGION" ]; then
-					cancel_installation
+					ask_cancel_installation
 				else
 					break
 				fi
@@ -273,7 +273,7 @@ get_timezone() {
 						${TIMEZONES_ARRAY[@]}
 				)
 				if [ -z "$TIMEZONE" ]; then
-					cancel_installation
+					ask_cancel_installation
 				else
 					break
 				fi
@@ -308,11 +308,8 @@ get_username() {
 	while true; do
 		USERNAME=$(whip_input "Nombre usuario" "Por favor, ingresa el nombre del usuario:")
 
-		if [ -z "$USERNAME" ]; then
-			cancel_installation
-		else
-			return
-		fi
+		[ -n "$USERNAME" ] && break
+		ask_cancel_installation
 	done
 }
 
@@ -330,11 +327,8 @@ get_hostname() {
 	while true; do
 		HOSTNAME=$(whip_input "Configuracion de hostname" "Introduce el nombre del equipo:")
 
-		if [ -z "$HOSTNAME" ]; then
-			cancel_installation
-		else
-			break
-		fi
+		[ -n "$HOSTNAME" ] && break
+		ask_cancel_installation
 	done
 }
 
