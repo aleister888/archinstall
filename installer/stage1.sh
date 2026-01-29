@@ -58,7 +58,7 @@ wait_return() {
 
 # Muestra como quedarían las particiones de nuestra instalación para confirmar
 # los cambios. También prepara las variables para formatear los discos
-scheme_show() {
+disk_scheme_show() {
 	local DISK_SIZE
 	local SCHEME_PREVIEW
 	DISK_SIZE="$(lsblk -dn -o size /dev/"$ROOT_DISK")"
@@ -100,7 +100,7 @@ disk_scheme_setup() {
 			;;
 		esac
 
-		{ [ "$DISK_NO_CONFIRM" = true ] || scheme_show; } && return
+		{ [ "$DISK_NO_CONFIRM" = true ] || disk_scheme_show; } && return
 
 		unset ROOT_DISK
 		whip_msg "ERROR" "Error al confirmar el esquema de particiones"
@@ -236,18 +236,18 @@ get_password() {
 
 # Establecer zona horaria
 list() {
-	local PATH="$1"
+	local DIR_PATH="$1"
 	local TYPE="$2"
-	find "$PATH" -mindepth 1 -type "$TYPE" \
+	find "$DIR_PATH" -mindepth 1 -type "$TYPE" \
 		-printf "%f\n" | grep -v '^[a-z]\|Etc' | sort -u
 }
 select_from_list() {
-	local PATH="$1" TYPE="$2" MSG="$3" SELECTION
+	local DIR_PATH="$1" TYPE="$2" MSG="$3" SELECTION
 	local -a ARRAY
 
 	while read -r ENTRY; do
 		ARRAY+=("$ENTRY" "$ENTRY")
-	done < <(list "$PATH" "$TYPE" "$FILTER")
+	done < <(list "$DIR_PATH" "$TYPE" "$FILTER")
 
 	while true; do
 		SELECTION=$(
