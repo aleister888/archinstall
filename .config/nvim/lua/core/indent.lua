@@ -42,6 +42,10 @@ local filetype_configs = {
 		tabstop = 8,
 		shiftwidth = 8,
 	},
+	conf = {
+		tabstop = 8,
+		shiftwidth = 8,
+	},
 	rasi = {
 		expandtab = true,
 	},

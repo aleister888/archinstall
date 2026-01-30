@@ -152,4 +152,4 @@ echo "root ALL=(ALL:ALL) ALL
 
 su "$USERNAME" -c "
 	export DEBUG=$DEBUG; cd /home/$USERNAME/.dotfiles/installer && ./stage3.sh
-"
+" || true # Evitar repotar errores en cascada

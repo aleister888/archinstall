@@ -367,4 +367,4 @@ arch-chroot /mnt sh -c "
 	cd /home/$USERNAME/.dotfiles/installer
 
 	./stage2.sh
-"
+" || true # Evitar repotar errores en cascada
