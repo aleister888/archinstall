@@ -63,6 +63,7 @@ wait_return() {
 # Muestra como quedarían las particiones de nuestra instalación para confirmar
 # los cambios. También prepara las variables para formatear los discos
 #-------------------------------------------------------------------------------
+
 disk_scheme_show() {
 	local DISK_SIZE
 	local SCHEME_PREVIEW
@@ -192,6 +193,7 @@ disk_setup() {
 # porque el comando no tiene la opción --disable-download-timeout.
 # Lo que podría hacer que la operación falle con conexiones muy lentas.
 #-------------------------------------------------------------------------------
+
 basestrap_packages_install() {
 	local BASESTRAP_PACKAGES
 	local MANUFACTURER=$(grep vendor_id /proc/cpuinfo | awk '{print $3}' | head -1)
@@ -217,6 +219,7 @@ basestrap_packages_install() {
 
 # Establecer zona horaria
 #-------------------------------------------------------------------------------
+
 list() {
 	local DIR_PATH="$1"
 	local TYPE="$2"
@@ -261,6 +264,7 @@ get_timezone() {
 }
 
 #-------------------------------------------------------------------------------
+
 get_password() {
 	local PASSWORD_1 PASSWORD_2
 	local TITLE_1=$1
@@ -300,6 +304,7 @@ get_user_password() {
 }
 
 #-------------------------------------------------------------------------------
+
 confirm_input() {
 	whip_yes "Confirmación" "Estas seguro de que quiere que el $1 sea: $2"
 }
@@ -325,6 +330,7 @@ get_hostname() {
 }
 
 #-------------------------------------------------------------------------------
+
 get_root_password
 get_username
 get_user_password

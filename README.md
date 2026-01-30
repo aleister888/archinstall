@@ -39,7 +39,8 @@ bash <(curl https://raw.githubusercontent.com/aleister888/archinstall/main/insta
   -D <disco>
 ```
 
-También puede usarse el flag `-d` para activar el modo depurado, que hace que el script se detenga completamente ante cualquier error
+- La versión estable también soporta el uso de flags.
+- También puede usarse el flag `-d` para activar el modo depurado, que hace que el script se detenga completamente ante cualquier error.
 
 ## 🧩 Características
 
