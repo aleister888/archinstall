@@ -309,7 +309,7 @@ get_username() {
 	while true; do
 		USERNAME=$(whip_input "Nombre usuario" "Ingresa el nombre del usuario:")
 
-		[ -n "$USERNAME" ] && confirm_input username "$USERNAME" && break
+		[ -n "$USERNAME" ] && confirm_input "nombre de usuario" "$USERNAME" && break
 		ask_cancel_installation
 	done
 }
@@ -319,7 +319,7 @@ get_hostname() {
 	while true; do
 		HOSTNAME=$(whip_input "Configuracion de hostname" "Introduce el nombre del equipo:")
 
-		[ -n "$HOSTNAME" ] && confirm_input hostname "$HOSTNAME" && break
+		[ -n "$HOSTNAME" ] && confirm_input "hostname" "$HOSTNAME" && break
 		ask_cancel_installation
 	done
 }

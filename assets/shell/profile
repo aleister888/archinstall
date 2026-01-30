@@ -80,6 +80,7 @@ if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
 	# En el primer arranque real del sistema se ejecutará update.sh de nuevo
 	# para completar las tareas que no pueden realizarse dentro del chroot
 	[ -f "$HOME/.system_not_initialized" ] && check_connection && (
+		echo "Ejecutando tareas post-instalación..."
 		cd "$REPO_DIR"
 		./update.sh &
 		~/.dotfiles/installer/post_install/tauon-config
