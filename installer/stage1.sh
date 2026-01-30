@@ -193,9 +193,7 @@ basestrap_packages_install() {
 	local MANUFACTURER=$(grep vendor_id /proc/cpuinfo | awk '{print $3}' | head -1)
 
 	mapfile -t BASESTRAP_PACKAGES < <(
-		jq -r '.[] | .[]' < <(# Importamos el json sin los comentarios
-			cat "$REPO_CLONE_DIR/assets/packages/installer.json" | grep -v "[ ]*//"
-		)
+		jq -r '.[] | .[]' < <(remove_comments "$REPO_CLONE_DIR/assets/packages/installer.json")
 	)
 
 	if [ "$MANUFACTURER" == "GenuineIntel" ]; then

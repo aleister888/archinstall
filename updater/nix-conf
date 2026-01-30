@@ -2,13 +2,18 @@
 
 # Script para instalar paquetes de nixpkgs
 # - Invocado por /update.sh
-# TODO: Add support for non-versioned packages
 
+source "$HOME/.dotfiles/assets/shell/profile"
 source "$HOME/.dotfiles/assets/shell/shell-utils"
 
 [ "$(id -u)" -eq 0 ] && exit 1
+check_connection || exit 1
 
 LOG_DIR=$(init_log nixpkgs)
+LATEST_VERSION=$(
+	curl -s https://api.github.com/repos/NixOS/nixpkgs/tags |
+		jq -r '.[].name' | grep -oP "[0-9]{2}\.[0-9]{2}$" | sort -run | head -n1
+)
 
 #-------------------------------------------------------------------------------
 
@@ -29,9 +34,14 @@ nix-collect-garbage -d >/dev/null 2>&1
 
 #-------------------------------------------------------------------------------
 
-PACKAGE_FILE="$HOME/.dotfiles/assets/packages/nix.json"
+PACKAGES_DIR="$HOME/.dotfiles/assets/packages"
 
-mapfile -t TARGET_PACKAGES < <(jq -c '.[] | .[] | select(has("name"))' "$PACKAGE_FILE")
+mapfile -t TARGET_PACKAGES < <(jq -c '.[] | .[] | select(has("name"))' <(remove_comments "$PACKAGES_DIR/nix.json"))
+
+[ -f "$PACKAGES_DIR/nix_local.json" ] && {
+	mapfile -t TARGET_LOCAL_PACKAGES < <(jq -c '.[] | .[] | select(has("name"))' <(remove_comments "$PACKAGES_DIR/nix_local.json"))
+	TARGET_PACKAGES+=("${TARGET_LOCAL_PACKAGES[@]}")
+}
 
 # Obtener paquetes instalados y sus versiones
 declare -A INSTALLED_MAP
@@ -59,6 +69,7 @@ done
 for pkg in "${TARGET_PACKAGES[@]}"; do
 	NAME=$(echo "$pkg" | jq -r '.name')
 	TARGET_VERSION=$(echo "$pkg" | jq -r '.version // empty')
+	[ -z "$TARGET_VERSION" ] && TARGET_VERSION="$LATEST_VERSION"
 
 	if [[ -n "$TARGET_VERSION" ]]; then
 		# usar flake con commit si se especifica versión

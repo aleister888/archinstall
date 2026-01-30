@@ -20,7 +20,7 @@
     "dialog",
     "wget",
     "libnewt",
-    // Para dectectar si hay algun dispositivo bluetooth
+    // Para detectar si hay algun dispositivo bluetooth
     "pciutils",
     "usbutils",
     // Para compilar yay en stage3

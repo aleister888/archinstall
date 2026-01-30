@@ -86,3 +86,7 @@ has_bluetooth_device() {
 		lsusb
 	)
 }
+
+remove_comments() {
+	cat "$1" | grep -v "^[ \t]*//"
+}

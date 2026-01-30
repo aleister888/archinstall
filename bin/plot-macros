@@ -1,5 +1,10 @@
 #!/bin/bash -x
 
+source "$REPO_DIR/assets/shell/shell-utils"
+
+TMP_DIR="$(get_tmp plot_macros)"
+CACHE_FILE="$XDG_CACHE_HOME/plot-macros"
+
 # Crear gráficos de barras para cada macro-nutriente
 make_plot() {
 	local VALUE=$1  # Calorías/Gramos consumidos
@@ -58,8 +63,6 @@ while getopts "oh" OPT; do
 	esac
 done
 shift $((OPTIND - 1))
-
-CACHE_FILE="$XDG_CACHE_HOME/plot-macros"
 
 if [ -f "$CACHE_FILE" ]; then
 	INPUT_FILE=$(head -n1 <"$CACHE_FILE")
@@ -152,8 +155,6 @@ done
 ##
 # Gráfico de barras (Último día)
 
-TMP_DIR=$(mktemp -d)
-
 IFS=, read -r CAL_TARGET FAT_TARGET CARB_TARGET PROT_TARGET < <(
 	tail -n +2 "$TARGET_MACROS"
 )
@@ -172,7 +173,5 @@ convert +append \
 	"${TMP_DIR}/carbs.png" \
 	"${TMP_DIR}/protein.png" \
 	"$OUTPUT_DAILY_COMBINED" >/dev/null 2>&1
-
-rm -rf "$TMP_DIR"
 
 notify-send -e -i text-csv "$(basename "$0")" "Informe compilado"

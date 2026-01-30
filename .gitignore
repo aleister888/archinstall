@@ -39,3 +39,5 @@ bookmarks
 qt5ct.conf
 qt6ct.conf
 .stfolder
+
+assets/packages/nix_local.json

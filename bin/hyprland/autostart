@@ -41,9 +41,6 @@ if [ -e /sys/class/power_supply/BAT0 ]; then
 	done
 fi &
 
-# https://github.com/emersion/hydroxide?tab=readme-ov-file#usage
-[ -x /usr/bin/hydroxide ] && hydroxide imap &
-
 # Si hay una tarjeta de audio USB y hay VST instalados, abrimos REAPER
 if lsusb | grep -i audio &&
 	[ -e "$WINEPREFIX/drive_c/Program Files/Common Files/VST3" ]; then

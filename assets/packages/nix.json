@@ -1,31 +1,22 @@
 {
   "general": [
     {
-      "name": "pinta",
-      "version": "25.11"
+      "name": "pinta"
     },
     {
-      "name": "hydroxide",
-      "version": "25.11"
-    },
-    {
-      "name": "lrcget",
-      "version": "25.11"
+      "name": "lrcget"
     }
   ],
   "entorno": [
     {
-      "_comment": "drag and drop support for lf file manager",
-      "name": "dragon-drop",
-      "version": "25.11"
+      // drag and drop support for lf file manager
+      "name": "dragon-drop"
     },
     {
-      "name": "wl-color-picker",
-      "version": "25.11"
+      "name": "wl-color-picker"
     },
     {
-      "name": "eyed3",
-      "version": "25.11"
+      "name": "eyed3"
     },
     {
       "name": "looking-glass-client",
@@ -34,45 +25,28 @@
   ],
   "dev": [
     {
-      "name": "dmg2img",
-      "version": "25.11"
+      "name": "dmg2img"
     },
     {
-      "_comment": "android: para extraer vmbeta.img desde payload.bin",
-      "name": "payload-dumper-go",
-      "version": "25.11"
+      // android: para extraer vmbeta.img desde payload.bin
+      "name": "payload-dumper-go"
     },
     {
-      "name": "jetbrains.idea-community",
-      "version": "25.11"
+      "name": "jetbrains.idea-community"
     },
     {
-      "name": "github-desktop",
-      "version": "25.11"
-    }
-  ],
-  "universidad": [
-    {
-      "name": "weka",
-      "version": "25.11"
-    },
-    {
-      "name": "digital",
-      "version": "25.11"
+      "name": "github-desktop"
     }
   ],
   "guitarra": [
     {
-      "name": "gmetronome",
-      "version": "25.11"
+      "name": "gmetronome"
     },
     {
-      "name": "winetricks",
-      "version": "25.11"
+      "name": "winetricks"
     },
     {
-      "name": "mono",
-      "version": "25.11"
+      "name": "mono"
     },
     {
       "name": "wineWowPackages.staging",
