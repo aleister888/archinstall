@@ -13,7 +13,7 @@
 #   - Nombre de la partición principal ($ROOT_PART_NAME)
 #   - Nombre de la partición desencriptada abierta ($CRYPT_NAME)
 #   - Nombre del grupo LVM ($VG_NAME)
-#   - Nombre del host ($HOSTNAME)
+#   - Nombre del host ($LOCAL_HOSTNAME)
 
 source "$REPO_CLONE_DIR/assets/shell/shell-utils"
 
@@ -309,12 +309,12 @@ get_username() {
 }
 
 get_hostname() {
-	[ -n "$HOSTNAME" ] && return
+	[ -n "$LOCAL_HOSTNAME" ] && return
 	while true; do
-		HOSTNAME=$(whip_input "Configuracion de hostname" "Introduce el nombre del equipo:") ||
+		LOCAL_HOSTNAME=$(whip_input "Configuracion de hostname" "Introduce el nombre del equipo:") ||
 			ask_cancel_install
 
-		[ -n "$HOSTNAME" ] && confirm_input "hostname" "$HOSTNAME" && break
+		[ -n "$LOCAL_HOSTNAME" ] && confirm_input "hostname" "$LOCAL_HOSTNAME" && break
 	done
 }
 

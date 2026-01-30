@@ -39,7 +39,7 @@ while getopts ":du:r:D:l:t:U:h:" opt; do
 	l) export LUKS_PASSWORD="$OPTARG" ;;
 	t) export TIMEZONE="$OPTARG" ;;
 	U) export USERNAME="$OPTARG" ;;
-	h) export HOSTNAME="$OPTARG" ;;
+	h) export LOCAL_HOSTNAME="$OPTARG" ;;
 	D) validate_drive "$OPTARG" ;;
 	:) error "la opción -$OPTARG requiere un argumento" ;;
 	\?) error "Error: opción inválida -$OPTARG" ;;

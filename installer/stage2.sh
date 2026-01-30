@@ -53,7 +53,7 @@ install_grub() {
 }
 
 hostname_conf() {
-	echo "$HOSTNAME" >/etc/hostname
+	echo "$LOCAL_HOSTNAME" >/etc/hostname
 
 	# Este archivo hosts bloquea el acceso a sitios maliciosos y de publicidad
 	timeout -k 1s 3s curl -s --head --request GET "https://www.gnu.org/" >/dev/null 2>&1 &&
@@ -61,7 +61,7 @@ hostname_conf() {
 
 	cat <<-EOF >>/etc/hosts
 		127.0.0.1 localhost
-		127.0.0.1 $HOSTNAME.localdomain $HOSTNAME
+		127.0.0.1 $LOCAL_HOSTNAME.localdomain $LOCAL_HOSTNAME
 		127.0.0.1 localhost.localdomain
 		127.0.0.1 local
 	EOF
