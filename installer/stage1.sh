@@ -18,42 +18,36 @@
 source "$REPO_CLONE_DIR/assets/shell/shell-utils"
 
 whip_msg() {
-	whiptail --backtitle "$REPO_URL" --title "$1" --msgbox "$2" 15 60
+	whiptail --backtitle "$REPO_URL" --title "$1" --msgbox "$2" 15 60 \
+		3>&1 1>&2 2>&3 || { 3>&- return 1; }
 }
 
 whip_yes() {
-	whiptail --backtitle "$REPO_URL" --title "$1" --yesno "$2" 15 60
+	whiptail --backtitle "$REPO_URL" --title "$1" --yesno "$2" 15 60 \
+		3>&1 1>&2 2>&3 || { 3>&- return 1; }
 }
 
 whip_password() {
-	whiptail --backtitle "$REPO_URL" \
-		--title "$1" \
-		--passwordbox "$2" \
-		10 60 3>&1 1>&2 2>&3
+	whiptail --backtitle "$REPO_URL" --title "$1" --passwordbox "$2" 15 60 \
+		3>&1 1>&2 2>&3 || { 3>&- return 1; }
 }
 
 whip_menu() {
-	local TITLE=$1
-	local MENU=$2
+	local TITLE=$1 MENU=$2
 	shift 2
-	whiptail --backtitle "$REPO_URL" \
-		--title "$TITLE" --menu "$MENU" 15 60 5 $@ 3>&1 1>&2 2>&3
+	whiptail --backtitle "$REPO_URL" --title "$TITLE" --menu "$MENU" 15 60 8 $@ \
+		3>&1 1>&2 2>&3 || { 3>&- return 1; }
 }
 
 whip_input() {
-	local TITLE=$1
-	local INPUTBOX=$2
-	whiptail --backtitle "$REPO_URL" \
-		--title "$TITLE" --inputbox "$INPUTBOX" \
-		10 60 3>&1 1>&2 2>&3
+	local TITLE=$1 INPUTBOX=$2
+	whiptail --backtitle "$REPO_URL" --title "$TITLE" --inputbox "$INPUTBOX" 15 60 \
+		3>&1 1>&2 2>&3 || { 3>&- return 1; }
 }
 
-ask_cancel_installation() {
-	if whip_yes "Cancelar" "¿Deseas cancelar la instalación?"; then
-		exit 1
-	else
-		return 0
-	fi
+ask_cancel_install() {
+	whip_yes "Cancelar" "¿Deseas cancelar la instalación?" && exit 1
+	return 0
 }
 
 wait_return() {
@@ -79,7 +73,7 @@ disk_scheme_show() {
 		EOF
 	)
 	if ! whip_yes "Confirmar particionado" "$SCHEME_PREVIEW"; then
-		ask_cancel_installation
+		ask_cancel_install
 	fi
 }
 
@@ -240,7 +234,7 @@ select_from_list() {
 		)
 
 		[ -n "$SELECTION" ] && break
-		ask_cancel_installation
+		ask_cancel_install
 	done
 
 	echo "$SELECTION"
@@ -266,21 +260,18 @@ get_timezone() {
 #-------------------------------------------------------------------------------
 
 get_password() {
-	local PASSWORD_1 PASSWORD_2
-	local TITLE_1=$1
-	local TITLE_2=$2
-	local BOX_1=$3
-	local BOX_2=$4
+	local PASS_ENTERED PASS_CONFIRM
+	local TITLE_ENTERED=$1 TITLE_CONFIRM=$2 BOX_ENTERED=$3 BOX_CONFIRM=$4
 
 	while true; do
-		PASSWORD_1=$(whip_password "$TITLE_1" "$BOX_1")
-		PASSWORD_2=$(whip_password "$TITLE_2" "$BOX_2")
+		PASS_ENTERED=$(whip_password "$TITLE_ENTERED" "$BOX_ENTERED")
+		PASS_CONFIRM=$(whip_password "$TITLE_CONFIRM" "$BOX_CONFIRM")
 
-		# Si ambas contraseñas coinciden devolver el resultado
-		if [ "$PASSWORD_1" == "$PASSWORD_2" ] && [ -n "$PASSWORD_1" ]; then
-			echo "$PASSWORD_1" && return
+		if [ "$PASS_ENTERED" == "$PASS_CONFIRM" ] && [ -n "$PASS_ENTERED" ]; then
+			echo "$PASS_ENTERED" && return
 		else
-			whip_msg "Error" "Las contraseñas no coinciden. Inténtalo de nuevo."
+			whip_yes "Error" "Las contraseñas no coinciden. Inténtalo de nuevo." ||
+				ask_cancel_install
 		fi
 	done
 }
@@ -312,20 +303,20 @@ confirm_input() {
 get_username() {
 	[ -n "$USERNAME" ] && return
 	while true; do
-		USERNAME=$(whip_input "Nombre usuario" "Ingresa el nombre del usuario:")
+		USERNAME=$(whip_input "Nombre usuario" "Ingresa el nombre del usuario:") ||
+			ask_cancel_install
 
 		[ -n "$USERNAME" ] && confirm_input "nombre de usuario" "$USERNAME" && break
-		ask_cancel_installation
 	done
 }
 
 get_hostname() {
 	[ -n "$HOSTNAME" ] && return
 	while true; do
-		HOSTNAME=$(whip_input "Configuracion de hostname" "Introduce el nombre del equipo:")
+		HOSTNAME=$(whip_input "Configuracion de hostname" "Introduce el nombre del equipo:") ||
+			ask_cancel_install
 
 		[ -n "$HOSTNAME" ] && confirm_input "hostname" "$HOSTNAME" && break
-		ask_cancel_installation
 	done
 }
 
