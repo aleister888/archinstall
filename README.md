@@ -42,6 +42,13 @@ bash <(curl https://raw.githubusercontent.com/aleister888/archinstall/main/insta
 - La versión estable también soporta el uso de flags.
 - También puede usarse el flag `-d` para activar el modo depurado, que hace que el script se detenga completamente ante cualquier error.
 
+## 🔧 Post-instalación
+
+Una vez instalado el sistema podemos actualizar el repositorio con:
+```bash
+cd "$HOME/.dotfiles" && ./update.sh
+```
+
 ## 🧩 Características
 
 - 🔐 **LUKS y LVM**: `swap` y `/` encriptados (`/boot` sin encriptar)
