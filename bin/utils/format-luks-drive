@@ -1,0 +1,164 @@
+#!/bin/bash
+# shellcheck disable=SC2162,SC2086
+
+source "$HOME/.dotfiles/assets/shell/shell-utils"
+
+validate_drive() {
+	local disk="$1" out_name
+
+	if lsblk "/dev/$disk" >/dev/null 2>&1; then
+		out_name="$disk"
+	elif lsblk "$disk" >/dev/null 2>&1; then
+		out_name="${disk#/dev/}"
+	fi
+
+	echo "$out_name"
+}
+
+read_password() {
+	local password
+
+	stty -echo
+	IFS= read -r password || {
+		stty echo
+		return 1
+	}
+	stty echo
+	echo >&2 # Nueva línea después de leer la contraseña
+
+	if [ -n "$password" ]; then
+		echo "$password"
+		return 0
+	else
+		return 1
+	fi
+}
+
+read_input() {
+	local input
+
+	read input || return 1
+
+	if [ -n "$input" ]; then
+		echo "$input"
+		return 0
+	else
+		return 1
+	fi
+}
+
+ensure_drive_unused() {
+	for m in /dev/mapper/*; do
+		basename="$(basename "$m")"
+		[ "$basename" = "control" ] && continue
+
+		if sudo /usr/bin/cryptsetup status "$m" 2>/dev/null | grep -q "/dev/$device"; then
+			sudo /usr/bin/umount "$m" &>/dev/null
+			sudo /usr/bin/cryptsetup close "$m"
+		fi
+	done
+	sudo /usr/bin/umount -R /dev/"$device"* &>/dev/null || true
+}
+
+#-------------------------------------------------------------------------------
+
+sudoloop
+
+device="$(validate_drive "$1")"
+random_string="$(openssl rand -base64 6 | tr -dc 'a-zA-Z')"
+first_partition="$(get_partition_name "${device}" 1)"
+
+if [ -z "$device" ]; then
+	log "El dispositivo $1 no existe"
+	exit 1
+fi
+
+# Pedimos confirmación
+#-------------------------------------------------------------------------------
+
+get_confirmation() {
+	local confirm
+	read -r confirm
+	confirm="${confirm//[$'\t\r\n ']/}"
+	if [ "$confirm" = "SI" ]; then
+		return 0
+	else
+		echo "Confirmación fallida. Se esperaba 'SI' pero se recibió: '$confirm'"
+		return 1
+	fi
+}
+
+printf 'Esto borrará completamente todos los datos en %s\n' "${device}"
+printf 'Escribe "SI" (en mayúsculas) para continuar: '
+get_confirmation || exit
+
+printf '¿Estás seguro?: '
+get_confirmation || exit
+
+# Formateamos el disco
+#-------------------------------------------------------------------------------
+
+get_password() {
+	local PASS_ENTERED PASS_CONFIRM
+
+	while true; do
+		printf 'Introduce la contraseña: ' >&2
+		PASS_ENTERED=$(read_password)
+		printf 'Reintroduce la contraseña: ' >&2
+		PASS_CONFIRM=$(read_password)
+
+		if [ "$PASS_ENTERED" == "$PASS_CONFIRM" ] && [ -n "$PASS_ENTERED" ]; then
+			echo "$PASS_ENTERED"
+			return 0
+		else
+			echo "Error: Las contraseñas no coinciden. Inténtalo de nuevo." >&2
+		fi
+	done
+}
+
+ensure_drive_unused
+sudo /usr/bin/wipefs --all "/dev/$device" &>/dev/null
+
+password=$(get_password) || exit 1
+
+printf 'Introduce el nombre del punto de montaje: '
+mountpoint=$(read_input) || exit 1
+
+# Crear particion encriptada
+#-------------------------------------------------------------------------------
+
+sudo /usr/bin/parted -s "/dev/$device" -- mklabel gpt
+sudo /usr/bin/parted -s "/dev/$device" -- mkpart primary 0% 100%
+
+echo "$password" | sudo /usr/bin/cryptsetup --type luks2 -q luksFormat "/dev/$first_partition"
+echo "$password" | sudo /usr/bin/cryptsetup open "/dev/$first_partition" "$random_string"
+
+# Formatear y montar partición
+#-------------------------------------------------------------------------------
+
+sudo /usr/bin/mkfs.xfs /dev/mapper/"$random_string" &>/dev/null
+sudo /usr/bin/mkdir -p /mnt/"$mountpoint"
+sudo /usr/bin/mount /dev/mapper/"$random_string" /mnt/"$mountpoint" &>/dev/null
+sudo /usr/bin/chown $USER:$USER /mnt/games
+
+sudo /usr/bin/systemctl daemon-reload &>/dev/null
+
+# Crear y añadir keyfile
+#-------------------------------------------------------------------------------
+
+encrypted_partition_uuid="$(sudo /usr/bin/blkid -s UUID -o value "/dev/$first_partition")"
+keyfile="/root/${encrypted_partition_uuid}.key"
+
+sudo /usr/bin/dd if=/dev/urandom of="$keyfile" bs=4096 count=1 &>/dev/null
+sudo /usr/bin/chmod 600 "$keyfile"
+echo "$password" | sudo /usr/bin/cryptsetup luksAddKey "/dev/$first_partition" "$keyfile"
+
+# Añadir a fstab y crypttab
+#-------------------------------------------------------------------------------
+
+unencrypted_partition_uuid="$(sudo /usr/bin/blkid -s UUID -o value "/dev/mapper/$random_string")"
+
+echo "${random_string} UUID=${encrypted_partition_uuid} ${keyfile} luks" |
+	sudo /usr/bin/tee -a /etc/crypttab &>/dev/null
+echo "UUID=${unencrypted_partition_uuid} /mnt/${mountpoint} xfs defaults 0 2" |
+	sudo /usr/bin/tee -a /etc/fstab &>/dev/null

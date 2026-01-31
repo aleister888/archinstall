@@ -89,16 +89,8 @@ disk_scheme_setup() {
 				) && break
 			done
 
-		case "$ROOT_DISK" in
-		*"nvme"* | *"mmcblk"*)
-			BOOT_PART="$ROOT_DISK"p1
-			ROOT_PART="$ROOT_DISK"p2
-			;;
-		*)
-			BOOT_PART="$ROOT_DISK"1
-			ROOT_PART="$ROOT_DISK"2
-			;;
-		esac
+		BOOT_PART=$(get_partition_name "$ROOT_DISK" 1)
+		ROOT_PART=$(get_partition_name "$ROOT_DISK" 2)
 
 		{ [ "$DISK_NO_CONFIRM" = true ] || disk_scheme_show; } && return
 

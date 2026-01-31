@@ -128,3 +128,23 @@ check_command() {
 check_connection() {
 	curl -s --connect-timeout 3 https://dns.google/ >/dev/null
 }
+
+#-------------------------------------------------------------------------------
+
+get_partition_name() {
+	_block_device="$1"
+	_number="$2"
+	case "$_block_device" in
+	*"nvme"* | *"mmcblk"*) echo "${_block_device}p${_number}" ;;
+	*) echo "${_block_device}${_number}" ;;
+	esac
+}
+
+sudoloop() {
+	sudo -v
+	while true; do
+		sudo -n true
+		sleep 60
+		kill -0 "$$" || exit
+	done 2>/dev/null &
+}
