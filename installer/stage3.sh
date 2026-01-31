@@ -8,6 +8,7 @@
 # Hacemos source porque el shell del usuario normal se ha iniciado desde
 # stage2.sh sin tener todavia el perfil del shell en ~/.profile
 source "$HOME/.dotfiles/assets/shell/profile"
+source "$HOME/.dotfiles/assets/shell/shell-utils-sh"
 source "$HOME/.dotfiles/assets/shell/shell-utils"
 
 PATH="$PATH:$HOME/.dotfiles/installer/modules"

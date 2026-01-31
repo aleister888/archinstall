@@ -7,6 +7,7 @@
 
 # Esta parte del script se ejecuta ya dentro de la instalación (chroot).
 
+source "/home/$USERNAME/.dotfiles/assets/shell/shell-utils-sh"
 source "/home/$USERNAME/.dotfiles/assets/shell/shell-utils"
 
 pacinstall() {

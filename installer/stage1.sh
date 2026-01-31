@@ -15,6 +15,7 @@
 #   - Nombre del grupo LVM ($VG_NAME)
 #   - Nombre del host ($LOCAL_HOSTNAME)
 
+source "$REPO_CLONE_DIR/assets/shell/shell-utils-sh"
 source "$REPO_CLONE_DIR/assets/shell/shell-utils"
 
 whip_msg() {
