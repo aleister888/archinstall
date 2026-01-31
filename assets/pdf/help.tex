@@ -11,11 +11,12 @@
 \usepackage{caption}
 \usepackage{cprotect}
 
+
 \usepackage{xcolor}
 \definecolor{mycolor}{HTML}{3CB5D6}
 
-% Márgenes y espaciado
-\usepackage[
+
+\usepackage[    % Márgenes y espaciado:
 	a4paper,      % Tamaño del papel
 	top=3cm,      % Márgen superior
 	bottom=2.5cm, % Márgen inferior
@@ -29,9 +30,9 @@
 \usepackage[nobottomtitles*]{titlesec}
 \titlespacing*{\section}{0pt}{7.5pt}{8pt}
 
+
 \usepackage{fontspec}
 \usepackage[T1]{fontenc}
-
 \setmainfont[
 	Path = /usr/share/fonts/TTF/,
 	UprightFont = FiraSans-Book.ttf,
@@ -39,13 +40,13 @@
 	BoldFont = FiraSans-Bold.ttf,
 	BoldItalicFont = FiraSans-BoldItalic.ttf
 ]{DejaVuMathTeXGyre.ttf}
-
 \setmonofont{Inconsolata Nerd Font}
+
 
 \usepackage[spanish]{babel}
 
-% Notas de colores
-\usepackage{tcolorbox}
+
+\usepackage{tcolorbox} % Cajas de notas
 \tcbuselibrary{skins}
 \newtcolorbox{mybox}[1]{
 	width=\textwidth,
@@ -58,15 +59,20 @@
 	sharp corners
 }
 
-% Enlaces clicables
 \usepackage[colorlinks=true, linkcolor=mycolor, urlcolor=mycolor]{hyperref}
 
-\usepackage{fancyhdr}
 
+\usepackage{fancyhdr}
 \fancyhf{} % Limpia header y footer
 \fancyhead[C]{\small\texttt{https://github.com/aleister888/archinstall}}
+\setlength{\headsep}{22pt}
+
+
+%-------------------------------------------------------------------------------
+
 
 \begin{document}
+
 
 \pagestyle{empty}
 \vspace*{.3\textheight}
@@ -74,29 +80,46 @@
 {\hfill\Large Documentación e información útil\par}
 \clearpage
 
+
 \tableofcontents
 \clearpage
 
+
 \pagestyle{fancy}
+
+% TODO: FAQ
+% \section{FAQ}
 
 \section{Estructura del repositorio}
 
-%TODO
-
-\subsection{Instalador}
-
-%TODO
+La información contenida en este documento es \emph{resumida} y tiene únicamente la intención de proporcionar una \emph{visión general} del proyecto. Este documento \emph{no se actualiza con la misma frecuencia que el repositorio}, por lo que es posible que \emph{no refleje el estado actual} del mismo. Para información precisa y actualizada, se recomienda consultar directamente el repositorio.
 
 \subsection{Entorno}
 
-%TODO
+Tanto el instalador como los distintos scripts incluidos con el repositorio utilizan funciones contenidas en el archivo \texttt{assets/shell/shell-utils-sh}. Este provee funciones para facilitar el logging y la creación de directorios temporales. De modo que todos los scripts depositan sus logs en \texttt{\$HOME/.cache/dotfiles\_log/} y sus archivos temporales en \texttt{/tmp/00\_dotfiles/}.
+
+\medskip
+Además, los scripts que utilizan bash pueden importar \texttt{shell-utils}, que facilita el depurado guardando en los logs los distintos fallos de los scripts, especificando el número de linea en el que se dio el error.
+
+\subsection{Instalador}
+
+El instalador se divide en varias etapas, cada una implementada en un script que llama a la siguiente al completarse:
+
+\begin{itemize}
+	\item \texttt{install.sh}: Se encarga de instalar las dependencias necesarias para el instalador y de procesar los argumentos de instalación.
+	\item \texttt{stage1.sh}: Se ejecuta desde la ISO de Arch. Utiliza whiptail para preguntar por las opciones de configuración, formatea los discos, instala los paquetes básicos mediante basestrap, crea los usuarios y copia el repositorio al entorno chroot.
+	\item \texttt{stage2.sh}:Se ejecuta dentro del chroot como root, configurando el sistema base.
+	\item \texttt{stage3.sh}: Se ejecuta dentro del chroot como el usuario no privilegiado creado previamente. Durante su ejecución utiliza una configuración temporal de sudo sin contraseña para realizar tareas que requieren permisos administrativos. Configura el entorno de usuario, los servicios y otros ajustes, y al finalizar aplica una configuración de sudo más restrictiva.
+\end{itemize}
+
+Si \texttt{install.sh} se ejecuta con el flag \texttt{-d} el instalador se detendrá ante cualquier error.
 
 \section{Compartir audio}
 
-Al iniciar Hyprland se crea un \emph{micrófono virtual}, que podemos enlazar con el audio de cualquier dispositivo o aplicación. Podemos así, compartir el audio de las aplicaciones junto con nuestra voz. Útil para aplicaciones que no tienen implementada esta funcionalidad o para compartir el audio de las aplicaciones al retransmitir nuestra pantalla.
+Tanto el instalador como los distintos scripts incluidos en el repositorio utilizan funciones definidas en \texttt{assets/shell/shell-utils-sh}. Este archivo proporciona utilidades para facilitar el \emph{logging} y la creación de directorios temporales, de modo que todos los scripts registran sus logs en \texttt{\$HOME/.cache/dotfiles\_log/} y guardan archivos temporales en \texttt{/tmp/00\_dotfiles/}.
 
 \medskip
-\noindent Para esto tendremos que elegir \emph{my-virtualmic} como nuestro micrófono predeterminado. Y añadir el audio de nuestro micrófono real y nuestras aplicaiones mediante el script \texttt{pipewire-virtualmic-select (Alt+Shift+A)}.
+Además, los scripts que utilizan \texttt{bash} pueden importar \texttt{shell-utils}, lo que permite un depurado más sencillo: los errores de los scripts se registran en los logs, indicando el número de línea en el que ocurrió cada fallo.
 
 \section{Scripts útiles}
 
@@ -110,6 +133,7 @@ Parecido a music-convert, crea un mirror de una biblioteca de comics (archivos \
 
 Este script genera un archivo comprimido \texttt{tar.gz} que contiene una copia de seguridad del directorio especificado como primer argumento, y lo guarda en el directorio indicado como segundo argumento. Además, elimina las copias de seguridad antiguas, conservando únicamente aquellas cuya antigüedad no supere un número máximo de días.
 
+\medskip
 Por defecto, este límite es de 7 días, aunque puede modificarse proporcionando dicho valor como tercer argumento al ejecutar el script.
 
 \subsection{exif-remove}
@@ -501,9 +525,7 @@ Para conectaros a la máquina virtual de nuestra red debemos configurar el Firew
 \begin{centering}
 	{
 		\fontsize{9.75}{9}\selectfont
-		\texttt{
-			netsh advfirewall firewall add rule name=\path{"}RDP\path{"} protocol=TCP dir=in localport=3389 action=allow
-		}
+		\texttt{netsh advfirewall firewall add rule name=\path{"}RDP\path{"} protocol=TCP dir=in localport=3389 action=allow}
 	}
 \end{centering}
 
@@ -530,9 +552,7 @@ sudo sh -c 'pacman -Sy ufw; systemctl enable ufw; ufw enable'
 
 Podemos añadir unas reglas muy básicas a nuestro firewall \emph{(que se aplicarán cuando reiniciemos nuestro equipo)} con:
 
-\begin{minted}[%
-  fontsize=\small,
-]{bash}
+\begin{minted}[fontsize=\small]{bash}
 ufw allow 80/tcp
 ufw allow 443/tcp
 ufw allow 3020          # Redmine
@@ -549,7 +569,7 @@ ufw default allow outgoing
 
 \clearpage
 
-\subsection{Aviso de Uso}
+\section{Aviso de Uso}
 
 Este proyecto es para uso personal. Se comparte con la intención de que pueda ser útil para otros, pero se proporciona tal cual, sin ninguna garantía. No se asume responsabilidad por ninguna pérdida de datos o problemas que puedan surgir del uso de este proyecto.
 
