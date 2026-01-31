@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC1091
 
 # Script para configurar diversas partes del sistema
 # - Invocado por /update.sh

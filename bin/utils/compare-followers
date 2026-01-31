@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC1091
 
 # Script para ver:
 # - Quién de tus FOLLOWS no te sigue de vuelta

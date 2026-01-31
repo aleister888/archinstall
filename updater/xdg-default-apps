@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC1091
 
 # Script para configurar las aplicaciones predeterminadas según el tipo de archivo
 # - Invocado por /update.sh

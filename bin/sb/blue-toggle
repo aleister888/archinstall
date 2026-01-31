@@ -1,8 +1,9 @@
-#!/bin/bash
+#!/bin/sh
+# shellcheck disable=SC1091
 
 # Activar/Desactivar hyprsunset (Filtro de la luz azul)
 
-source "$HOME/.dotfiles/assets/shell/shell-utils"
+. "$HOME/.dotfiles/assets/shell/shell-utils-sh"
 
 init_log status_bar
 

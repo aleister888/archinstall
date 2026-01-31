@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2155,SC2086
+# shellcheck disable=SC2155,SC2086,SC1091
 
 # TODO: Añadir opcion para verificar la integridad de los archivos, podemos
 # reutilizar la lógica dentro de flac-corruption-check y separarla en otro

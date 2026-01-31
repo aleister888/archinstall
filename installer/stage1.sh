@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2068,SC2155
+# shellcheck disable=SC2068,SC2155,SC1091
 
 # Auto-instalador para Arch Linux (Parte 1)
 # por aleister888 <pacoe1000@gmail.com>

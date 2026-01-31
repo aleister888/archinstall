@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC1091
 
 # Script para auto-configurar TauonMusicBox
 # https://github.com/Taiko2k/TauonMusicBox

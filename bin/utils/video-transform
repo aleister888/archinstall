@@ -1,5 +1,5 @@
-#!/bin/bash -x
-# shellcheck disable=SC2086,2012,2116
+#!/bin/bash
+# shellcheck disable=SC2086,SC2012,SC2116,SC1091
 
 # Recodifíca videos a h.264 con la opción de rotarlos
 

@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck disable=SC1091
 
 # Script para instalar los drivers de:
 # https://www.asus.com/networking-iot-servers/adapters/all-series/usbbt400/
