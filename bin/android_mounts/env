@@ -4,9 +4,10 @@
 source "$HOME/.dotfiles/assets/shell/shell-utils"
 
 DMENU="wofi --show dmenu -L 5"
-TMP_DIR="$(get_tmp android_mount)"
-MOUNT_LOG="$TMP_DIR/mount.log"
-UNMOUNT_LOG="$TMP_DIR/unmount.log"
+LOG_DIR="$(init_log android_mount)"
+MOUNT_LOG="$LOG_DIR/mount.log"
+UNMOUNT_LOG="$LOG_DIR/unmount.log"
+TMP_DIR=$(get_tmp android_mounts)
 BASENAME="$TMP_DIR/mount_"
 
 notify() {

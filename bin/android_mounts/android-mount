@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2086
+# shellcheck disable=SC2086,SC1091
 
 # Script para montar dispositivos android
 
@@ -39,20 +39,21 @@ if [ -z "$CONNECTED_ANDROID" ]; then
 	exit 1
 fi
 
-CHOSEN="$(echo "$CONNECTED_ANDROID" | $DMENU -p "¿Qué dispositivo montar?")"
+CHOSEN="$(echo "$CONNECTED_ANDROID" | $DMENU -p "¿Qué dispositivo montar?")" || true
 [ -z "$CHOSEN" ] && exit 1
 NUMBER="${CHOSEN%%:*}"
 MOUNTPOINT=$(create_mountpoint)
 
-if sudo /usr/bin/simple-mtpfs -o allow_other \
+if MOUNT_OUTPUT=$(sudo /usr/bin/simple-mtpfs -o allow_other \
 	-o fsname="simple-mtpfs-$(escape_name "$CHOSEN")" \
-	--device "$NUMBER" "$MOUNTPOINT" 2>$MOUNT_LOG; then
+	--device "$NUMBER" "$MOUNTPOINT" 2>&1); then
 
-	DEVICE="$(echo $CHOSEN | grep -oP "[0-9]: \K.*(?= \(MTP\))")"
-	notify "$(basename "$0")" "<i>$DEVICE</i>\nMontado: $MOUNTPOINT"
+	DEVICE="$(echo $CHOSEN | grep -oP "[0-9]: \K.*(?= \(MTP.*\))")" || DEVICE="$CHOSEN"
+	notify "$(basename "$0")" "<i>$DEVICE</i> Montado"
 	xdg-open "$MOUNTPOINT"
-
 else
-	notify "$(basename "$0")" "$(cat $MOUNT_LOG)"
+	notify "$(basename "$0")" "$MOUNT_OUTPUT"
 	rm -rf "$MOUNTPOINT"
 fi
+
+[ -n "$MOUNT_OUTPUT" ] && { echo "$MOUNT_OUTPUT" | tee -a "$MOUNT_LOG"; }

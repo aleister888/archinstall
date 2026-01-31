@@ -13,10 +13,16 @@ TMP_DIR="$(get_random_tmp)"
 ZIP_PATH="$TMP_DIR/bt400-driver.zip"
 EXTRACT_PATH="$TMP_DIR/windows_driver"
 HEX_FILE="BCM20702A1_001.002.014.1443.1467.hex"
+OUT_FILE="/lib/firmware/brcm/BCM20702A1-0b05-17cb.hcd"
 
-download "$DRIVER_URL" "$ZIP_PATH"
+if [ -f "$OUT_FILE" ]; then
+	log "El driver ya está instalado"
+	exit 1
+fi
 
-{ lsusb | grep BCM20702A0 | grep -oE '....:....'; } || log "El dispositivo no está conectado"
+download "$DRIVER_URL" "$ZIP_PATH" >/dev/null
+
+{ lsusb | grep BCM20702A0 | grep -oE '....:....'; } || log "El dispositivo no está conectado" WARN
 
 aunpack "$ZIP_PATH" -X "$EXTRACT_PATH" -f -q
 
@@ -24,8 +30,7 @@ sudo /usr/bin/mkdir -p /lib/firmware/brcm/
 
 # Convertir el archivo .hex a .hcd y moverlo al directorio de firmware
 cd "$EXTRACT_PATH/Win10_USB-BT400_DRIVERS/Win10_USB-BT400_Driver_Package/64"
-sudo /usr/bin/hex2hcd "$HEX_FILE" -o /lib/firmware/brcm/BCM20702A1-0b05-17cb.hcd
+sudo /usr/bin/hex2hcd "$HEX_FILE" -o "$OUT_FILE" >/dev/null 2>&1 &&
+	echo "Driver instalado correctamente."
 
 rm -rf "$TMP_DIR"
-
-echo "Driver instalado correctamente."

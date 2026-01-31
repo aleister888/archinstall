@@ -39,7 +39,7 @@ BAK_NAME="$(date +'%Y-%m-%d_%H-%M-%S').$EXTENSION"
 cd "$OG_DIR"
 tar -czf "${BAK_DIR}/${BAK_NAME}" .
 
-echo "Copia de seguridad de ${OG_DIR} creada en ${BAK_DIR}/${BAK_NAME}"
+print_msg "Copia de seguridad de ${OG_DIR} creada en ${BAK_DIR}/${BAK_NAME}"
 
 [ "$DELETE_OLD" = true ] &&
 	find "$BAK_DIR" -type f -name "*.$EXTENSION" -mtime +$DAYS -exec rm {} \;

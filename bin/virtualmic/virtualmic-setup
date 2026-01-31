@@ -21,6 +21,8 @@ mic_setup() {
 		pw-link my-combined-sink:monitor_FL my-virtualmic:input_FL
 		pw-link my-combined-sink:monitor_FR my-virtualmic:input_FR
 
+		pactl set-sink-volume my-combined-sink 100%
+
 		# Reiniciamos la lista con los sinks vinculados
 		install /dev/null "$ADDED_LIST"
 	fi
