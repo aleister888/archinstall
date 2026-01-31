@@ -3,7 +3,7 @@
 [ "$(id -u)" -ne 0 ] && exit 1
 
 # Si pacman o yay se están ejecutando el script se detiene
-(pgrep yay >/dev/null || pgrep pacman >/dev/null) && exit 1
+{ pgrep yay >/dev/null || pgrep pacman >/dev/null; } && exit 1
 
 KERNELS=()
 DELETED_KERNELS=0

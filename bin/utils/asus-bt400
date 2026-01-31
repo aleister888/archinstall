@@ -5,33 +5,25 @@
 
 set -e
 
-source "$REPO_DIR/assets/shell/shell-utils"
+source "$REPO_DIR/assets/shell/shell-utils-sh"
 
-# Variables
 DRIVER_URL="https://dlcdnets.asus.com/pub/ASUS/wireless/USB-BT400/DR_USB_BT400_1201710_Windows.zip"
 TMP_DIR="$(get_random_tmp)"
 ZIP_PATH="$TMP_DIR/bt400-driver.zip"
 EXTRACT_PATH="$TMP_DIR/windows_driver"
 HEX_FILE="BCM20702A1_001.002.014.1443.1467.hex"
-HCD_FILE="/lib/firmware/brcm/BCM20702A1-0b05-17cb.hcd"
-FIRMWARE_DIR="/lib/firmware/brcm/"
 
-# Descargar el archivo zip del driver
-curl -L "$DRIVER_URL" -o "$ZIP_PATH" 2>/dev/null
+download "$DRIVER_URL" "$ZIP_PATH"
 
-# Obtener el ID USB del dispositivo
-usbid=$(lsusb | grep BCM20702A0 | grep -oE '....:....')
-echo "USB ID: $usbid"
+{ lsusb | grep BCM20702A0 | grep -oE '....:....'; } || log "El dispositivo no está conectado"
 
-# Extraer el archivo zip
 aunpack "$ZIP_PATH" -X "$EXTRACT_PATH" -f -q
 
-# Crear el directorio de firmware si no existe
-sudo /usr/bin/mkdir -p "$FIRMWARE_DIR"
+sudo /usr/bin/mkdir -p /lib/firmware/brcm/
 
 # Convertir el archivo .hex a .hcd y moverlo al directorio de firmware
 cd "$EXTRACT_PATH/Win10_USB-BT400_DRIVERS/Win10_USB-BT400_Driver_Package/64"
-sudo /usr/bin/hex2hcd "$HEX_FILE" -o "$HCD_FILE"
+sudo /usr/bin/hex2hcd "$HEX_FILE" -o /lib/firmware/brcm/BCM20702A1-0b05-17cb.hcd
 
 rm -rf "$TMP_DIR"
 

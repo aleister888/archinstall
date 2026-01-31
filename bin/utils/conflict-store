@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# Script para mover todos los conflictos de syncthing a un directorio común
+# Mover todos los conflictos de syncthing a un directorio común
 
 CONFLICT_DIR="$HOME/.local/share/syncthing-conflicts"
+
 [ ! -d "$CONFLICT_DIR" ] && mkdir -p "$CONFLICT_DIR"
 
 # Buscar y mover archivos de conflicto

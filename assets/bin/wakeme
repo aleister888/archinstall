@@ -80,9 +80,7 @@ wakeme() {
 	local VOL_OG
 	VOL_OG="$(pamixer --get-volume)"
 
-	# Cambiamos el volumen a $VOL_SET
 	pactl set-sink-volume @DEFAULT_SINK@ "$VOL_LEVEL"%
-	# Hacemos sonar alarma
 	ffplay -nodisp -autoexit "$ALARMA" &
 
 	# Esperar a que cierre este menú para cerrar el proceso que esta

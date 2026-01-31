@@ -1,46 +1,29 @@
 #!/bin/bash
+# shellcheck disable=SC1091,SC2155
 
-# Script para crear mirrors de una biblioteca de comics en un formato optimizado
+# Crear mirrors de una biblioteca de comics en un formato optimizado
 
-# por aleister888 <pacoe1000@gmail.com>
-# Licencia: GNU GPLv3
+source "$HOME/.dotfiles/assets/shell/profile"
+source "$HOME/.dotfiles/assets/shell/shell-utils"
 
 # Número máximo de codificaciones simultaneas
 MAX_JOBS=$(($(nproc) / 4))
-# Segundos de espera entre cada verificación
+# Segundos de espera entre cada codificación
 WAIT_TIME=$(echo "scale=4; 1/$(((MAX_JOBS + 1) / 2))" | bc)
 
-BASE_EX_DIR="$HOME/.cache/comic_repack"
+BASE_EX_DIR="$(get_cache_tmp comic_repack)"
 
-# Función para verificar que las dependencias están instaladas
-check_command() {
-	if ! command -v "$1" &>/dev/null; then
-		echo "El comando $1 no se encontró. Por favor, instálalo usando:"
-		echo
-		echo "$2"
-		exit 1
-	fi
-}
+init_log comic_repack >/dev/null
 
-# Verificar que todas las dependencias están instaladas
-check_command "unzip" "sudo /usr/bin/pacman -S unzip"
-check_command "unrar" "sudo /usr/bin/pacman -S unrar"
-check_command "mogrify" "sudo /usr/bin/pacman -S imagemagick"
-check_command "zip" "sudo /usr/bin/pacman -S zip"
+check_command "unzip"
+check_command "unrar"
+check_command "mogrify"
+check_command "zip"
 
-#::::::::::::::::::::::::::::::::::::::::::::::::::::::#
-# Funciones
-#::::::::::::::::::::::::::::::::::::::::::::::::::::::#
-
-usage() {
-	echo -e "Uso: $(basename "$0") [Directorio original] [Directorio copia]"
-	echo -e "       -h: Mostrar este mensaje"
-	exit
-}
+#-------------------------------------------------------------------------------
 
 extract() {
-	local FILE="$1"
-	local OUT_DIR="$2"
+	local FILE="$1" OUT_DIR="$2"
 
 	FILETYPE="$(file -b --mime-type "$(readlink -f "$FILE")")"
 	case "$FILETYPE" in
@@ -58,7 +41,7 @@ extract() {
 	esac
 }
 
-image_process() {
+images_process() {
 	local DIR="$1"
 
 	shopt -s nullglob
@@ -95,42 +78,30 @@ repack() {
 	local FILE="$1"
 	local OG_FILE="$OG_DIR/$FILE"
 	local MIRROR_FILE="$MIRROR_DIR/${FILE%.*}.cbz"
-
-	# shellcheck disable=SC2155
 	local EX_DIR=$(mktemp -d "$BASE_EX_DIR"/XXXXXX)
 
-	# Extraemos las imagenes en un directorio temporal
+	# Extraemos las imagenes en un directorio temporal y las procesamos
 	extract "$OG_FILE" "$EX_DIR" || return 1
-
-	# Procesamos las imagenes extraidas
-	image_process "$EX_DIR"
+	images_process "$EX_DIR"
 
 	mkdir -p "$(dirname "$MIRROR_FILE")"
-
-	# Archivamos sin compresión para acelerar la aptertura de los archivos
 	zip -r -0 -j "$MIRROR_FILE" "$EX_DIR"/*
-
 	rm -rf "$EX_DIR"
 }
 
-# Verificamos que el directorio original existe
 [ ! -d "$1" ] && {
-	echo "Error: El directorio original no existe."
+	log "El directorio original no existe."
 	exit 1
 }
 
 OG_DIR="$1"
 MIRROR_DIR="$2"
 
-# Nos aseguramos que los directorios espejo y temporal existan
-[ ! -d "$MIRROR_DIR" ] && mkdir -p "$MIRROR_DIR"
-[ ! -d "$BASE_EX_DIR" ] && mkdir -p "$BASE_EX_DIR"
+ensure_dir "$MIRROR_DIR" >/dev/null
 
-#::::::::::::::::::::::::::::::::::::::::::::::::::::::#
 # Identificar archivos cbr/cbz
-#::::::::::::::::::::::::::::::::::::::::::::::::::::::#
+#-------------------------------------------------------------------------------
 
-# Creamos un array con todos los elementos del directorio original
 FILES=()
 
 # Iteramos sobre cada archivo del directorio original, comprobamos si es un
@@ -149,27 +120,21 @@ while IFS= read -r FILE; do
 	esac
 done < <(find "$OG_DIR" -type f)
 
-#::::::::::::::::::::::::::::::::::::::::::::::::::::::#
 # Procesar archivos uno a uno
-#::::::::::::::::::::::::::::::::::::::::::::::::::::::#
+#-------------------------------------------------------------------------------
 
 for FILE in "${FILES[@]}"; do
-	# Solo se permiten $MAX_JOBS codificaciones simultáneamente
 	while [ "$(jobs -rp | wc -l)" -ge "$MAX_JOBS" ]; do
 		sleep "${WAIT_TIME}s"
 	done
 
-	# El archivo no esta en el directorio espejo
-	if [ ! -e "$MIRROR_DIR/${FILE%.*}.cbz" ]; then
-		repack "$FILE" &
-	fi
+	[ ! -e "$MIRROR_DIR/${FILE%.*}.cbz" ] && { repack "$FILE" & }
 done
 
 wait
 
-#::::::::::::::::::::::::::::::::::::::::::::::::::::::#
 # Borramos los archivos que ya no estan en el original
-#::::::::::::::::::::::::::::::::::::::::::::::::::::::#
+#-------------------------------------------------------------------------------
 
 # Iteramos sobre cada archivo del directorio espejo. Si no existe el archivo de
 # en el directorio original, borramos la copia del directorio espejo

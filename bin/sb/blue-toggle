@@ -13,6 +13,6 @@ if pgrep hyprsunset; then
 	pkill hyprsunset
 	$NOTIFY "hyprsunset 󰌵" 'Filtro desactivado'
 else
-	setsid -f hyprsunset -t 4500 >"$LOG_DIR"/blue-toggle.log 2>&1
+	setsid -f hyprsunset -t 3500 -g 60 >"$LOG_DIR"/blue-toggle.log 2>&1
 	$NOTIFY "hyprsunset 󰹏" 'Filtro activado'
 fi

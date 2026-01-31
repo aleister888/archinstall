@@ -6,8 +6,6 @@ REGULARUSER="$(getent passwd 1000 | cut -d: -f1)"
 export DISPLAY=:0
 export XDG_RUNTIME_DIR=/run/user/1000
 
-WAIT_MINS=10
-
 # Comprobaciones:
 # Verifica que el script se ejecuta como root
 if [ "$(id -u)" -ne 0 ]; then
@@ -67,13 +65,6 @@ if command -v virsh >/dev/null 2>&1; then
 		notify "Suspensión cancelada" "Máquina virtual activa"
 		exit
 	fi
-fi
-
-# Si el usuario pasa "now", suspende inmediatamente, en el caso
-# contrario, se esperan $WAIT_MINS antes de suspender el equipo.
-if [ "$2" != "now" ]; then
-	notify "$(basename "$0")" "El sistema se suspenderá en $WAIT_MINS minutos"
-	sleep $((WAIT_MINS * 60))
 fi
 
 tosleep "$WAKE_TIME"

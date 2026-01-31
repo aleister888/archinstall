@@ -1,15 +1,16 @@
 #!/bin/bash
+# shellcheck disable=SC1091
 
 # Script para instalar paquetes de nixpkgs
 # - Invocado por /update.sh
 
-source "$HOME/.dotfiles/assets/shell/profile"
-source "$HOME/.dotfiles/assets/shell/shell-utils"
+source "$HOME/.dotfiles/assets/shell/shell-utils-sh"
 
 [ "$(id -u)" -eq 0 ] && exit 1
 check_connection || exit 1
 
-LOG_DIR=$(init_log nixpkgs)
+init_log nixpkgs
+
 LATEST_VERSION=$(
 	curl -s https://api.github.com/repos/NixOS/nixpkgs/tags |
 		jq -r '.[].name' | grep -oP "[0-9]{2}\.[0-9]{2}$" | sort -run | head -n1

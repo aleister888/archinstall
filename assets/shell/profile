@@ -72,9 +72,7 @@ export LESSHISTFILE="$XDG_CACHE_HOME"/less/history
 export CARGO_HOME="$XDG_DATA_HOME"/cargo
 export NPM_CONFIG_USERCONFIG="${XDG_CONFIG_HOME:-$HOME/.config}"/npm/npmrc
 
-check_connection() {
-	curl -s --connect-timeout 3 https://dns.google/ >/dev/null
-}
+. "$HOME/.dotfiles/assets/shell/shell-utils-sh"
 
 if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
 	# En el primer arranque real del sistema se ejecutará update.sh de nuevo

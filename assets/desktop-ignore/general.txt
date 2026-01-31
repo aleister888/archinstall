@@ -37,3 +37,4 @@ xdvi
 xgps
 xgpsspeed
 yad-settings
+winetricks

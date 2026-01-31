@@ -1,0 +1,123 @@
+#!/bin/sh
+
+export LOG_BASE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles_log"
+export CACHE_BASE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles_cache"
+export TMP_BASE_DIR="/tmp/00_dotfiles"
+
+ensure_dir() {
+	[ ! -d "$1" ] && mkdir -p "$1"
+	echo "$1"
+}
+
+delete_broken_symlinks() {
+	find "$1" -type l ! -exec test -e {} \; -delete
+}
+
+# Utilidades para guardar los logs en un solo directorio
+#
+# Podemos guardar los logs en un directorio relativo al base usando:
+#     initlog <directorio>
+#       => logs guardados en $LOG_BASE_DIR/<directorio>
+#
+# o para que la actualización de la variable LOG_DIR sea más explícita:
+#     LOG_DIR=$(ini_tlog <directorio>)
+#-------------------------------------------------------------------------------
+
+log() {
+	_msg="$1"
+	_level="${2:-ERROR}"
+	_date="$(date '+%Y-%m-%d %H:%M:%S')"
+	_module="$(basename "$0")"
+
+	ensure_dir "${LOG_DIR:-$LOG_BASE_DIR}" >/dev/null
+
+	printf "%s [%s] (%s) %s\n" "$_date" "$_level" "$_module" "$_msg" |
+		tee -a "${LOG_DIR:-$LOG_BASE_DIR}/errors.log"
+}
+
+init_log() {
+	LOG_DIR="$LOG_BASE_DIR/$1"
+	ensure_dir "$LOG_DIR"
+}
+
+print_msg() {
+	_msg="$1"
+	_date="$(date '+%Y-%m-%d %H:%M:%S')"
+	_module="$(basename "$0")"
+	printf "%s [INFO] (%s) %s\n" "$_date" "$_module" "$_msg"
+}
+
+# Utilidades para guardar los archivos temporales en un solo directorio
+#-------------------------------------------------------------------------------
+
+get_tmp() {
+	ensure_dir "$TMP_BASE_DIR/$1"
+}
+
+get_random_tmp() {
+	ensure_dir "$TMP_BASE_DIR" >/dev/null
+	mktemp -d -p "$TMP_BASE_DIR" XXXXXX
+}
+
+# A veces necesitaremos trabajar sobre el directorio ~/.cache porque tmp tiene
+# limitaciones de tamaño. Importante tener en cuenta que como el contenido de
+# ~/.cache no se borra solo se debe borrar el directorio $CACHE_DIR al terminar
+# de utilizarlo
+get_cache_tmp() {
+	_cache_dir="$CACHE_BASE_DIR/$1"
+	_tmp_symlink="$TMP_BASE_DIR/$1"
+
+	ensure_dir "$_cache_dir"
+	ensure_dir "$TMP_BASE_DIR" >/dev/null
+
+	# Creamos un enlace simbólico en el directorio temporal centralizado
+	rm -rf "$_tmp_symlink"
+	ln -sf "$_cache_dir" "$_tmp_symlink"
+
+	trap 'delete_broken_symlinks "$TMP_BASE_DIR"' EXIT
+}
+
+#-------------------------------------------------------------------------------
+
+is_chroot() {
+	sudo /usr/bin/systemd-detect-virt --chroot >/dev/null 2>&1
+}
+
+has_bluetooth_device() {
+	{
+		lspci
+		lsusb
+	} | grep -qi bluetooth
+}
+
+#-------------------------------------------------------------------------------
+
+download() {
+	_url="$1"
+	_file="$2"
+	if [ ! -f "$_file" ]; then
+		ensure_dir "$(dirname "$_file")"
+		if curl "$_url" -o "$_file" 2>/dev/null; then
+			return
+		else
+			log "file could not be downloaded: $_file"
+		fi
+	fi
+
+	#log "file already exists: $file" WARN
+}
+
+remove_comments() {
+	cat "$1" | grep -v "^[ \t]*//"
+}
+
+check_command() {
+	if ! command -v "$1" >/dev/null 2>&1; then
+		log "El comando $1 no se encontró"
+		exit 1
+	fi
+}
+
+check_connection() {
+	curl -s --connect-timeout 3 https://dns.google/ >/dev/null
+}

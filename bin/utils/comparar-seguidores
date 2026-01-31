@@ -1,46 +1,37 @@
 #!/bin/bash
 
+# Script para ver:
+# - Quién de tus FOLLOWS no te sigue de vuelta
+# - Tus solicitudes de seguimiento pendientes
+
 # Consigue tu informe de Instagram en:
 # https://accountscenter.instagram.com/info_and_permissions/dyi
 
-# Script para ver:
-# - Quién de tus seguidos no te sigue de vuelta
-# - Tus solicitudes de seguimiento pendientes
-
 source "$REPO_DIR/assets/shell/shell-utils"
 
-if [ -z "$1" ]; then
-	cat <<-EOF
-		Uso:
-		  $(basename "$0") <informe_instagram_comprimido>
-	EOF
-	exit 1
-fi
-
 IN="$1" # Informe de Instagram comprimido
-OUT="$(get_random_tmp)"
+EXTRACT_DIR="$(get_random_tmp)"
+LOG_DIR=$(initlog comparar-seguidores)
 
-# Descomprime el informe
-aunpack -fq "$IN" -X "$OUT"
+NOT_FOLLOWING_BACK_TXT="$LOG_DIR/vuelta.txt"
+PENDING_TXT="$LOG_DIR/peticiones.txt"
 
-# Extraer seguidores y seguidos del informe
-SEGUIDORES=$(grep -oP 'href="https://www\.instagram\.com/\K[^"]+' \
-	"$OUT/connections/followers_and_following/followers_1.html")
-SEGUIDOS=$(grep -oP 'href="https://www\.instagram\.com/\K[^"]+' \
-	"$OUT/connections/followers_and_following/following.html")
+aunpack -fq "$IN" -X "$EXTRACT_DIR"
 
-# Encontrar gente que no te sigue de vuelta
-NO_SEGUIDORES=$(echo "$SEGUIDOS" | grep -Fxv -f <(echo "$SEGUIDORES"))
-echo "$NO_SEGUIDORES" >./vuelta.txt
+FOLLOWERS=$(grep -oP 'href="https://www\.instagram\.com/\K[^"]+' \
+	"$EXTRACT_DIR/connections/followers_and_following/followers_1.html")
+FOLLOWS=$(grep -oP 'href="https://www\.instagram\.com/\K[^"]+' \
+	"$EXTRACT_DIR/connections/followers_and_following/following.html")
 
-# Extraer solicitudes de seguimiento pendientes
+#-------------------------------------------------------------------------------
+
+NO_FOLLOWERS=$(echo "$FOLLOWS" | grep -Fxv -f <(echo "$FOLLOWERS"))
+echo "$NO_FOLLOWERS" >"$NOT_FOLLOWING_BACK_TXT"
+
 PENDING_REQUESTS=$(grep -oP 'href="https://www\.instagram\.com/\K[^"]+' \
-	"$OUT/connections/followers_and_following/pending_follow_requests.html")
-echo "$PENDING_REQUESTS" >./peticiones.txt
-
-# Limpieza de archivos temporales
-rm -rf "$OUT"
+	"$EXTRACT_DIR/connections/followers_and_following/pending_follow_requests.html")
+echo "$PENDING_REQUESTS" >"$PENDING_TXT"
 
 echo "Informe generado:"
-echo "- Usuarios que no te siguen de vuelta guardados en 'vuelta.txt'"
-echo "- Solicitudes de seguimiento pendientes guardadas en 'peticiones.txt'"
+echo "- Usuarios que no te siguen de vuelta guardados en \"$NOT_FOLLOWING_BACK_TXT\""
+echo "- Solicitudes de seguimiento pendientes guardadas en \"$PENDING_TXT\""

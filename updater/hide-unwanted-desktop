@@ -1,0 +1,57 @@
+#!/bin/bash
+# shellcheck disable=SC1091
+
+source "$HOME/.dotfiles/assets/shell/shell-utils"
+
+[ "$(id -u)" -eq 0 ] && exit 1
+
+IGNORE_GENERAL="$REPO_DIR/assets/desktop-ignore/general.txt"
+IGNORE_LSP="$REPO_DIR/assets/desktop-ignore/lsp.txt"
+
+mapfile -t GENERAL_DESKTOP <"$IGNORE_GENERAL"
+mapfile -t LSP_DESKTOP <"$IGNORE_LSP"
+
+ALL_IGNORE=("${LSP_DESKTOP[@]}" "${GENERAL_DESKTOP[@]}")
+
+# Esto funciona porque /usr/local/share toma precedencia en $XDG_DATA_DIRS
+OG_DIRS=(
+	"/usr/share/applications"
+	"$HOME/.nix-profile/share/applications"
+)
+
+find_desktop() {
+	local entry="$1"
+
+	for OG_DIR in "${OG_DIRS[@]}"; do
+		if [ -e "$OG_DIR/$entry.desktop" ]; then
+			echo "$OG_DIR/$entry.desktop"
+			return 0
+		fi
+	done
+
+	return 1
+}
+
+# Ocultamos estas entradas .desktop
+for ENTRY in "${ALL_IGNORE[@]}"; do
+
+	MOD_DESKTOP="/usr/local/share/applications/$ENTRY.desktop"
+
+	if OG_DESKTOP=$(find_desktop "$ENTRY"); then
+
+		sudo /usr/bin/cp -f "$OG_DESKTOP" "$MOD_DESKTOP"
+
+		# A veces los archivos desktop no estan correctamente terminados y
+		# necesitan un salto de línea adicional antes de añadir NoDisplay
+		if [ -s "$MOD_DESKTOP" ] && [ -n "$(tail -c1 "$MOD_DESKTOP")" ]; then
+			printf '\nNoDisplay=true\n' | sudo tee -a "$MOD_DESKTOP" >/dev/null
+		else
+			printf 'NoDisplay=true\n' | sudo tee -a "$MOD_DESKTOP" >/dev/null
+		fi
+	# Si la aplicación se eliminó, borramos el archivo desktop sobrante
+	elif [ -e "$MOD_DESKTOP" ]; then
+		sudo /usr/bin/rm "$MOD_DESKTOP" && log "removed leftover desktop file: $ENTRY"
+	else
+		log "desktop file not found: $ENTRY" WARN
+	fi
+done

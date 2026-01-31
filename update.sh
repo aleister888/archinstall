@@ -5,16 +5,6 @@
 # por aleister888 <pacoe1000@gmail.com>
 # Licencia: GNU GPLv3
 
-source "$HOME/.dotfiles/assets/shell/profile"
-source "$HOME/.dotfiles/assets/shell/shell-utils"
-
-export DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}"
-export CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
-export ASSETDIR="$REPO_DIR/assets/configs"
-
-export TMP_DIR="$(get_tmp updater)"
-export LOG_DIR="$(init_log updater)"
-
 [ -z "$DEBUG" ] && DEBUG=false
 
 while getopts "d" opt; do
@@ -25,6 +15,16 @@ while getopts "d" opt; do
 done
 
 export DEBUG
+
+source "$HOME/.dotfiles/assets/shell/profile"
+source "$HOME/.dotfiles/assets/shell/shell-utils"
+
+export DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}"
+export CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
+export ASSETDIR="$REPO_DIR/assets/configs"
+
+export TMP_DIR="$(get_tmp updater)"
+export LOG_DIR="$(init_log updater)"
 
 #-------------------------------------------------------------------------------
 
@@ -131,9 +131,8 @@ ln -sf "$REPO_DIR/assets/shell/profile" "$CONF_DIR/zsh/.zprofile"
 ln -sf "$REPO_DIR/assets/shell/profile" "$HOME/.profile"
 ln -sf "$REPO_DIR/assets/shell/profile" "$HOME/.bash_profile"
 
-# Borrar enlaces rotos
-find "$HOME/.local/bin" -type l ! -exec test -e {} \; -delete &
-find "$CONF_DIR" -type l ! -exec test -e {} \; -delete &
+delete_broken_symlinks "$HOME/.local/bin" &
+delete_broken_symlinks "$CONF_DIR" &
 
 mkdir -p ~/.config/xdg-desktop-portal/
 cat <<-EOF >~/.config/xdg-desktop-portal/portals.conf
@@ -143,17 +142,11 @@ EOF
 
 #-------------------------------------------------------------------------------
 
-if [ "$DEBUG" = true ]; then
-	"$HOME"/.dotfiles/updater/conf-services
-	"$HOME"/.dotfiles/updater/install-bin &
-	"$HOME"/.dotfiles/updater/install-conf
-	"$HOME"/.dotfiles/updater/lf-dbus &
-else
-	"$HOME"/.dotfiles/updater/conf-services 2>/dev/null
-	"$HOME"/.dotfiles/updater/install-bin 2>/dev/null &
-	"$HOME"/.dotfiles/updater/install-conf 2>/dev/null
-	"$HOME"/.dotfiles/updater/lf-dbus 2>/dev/null &
-fi
+"$HOME"/.dotfiles/updater/conf-services
+"$HOME"/.dotfiles/updater/install-bin &
+"$HOME"/.dotfiles/updater/install-conf
+"$HOME"/.dotfiles/updater/lf-dbus &
+
 wait
 
 fc-cache -f &
@@ -161,43 +154,6 @@ fc-cache -f &
 "$HOME"/.dotfiles/updater/xdg-default-apps &
 
 is_chroot || "$HOME"/.dotfiles/updater/nix-conf &
-
-#-------------------------------------------------------------------------------
-
-IGNORE_GENERAL="$REPO_DIR/assets/desktop-ignore/general.txt"
-IGNORE_LSP="$REPO_DIR/assets/desktop-ignore/lsp.txt"
-
-mapfile -t GENERAL_DESKTOP <"$IGNORE_GENERAL"
-mapfile -t LSP_DESKTOP <"$IGNORE_LSP"
-
-ALL_IGNORE=("${LSP_DESKTOP[@]}" "${GENERAL_DESKTOP[@]}")
-
-# TODO: add support for nix pkgs .desktop files
-
-# Ocultamos estas entradas .desktop
-for ENTRY in "${ALL_IGNORE[@]}"; do
-	OG_DESKTOP="/usr/share/applications/$ENTRY.desktop"
-	MOD_DESKTOP="/usr/local/share/applications/$ENTRY.desktop"
-	if [ -e "$OG_DESKTOP" ]; then
-		(
-			sudo /usr/bin/cp -f "$OG_DESKTOP" "$MOD_DESKTOP"
-			if [ -s "$MOD_DESKTOP" ] && [ -n "$(tail -c1 "$MOD_DESKTOP")" ]; then
-				# Último carácter no es salto de línea
-				printf '\nNoDisplay=true\n' | sudo tee -a "$MOD_DESKTOP" >/dev/null
-			else
-				printf 'NoDisplay=true\n' | sudo tee -a "$MOD_DESKTOP" >/dev/null
-			fi
-		) &
-	else
-		log "desktop file not found: $ENTRY" WARN
-	fi
-done &
-
-ensure_dir "${XDG_DATA_HOME:-$HOME/.local/share}/applications" >/dev/null
-
-# Copiamos archivos .desktop
-cp -f "$HOME/.dotfiles/assets/desktop/rdp.desktop" \
-	"${XDG_DATA_HOME:-$HOME/.local/share}/applications/rdp.desktop"
 
 #-------------------------------------------------------------------------------
 
@@ -259,7 +215,20 @@ LF_ETC="https://raw.githubusercontent.com/gokcehan/lf/master/etc"
 download "$LF_ETC/colors.example" "$CONF_DIR/lf/colors" &
 download "$LF_ETC/icons.example" "$CONF_DIR/lf/icons" &
 
-wait # Esperamos a que nix-conf termine para que wine este disponible
+#-------------------------------------------------------------------------------
+
+# Esperamos a que nix-conf termine para que wine este disponible y para
+# gestionar los archivos .desktop de nixpkgs
+wait
+
+"$HOME"/.dotfiles/updater/hide-unwanted-desktop
+
+ensure_dir "${XDG_DATA_HOME:-$HOME/.local/share}/applications" >/dev/null
+
+cp -f "$HOME/.dotfiles/assets/desktop/rdp.desktop" \
+	"${XDG_DATA_HOME:-$HOME/.local/share}/applications/rdp.desktop"
+
+#-------------------------------------------------------------------------------
 
 [ ! -f "$WINEPREFIX/drive_c/windows/syswow64/mfc42.dll" ] && {
 	is_chroot || winetricks -q mfc42

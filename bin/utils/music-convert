@@ -20,21 +20,10 @@ MAX_JOBS=$(nproc)
 # Segundos de espera entre cada verificación
 WAIT_TIME=$(echo "scale=4; 1/$(((MAX_JOBS + 1) / 2))" | bc)
 
-# Función para verificar que las dependencias están instaladas
-check_command() {
-	if ! command -v "$1" &>/dev/null; then
-		echo "El comando $1 no se encontró. Por favor, instálalo usando:"
-		echo
-		echo "$2"
-		exit 1
-	fi
-}
-
-# Verificar que todas las dependencias están instaladas
-check_command "atomicparsley" "sudo /usr/bin/pacman -S atomicparsley"
-check_command "ffmpeg" "sudo /usr/bin/pacman -S ffmpeg"
-check_command "glyrc" "sudo /usr/bin/pacman -S glyrc"
-check_command "eyeD3" "yay -S python-eyed3"
+check_command "atomicparsley"
+check_command "ffmpeg"
+check_command "glyrc"
+check_command "eyeD3"
 
 #:::::::::::::::::::::::::::::::::::::::::::::::::::::::::#
 # Funciones

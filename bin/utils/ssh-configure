@@ -1,9 +1,7 @@
 #!/bin/bash
 
 # Script para instalar y configurar SSH en sistemas Arch Linux
-# https://www.sshaudit.com/hardening_guides.html
 
-# Salir si algún comando falla
 set -e
 
 if [ "$(id -u)" -ne 0 ]; then
@@ -63,7 +61,6 @@ configure_ufw() {
 }
 
 configure_fail2ban() {
-	# Instalar (si no lo está ya) y activar fail2ban
 	if [ ! -x /usr/bin/fail2ban-server ]; then
 		pacman -Sy --noconfirm fail2ban
 		systemctl enable --now fail2ban
@@ -78,7 +75,6 @@ configure_fail2ban() {
 		actionunban = ufw delete deny from <ip> to any
 	EOF
 
-	# Activar el banneo para SSH
 	cp /etc/fail2ban/fail2ban.conf /etc/fail2ban/jail.local
 
 	cat <<-'EOF' | tee -a /etc/fail2ban/jail.local
