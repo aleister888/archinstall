@@ -1,22 +1,24 @@
-#!/bin/bash -x
-# shellcheck disable=SC2155
+#!/bin/bash
+# shellcheck disable=SC2155,SC1091
 
 # Script para comprobar y corregir la corrupción de los archivos flac de un directorio
 
 # por aleister888 <pacoe1000@gmail.com>
 # Licencia: GNU GPLv3
 
-source "$REPO_DIR/assets/shell/shell-utils"
+source "$HOME/.dotfiles/assets/shell/shell-utils"
 
-TEMPORARY_DIR=$(get_tmp flac_corruption)
+OG_DIR="$1" # Directorio a verificar
 
-OG_DIR="$1"                                      # Directorio a verificar
-TMP_LOG="$TEMPORARY_DIR/tmp.log"                 # Archivos con posibles errores
-FINAL_LOG="$TEMPORARY_DIR/corrupted.log"         # Archivos con corrupción asegurada
-RECODE_LOG="$TEMPORARY_DIR/recoded.log"          # Falsos positivos que solo necesitan recodificación
-TMP_DIR="$(ensure_dir "$TEMPORARY_DIR/try")"     # Salida recodificados (temporales)
-OUT_DIR="$(ensure_dir "$TEMPORARY_DIR/recoded")" # Salida recodificados
-OVERWRITE=false                                  # Sobrescribir archivos originales
+LOG_DIR=$(init_log flac_corruption)
+TMP_LOG="$LOG_DIR/tmp.log"         # Archivos con posibles errores
+FINAL_LOG="$LOG_DIR/corrupted.log" # Archivos con corrupción asegurada
+RECODE_LOG="$LOG_DIR/recoded.log"  # Falsos positivos que necesitan recodificarse
+
+TMP_DIR=$(get_tmp flac_corruption)
+RECODE_TMP_DIR="$(ensure_dir "$TMP_DIR/try")"     # Salida recodificados (temporales)
+RECODE_OUT_DIR="$(ensure_dir "$TMP_DIR/recoded")" # Salida recodificados
+OVERWRITE=false                                   # Sobrescribir archivos originales
 
 show_help() {
 	cat <<-EOF
@@ -41,7 +43,7 @@ done
 
 true >"$TMP_LOG"
 true >"$FINAL_LOG"
-find "$OUT_DIR" -type f -delete
+find "$RECODE_OUT_DIR" -type f -delete
 
 flac_check() {
 	local FILE="$1"
@@ -69,8 +71,8 @@ flac_check() {
 # trataba de un falso positivo
 process_flac() {
 	local FILE="$1"
-	local RECODED_TRY="$TMP_DIR/$(basename "$FILE")"
-	local RECODED_FINAL="$OUT_DIR/$(basename "$FILE")"
+	local RECODED_TRY="$RECODE_TMP_DIR/$(basename "$FILE")"
+	local RECODED_FINAL="$RECODE_OUT_DIR/$(basename "$FILE")"
 
 	if ! ffmpeg -y -i "$FILE" "$RECODED_TRY" >/dev/null 2>&1; then
 		echo "$FILE" >>"$FINAL_LOG"
@@ -104,4 +106,4 @@ done <"$TMP_LOG"
 # Falsos positivos que fueron recodificados
 grep -v -f "$FINAL_LOG" "$TMP_LOG" >"$RECODE_LOG"
 
-rm -rf "$TMP_DIR" "$TMP_LOG"
+rm -rf "$RECODE_TMP_DIR" "$TMP_LOG"

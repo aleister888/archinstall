@@ -4,7 +4,7 @@
 # Script Iniciador del entorno de escritorio
 # por aleister888 <pacoe1000@gmail.com>
 
-source "$REPO_DIR/assets/shell/shell-utils"
+source "$HOME/.dotfiles/assets/shell/shell-utils"
 
 set +e
 

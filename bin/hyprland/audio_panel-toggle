@@ -3,7 +3,6 @@
 PAVUCONTROL_CLASS="org.pulseaudio.pavucontrol"
 SPECIAL_W="audio_panel"
 
-# Si pavucontrol no está abierto, lo abrimos
 if ! pgrep pavucontrol; then
 	exec pavucontrol -t 3
 else

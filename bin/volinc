@@ -23,10 +23,8 @@ VOL=$(($(pamixer --get-volume) + VOLINC))
 [ $VOL -gt $VOL_LIMIT ] && VOL=$VOL_LIMIT
 [ $VOL -lt 0 ] && exit
 
-# Establecer el nuevo volumen
 pactl set-sink-volume @DEFAULT_SINK@ "${VOL}%"
 
-# Notificar
 if [ "$NOTIFY" = true ]; then
 	$HIDE_NOTIFICATIONS &
 	notify-send -e "Volumen: $VOL%" -t 850 --hint=INT:value:$VOL &

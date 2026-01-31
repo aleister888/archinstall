@@ -3,7 +3,7 @@
 
 # Recodifíca videos a h.264 con la opción de rotarlos
 
-source "$REPO_DIR/assets/shell/shell-utils"
+source "$HOME/.dotfiles/assets/shell/shell-utils"
 
 MAX_RES="${MAX_RES:=1440}"
 

@@ -4,12 +4,12 @@
 # Script para instalar paquetes de nixpkgs
 # - Invocado por /update.sh
 
-source "$HOME/.dotfiles/assets/shell/shell-utils-sh"
+source "$HOME/.dotfiles/assets/shell/shell-utils"
 
 [ "$(id -u)" -eq 0 ] && exit 1
 check_connection || exit 1
 
-init_log nixpkgs
+init_log nixpkgs >/dev/null
 
 LATEST_VERSION=$(
 	curl -s https://api.github.com/repos/NixOS/nixpkgs/tags |

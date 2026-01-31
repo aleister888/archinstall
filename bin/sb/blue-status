@@ -1,5 +1,4 @@
 #!/bin/sh
-# Activar/Desactivar hyprsunset (Filtro de la luz azul)
 
 if pgrep hyprsunset >/dev/null; then
 	echo "󰹏"

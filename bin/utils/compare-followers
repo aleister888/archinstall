@@ -7,11 +7,11 @@
 # Consigue tu informe de Instagram en:
 # https://accountscenter.instagram.com/info_and_permissions/dyi
 
-source "$REPO_DIR/assets/shell/shell-utils"
+source "$HOME/.dotfiles/assets/shell/shell-utils"
 
 IN="$1" # Informe de Instagram comprimido
 EXTRACT_DIR="$(get_random_tmp)"
-LOG_DIR=$(initlog comparar-seguidores)
+LOG_DIR=$(initlog compare_followers)
 
 NOT_FOLLOWING_BACK_TXT="$LOG_DIR/vuelta.txt"
 PENDING_TXT="$LOG_DIR/peticiones.txt"

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Script para mostrar el uso del disco
+# Mostrar el uso del disco
 
 $HIDE_NOTIFICATIONS
 

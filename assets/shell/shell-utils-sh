@@ -90,6 +90,13 @@ has_bluetooth_device() {
 	} | grep -qi bluetooth
 }
 
+has_wifi_device() {
+	{
+		lspci
+		lsusb
+	} | grep -qi wireless
+}
+
 #-------------------------------------------------------------------------------
 
 download() {

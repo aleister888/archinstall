@@ -6,7 +6,6 @@ help_msg() {
 	exit
 }
 
-# Comporobar que el archivo es del tipo correcto
 filetype_test() {
 	local MIMETYPE FILE_2_CHECK
 	FILE_2_CHECK="$1"
@@ -15,7 +14,6 @@ filetype_test() {
 	return $?
 }
 
-# Función para renombrar archivos
 renombrar_archivo() {
 	local ARCHIVO NOMBRE_ARCHIVO EXTENSION NUEVO_NOMBRE NUEVO_ARCHIVO TIPO
 	ARCHIVO="$1"
@@ -100,7 +98,6 @@ while [ "$#" -gt 0 ]; do
 	shift
 done
 
-# Buscar y procesar archivos
 find "$DIRECTORIO" -type f | while read -r ARCHIVO; do
 	renombrar_archivo "$ARCHIVO"
 done

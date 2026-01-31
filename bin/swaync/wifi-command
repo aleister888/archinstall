@@ -1,7 +1,10 @@
 #!/bin/sh
+# shellcheck disable=SC1091
+
+. "$HOME/.dotfiles/assets/shell/shell-utils-sh"
 
 # Salimos si el dispositivo no tiene una tarjeta wifi
-if ! { lspci | grep -qi wireless || lsusb | grep -qi wireless; }; then
+if ! has_wifi_device; then
 	notify-send -a swaync "WiFi" "El dispositivo no tiene una tarjeta WiFi"
 	exit
 fi

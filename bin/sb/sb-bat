@@ -2,7 +2,6 @@
 
 [ ! -e /sys/class/power_supply/BAT0 ] && exit 1
 
-# Contamos cuantas baterias hay
 NUM_BATERIAS=$(
 	find /sys/class/power_supply/ -maxdepth 1 -name 'BAT[0-9]*' | wc -l
 )
@@ -23,9 +22,8 @@ for ((i = 1; i <= NUM_BATERIAS; i++)); do
 	echo "$OUT" | sed "${i}q;d" | grep -q Charging && CHARGING=true
 done
 
-ICON="  "
 # Definimos el icono en función del estado de la batería
-# Calculamos la media
+ICON="  "
 AVERAGE=$((SUM / NUM_BATERIAS))
 case $AVERAGE in
 [0-9]) ICON=" " ;;
@@ -45,6 +43,5 @@ esac
 
 $CHARGING && ICON=" $ICON"
 
-# Imprimos el icono, las secuencias de colores y el % de cada batería
 IFS=' '
 echo "${ICON}${BATTERY_LEVEL[*]}%"

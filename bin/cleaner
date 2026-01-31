@@ -1,10 +1,10 @@
-#!/bin/bash -x
+#!/bin/sh
 
-# Hacer que npm user la especificación de directorios XDG
-npm_xdg() {
-	local CONFIG_DIR
-	CONFIG_DIR="$(dirname "$NPM_CONFIG_USERCONFIG")"
-	mkdir -p "$CONFIG_DIR"
+npm_xdg() { # Hacer que npm use la especificación de directorios XDG
+	[ -z "$NPM_CONFIG_USERCONFIG" ] && return
+
+	_config_dir="$(dirname "$NPM_CONFIG_USERCONFIG")"
+	mkdir -p "$_config_dir"
 	cat <<-'EOF' | tee "$NPM_CONFIG_USERCONFIG"
 		prefix=${XDG_DATA_HOME}/npm
 		cache=${XDG_CACHE_HOME}/npm
@@ -19,32 +19,29 @@ npm_xdg() {
 }
 
 merge_delete() {
-	local OG XDG
-	OG="$1"
-	XDG="$2"
-	if [ -d "$OG" ]; then
-		cp -r "$OG" "$XDG"
-		rm -rf "$OG"
+	_og="$1"
+	_xdg="$2"
+	if [ -d "$_og" ]; then
+		cp -r "$_og" "$_xdg"
+		rm -rf "$_og"
 	fi
 }
 
 moveto_xdg() {
-	local OG XDG
-	OG="$1"
-	XDG="$2"
-	if [ -f "$OG" ]; then
-		mkdir "$(dirname "$XDG")"
-		mv -f "$OG" "$XDG"
+	_og="$1"
+	_xdg="$2"
+	if [ -f "$_og" ]; then
+		mkdir "$(dirname "$_xdg")"
+		mv -f "$_og" "$_xdg"
 	fi
 }
 
 move_hardcoded_dir() {
-	local OG XDG
-	OG="$1"
-	XDG="$2"
-	if [[ ! -L "$OG" ]] && [ -d "$OG" ]; then
-		merge_delete "$OG" "$XDG"
-		ln -s "$XDG" "$OG"
+	_og="$1"
+	_xdg="$2"
+	if [ ! -L "$_og" ] && [ -d "$OG" ]; then
+		merge_delete "$_og" "$_xdg"
+		ln -s "$_xdg" "$_og"
 	fi
 }
 

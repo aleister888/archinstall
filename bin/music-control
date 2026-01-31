@@ -1,10 +1,9 @@
 #!/bin/sh -x
 
-# Script para controlar la reproducción de la música
+# Controlar la reproducción de la música
 
 [ "$(pgrep "$(basename "$0")" | wc -l)" -ge 3 ] && exit 1
 
-# Si se ejecuta con -q el script no notifica
 QUIET=false
 if [ "$1" = "-q" ]; then
 	QUIET=true
@@ -16,15 +15,12 @@ escape_markup() {
 	sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g;'
 }
 
-# Establecemos el reproductor
 PLAYER="$(music-priority)"
 
-# Si no se encontró el reproductor, se informa al usuario
 if [ -z "$PLAYER" ] && ! $QUIET; then
 	$HIDE_NOTIFICATIONS
 	notify-send -e -i "$(music-metadata -c)" \
 		"$(music-metadata -t)" "$(music-metadata -a)"
-# Si se encontró, notificamos el cambio de canción
 else
 	export ALTFACT=28
 	playerctl --player="$PLAYER" "$1"

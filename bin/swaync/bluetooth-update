@@ -1,6 +1,9 @@
 #!/bin/sh
+# shellcheck disable=SC1091
 
-if { lspci | grep -qi bluetooth || lsusb | grep -qi bluetooth; }; then
+. "$HOME/.dotfiles/assets/shell/shell-utils-sh"
+
+if has_bluetooth_device; then
 	# Si el dispositivo tiene una tarjeta bluetooth entonces el estado del
 	# botón cambia en función de si el bluetooth esta activado o no
 	if bluetoothctl show | grep -q "Powered: yes"; then

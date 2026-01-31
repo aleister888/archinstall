@@ -1,6 +1,6 @@
 #!/bin/bash -x
 
-source "$REPO_DIR/assets/shell/shell-utils"
+source "$HOME/.dotfiles/assets/shell/shell-utils"
 
 TMP_DIR="$(get_tmp plot_macros)"
 CACHE_FILE="$XDG_CACHE_HOME/plot-macros"
@@ -95,8 +95,8 @@ LAST_PROC_DATE=$(tail -n 1 "$PROCESSED_MACROS" | cut -d',' -f1)
 
 declare -A DAILY_DATA
 
-##
 # Procesamos los datos
+#-------------------------------------------------------------------------------
 
 # Leemos en orden inverso para no procesar información innecesaria si
 # OVERWRITE=false
@@ -136,8 +136,8 @@ done < <(
 	tac ~/Documentos/Gym/diet/comidas.csv | sed '$d'
 )
 
-##
 # Tabulamos los datos
+#-------------------------------------------------------------------------------
 
 for DATE in $(printf "%s\n" "${!DAILY_DATA[@]}" | sort); do
 	IFS=',' read -r CAL FAT CARB PROT <<<"${DAILY_DATA[$DATE]}"
@@ -152,8 +152,8 @@ for DATE in $(printf "%s\n" "${!DAILY_DATA[@]}" | sort); do
 	fi
 done
 
-##
 # Gráfico de barras (Último día)
+#-------------------------------------------------------------------------------
 
 IFS=, read -r CAL_TARGET FAT_TARGET CARB_TARGET PROT_TARGET < <(
 	tail -n +2 "$TARGET_MACROS"

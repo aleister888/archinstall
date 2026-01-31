@@ -3,6 +3,8 @@
 # Cambiamos el foco de las ventanas de forma cíclica en función de si estamos en
 # un espacio normal o en el espacio especial "scratch"
 
+# TODO: Fix
+
 SCRATCH_PIDS=()
 
 ARG="$1"

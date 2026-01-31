@@ -1,6 +1,9 @@
 #!/bin/sh
+# shellcheck disable=SC1091
 
-if { lspci | grep -qi wireless || lsusb | grep -qi wireless; }; then
+. "$HOME/.dotfiles/assets/shell/shell-utils-sh"
+
+if has_wifi_device; then
 	# Si el dispositivo tiene una tarjeta wifi entonces el estado del
 	# botón cambia en función de si el wifi esta activado o no
 	if [ "$(nmcli radio wifi)" = "enabled" ]; then

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Script para mostrar el uso de ram
+# Mostrar el uso de ram
 
 $HIDE_NOTIFICATIONS
 

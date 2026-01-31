@@ -1,7 +1,9 @@
 #!/bin/sh
+# shellcheck disable=SC1091
 
-# Salimos si el dispositivo no tiene una tarjeta bluetooth
-{ lspci | grep -qi bluetooth || lsusb | grep -qi bluetooth; } || exit
+. "$HOME/.dotfiles/assets/shell/shell-utils-sh"
+
+has_bluetooth_device || exit
 
 # Si el dispositivo bluetooth esta bloqueado por software, lo desbloqueamos
 rfkill list bluetooth | grep -q "Soft blocked: yes" &&

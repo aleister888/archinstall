@@ -3,7 +3,7 @@
 
 # Crear copias de seguridad como archivos comprimidos
 
-source "$HOME/.dotfiles/assets/shell/shell-utils-sh"
+source "$HOME/.dotfiles/assets/shell/shell-utils"
 
 DELETE_OLD=false
 OG_DIR="$1"

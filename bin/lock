@@ -2,11 +2,9 @@
 
 # Secuencia de comandos que usamos para bloquear el equipo
 
-# Pausamos la música
-music-control -q pause
-# Limpiamos todas las notificaciones
-$HIDE_NOTIFICATIONS
-# Silenciamos el audio (si hay medios reproducción)
-[ "$(playerctl status)" = "Playing" ] && pactl set-sink-mute @DEFAULT_SINK@ 1
-# Bloqueamos la pantalla
-hyprlock
+trap 'hyprlock' EXIT
+
+music-control -q pause                   # Pausamos la música
+$HIDE_NOTIFICATIONS                      # Limpiamos las notificaciones
+[ "$(playerctl status)" = "Playing" ] && # Silenciamos el audio (si hay medios reproducción)
+	pactl set-sink-mute @DEFAULT_SINK@ 1

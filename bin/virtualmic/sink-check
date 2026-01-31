@@ -4,7 +4,7 @@
 # no se han desvinculado. Muchas veces al pausar la aplicación que esta
 # pasando audio, el sink de esta se desvincula con el micrófono virtual.
 
-source "$REPO_DIR/bin/virtualmic/env"
+source "$HOME/.dotfiles/bin/virtualmic/env"
 
 while true; do
 	# Bloqueamos el proceso mientras se este eligiendo un sink

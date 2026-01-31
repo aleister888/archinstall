@@ -1,11 +1,12 @@
 #!/bin/sh
+# shellcheck disable=SC1091
 
 # Borrar todos los metadatos EXIF de una carpeta con imágenes
 
 . "$HOME/.dotfiles/assets/shell/shell-utils-sh"
 
 IMAGE_DIR="$1"
-LOG_DIR=$(init_log exif_remove)
+init_log exif_remove >/dev/null
 
 if [ ! -d "$IMAGE_DIR" ]; then
 	log "El directorio no existe: $IMAGE_DIR"

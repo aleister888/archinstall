@@ -2,10 +2,8 @@
 
 # Script para cambiar el brillo
 
-# Sonido
 SOUND="/usr/share/sounds/freedesktop/stereo/audio-volume-change.oga"
-# Número de niveles de brillo
-LEVELS=10
+LEVELS=10 # Número de niveles de brillo
 
 # Establecer el dispositivo en función de la CPU
 if grep -q "GenuineIntel" /proc/cpuinfo; then
@@ -16,7 +14,6 @@ else
 	exit 1
 fi
 
-# Verificar si el archivo existe antes de continuar
 [ ! -e "$BRIGHT_DEV/brightness" ] && exit 1
 
 MAX_BRIGHTNESS=$(cat "$BRIGHT_DEV/max_brightness")
@@ -55,13 +52,9 @@ esac
 
 NEXT=${LEVELS_ARRAY[$INDEX]}
 
-# Cambiar brillo
 echo "$NEXT" | sudo /usr/bin/tee "$BRIGHT_DEV/brightness" >/dev/null
-
-# Reproducir sonido
 pw-play "$SOUND" &
 
-# Notificación de porcentaje
 PERC=$(((INDEX + 1) * 100 / LEVELS))
 $HIDE_NOTIFICATIONS &
 notify-send -e "Brillo: $PERC%" -t 500 --hint=INT:value:$PERC &

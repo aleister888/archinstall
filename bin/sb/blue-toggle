@@ -1,7 +1,8 @@
 #!/bin/bash
+
 # Activar/Desactivar hyprsunset (Filtro de la luz azul)
 
-source "$REPO_DIR/assets/shell/shell-utils"
+source "$HOME/.dotfiles/assets/shell/shell-utils"
 
 init_log status_bar
 

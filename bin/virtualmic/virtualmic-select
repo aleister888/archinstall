@@ -1,9 +1,9 @@
 #!/bin/bash
 # shellcheck disable=SC2086,SC2181
 
-# Script para vincular (dispositivos de entrada)|(aplicaciones) a un micrófono virtual para compartir audio
+# Vincular (dispositivos de entrada)|(aplicaciones) a un micrófono virtual para compartir audio
 
-source "$REPO_DIR/bin/virtualmic/env"
+source "$HOME/.dotfiles/bin/virtualmic/env"
 
 NOTIFICATION_DURATION=750
 
@@ -16,15 +16,13 @@ EXCLUDE_PATTERN="my-combined-sink\|my-virtualmic\|PulseAudio\|Midi\|v4l2\|WEBRTC
 
 # Función para construir la lista de sinks
 sinks_eval() {
-	# Sinks candidadtos a añadir
-	DEVICES=$(
+	DEVICES=$( # Sinks candidadtos a añadir
 		pw-link -o |
 			grep -P ':((capture)|(output)_((FL)|(FR)|(MONO)))|(out[12])' |
 			grep -v "$EXCLUDE_PATTERN" | sort -u
 	)
 
-	# Sinks candidatos a borrar (ya añadidos)
-	DEL_DEVICES=$(
+	DEL_DEVICES=$( # Sinks candidatos a borrar (ya añadidos)
 		pw-link -l my-combined-sink |
 			pcre2grep -M 'my-combined-sink:playback_F[LR]\n(^ .*\n)*' |
 			grep -oP '\- \K.*'
@@ -56,8 +54,7 @@ sink_edit() {
 		SINKS=$DEL_DEVICES
 	fi
 
-	# Sinks formateados
-	F_SINKS=$(echo "$SINKS" | sed 's/:.*//g' | sort -u)
+	F_SINKS=$(echo "$SINKS" | sed 's/:.*//g' | sort -u) # Sinks formateados
 
 	# Elegir el sink con dmenu mostrando solo la información esencial
 	DMENU_SELECTED=$(echo "$F_SINKS" | $DMENU $DMENU_LINES "$(echo "$F_SINKS" | wc -l)")
@@ -70,7 +67,7 @@ sink_edit() {
 
 	if [ "$1" = "add" ]; then
 		# Vinculamos el sink
-		~/.dotfiles/bin/virtualmic/sink-link "$1" "$SELECTED"
+		"$HOME"/.dotfiles/bin/virtualmic/sink-link "$1" "$SELECTED"
 
 		sinks_eval
 
@@ -86,7 +83,7 @@ sink_edit() {
 
 	elif [ "$1" = "del" ]; then
 		# Desvinculamos el sink
-		~/.dotfiles/bin/virtualmic/sink-link "$1" "$SELECTED"
+		"$HOME"/.dotfiles/bin/virtualmic/sink-link "$1" "$SELECTED"
 
 		# Borramos el sink de la lista de sinks añadidos
 		grep -v "$SELECTED" $ADDED_LIST >$ADDED_LIST.tmp
@@ -137,12 +134,10 @@ set_max_samplerate() {
 		notify audio-card "$NOTIFICATION_TITLE" "Samplerate establecido a $MAX_RATE"
 }
 
-##########
-# Script #
-##########
+#-------------------------------------------------------------------------------
 
 # Si no existe todavía el micrófono virtual, nos salimos
-pactl list | grep -q my-virtualmic
+{ pactl list | grep -q my-virtualmic; } || exit 1
 
 # Nos aeguramos que el sink combinado y el micrófono virtual estén conectados
 pw-link my-combined-sink:monitor_FL my-virtualmic:input_FL 2>/dev/null

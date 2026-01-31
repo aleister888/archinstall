@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # shellcheck disable=SC2068
 
 Xephyr -br -ac -resizeable -screen 1920x1080 :1 &

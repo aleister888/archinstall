@@ -3,7 +3,7 @@
 
 # Script para desmontar dispositivos android
 
-source "$REPO_DIR/bin/android_mounts/env"
+source "$HOME/.dotfiles/bin/android_mounts/env"
 
 cleanup_mountpoints() {
 	for DIR in "$BASENAME"*; do

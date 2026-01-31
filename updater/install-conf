@@ -30,13 +30,13 @@ cat <<-EOF >~/.config/okularpartrc
 	ExternalEditor=Custom
 	ExternalEditorCommand=okular-inverse-search %l "%f"
 
-	[Dlg Accessibility]
-	RecolorBackground=40,40,40
-	RecolorForeground=251,241,199
+	#[Dlg Accessibility]
+	#RecolorBackground=40,40,40
+	#RecolorForeground=251,241,199
 
-	[Document]
-	ChangeColors=true
-	RenderMode=Recolor
+	#[Document]
+	#ChangeColors=true
+	#RenderMode=Recolor
 
 	[Main View]
 	ShowBottomBar=true
