@@ -227,6 +227,10 @@ sudo /usr/bin/cp -f "$REPO_DIR/assets/system/arkenfox.hook" \
 	/etc/pacman.d/hooks/arkenfox.hook
 sudo /usr/bin/chmod 755 /usr/local/lib/arkenfox-auto-update
 
+# Instalar configuración de syslog-ng
+sudo /usr/bin/install -o root -g root -m 644 \
+	"$REPO_DIR/assets/configs/syslog-ng.conf" /etc/syslog-ng/syslog-ng.conf
+
 # Configuramos sudo de forma segura
 sudo /usr/bin/install -o root -g root -m 440 \
 	"$REPO_DIR/assets/configs/sudoers" /etc/sudoers
