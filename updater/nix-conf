@@ -9,6 +9,9 @@ source "$HOME/.dotfiles/assets/shell/shell-utils"
 [ "$(id -u)" -eq 0 ] && exit 1
 check_connection || exit 1
 
+export NIXPKGS_ALLOW_UNFREE=1
+export NIXPKGS_ALLOW_INSECURE=1
+
 init_log nixpkgs >/dev/null
 
 LATEST_VERSION=$(
@@ -82,10 +85,10 @@ for pkg in "${TARGET_PACKAGES[@]}"; do
 	INSTALLED_VERSION="${INSTALLED_MAP[$NAME]:-}"
 
 	if [[ -z "$INSTALLED_VERSION" ]]; then
-		nix profile add "$FLAKE_REF" >/dev/null
+		nix profile add --impure "$FLAKE_REF" >/dev/null
 	elif [[ "$INSTALLED_VERSION" != "$TARGET_VERSION" ]]; then
 		log "cambiando versión $NAME: $INSTALLED_VERSION -> $TARGET_VERSION" WARN
 		nix profile remove "${NAME##*.}" >/dev/null 2>&1
-		nix profile add "$FLAKE_REF"
+		nix profile add --impure "$FLAKE_REF"
 	fi
 done

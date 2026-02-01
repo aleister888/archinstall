@@ -1,20 +1,12 @@
 {
-  "vm": [
-    "vulkan-virtio",
-    "lib32-vulkan-virtio"
-  ],
+  "vm": ["vulkan-virtio", "lib32-vulkan-virtio"],
   "intel": [
     "lib32-libva-intel-driver",
     "lib32-vulkan-intel",
     "libva-intel-driver",
     "vulkan-intel"
   ],
-  "amd": [
-    "mesa",
-    "lib32-mesa",
-    "vulkan-radeon",
-    "lib32-vulkan-radeon"
-  ],
+  "amd": ["mesa", "lib32-mesa", "vulkan-radeon", "lib32-vulkan-radeon"],
   "nvidia": [
     "dkms",
     "nvidia-dkms",

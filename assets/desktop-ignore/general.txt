@@ -1,5 +1,4 @@
-Surge-XT
-Surge-XT-FX
+Ventoy
 YACReaderLibrary
 avahi-discover
 blueman-manager
@@ -16,11 +15,9 @@ hp-uiscan
 htop
 hwmixvolume
 jconsole-java-openjdk
-jconsole-java11-openjdk
 jconsole-java17-openjdk
 jconsole-java21-openjdk
 jshell-java-openjdk
-jshell-java11-openjdk
 jshell-java17-openjdk
 jshell-java21-openjdk
 lf
@@ -33,8 +30,8 @@ qvidcap
 rofi
 rofi-theme-selector
 uuctl
+winetricks
 xdvi
 xgps
 xgpsspeed
 yad-settings
-winetricks

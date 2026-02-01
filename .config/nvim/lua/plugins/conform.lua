@@ -41,7 +41,7 @@ return {
 			prettier_json = {
 				command = "prettier",
 				-- Desactivar el wrap para archivos json
-				args = { "--parser", "json", "--print-width", "0" },
+				args = { "--parser", "json", "--print-width", "80" },
 				stdin = true,
 			},
 			prettier = {

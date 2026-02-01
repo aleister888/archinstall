@@ -1,3 +1,5 @@
+Surge-XT
+Surge-XT-FX
 amsynth
 ardour8
 carla

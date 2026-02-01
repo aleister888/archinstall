@@ -136,7 +136,7 @@ echo "$password" | sudo /usr/bin/cryptsetup open "/dev/$first_partition" "$rando
 # Formatear y montar partición
 #-------------------------------------------------------------------------------
 
-sudo /usr/bin/mkfs.xfs /dev/mapper/"$random_string" &>/dev/null
+sudo /usr/bin/mkfs.ext4 /dev/mapper/"$random_string" &>/dev/null
 sudo /usr/bin/mkdir -p /mnt/"$mountpoint"
 sudo /usr/bin/mount /dev/mapper/"$random_string" /mnt/"$mountpoint" &>/dev/null
 sudo /usr/bin/chown $USER:$USER /mnt/games
@@ -160,5 +160,5 @@ unencrypted_partition_uuid="$(sudo /usr/bin/blkid -s UUID -o value "/dev/mapper/
 
 echo "${random_string} UUID=${encrypted_partition_uuid} ${keyfile} luks" |
 	sudo /usr/bin/tee -a /etc/crypttab &>/dev/null
-echo "UUID=${unencrypted_partition_uuid} /mnt/${mountpoint} xfs defaults 0 2" |
+echo "UUID=${unencrypted_partition_uuid} /mnt/${mountpoint} ext4 defaults,noatime,discard,nofail 0 2" |
 	sudo /usr/bin/tee -a /etc/fstab &>/dev/null
