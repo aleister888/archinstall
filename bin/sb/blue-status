@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if pgrep hyprsunset >/dev/null; then
+if pgrep --quiet hyprsunset; then
 	echo "󰹏"
 else
 	echo "󰌵"
