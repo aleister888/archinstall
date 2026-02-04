@@ -11,10 +11,7 @@
     "seahorse",
     "yacreader" // lector comics
   ],
-  "krita": [
-    "krita",
-    "kseexpr"
-  ],
+  "krita": ["krita", "kseexpr"],
   "music_library": [
     "easytag",
     "picard",
@@ -37,11 +34,7 @@
     "libmupdf",
     "zathura-pdf-poppler"
   ],
-  "efectos_audio": [
-    "easyeffects",
-    "lsp-plugins",
-    "lv2-plugins"
-  ],
+  "efectos_audio": ["easyeffects", "lsp-plugins", "lv2-plugins"],
   "neovim": [
     "neovim",
     "hunspell-en_us",
@@ -56,23 +49,8 @@
     "firefox",
     "thunderbird"
   ],
-  "tauon": [
-    "python-lynxpresence",
-    "tauon-music-box"
-  ],
-  "no-foss": [
-    "discord",
-    "telegram-desktop"
-  ],
-  "oficina": [
-    "libreoffice-fresh",
-    "libreoffice-fresh-es"
-  ],
-  "lf": [
-    "imagemagick",
-    "inkscape",
-    "lf",
-    "rsync",
-    "trash-cli"
-  ]
+  "tauon": ["python-lynxpresence", "tauon-music-box"],
+  "no-foss": ["discord", "telegram-desktop"],
+  "oficina": ["libreoffice-fresh", "libreoffice-fresh-es"],
+  "lf": ["imagemagick", "inkscape", "lf", "rsync", "trash-cli"]
 }

@@ -24,46 +24,19 @@
     "uwsm",
     "wl-clip-persist"
   ],
-  "nix": [
-    "nix"
-  ],
-  "sys_ficheros": [
-    "exfat-utils",
-    "f2fs-tools",
-    "udftools",
-    "xfsprogs"
-  ],
-  "kernel": [
-    "linux-lts",
-    "linux-lts-headers"
-  ],
-  "pacman": [
-    "downgrade",
-    "lostfiles",
-    "pacman-contrib",
-    "rebuild-detector"
-  ],
-  "mesa_video": [
-    "lib32-mesa",
-    "mesa",
-    "mesa-utils"
-  ],
-  "utilidades": [
-    "gawk",
-    "glow"
-  ],
+  "nix": ["nix"],
+  "sys_ficheros": ["exfat-utils", "f2fs-tools", "udftools", "xfsprogs"],
+  "kernel": ["linux-lts", "linux-lts-headers"],
+  "pacman": ["downgrade", "lostfiles", "pacman-contrib", "rebuild-detector"],
+  "mesa_video": ["lib32-mesa", "mesa", "mesa-utils"],
+  "utilidades": ["gawk", "glow"],
   "zsh": [
     "zsh",
     "zsh-autosuggestions",
     "zsh-history-substring-search",
     "zsh-syntax-highlighting"
   ],
-  "vnc": [
-    "freerdp",
-    "gtk-vnc",
-    "libvncserver",
-    "remmina"
-  ],
+  "vnc": ["freerdp", "gtk-vnc", "libvncserver", "remmina"],
   "fuentes": [
     "adobe-source-han-sans-jp-fonts",
     "cantarell-fonts",
@@ -96,11 +69,7 @@
     "xarchiver",
     "zip"
   ],
-  "grub": [
-    "grub-btrfs",
-    "grub-hook",
-    "memtest86+-efi"
-  ],
+  "grub": ["grub-btrfs", "grub-hook", "memtest86+-efi"],
   "java": [
     "java-environment-common",
     "jdk-openjdk",

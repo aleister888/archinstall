@@ -127,7 +127,7 @@ cmd open ${{
 
 		video/*)
 			IFS=$'\n'
-			open_gui vlc "$@" ;;
+			open_gui vlc "$@" --no-video-title-show ;;
 
 		*/x-keepass2)
 			open_gui setsid -f keepassxc "$f" ;;

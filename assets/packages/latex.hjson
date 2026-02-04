@@ -24,8 +24,5 @@
     "texlive-publishers",
     "texlive-xetex"
   ],
-  "fuentes": [
-    "ttf-fira-mono",
-    "ttf-fira-sans"
-  ]
+  "fuentes": ["ttf-fira-mono", "ttf-fira-sans"]
 }

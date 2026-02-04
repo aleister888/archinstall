@@ -1,10 +1,5 @@
 {
-  "libvirt": [
-    "dnsmasq",
-    "edk2-ovmf",
-    "libvirt",
-    "swtpm"
-  ],
+  "libvirt": ["dnsmasq", "edk2-ovmf", "libvirt", "swtpm"],
   "qemu": [
     "qemu-audio-sdl",
     "qemu-audio-spice",
@@ -21,8 +16,5 @@
     "qemu-hw-usb-redirect",
     "qemu-ui-sdl"
   ],
-  "gui": [
-    "virt-manager",
-    "virt-viewer"
-  ]
+  "gui": ["virt-manager", "virt-viewer"]
 }

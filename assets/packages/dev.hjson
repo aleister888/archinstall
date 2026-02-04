@@ -14,20 +14,7 @@
     "time",
     "yarn"
   ],
-  "kotlin": [
-    "kotlin",
-    "gradle",
-    "ktlint"
-  ],
-  "python": [
-    "python-pandas",
-    "python-scikit-learn"
-  ],
-  "formateadores": [
-    "astyle",
-    "prettier",
-    "sassc",
-    "shfmt",
-    "stylua"
-  ]
+  "kotlin": ["kotlin", "gradle", "ktlint"],
+  "python": ["python-pandas", "python-scikit-learn"],
+  "formateadores": ["astyle", "prettier", "sassc", "shfmt", "stylua"]
 }

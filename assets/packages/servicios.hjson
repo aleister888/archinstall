@@ -1,11 +1,5 @@
 {
-  "general": [
-    "cups",
-    "cronie",
-    "geoclue",
-    "syncthing",
-    "timeshift"
-  ],
+  "general": ["cups", "cronie", "geoclue", "syncthing", "timeshift"],
   "audio": [
     "alsa-firmware",
     "alsa-plugins",
@@ -18,10 +12,7 @@
     "pipewire-v4l2",
     "sof-firmware"
   ],
-  "init": [
-    "earlyoom",
-    "power-profiles-daemon"
-  ],
+  "init": ["earlyoom", "power-profiles-daemon"],
   "syslog-ng": [
     "hiredis",
     "libdbi",
@@ -34,9 +25,5 @@
     "net-snmp",
     "syslog-ng"
   ],
-  "fwupd": [
-    "gnome-firmware",
-    "fwupd",
-    "fwupd-efi"
-  ]
+  "fwupd": ["gnome-firmware", "fwupd", "fwupd-efi"]
 }

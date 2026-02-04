@@ -51,8 +51,9 @@ cd "$HOME/.dotfiles" && ./update.sh
 
 ### 🏠 Cambios locales
 
-- Podemos definir paquetes de nixpkgs sin entrar en conflicto con el repositorio en:
-  - `~/.dotfiles/assets/packages/nix_local.json`
+- Podemos definir paquetes sin entrar en conflicto con el repositorio en:
+  - pacman/yay: `~/.dotfiles/assets/packages/local.hjson`
+  - nixpkgs: `~/.dotfiles/assets/packages/nix_local.json`
 - Podemos añadir alias a nuestra shell sin entrar en conflicto con el repositorio en:
   - `~/.config/useralias`
 

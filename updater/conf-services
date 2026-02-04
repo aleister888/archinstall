@@ -24,13 +24,14 @@ user_service_add() {
 [ "$(id -u)" -eq 0 ] && exit 1
 
 SERVICES=(
-	"acpid"
 	"NetworkManager"
+	"acpid"
 	"cronie"
 	"cups"
 	"earlyoom"
 	"fwupd"
 	"input-remapper"
+	"lactd"
 	"nix-daemon"
 	"power-profiles-daemon"
 	"syslog-ng@default.service"

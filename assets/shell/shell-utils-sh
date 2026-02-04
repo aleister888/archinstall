@@ -148,3 +148,10 @@ sudoloop() {
 		kill -0 "$$" || exit
 	done 2>/dev/null &
 }
+
+get_monitor_resolution() {
+	_n_monitor=${1:-1}
+	hyprctl monitors |
+		grep -v "availableModes" | grep -oP "\d+x\d+(?=@)" |
+		head -n"$_n_monitor"
+}

@@ -3,13 +3,10 @@
 
 export REPO_DIR="$HOME/.dotfiles"
 
-# Abreviaciones
 if [ -e "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/aliasrc" ]; then
 	. "${XDG_CONFIG_HOME:-$HOME/.config}/zsh/aliasrc"
 fi
 
-# Aquí puedes colocar alias sin que estos esten
-# dentro de la estructura del repositorio
 if [ -e "${XDG_CONFIG_HOME:-$HOME/.config}/useralias" ]; then
 	. "${XDG_CONFIG_HOME:-$HOME/.config}/useralias"
 fi
@@ -30,13 +27,13 @@ export OPENER="xdg-open"
 
 export GDK_SCALE=1
 export GTK_USE_PORTAL=1
-
-# Hacer que las aplicaciones QT sigan los ajustes de QT5CT
 export QT_QPA_PLATFORMTHEME="qt6ct"
-
 export XCURSOR_PATH="/usr/share/icons:${XDG_DATA_HOME}/icons"
 export XCURSOR_THEME=capitaine-cursors
 export XCURSOR_SIZE=64
+
+# Aplicaciones predeterminadas
+#-------------------------------------------------------------------------------
 
 export EDITOR="nvim"
 export SUDO_EDITOR="nvim"
@@ -54,8 +51,11 @@ export VIEWER="nsxiv"
 export _JAVA_AWT_WM_NONREPARENTING=1
 
 # Limpiar el directorio ~/ de archivos de configuración
+#-------------------------------------------------------------------------------
+
 alias wget='wget --hsts-file="$XDG_CONFIG_HOME"/wget-hsts'
 alias gpg2='gpg2 --homedir "$XDG_DATA_HOME"/gnupg'
+
 export PARALLEL_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"/parallel
 export RUSTUP_HOME="$XDG_DATA_HOME"/rustup
 export GOPATH="$XDG_DATA_HOME"/go
@@ -64,13 +64,14 @@ export KODI_DATA="$XDG_DATA_HOME"/kodi
 export DVDCSS_CACHE="$XDG_DATA_HOME"/dvdcss
 export GNUPGHOME="${XDG_DATA_HOME:-$HOME/.local/share}/gnupg"
 export CUDA_CACHE_PATH="${XDG_CACHE_HOME:-$HOME/.cache}/nv"
-export GTK2_RC_FILES="${XDG_CONFIG_HOME:-$HOME/.config}/gtk-2.0/gtkrc:${XDG_CONFIG_HOME:-$HOME/.config}/gtk-2.0/gtkfilechooser.ini"
 export WINEPREFIX="${XDG_CONFIG_HOME:-$HOME/.config}/wineprefixes"
-export TERMINFO_DIRS="${XDG_CONFIG_HOME:-$HOME/.config}/terminfo:/usr/share/terminfo"
 export HISTFILE="${XDG_DATA_HOME:-$HOME/.local/share}/history"
 export LESSHISTFILE="$XDG_CACHE_HOME"/less/history
 export CARGO_HOME="$XDG_DATA_HOME"/cargo
 export NPM_CONFIG_USERCONFIG="${XDG_CONFIG_HOME:-$HOME/.config}"/npm/npmrc
+
+# Iniciar Hyprland desde tty
+#-------------------------------------------------------------------------------
 
 . "$HOME/.dotfiles/assets/shell/shell-utils-sh"
 

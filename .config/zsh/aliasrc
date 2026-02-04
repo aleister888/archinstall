@@ -1,125 +1,41 @@
-#!/bin/zsh
+#!/bin/sh
+
+. "$HOME/.dotfiles/assets/shell/shell-utils-sh"
+
+alias grub-update='sudo /usr/bin/grub-mkconfig -o /boot/grub/grub.cfg'
+
+alias clipboard="wl-copy"
+alias webcam="ffplay /dev/video0"
 
 alias vi='nvim'
 alias vim='nvim'
 
-# Moverse rápidamente entre directorios
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
 
-# Utilidades básicas
 alias cp='cp -iv'
 alias cat='bat -p --tabs 8'
 alias ls='eza -lagX --time-style iso --group-directories-first --smart-group'
 alias grep='grep --color=auto'
 alias tree='exa --tree'
 
-# Herramientas
 alias xdotool_table='xmodmap -pk'
-alias grub-update='sudo /usr/bin/grub-mkconfig -o /boot/grub/grub.cfg'
+alias find_broken_links='find / -xtype l -print 2>/dev/null'
+alias rebuild_detector="checkrebuild -v"
 
-# Alias para encontrar enlaces simbólicos rotos
-alias brokenlink='find / -xtype l -print 2>/dev/null'
+# Pacman
+#-------------------------------------------------------------------------------
 
-# Detectar que paquetes del AUR necesitan recompilarse
-alias rebuild-detector="checkrebuild -v"
-
-# Para pasar el output de un comando al portapeles con: comando | clipboard
-alias clipboard="wl-copy"
-
-alias webcam="ffplay /dev/video0"
-
-# Compilar programas clang rápidamente
-function GCC() {
-	gcc "$1" -o "${1%.*}"
-}
-
-function du() {
-	{
-		export BLOCKSIZE=$((2 ** 30)) # GiB
-		/usr/bin/du -s *
-		/usr/bin/du -s .*
-	} 2>/dev/null | sort -rnk 1
-}
-
-function reducePDF() {
-	gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 \
-		-dPDFSETTINGS=/screen \
-		-dDownsampleColorImages=true \
-		-dColorImageResolution=137 \
-		-dDownsampleGrayImages=true \
-		-dGrayImageResolution=137 \
-		-dDownsampleMonoImages=true \
-		-dMonoImageResolution=137 \
-		-dNOPAUSE -dBATCH -dQUIET \
-		-sOutputFile="${1%.*} (Reduced).pdf" "$1"
-}
-
-# Para obtener archivos no reclamados por pacman
-function lostfiles() {
-	local IGNORAR=(
-		"/etc/libvirt/storage"
-		"/usr/share/webapps/redmine"
-		"/opt"
-		"/usr/lib/modules/"
-		".*\.cache$"
-		"/usr/share/themes"
-		"/usr/lib/python[0-9\.]*/site-packages/inputremapper"
-		"/var/[a-zA-Z\.]*$"
-		"/var/lib/[a-zA-Z\.]*$"
-		".*\.service" # Systemd
-		".*\.target"  # Systemd
-	)
-
-	local COMANDO="sudo /usr/bin/lostfiles"
-	for PATRON in "${IGNORAR[@]}"; do
-		COMANDO+=" | grep -iv \"$PATRON\""
-	done
-
-	eval "$COMANDO"
-}
-
-# Para obtener el mimetype del archivo
-filetype() {
-	OUT=""
-	OUT+="xdg-mime: $(xdg-mime query filetype "$1")\n"
-	OUT+="file:     $(file --dereference --brief --mime-type "$1")"
-	echo -e "$OUT"
-}
-
-# Para reinciar pipewire
-pw_restart() {
-	systemctl --user stop wireplumber
-	systemctl --user stop pipewire-pulse
-	systemctl --user stop pipewire
-	systemctl --user start pipewire
-	systemctl --user start pipewire-pulse
-	systemctl --user start wireplumber
-}
-
-# Limpiar las dependencias innecesarias y la caché de pacman
-deepcleanup() {
-	yay -Ycc --noconfirm
-	yay -Scc --noconfirm
-	sudo /usr/bin/paccache -rk1
-}
-
-# Embeber letras en las canciones
-lrcput() {
-	$HOME/.local/bin/lrcput -d "$1" -s -R -r
-}
-
-# Actualizar el sistema
 update() {
 	yay -Syuu --sudoloop --answerclean --answerdiff --removemake
 	~/.dotfiles/updater/nix-conf -d
 }
 
-# Función para reinstalar todos los paquetes
-reinstall() {
-	# shellcheck disable=SC2046
-	yay -S $(pacman -Qq | grep -v "$(pacman -Qqm)")
+deepcleanup() {
+	yay -Ycc --noconfirm
+	yay -Scc --noconfirm
+	sudo /usr/bin/paccache -rk1
 }
 
 # Función para restaurar los paquetes
@@ -133,22 +49,118 @@ reexplicit() {
 	done
 }
 
-# Borrar entornos de un código laTeX
-desencapsular() {
-	TAG="$1"
-	shift
-	perl -pe "s/\\\\$TAG\\{([^{}]*(?:\\{$TAG\\}[^{}]*)*)\\}/\$1/g" "$@"
+reinstall() {
+	# shellcheck disable=SC2046
+	yay -S $(pacman -Qq | grep -v "$(pacman -Qqm)")
 }
 
-# Grabar la pantalla
-screenrecord() {
-	# Verificar si se proporcionó un archivo de salida
+pac_find() {
+	# Buscar archivos .pacnew y .pacsave
+	sudo /usr/bin/find /etc \
+		\( -name "*.pacnew" -o -name "*.pacsave" \) 2>/dev/null | while read -r _file; do
+		# Obtener el nombre del archivo original
+		_og_file="${_file%.pacnew}"
+		_og_file="${_og_file%.pacsave}"
+
+		# Mostrar encabezado
+		echo "##$(printf '#%.0s' $(seq 1 ${#_og_file}))##"
+		echo "# $_og_file #"
+		echo "##$(printf '#%.0s' $(seq 1 ${#_og_file}))##"
+
+		# Mostrar diferencias y limitar la salida
+		sudo /usr/bin/diff -d "$_file" "$_og_file" | head -n 20
+	done
+}
+
+GCC() {
+	gcc "$1" -o "${1%.*}"
+}
+
+du() {
+	{
+		BLOCKSIZE="$(echo "2^30" | bc)" # GiB
+		export BLOCKSIZE
+		/usr/bin/du -s -- *
+		/usr/bin/du -s -- .*
+	} 2>/dev/null | sort -rnk 1
+}
+
+reduce_pdf() {
+	gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 \
+		-dPDFSETTINGS=/screen \
+		-dDownsampleColorImages=true \
+		-dColorImageResolution=137 \
+		-dDownsampleGrayImages=true \
+		-dGrayImageResolution=137 \
+		-dDownsampleMonoImages=true \
+		-dMonoImageResolution=137 \
+		-dNOPAUSE -dBATCH -dQUIET \
+		-sOutputFile="${1%.*} (Reduced).pdf" "$1"
+}
+
+# Para obtener archivos no reclamados por pacman
+# shellcheck disable=SC3043,SC3024,SC3054,SC3030
+lostfiles() {
+	if [ -z "$ZSH_VERSION" ]; then
+		echo "$0"
+		log "Esta función solo se puede usar en zsh"
+		return 1
+	fi
+
+	local IGNORAR=(
+		"/etc/fail2ban"
+		"/etc/libvirt/qemu/.*\.xml"
+		"/etc/libvirt/storage"
+		"/etc/modprobe.d/"
+		"/usr/share/webapps/redmine"
+		"/opt"
+		"/usr/lib/modules/"
+		".*\.cache$"
+		"/usr/share/themes"
+		"/usr/lib/python[0-9\.]*/site-packages/inputremapper"
+		"/var/[a-zA-Z\.]*$"
+		"/var/lib/[a-zA-Z\.]*$"
+		".*\.service" # Systemd
+		".*\.target"  # Systemd
+		".*\.pacnew"
+	)
+
+	local COMANDO="sudo /usr/bin/lostfiles"
+	for PATRON in "${IGNORAR[@]}"; do
+		COMANDO+=" | grep -iv \"$PATRON\""
+	done
+
+	eval "$COMANDO"
+}
+
+#-------------------------------------------------------------------------------
+
+filetype() {
+	cat <<-EOF
+		xdg-mime: $(xdg-mime query filetype "$1")
+		file:     $(file --dereference --brief --mime-type "$1")
+	EOF
+}
+
+pipewire_restart() {
+	systemctl --user stop wireplumber
+	systemctl --user stop pipewire-pulse
+	systemctl --user stop pipewire
+	systemctl --user start pipewire
+	systemctl --user start pipewire-pulse
+	systemctl --user start wireplumber
+}
+
+lrc_put() {
+	~/.local/bin/lrcput -d "$1" -s -R -r
+}
+
+screen_record() {
 	if [ -z "$1" ]; then
 		echo "Se debe dar como argumento el archivo de salida" >&2
 		return 1
 	fi
-	# Detectar resolución de pantalla
-	RESOLUTION=$(hyprctl monitors | grep -v "availableModes" | grep -oP "\d+x\d+(?=@)" | head -n1)
+	RESOLUTION=$(get_monitor_resolution)
 	wf-recorder -g "$RESOLUTION" -a -f "$1"
 }
 
@@ -157,80 +169,28 @@ yabridgectl_dirs() {
 		yabridgectl add "$WINEPREFIX/drive_c/Program Files/Common Files"
 	[ -d "$WINEPREFIX/drive_c/Program Files/Steinberg" ] &&
 		yabridgectl add "$WINEPREFIX/drive_c/Program Files/Steinberg"
+	yabridgectl sync --prune
+}
+
+# Coding
+#-------------------------------------------------------------------------------
+
+# Borrar entornos de un código laTeX
+desencapsular() {
+	_tag="$1"
+	shift
+	perl -pe "s/\\\\${_tag}\\{([^{}]*(?:\\{${_tag}\\}[^{}]*)*)\\}/\$1/g" "$@"
 }
 
 push() {
+	# shellcheck disable=SC2086
 	if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
 		git add .
-		eval $TERMINAL $REGULAR_OPTS \
+		eval $TERMINAL $REGULAR_OPTS $TERMEXEC \
 			"sh -c \"cd $HOME/.dotfiles && git diff --cached\""
 		git commit
 		git push
 	else
 		echo "No estás dentro de ningún repositorio" >&2
 	fi
-}
-
-# Alias para encontrar archivos pac de pacman
-pac() {
-	# Buscar archivos .pacnew y .pacsave
-	sudo /usr/bin/find /etc \( -name "*.pacnew" -o -name "*.pacsave" \) 2>/dev/null | while read -r FILE; do
-		# Obtener el nombre del archivo original
-		ORIGINAL_FILE="${FILE%.pacnew}"
-		ORIGINAL_FILE="${ORIGINAL_FILE%.pacsave}"
-
-		# Mostrar encabezado
-		echo "##$(printf '#%.0s' $(seq 1 ${#ORIGINAL_FILE}))##"
-		echo "# $ORIGINAL_FILE #"
-		echo "##$(printf '#%.0s' $(seq 1 ${#ORIGINAL_FILE}))##"
-
-		# Mostrar diferencias y limitar la salida
-		sudo /usr/bin/diff -d "$FILE" "$ORIGINAL_FILE" | head -n 20
-	done
-}
-
-# Función para validar la indentación de un archivo
-indent_check() {
-	# Validar que el número de espacios es un entero
-	if ! print -r -- "$1" | grep -qE '^[0-9]+$' || [ ! -f "$2" ]; then
-		echo "Uso: indent_check <nº espacios> <archivo>"
-		return 1
-	fi
-	awk -v n="$1" '
-	{
-		match($0, /^[ ]+/)
-		if (RSTART == 1) {
-			spaces = RLENGTH
-			if (spaces % n != 0) print NR, "Indentación incorrecta:", spaces, "espacios ->", $0
-		}
-	}' "$2"
-}
-
-code_format() {
-	# Directorio donde se encuentran los scripts
-	DIRECTORIO=$1
-	# Si no se pasó un directorio, usamos el directorio actual
-	if [ -z "$DIRECTORIO" ]; then
-		DIRECTORIO="."
-	fi
-	# Buscar todos los archivos en el directorio
-	find "$DIRECTORIO" -wholename "$DIRECTORIO/.git*" -prune -o \
-		-type f -print | grep -vE '/test/java/' |
-		while read -r ARCHIVO; do
-			# Obtener el tipo MIME del archivo
-			MIME_TYPE=$(xdg-mime query filetype "$ARCHIVO")
-			# Obtener el hash del archivo original
-			OG_HASH=$(sha256sum "$ARCHIVO" | awk '{print $1}')
-			# Si el tipo MIME es 'application/x-shellscript', formatear el archivo
-			case "$MIME_TYPE" in
-			application/x-shellscript) shfmt -w "$ARCHIVO" >/dev/null 2>&1 ;;
-			text/x-java) astyle --style=java --indent=tab=8 --add-braces --squeeze-lines=1 -n "$ARCHIVO" >/dev/null 2>&1 ;;
-			text/x-tex) latexindent --cruft=/tmp -w "$ARCHIVO" >/dev/null 2>&1 ;;
-			esac
-			# Obtener el hash del archivo actualizado, para ver si se cambió algo
-			NEW_HASH=$(sha256sum "$ARCHIVO" | awk '{print $1}')
-			if [ "$OG_HASH" != "$NEW_HASH" ]; then
-				echo "Formateado: $ARCHIVO"
-			fi
-		done
 }

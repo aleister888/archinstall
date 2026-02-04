@@ -21,12 +21,10 @@
     "xdg-desktop-portal-hyprland",
     "yad",
     "yt-dlp",
-    "zenity"
+    "zenity",
+    "lact"
   ],
-  "musica": [
-    "atomicparsley",
-    "glyr"
-  ],
+  "musica": ["atomicparsley", "glyr"],
   "audio_prod": [
     "suil",
     "reaper",
@@ -35,11 +33,7 @@
     "surge-xt-vst3",
     "surge-xt"
   ],
-  "servicios": [
-    "gnome-keyring",
-    "hyprsunset",
-    "swaync"
-  ],
+  "servicios": ["gnome-keyring", "hyprsunset", "swaync"],
   "discos": [
     "gnome-disk-utility",
     "ntfs-3g",
@@ -87,9 +81,7 @@
     "extra/wxwidgets-common",
     "extra/wxwidgets-gtk3"
   ],
-  "bandeja_sisteam": [
-    "network-manager-applet"
-  ],
+  "bandeja_sisteam": ["network-manager-applet"],
   "aplicaciones_gui": [
     "hyprpaper",
     "mpv",
@@ -98,7 +90,5 @@
     "qalculate-gtk",
     "sxiv"
   ],
-  "aplicaciones_tui": [
-    "htop"
-  ]
+  "aplicaciones_tui": ["htop"]
 }
