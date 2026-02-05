@@ -25,13 +25,7 @@
   "hide-on-action": false,
   "text-empty": "Sin Notificaciones",
   "script-fail-notify": true,
-  "widgets": [
-    "buttons-grid",
-    "title",
-    "dnd",
-    "mpris",
-    "notifications"
-  ],
+  "widgets": ["buttons-grid", "title", "dnd", "mpris", "notifications"],
   "widget-config": {
     "notifications": {
       "vexpand": true
@@ -45,10 +39,7 @@
       "text": "No Molestar"
     },
     "mpris": {
-      "blacklist": [
-        "Telegram",
-        "firefox"
-      ],
+      "blacklist": ["Telegram", "chromium", "firefox"],
       "image-size": 128
     },
     "buttons-grid": {

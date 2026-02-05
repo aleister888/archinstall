@@ -62,6 +62,9 @@ set_default_mime_types "^audio" "mpv"
 set_default_mime_types "^text" "text"
 set_default_mime_types "^.*/(g)?zip" "xarchiver"
 
+xdg-mime default firefox.desktop x-scheme-handler/http
+xdg-mime default firefox.desktop x-scheme-handler/https
+
 # Establecemos el administrador de archivos predetermiando
 {
 	flock 200
