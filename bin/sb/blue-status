@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -x
 
 if pgrep --quiet hyprsunset; then
 	echo "󰹏"

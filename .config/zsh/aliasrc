@@ -98,41 +98,6 @@ reduce_pdf() {
 		-sOutputFile="${1%.*} (Reduced).pdf" "$1"
 }
 
-# Para obtener archivos no reclamados por pacman
-# shellcheck disable=SC3043,SC3024,SC3054,SC3030
-lostfiles() {
-	if [ -z "$ZSH_VERSION" ]; then
-		echo "$0"
-		log "Esta función solo se puede usar en zsh"
-		return 1
-	fi
-
-	local IGNORAR=(
-		"/etc/fail2ban"
-		"/etc/libvirt/qemu/.*\.xml"
-		"/etc/libvirt/storage"
-		"/etc/modprobe.d/"
-		"/usr/share/webapps/redmine"
-		"/opt"
-		"/usr/lib/modules/"
-		".*\.cache$"
-		"/usr/share/themes"
-		"/usr/lib/python[0-9\.]*/site-packages/inputremapper"
-		"/var/[a-zA-Z\.]*$"
-		"/var/lib/[a-zA-Z\.]*$"
-		".*\.service" # Systemd
-		".*\.target"  # Systemd
-		".*\.pacnew"
-	)
-
-	local COMANDO="sudo /usr/bin/lostfiles"
-	for PATRON in "${IGNORAR[@]}"; do
-		COMANDO+=" | grep -iv \"$PATRON\""
-	done
-
-	eval "$COMANDO"
-}
-
 #-------------------------------------------------------------------------------
 
 filetype() {

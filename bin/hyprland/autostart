@@ -45,8 +45,9 @@ fi &
 if lsusb | grep -i audio &&
 	[ -e "$WINEPREFIX/drive_c/Program Files/Common Files/VST3" ]; then
 	setsid -f "$HOME/.local/bin/utils/reaper-xephyr"
-fi
+fi &
 
+rm -f ~/.cache/wofi*
 cleaner
 
 # Watchers

@@ -104,7 +104,6 @@
   },
   "custom/blue-filter": {
     "tooltip": false,
-    "format": "{}",
     "interval": 1,
     "exec": "~/.dotfiles/bin/sb/blue-status",
     "on-click": "~/.dotfiles/bin/sb/blue-toggle",

@@ -1,20 +1,20 @@
 #!/bin/sh
-# shellcheck disable=SC1091
+# shellcheck disable=SC1091,SC2086
 
 # Activar/Desactivar hyprsunset (Filtro de la luz azul)
 
 . "$HOME/.dotfiles/assets/shell/shell-utils-sh"
 
-init_log status_bar
+init_log status_bar >/dev/null
 
 NOTIFY="notify-send -e -a hyprsunset -t 1500 -i screensaver"
 
 $HIDE_NOTIFICATIONS
 
-if pgrep hyprsunset; then
+if pgrep --quiet hyprsunset; then
 	pkill hyprsunset
-	$NOTIFY "hyprsunset 󰌵" 'Filtro desactivado'
+	$NOTIFY "hyprsunset 󰌵" "Filtro desactivado"
 else
-	setsid -f hyprsunset -t 4000 -g 80 >"$LOG_DIR"/blue-toggle.log 2>&1
-	$NOTIFY "hyprsunset 󰹏" 'Filtro activado'
+	setsid -f $HYPRSUNSET_CMD >"$LOG_DIR"/blue-toggle.log 2>&1
+	$NOTIFY "hyprsunset 󰹏" "Filtro activado"
 fi

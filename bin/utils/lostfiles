@@ -1,0 +1,26 @@
+#!/bin/bash
+
+IGNORE=(
+	"/etc/fail2ban"
+	"/etc/libvirt/qemu/.*\.xml"
+	"/etc/libvirt/storage"
+	"/etc/modprobe.d/"
+	"/usr/share/webapps/redmine"
+	"/opt"
+	"/usr/lib/modules/"
+	".*\.cache$"
+	"/usr/share/themes"
+	"/usr/lib/python[0-9\.]*/site-packages/inputremapper"
+	"/var/[a-zA-Z\.]*$"
+	"/var/lib/[a-zA-Z\.]*$"
+	".*\.service" # Systemd
+	".*\.target"  # Systemd
+	".*\.pacnew"
+)
+
+COMMAND="sudo /usr/bin/lostfiles"
+for PATTERN in "${IGNORE[@]}"; do
+	COMMAND+=" | grep -iv \"$PATTERN\""
+done
+
+eval "$COMMAND"
