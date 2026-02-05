@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC1091
 
 # Script para comprobar que los sinks vinculados con el micrófono virtual
 # no se han desvinculado. Muchas veces al pausar la aplicación que esta
@@ -8,24 +9,18 @@ source "$HOME/.dotfiles/bin/virtualmic/env"
 
 while true; do
 	# Bloqueamos el proceso mientras se este eligiendo un sink
-	while pgrep virtualmic; do
+	while pgrep --quiet -f virtualmic-select; do
 		sleep 0.2
 	done
 
-	# Sinks vinculados
-	DEL_DEVICES=$(
-		pw-link -l my-combined-sink |
-			pcre2grep -M 'my-combined-sink:playback_F[LR]\n(^ .*\n)*' |
-			grep -oP '\- \K.*'
-	)
+	sink_list_build
 
 	# Para cada dispositivo supuestamente añadido,
 	# comprobamos que realmente lo está
 	while IFS= read -r DEVICE; do
 		# Si no lo está lo volvemos a vincular
 		if ! grep -qF "$DEVICE" <<<"$DEL_DEVICES"; then
-			~/.dotfiles/bin/virtualmic/sink-link add "$DEVICE" 2>/dev/null &&
-				notify "$ICON" "Dispositivo reconectado" "$DEVICE"
+			~/.dotfiles/bin/virtualmic/sink-link add "$DEVICE"
 		fi
 	done <"$ADDED_LIST"
 

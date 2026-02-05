@@ -1,133 +1,49 @@
 #!/bin/bash
-# shellcheck disable=SC2086,SC2181
+# shellcheck disable=SC2086,SC2181,SC1091
 
 # Vincular (dispositivos de entrada)|(aplicaciones) a un micrófono virtual para compartir audio
 
 source "$HOME/.dotfiles/bin/virtualmic/env"
 
-NOTIFICATION_DURATION=750
-
 DMENU="rofi -dmenu"
 DMENU_LINES="-l"
-NOTIFICATION_TITLE="Micrófono Virtual"
 
-# Excluiremos los sinks cuyo nombre contenga alguno de estos patrones
-EXCLUDE_PATTERN="my-combined-sink\|my-virtualmic\|PulseAudio\|Midi\|v4l2\|WEBRTC\|Chromium\|bluez_input\|xdg.*portal\|ee_.*\|easyeffects.*"
+sink_links_edit() {
+	local DMENU_SELECTED SINKS_LIST FORMATED_SINKS_LIST
 
-# Función para construir la lista de sinks
-sinks_eval() {
-	DEVICES=$( # Sinks candidadtos a añadir
-		pw-link -o |
-			grep -P ':((capture)|(output)_((FL)|(FR)|(MONO)))|(out[12])' |
-			grep -v "$EXCLUDE_PATTERN" | sort -u
-	)
-
-	DEL_DEVICES=$( # Sinks candidatos a borrar (ya añadidos)
-		pw-link -l my-combined-sink |
-			pcre2grep -M 'my-combined-sink:playback_F[LR]\n(^ .*\n)*' |
-			grep -oP '\- \K.*'
-	)
-
-	# Añadimos a los candidatos para desvinculación los sinks en la lista de sinks añadidos
-	while IFS= read -r CANDIDATE_SINK; do
-		if [ -z "$DEL_DEVICES" ]; then
-			DEL_DEVICES="$CANDIDATE_SINK"
-		else
-			DEL_DEVICES=$(echo -e "$DEL_DEVICES\n$CANDIDATE_SINK")
-		fi
-	done <"$ADDED_LIST"
-
-	# Eliminamos los sinks ya añadidos de la lista con los posibles sinks a añadir
-	for ADDED in $DEL_DEVICES; do
-		DEVICES=$(echo "$DEVICES" | grep -v "$ADDED")
-	done
-}
-
-# Función para vincular/desvincular dispositivos/aplicaciones
-sink_edit() {
-	local DMENU_SELECTED
-
-	# Lista con nuestros dispositivos/aplicaciones
 	if [ "$1" = "add" ]; then
-		SINKS=$DEVICES
+		SINKS_LIST=$DEVICES
 	else
-		SINKS=$DEL_DEVICES
+		SINKS_LIST=$DEL_DEVICES
 	fi
 
-	F_SINKS=$(echo "$SINKS" | sed 's/:.*//g' | sort -u) # Sinks formateados
+	FORMATED_SINKS_LIST=$(echo "$SINKS_LIST" | sed 's/:.*//g' | sort -u)
 
-	# Elegir el sink con dmenu mostrando solo la información esencial
-	DMENU_SELECTED=$(echo "$F_SINKS" | $DMENU $DMENU_LINES "$(echo "$F_SINKS" | wc -l)")
+	DMENU_SELECTED=$(echo "$FORMATED_SINKS_LIST" | $DMENU $DMENU_LINES "$(echo "$FORMATED_SINKS_LIST" | wc -l)")
 	[ -z "$DMENU_SELECTED" ] && exit
 
-	# Elegir la primera coincidencia de nuestra elección con el array
-	SELECTED=$(echo "$SINKS" | grep "$DMENU_SELECTED" | sed '1q;d')
-
+	SELECTED=$(echo "$SINKS_LIST" | grep "$DMENU_SELECTED" | sed '1q;d')
 	[ -z "$SELECTED" ] && exit
 
-	if [ "$1" = "add" ]; then
-		# Vinculamos el sink
-		"$HOME"/.dotfiles/bin/virtualmic/sink-link "$1" "$SELECTED"
-
-		sinks_eval
-
-		# Comprobamos que el sink se vinculó correctamente
-		if echo $DEL_DEVICES | grep -q "$DMENU_SELECTED"; then
-			notify "$ICON" "$NOTIFICATION_TITLE" "Sink vinculado correctamente"
-		else
-			notify "$ICON" "$NOTIFICATION_TITLE" "Hubo un fallo al añadir el sink"
-		fi
-
-		# Añadimos el sink a la lista de sinks añadidos
-		echo $SELECTED >>$ADDED_LIST
-
-	elif [ "$1" = "del" ]; then
-		# Desvinculamos el sink
-		"$HOME"/.dotfiles/bin/virtualmic/sink-link "$1" "$SELECTED"
-
-		# Borramos el sink de la lista de sinks añadidos
-		grep -v "$SELECTED" $ADDED_LIST >$ADDED_LIST.tmp
-		mv $ADDED_LIST.tmp $ADDED_LIST
-
-		sinks_eval
-
-		# Comprobamos que el sink se desvinculó correctamente
-		if ! echo $DEL_DEVICES | grep -q "$SELECTED"; then
-			notify "$ICON" "$NOTIFICATION_TITLE" "Sink desvinculado correctamente"
-		else
-			notify "$ICON" "$NOTIFICATION_TITLE" "Fallo al desvincular el sink"
-		fi
-	fi
+	"$HOME"/.dotfiles/bin/virtualmic/sink-link "$1" "$SELECTED"
 }
 
 # shellcheck disable=SC2155
 set_max_samplerate() {
+	local DEFAULT_SINK AUDIO_ID MAX_RATE
+
 	samplerate_error() {
 		notify system-error "$NOTIFICATION_TITLE" "Error al establecer el samplerate"
 		exit 1
 	}
 
-	local DEFAULT_SINK=$(pactl info | awk -F': ' '/Default Sink/ {print $2}')
+	DEFAULT_SINK=$(pactl info | awk -F': ' '/Default Sink/ {print $2}')
 
-	local AUDIO_ID=$(
-		pw-dump | jq -r ".[]
-			| select(.type==\"PipeWire:Interface:Node\" and .info.props[\"node.name\"]==\"$DEFAULT_SINK\")
-			| .id"
-	)
-
+	AUDIO_ID=$(pw-dump | jq -r ".[] | select(.type==\"PipeWire:Interface:Node\" and .info.props[\"node.name\"]==\"$DEFAULT_SINK\") | .id")
 	[ -z "$AUDIO_ID" ] && samplerate_error
 
-	local MAX_RATE=$(
-		pw-dump | jq ".[] |
-		select(.id == $AUDIO_ID) |
-		.info.params.EnumFormat[0].rate.max"
-	)
-	[ -z "$MAX_RATE" ] && MAX_RATE=$(
-		pw-dump | jq ".[] |
-			select(.id == $AUDIO_ID) |
-			.info.params.EnumFormat[0].rate"
-	)
-
+	MAX_RATE=$(pw-dump | jq ".[] | select(.id == $AUDIO_ID) | .info.params.EnumFormat[0].rate.max")
+	[ -z "$MAX_RATE" ] && MAX_RATE=$(pw-dump | jq ".[] | select(.id == $AUDIO_ID) | .info.params.EnumFormat[0].rate")
 	[ -z "$MAX_RATE" ] && samplerate_error
 
 	pw-metadata -n settings 0 clock.force-rate "$MAX_RATE" &&
@@ -136,33 +52,36 @@ set_max_samplerate() {
 
 #-------------------------------------------------------------------------------
 
-# Si no existe todavía el micrófono virtual, nos salimos
+# Nos aseguramos que el micrófono virtual existe
 { pactl list | grep -q my-virtualmic; } || exit 1
 
 # Nos aeguramos que el sink combinado y el micrófono virtual estén conectados
 pw-link my-combined-sink:monitor_FL my-virtualmic:input_FL 2>/dev/null
 pw-link my-combined-sink:monitor_FR my-virtualmic:input_FR 2>/dev/null
 
-# Elegir si vincular o desvincular sinks
-ADD="Añadir sink al micrófono virtual"
-DEL="Quitar sink del micrófono virtual"
-RATE="Establecer el samplerate"
-CHOSEN=$(echo -e "$ADD\n$DEL\n$RATE" | eval $DMENU $DMENU_LINES 3)
+ADD_MSG="Añadir sink al micrófono virtual"
+DEL_MSG="Quitar sink del micrófono virtual"
+RATE_MSG="Establecer el samplerate"
 
-[ -z "$CHOSEN" ] || sinks_eval
+CHOSEN=$(echo -e "$ADD_MSG\n$DEL_MSG\n$RATE_MSG" | eval $DMENU $DMENU_LINES 3)
+[ -z "$CHOSEN" ] && exit 1
 
-if [ "$CHOSEN" = "$ADD" ]; then
+sink_list_build
+
+case "$CHOSEN" in
+"$ADD_MSG")
 	[ -z "$DEVICES" ] && {
 		notify "$ICON" "$NOTIFICATION_TITLE" "No hay sinks que añadir"
 		exit
 	}
-	sink_edit add
-elif [ "$CHOSEN" = "$DEL" ]; then
+	sink_links_edit add
+	;;
+"$DEL_MSG")
 	[ -z "$DEL_DEVICES" ] && {
 		notify "$ICON" "$NOTIFICATION_TITLE" "No hay sinks que borrar"
 		exit
 	}
-	sink_edit del
-elif [ "$CHOSEN" = "$RATE" ]; then
-	set_max_samplerate
-fi
+	sink_links_edit del
+	;;
+"$RATE_MSG") set_max_samplerate ;;
+esac
