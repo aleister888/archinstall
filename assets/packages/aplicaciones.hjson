@@ -24,6 +24,7 @@
     "vlc",
     "vlc-plugin-ffmpeg",
     "vlc-plugin-freetype",
+    "vlc-plugin-matroska",
     "vlc-plugin-x264",
     "vlc-plugin-x265"
   ],
