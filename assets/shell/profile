@@ -32,6 +32,10 @@ export XCURSOR_PATH="/usr/share/icons:${XDG_DATA_HOME}/icons"
 export XCURSOR_THEME=capitaine-cursors
 export XCURSOR_SIZE=64
 
+export MOZ_ENABLE_WAYLAND=1
+export MOZ_DBUS_REMOTE=1
+export MOZ_WAYLAND_USE_VAAPI=1
+
 # Aplicaciones predeterminadas
 #-------------------------------------------------------------------------------
 

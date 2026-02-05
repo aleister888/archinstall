@@ -1,37 +1,33 @@
-#!/bin/bash -x
+#!/bin/bash
 
 # Cambiamos el foco de las ventanas de forma cíclica en función de si estamos en
 # un espacio normal o en el espacio especial "scratch"
 
-# TODO: Fix
-
-SCRATCH_PIDS=()
-
 ARG="$1"
 [ -z "$ARG" ] && exit 1
 
-ACTIVE_WORKSPACE=$(hyprctl -j activewindow | jq -r '.workspace.name')
-
-# Indexamos el PID de las ventanas en el espacio "special:scratch" ordenadas
-# en función de la última vez que tuvieron el foco
-index_scratch() {
-	mapfile -t SCRATCH_PIDS < <(
+# Indexamos la dirección de las ventanas en el espacio "special:scratch"
+# ordenadas en función de la última vez que tuvieron el foco (No usamos el PID
+# porque todas las ventanas de kitty que usan --single-instance tienen el mismo
+# pid)
+index_scratch_addresses() {
+	mapfile -t SCRATCH_ADDRESSES < <(
 		hyprctl -j clients |
 			jq -r '.[]
 			| select(.workspace.name=="special:scratch")
-			| select(.floating == true or .fullscreen != 0)
-			| "\(.focusHistoryID):\(.pid)"' |
-			sort | cut -d':' -f2
+			| select(.floating == true and .fullscreen == 0)
+			| "\(.focusHistoryID):\(.address)"' |
+			sort | cut --delimiter=":" --fields="2"
 	)
 }
 
-get_prop() {
-	hyprctl -j clients | jq -r ".[] | select(.pid == $1) | .$2"
+get_prop_from_address() {
+	hyprctl -j clients | jq -r ".[] | select(.address == $1) | .$2"
 }
 
-focus() {
-	hyprctl dispatch focuswindow "pid:$1"
-	hyprctl dispatch alterzorder top, "pid:$1"
+focus_from_address() {
+	hyprctl dispatch focuswindow "address:$1"
+	hyprctl dispatch alterzorder top, "address:$1"
 }
 
 cycle_regular() {
@@ -43,33 +39,14 @@ cycle_regular() {
 }
 
 cycle_scratch() {
-	index_scratch
-	local PID FULLSCREEN_STATE
-
+	index_scratch_addresses
 	# Última ventana enfocada cronológicamente
-	PID="${SCRATCH_PIDS[-1]}"
+	local ADDRESS="${SCRATCH_ADDRESSES[-1]}"
 
-	FULLSCREEN_STATE=$(get_prop "$PID" fullscreen)
-
-	# Si la ventana esta en pantalla completa, la volvemos tile
-	# otra vez para que pase a estar enfrente
-	[ "$FULLSCREEN_STATE" -ne 0 ] && {
-		hyprctl dispatch fullscreenstate 0 "pid:$PID"
-		sleep 0.1
-		hyprctl dispatch settiled "pid:$PID"
-		sleep 0.1
-		focus "${SCRATCH_PIDS[-2]}"
-		return
-	}
-
-	focus "$PID"
+	focus_from_address "$ADDRESS"
 }
 
-# Si estamos en un espacio normal cambiamos ventanas con layoutmsg
-if [ "$ACTIVE_WORKSPACE" != "special:scratch" ]; then
-	cycle_regular
-# Si estamos en el espacio especial "scratch" vamos alternando el foco entre
-# los distintos scratchpads
-else
-	cycle_scratch
-fi
+case "$(hyprctl -j activewindow | jq -r '.workspace.name')" in
+"special:scratch") cycle_scratch ;;
+*) cycle_regular ;;
+esac

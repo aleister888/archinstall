@@ -1,5 +1,4 @@
 return {
-	-- TODO disable for jsonc files
 	"nvim-treesitter/nvim-treesitter",
 	lazy = false,
 	branch = "main",

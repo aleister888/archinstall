@@ -3,9 +3,10 @@
   "position": "top",
   "height": 0, // Dejamos que el tamaño de los módulos sea el que mande
   "margin": "0 6 0 6",
-  "modules-left": ["hyprland/workspaces"],
-  //"modules-left": ["hyprland/workspaces", "hyprland/window"],
-  //"modules-left": ["hyprland/workspaces", "custom/music-metadata"],
+  "modules-left": [
+    "hyprland/workspaces"
+    //"hyprland/window"
+  ],
   "modules-center": ["clock", "privacy"],
   "modules-right": [
     "custom/battery",
@@ -14,12 +15,12 @@
     //"network",
     //"custom/powermenu",
     "custom/blue-filter",
-    "tray",
+    "tray"
   ],
   "hyprland/workspaces": {
     "format": "{name}{windows}",
     "persistent-workspaces": {
-      "*": 5,
+      "*": 5
     },
     "workspace-taskbar": {
       "enable": true,
@@ -32,9 +33,9 @@
         "FX: Track .*",
         "xdg-desktop-portal-gtk",
         "win.*",
-        "",
-      ],
-    },
+        ""
+      ]
+    }
   },
   "hyprland/window": {
     "rewrite": {
@@ -42,36 +43,36 @@
       "(.*) - Nvim": "$1",
       "(.*) - Obsidian.*": "$1",
       "(.*) — Mozilla Firefox": "$1",
-      "(.*).pdf": "$1",
-    },
+      "(.*).pdf": "$1"
+    }
   },
   "custom/music-metadata": {
     "tooltip": false,
     "interval": 1,
     "exec": "music-metadata -d",
-    "on-click": "music-control play-pause",
+    "on-click": "music-control play-pause"
   },
   "clock": {
     "tooltip": false,
     "interval": 1,
     "format": "{:%I:%M:%S}",
-    "on-click": "swaync-client -t",
+    "on-click": "swaync-client -t"
   },
   "privacy": {
-    "icon-size": 20,
+    "icon-size": 20
   },
   "custom/battery": {
     "tooltip": false,
     "interval": 1,
     "exec": "~/.dotfiles/bin/sb/sb-bat",
-    "on-click": "~/.dotfiles/bin/sb/sb-bat-info",
+    "on-click": "~/.dotfiles/bin/sb/sb-bat-info"
   },
   "custom/disk": {
     "tooltip": false,
     "format": "󰨣 {}",
     "interval": 15,
     "exec": "df -h /home | awk '/[0-9]/ {print $4}'",
-    "on-click": "~/.dotfiles/bin/sb/sb-disks-info",
+    "on-click": "~/.dotfiles/bin/sb/sb-disks-info"
   },
   "pulseaudio": {
     "tooltip": false,
@@ -80,11 +81,11 @@
     "format-muted": " {volume}%",
     "format-icons": {
       "headphone": "",
-      "default": ["", ""],
+      "default": ["", ""]
     },
     "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
     "on-scroll-up": "volinc 5",
-    "on-scroll-down": "volinc -5",
+    "on-scroll-down": "volinc -5"
   },
   "network": {
     "tooltip": false,
@@ -95,18 +96,18 @@
     "format-wifi": "{icon} {essid} {frequency}GHz",
     "format-alt": "󰏔 {bandwidthDownBytes} 󰏕 {bandwidthUpBytes}",
     "format-icons": ["󰤟", "󰤢", "󰤥", "󰤨"],
-    "max-length": 50,
+    "max-length": 50
   },
   "custom/powermenu": {
     "tooltip": false,
     "format": "⏻",
-    "on-click": "~/.dotfiles/bin/powermenu",
+    "on-click": "~/.dotfiles/bin/powermenu"
   },
   "custom/blue-filter": {
     "tooltip": false,
     "interval": 1,
     "exec": "~/.dotfiles/bin/sb/blue-status",
-    "on-click": "~/.dotfiles/bin/sb/blue-toggle",
+    "on-click": "~/.dotfiles/bin/sb/blue-toggle"
   },
   "tray": {
     "icon-size": 24,
@@ -114,7 +115,7 @@
     "icons": {
       "discord": "discord-tray",
       "easyeffects": "google-music-manager-panel",
-      "redact": "entry-delete",
-    },
-  },
+      "redact": "entry-delete"
+    }
+  }
 }

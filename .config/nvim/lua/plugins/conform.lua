@@ -19,7 +19,7 @@ return {
 			hjson = { "prettier_json" },
 			java = { "astyle" },
 			json = { "prettier_json" },
-			jsonc = { "prettier" },
+			jsonc = { "prettier_json" },
 			lua = { "stylua" },
 			scss = { "prettier" },
 			sh = { "shfmt" },
