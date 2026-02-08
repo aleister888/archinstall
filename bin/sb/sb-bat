@@ -1,6 +1,6 @@
 #!/bin/bash
 
-[ ! -e /sys/class/power_supply/BAT0 ] && exit 1
+ls /sys/class/power_supply/BAT* &>/dev/null || exit 1
 
 NUM_BATERIAS=$(
 	find /sys/class/power_supply/ -maxdepth 1 -name 'BAT[0-9]*' | wc -l
