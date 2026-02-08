@@ -50,6 +50,8 @@ fi &
 rm -f ~/.cache/wofi*
 cleaner
 
+has_bluetooth_device && setsid -f blueman-applet
+
 # Watchers
 #-------------------------------------------------------------------------------
 
