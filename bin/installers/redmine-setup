@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 # shellcheck disable=SC2086,SC2155,SC2164,SC3043
 
 # Instala y configura redmine con usuario=admin contraseña=admin

@@ -14,7 +14,9 @@
     "time",
     "yarn"
   ],
+  "dotnet": ["dotnet-host", "dotnet-runtime", "dotnet-sdk"],
   "kotlin": ["kotlin", "gradle", "ktlint"],
   "python": ["python-pandas", "python-scikit-learn"],
-  "formateadores": ["astyle", "prettier", "sassc", "shfmt", "stylua"]
+  "formateadores": ["astyle", "prettier", "sassc", "shfmt", "stylua"],
+  "rust": ["rust", "rust-src"]
 }

@@ -38,17 +38,19 @@ vim.keymap.set("v", "?", 's¿<C-r>"?', { noremap = true, silent = true })
 -- Cambiar entre ventanas
 vim.keymap.set("n", "<leader>s", "<C-w>w", { noremap = true, silent = true })
 
+-- Spawnear terminal
+vim.keymap.set("n", "<localleader>T", function()
+	local terminal = os.getenv("TERMINAL") or ""
+	local terminal_opts = os.getenv("REGULAR_OPTS") or ""
+	local cmd = string.format("%s %s &>/dev/null &", terminal, terminal_opts)
+	vim.fn.execute("!" .. cmd)
+end, { silent = true })
+
 -- Spawnear scratchpad
 vim.keymap.set("n", "<localleader>t", function()
 	local terminal = os.getenv("TERMINAL") or ""
 	local termtitle = os.getenv("TERMTITLE") or ""
-	local cmd = string.format("%s %s scratchpad &>/dev/null &", terminal, termtitle)
-	vim.fn.execute("!" .. cmd)
-end, { silent = true })
-
--- Spawnear terminal
-vim.keymap.set("n", "<localleader>T", function()
-	local terminal = os.getenv("TERMINAL") or ""
-	local cmd = string.format("%s &>/dev/null &", terminal)
+	local terminal_opts = os.getenv("SCRATCH_OPTS") or ""
+	local cmd = string.format("%s %s %s scratchpad &>/dev/null &", terminal, terminal_opts, termtitle)
 	vim.fn.execute("!" .. cmd)
 end, { silent = true })

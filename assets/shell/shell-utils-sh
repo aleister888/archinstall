@@ -61,8 +61,8 @@ get_random_tmp() {
 
 # A veces necesitaremos trabajar sobre el directorio ~/.cache porque tmp tiene
 # limitaciones de tamaño. Importante tener en cuenta que como el contenido de
-# ~/.cache no se borra solo se debe borrar el directorio $CACHE_DIR al terminar
-# de utilizarlo
+# ~/.cache no se borra solo, se debe borrar explicitamente el directorio
+# $CACHE_DIR al terminar de utilizarlo
 get_cache_tmp() {
 	_cache_dir="$CACHE_BASE_DIR/$1"
 	_tmp_symlink="$TMP_BASE_DIR/$1"
@@ -154,4 +154,31 @@ get_monitor_resolution() {
 	hyprctl monitors |
 		grep -v "availableModes" | grep -oP "\d+x\d+(?=@)" |
 		head -n"$_n_monitor"
+}
+
+# Funciones para informar sobre el número de paquetes instalados
+#-------------------------------------------------------------------------------
+
+_pacman_count_file=$TMP_BASE_DIR/pacman_pkg_count
+_aur_count_file=$TMP_BASE_DIR/aur_pkg_count
+_nix_count_file=$TMP_BASE_DIR/nix_pkg_count
+
+package_info_update() {
+	_pacman_count="$(yay -Q | wc -l)"
+	_aur_count="$(yay -Qm | wc -l)"
+	_nix_count="$(nix profile list --json 2>/dev/null | jq -c '.elements | to_entries[]' | wc -l)"
+	echo "$_pacman_count" >$_pacman_count_file
+	echo "$_aur_count" >$_aur_count_file
+	echo "$_nix_count" >$_nix_count_file
+}
+
+package_info_print() {
+	[ ! -e "$_pacman_count_file" ] && return 1
+	[ ! -e "$_aur_count_file" ] && return 1
+	[ ! -e "$_nix_count_file" ] && return 1
+
+	printf "pacman: %s (aur: %s), nix: %s\n" \
+		"$(cat $_pacman_count_file)" \
+		"$(cat $_aur_count_file)" \
+		"$(cat $_nix_count_file)"
 }

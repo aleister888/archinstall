@@ -9,7 +9,8 @@
     "okular",
     "qbittorrent",
     "seahorse",
-    "yacreader" // lector comics
+    // lector comics
+    "yacreader"
   ],
   "krita": ["krita", "kseexpr"],
   "music_library": [

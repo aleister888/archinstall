@@ -79,8 +79,10 @@
   ],
   "xephyr": [
     "xorg-server-xephyr",
-    "openbox", // Entorno dentro de Xephyr
-    "picom" // Compositor para Xehyr
+    // Entorno dentro de Xephyr
+    "openbox",
+    // Compositor para Xehyr
+    "picom"
   ],
   "x11": [
     "libx11",

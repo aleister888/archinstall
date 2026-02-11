@@ -1,14 +1,14 @@
 #!/bin/bash
 # shellcheck disable=SC2155,SC2086,SC1091
 
-# TODO: Añadir opcion para verificar la integridad de los archivos, podemos
-# reutilizar la lógica dentro de flac-corruption-check y separarla en otro
-# script con funciones en común
-
 # Crear mirrors de una biblioteca de música en un formato distinto
 
-# por aleister888 <pacoe1000@gmail.com>
-# Licencia: GNU GPLv3
+# TODO: Añadir una opción para verificar la integridad de los archivos.
+# Podemos reutilizar la lógica de flac-corruption-check y separarla en otro
+# script con funciones comunes.
+
+# TODO: Añadir la siguiente heurística: obtener el género de la canción usando
+# un regex y, en función de este, determinar el mejor proveedor de letras en glyrc.
 
 source "$HOME/.dotfiles/assets/shell/shell-utils"
 
@@ -141,7 +141,7 @@ add_lyrics() {
 		fi
 	fi
 
-	# Aveces si la canción tiene el mismo nombre que el álbum glyrc puede
+	# Aveces si la canción tiene el mismo nombre que el álbum, glyrc puede
 	# devolver el tracklist en vez de la letra de la canción.
 	#
 	# Vamos a comprobar que no haya mas de 3 lineas numeradas para

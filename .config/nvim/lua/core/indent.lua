@@ -1,5 +1,3 @@
--- Configuración de indentación y tabulación
-
 -- Configuración por defecto para todos los tipos de archivo
 local default_config = {
 	smartindent = false,

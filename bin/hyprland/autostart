@@ -1,9 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC1091,SC2155
 
-# Script Iniciador del entorno de escritorio
-# por aleister888 <pacoe1000@gmail.com>
-
 source "$HOME/.dotfiles/assets/shell/shell-utils"
 
 set +e
@@ -55,24 +52,25 @@ has_bluetooth_device && setsid -f blueman-applet
 # Watchers
 #-------------------------------------------------------------------------------
 
-# Actualizar el fondo de pantalla
-while true; do
+while true; do # Actualizar el fondo de pantalla
 	inotifywait -e modify ~/.dotfiles/assets/images/wallpaper
 	pkill hyprpaper
 	setsid -f hyprpaper
 done &
 
-# Recargar la configuración de swaync
-while true; do
+while true; do # Recargar la configuración de swaync
 	inotifywait -e modify ~/.config/swaync
 	systemctl --user restart swaync.service
 	notify-send -i preferences-system-notifications "swaync" "Configuración actualizada"
 done &
 
-# Asegurarse de que el polkit agent esta siempre activo
-while true; do
+while true; do # Asegurarse de que el polkit agent esta siempre activo
 	POLKIT_STATUS="$(systemctl --user show hyprpolkitagent | grep ActiveState | cut -d'=' -f2)"
 	[ "$POLKIT_STATUS" != "active" ] && systemctl --user restart hyprpolkitagent
+	sleep 5
 done &
 
-wait
+while true; do # Contar los paquetes aquí y no cada vez que abrimos la terminal
+	package_info_update
+	sleep 1m
+done &
