@@ -61,19 +61,10 @@ installffaddons() {
 	# Para cada addon de la lista descargamos la extensión y la movemos
 	# dentro de nuestro perfil de Firefox
 	for ADDON in "${ADDON_LIST[@]}"; do
-		# Si es ublock-origin, descargamos el addon desde GitHub
-		if [ "$ADDON" == "ublock-origin" ]; then
-			ADDON_URL=$(
-				curl -sL "https://api.github.com/repos/gorhill/uBlock/releases/latest" |
-					grep -E 'browser_download_url.*firefox' | cut -d '"' -f 4
-			)
-		# Para todos los demás, los descargamos desde la tienda
-		else
-			ADDON_URL=$(
-				curl --silent "https://addons.mozilla.org/en-US/firefox/addon/${ADDON}/" |
-					grep -o 'https://addons.mozilla.org/firefox/downloads/file/[^"]*'
-			)
-		fi
+		ADDON_URL=$(
+			curl --silent "https://addons.mozilla.org/en-US/firefox/addon/${ADDON}/" |
+				grep -o 'https://addons.mozilla.org/firefox/downloads/file/[^"]*'
+		)
 
 		# El nombre del addon es la última parte de la URL
 		FILE="${ADDON_URL##*/}"

@@ -126,7 +126,8 @@ check_command() {
 }
 
 check_connection() {
-	curl -s --connect-timeout 3 https://dns.google/ >/dev/null
+	_check_url="${1:-https://dns.google/}"
+	curl -s --connect-timeout 3 "$_check_url" >/dev/null
 }
 
 #-------------------------------------------------------------------------------

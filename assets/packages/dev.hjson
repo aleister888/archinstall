@@ -18,5 +18,5 @@
   "kotlin": ["kotlin", "gradle", "ktlint"],
   "python": ["python-pandas", "python-scikit-learn"],
   "formateadores": ["astyle", "prettier", "sassc", "shfmt", "stylua"],
-  "rust": ["rust", "rust-src"]
+  "rust": ["rust", "rust-src", "rust-analyzer"]
 }

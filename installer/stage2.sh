@@ -57,7 +57,7 @@ hostname_conf() {
 	echo "$LOCAL_HOSTNAME" >/etc/hostname
 
 	# Este archivo hosts bloquea el acceso a sitios maliciosos y de publicidad
-	timeout -k 1s 3s curl -s --head --request GET "https://www.gnu.org/" >/dev/null 2>&1 &&
+	check_connection &&
 		curl -o /etc/hosts "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
 
 	cat <<-EOF >>/etc/hosts
