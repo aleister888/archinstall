@@ -157,7 +157,7 @@ video/*)
 	;;
 
 # Mostar la primera página del comic
-*/vnd.comicbook+zip | */vnd.comicbook-rar)
+*/vnd.comicbook+zip | */vnd.comicbook-rar | */epub+zip)
 	CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/lf/thumb.$HASH"
 	[ ! -f "$CACHE" ] && {
 		TMP_DIR="$(mktemp -d /tmp/lf.XXXX)"
