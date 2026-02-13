@@ -1,0 +1,10 @@
+#!/bin/sh
+
+MOUNTS_DIR="/run/media/$USER"
+
+if ! test -d "$MOUNTS_DIR"; then
+	notify-send -e -t 1300 "Error" "No se conectó ningún medio extraible"
+	exit 1
+fi
+
+eval "$TERMINAL $REGULAR_OPTS $TERMEXEC lf \"$MOUNTS_DIR\""

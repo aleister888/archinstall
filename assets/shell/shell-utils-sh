@@ -23,6 +23,15 @@ delete_broken_symlinks() {
 #     LOG_DIR=$(ini_tlog <directorio>)
 #-------------------------------------------------------------------------------
 
+print_msg() {
+	_msg="$1"
+	_level="${2:-INFO}"
+	_date="${3:-$(date '+%Y-%m-%d %H:%M:%S')}"
+	_module="${4:-$(basename "$0")}"
+
+	printf "%s [%s] (%s) %s\n" "$_date" "$_level" "$_module" "$_msg"
+}
+
 log() {
 	_msg="$1"
 	_level="${2:-ERROR}"
@@ -31,20 +40,13 @@ log() {
 
 	ensure_dir "${LOG_DIR:-$LOG_BASE_DIR}" >/dev/null
 
-	printf "%s [%s] (%s) %s\n" "$_date" "$_level" "$_module" "$_msg" |
+	print_msg "$_msg" "$_level" "$_date" "$_module" |
 		tee -a "${LOG_DIR:-$LOG_BASE_DIR}/errors.log"
 }
 
 init_log() {
 	LOG_DIR="$LOG_BASE_DIR/$1"
 	ensure_dir "$LOG_DIR"
-}
-
-print_msg() {
-	_msg="$1"
-	_date="$(date '+%Y-%m-%d %H:%M:%S')"
-	_module="$(basename "$0")"
-	printf "%s [INFO] (%s) %s\n" "$_date" "$_module" "$_msg"
 }
 
 # Utilidades para guardar los archivos temporales en un solo directorio

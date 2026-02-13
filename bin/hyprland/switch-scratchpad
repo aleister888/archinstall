@@ -1,0 +1,10 @@
+#!/bin/sh
+
+WINDOW_WORKSPACE="$(hyprctl -j activewindow | jq -r '.workspace.name')"
+CURRENT_WORKSPACE="$(hyprctl -j activeworkspace | jq -r '.id')"
+SPECIAL_WORKSPACE="special:scratch"
+
+case "$WINDOW_WORKSPACE" in
+"$CURRENT_WORKSPACE") hyprctl dispatch movetoworkspacesilent "$SPECIAL_WORKSPACE" ;;
+"$SPECIAL_WORKSPACE") hyprctl dispatch movetoworkspacesilent "$CURRENT_WORKSPACE" ;;
+esac
