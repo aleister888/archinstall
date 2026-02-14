@@ -51,6 +51,9 @@ cd "$HOME/.dotfiles" && ./update.sh
 
 ### 🏠 Cambios locales
 
+> [!WARNING]
+> Los paquetes de nixpkgs no pueden usar aceleración gráfica
+
 - Podemos definir paquetes sin entrar en conflicto con el repositorio en:
   - pacman/yay: `~/.dotfiles/assets/packages/local.hjson`
   - nixpkgs: `~/.dotfiles/assets/packages/nix_local.json`
