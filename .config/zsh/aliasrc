@@ -72,9 +72,7 @@ pac_find() {
 	done
 }
 
-GCC() {
-	gcc "$1" -o "${1%.*}"
-}
+#-------------------------------------------------------------------------------
 
 du() {
 	{
@@ -96,6 +94,41 @@ reduce_pdf() {
 		-dMonoImageResolution=137 \
 		-dNOPAUSE -dBATCH -dQUIET \
 		-sOutputFile="${1%.*} (Reduced).pdf" "$1"
+}
+
+rotate_image() {
+	_input_image="$1"
+	_image_rotation="$2"
+	if [ ! -f "$_input_image" ]; then
+		print_msg "El archivo no existe" ERROR
+		return 1
+	fi
+	if [ "$_image_rotation" -gt 360 ] || [ "$_image_rotation" -lt -360 ]; then
+		print_msg "La rotación no es válida" ERROR
+		return 1
+	fi
+
+	_image_extension=$(printf '%s\n' "$_input_image" | awk -F. 'NF>1 {print $NF}')
+	_tmp_file=$(mktemp "$TMP_BASE_DIR/tmp.XXXXXX.${_image_extension}") || return 1
+	magick "$_input_image" -rotate 90 "$_tmp_file" && {
+		rm "$_input_image" && mv "$_tmp_file" "$_input_image"
+	}
+}
+
+btrfs_balance_root() {
+	_disk_usage_perc=${1:-90}
+
+	log "Comenzando un balanceo btrfs en /" INFO
+
+	sudo setsid -f btrfs balance start \
+		-dusage="$_disk_usage_perc" -musage="$_disk_usage_perc" /
+
+	while sudo btrfs balance status / | grep -q "running"; do
+		sudo btrfs balance status / | tail -1
+		sleep 5
+	done
+
+	log "Balanceo btrfs en / terminado" INFO
 }
 
 #-------------------------------------------------------------------------------
@@ -140,6 +173,10 @@ yabridgectl_dirs() {
 # Coding
 #-------------------------------------------------------------------------------
 
+GCC() {
+	gcc "$1" -o "${1%.*}"
+}
+
 # Borrar entornos de un código laTeX
 desencapsular() {
 	_tag="$1"
@@ -158,26 +195,4 @@ push() {
 	else
 		echo "No estás dentro de ningún repositorio" >&2
 	fi
-}
-
-# Funciones para trabajar con imágenes
-#-------------------------------------------------------------------------------
-
-rotate_image() {
-	_input_image="$1"
-	_image_rotation="$2"
-	if [ ! -f "$_input_image" ]; then
-		print_msg "El archivo no existe" ERROR
-		return 1
-	fi
-	if [ "$_image_rotation" -gt 360 ] || [ "$_image_rotation" -lt -360 ]; then
-		print_msg "La rotación no es válida" ERROR
-		return 1
-	fi
-
-	_image_extension=$(printf '%s\n' "$_input_image" | awk -F. 'NF>1 {print $NF}')
-	_tmp_file=$(mktemp "$TMP_BASE_DIR/tmp.XXXXXX.${_image_extension}") || return 1
-	magick "$_input_image" -rotate 90 "$_tmp_file" && {
-		rm "$_input_image" && mv "$_tmp_file" "$_input_image"
-	}
 }

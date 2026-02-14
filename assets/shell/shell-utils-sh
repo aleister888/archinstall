@@ -38,6 +38,9 @@ log() {
 	_date="$(date '+%Y-%m-%d %H:%M:%S')"
 	_module="$(basename "$0")"
 
+	# Cuando se ejecuta directamente desde el shell interactivo $0=log
+	[ "$_module" = "log" ] && _module="shell"
+
 	ensure_dir "${LOG_DIR:-$LOG_BASE_DIR}" >/dev/null
 
 	print_msg "$_msg" "$_level" "$_date" "$_module" |
