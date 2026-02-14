@@ -44,4 +44,4 @@ for APP in "${PRIORITY[@]}"; do
 
 done
 
-printf "%s" "$PLAYER"
+printf "%s\n" "$PLAYER"

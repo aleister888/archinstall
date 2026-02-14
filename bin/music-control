@@ -17,6 +17,11 @@ escape_markup() {
 
 PLAYER="$(music-priority)"
 
+case "$PLAYER" in
+"tauon") APP_ICON="tauonmb" ;;
+*) APP_ICON="$PLAYER" ;;
+esac
+
 if [ -z "$PLAYER" ] && ! $QUIET; then
 	$HIDE_NOTIFICATIONS
 	notify-send -e -i "$(music-metadata -c)" \
@@ -31,7 +36,7 @@ else
 		ARTIST="$(music-metadata -S -a | escape_markup)"
 		ALBUM="<i>$(music-metadata -S -A | escape_markup)</i>"
 
-		notify-send -e -i "$(music-metadata -c)" \
+		notify-send -e -i "$(music-metadata -c)" -a "$APP_ICON" \
 			"$TITLE" "$ARTIST\n$ALBUM"
 	fi
 fi
