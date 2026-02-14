@@ -11,10 +11,15 @@ export XDG_RUNTIME_DIR=/run/user/$(id -u)
 TMP_DIR="$(get_tmp hyprland_autostart)"
 PROCESSLIST=$TMP_DIR/startScript_processes
 
-grep -v "^$BASHPID$" "$PROCESSLIST" | while read -r ID; do
-	kill -9 "$ID" 2>/dev/null
-done
-echo $BASHPID | tee "$PROCESSLIST" >/dev/null
+# shellcheck disable=SC2013,SC2086
+if [ -f "$PROCESSLIST" ]; then
+	for OLD_PID in $(cat "$PROCESSLIST"); do
+		kill -9 $OLD_PID &>/dev/null || true
+	done
+fi
+
+# Esperamos a que todos los subshells se desplieguen
+trap 'pgrep -f "$0" >"$PROCESSLIST"' EXIT
 
 #-------------------------------------------------------------------------------
 
@@ -47,19 +52,19 @@ fi &
 rm -f ~/.cache/wofi*
 cleaner
 
-has_bluetooth_device && setsid -f blueman-applet
+has_bluetooth_device && setsid -f blueman-applet &>/dev/null
 
 # Watchers
 #-------------------------------------------------------------------------------
 
 while true; do # Actualizar el fondo de pantalla
-	inotifywait -e modify ~/.dotfiles/assets/images/wallpaper
+	inotifywait -e modify ~/.dotfiles/assets/images/wallpaper &>/dev/null
 	pkill hyprpaper
 	setsid -f hyprpaper
 done &
 
 while true; do # Recargar la configuración de swaync
-	inotifywait -e modify ~/.config/swaync
+	inotifywait -e modify ~/.config/swaync &>/dev/null
 	systemctl --user restart swaync.service
 	notify-send -i preferences-system-notifications "swaync" "Configuración actualizada"
 done &
