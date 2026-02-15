@@ -26,15 +26,15 @@ CHANNELS=(
 )
 
 for CHANNEL in "${CHANNELS[@]}"; do
-	nix-channel --add "$CHANNEL" >/dev/null 2>&1
+	nix-channel --add "$CHANNEL"
 done
-nix-channel --update >/dev/null 2>&1
+nix-channel --update
 
 #-------------------------------------------------------------------------------
 
-nix profile wipe-history >/dev/null 2>&1
-nix-env --delete-generations old >/dev/null 2>&1
-nix-collect-garbage -d >/dev/null 2>&1
+nix profile wipe-history &>/dev/null
+nix-env --delete-generations old &>/dev/null
+nix-collect-garbage -d &>/dev/null
 
 #-------------------------------------------------------------------------------
 
@@ -65,7 +65,7 @@ done
 for pkg in "${!INSTALLED_MAP[@]}"; do
 	if [ -z "${TARGET_MAP[$pkg]:-}" ]; then
 		log "borrando $pkg" WARN
-		nix profile remove "$pkg" >/dev/null 2>&1
+		nix profile remove "$pkg" &>/dev/null
 	fi
 done
 
@@ -88,7 +88,7 @@ for pkg in "${TARGET_PACKAGES[@]}"; do
 		nix profile add --impure "$FLAKE_REF" >/dev/null
 	elif [[ "$INSTALLED_VERSION" != "$TARGET_VERSION" ]]; then
 		log "cambiando versión $NAME: $INSTALLED_VERSION -> $TARGET_VERSION" WARN
-		nix profile remove "${NAME##*.}" >/dev/null 2>&1
+		nix profile remove "${NAME##*.}" &>/dev/null
 		nix profile add --impure "$FLAKE_REF"
 	fi
 done

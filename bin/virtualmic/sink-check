@@ -15,14 +15,14 @@ while true; do
 
 	sink_list_build
 
-	# Para cada dispositivo supuestamente añadido,
-	# comprobamos que realmente lo está
-	while IFS= read -r DEVICE; do
-		# Si no lo está lo volvemos a vincular
-		if ! grep -qF "$DEVICE" <<<"$DEL_DEVICES"; then
-			~/.dotfiles/bin/virtualmic/sink-link add "$DEVICE"
-		fi
+	# Para cada sink supuestame añadido, comprobamos si está vinculado y existe
+	while IFS= read -r SINK; do
+		is_sink_linked "$SINK" && continue
+
+		# Solo intentamos añadir si el sink existe actualmente
+		pw-link -o | grep -Fq -- "$SINK" &&
+			~/.dotfiles/bin/virtualmic/sink-link add "$SINK"
 	done <"$ADDED_LIST"
 
-	sleep 0.2
+	sleep 1
 done

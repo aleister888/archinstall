@@ -3,16 +3,16 @@
 
 source "$HOME/.dotfiles/bin/virtualmic/env"
 
-check_added() {
-	if echo $DEL_DEVICES | grep -q "$SINK"; then
+notify_added() {
+	if is_sink_linked "$SINK"; then
 		notify "$ICON" "$NOTIFICATION_TITLE" "Sink vinculado correctamente"
 	else
 		notify "$ICON" "$NOTIFICATION_TITLE" "Fallo al añadir el sink"
 	fi
 }
 
-check_deleted() {
-	if ! echo $DEL_DEVICES | grep -q "$SINK"; then
+notify_deleted() {
+	if ! is_sink_linked "$SINK"; then
 		notify "$ICON" "$NOTIFICATION_TITLE" "Sink desvinculado correctamente"
 	else
 		notify "$ICON" "$NOTIFICATION_TITLE" "Fallo al desvincular el sink"
@@ -39,20 +39,17 @@ sink_link() {
 	timeout -k 1s 1s pw-link $FLAG "$SINK" "$SINK_L"
 	timeout -k 1s 1s pw-link $FLAG "$CSINK" "$SINK_R"
 
-	[ "$1" = "del" ] && {
-		# Borramos el sink de la lista de sinks añadidos
-		grep -v "$SELECTED" $ADDED_LIST >$ADDED_LIST.tmp
-		mv $ADDED_LIST.tmp $ADDED_LIST
-	}
-
-	sink_list_build
-
-	if [ "$1" = "add" ]; then
-		check_added
-		echo $SINK >>$ADDED_LIST
-	elif [ "$1" = "del" ]; then
-		check_deleted
-	fi
+	# Notificamos y actualizamos la lista
+	case "$1" in
+	"add")
+		notify_added
+		grep -Fxq "$SINK" "$ADDED_LIST" || echo "$SINK" >>"$ADDED_LIST"
+		;;
+	"del")
+		notify_deleted
+		delete_sink_from_list "$SINK"
+		;;
+	esac
 }
 
 sink_link "$@"

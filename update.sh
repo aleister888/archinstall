@@ -5,6 +5,9 @@
 # por aleister888 <pacoe1000@gmail.com>
 # Licencia: GNU GPLv3
 
+# TODO: Detectar paquetes huérfanos incluso cuando el repositorio no ha cambiado
+# para detectar paquetes innecesarios al hacer cambios locales antes de un push
+
 [ -z "$DEBUG" ] && DEBUG=false
 
 while getopts "d" opt; do
@@ -94,6 +97,7 @@ PKGS_TO_INSTALL=$(comm -23 <(printf "%s\n" "$REPO_PKGS" | sort -u) \
 	<(printf "%s\n" "$INSTALLED_PKGS" | sort))
 
 if [ -n "$PKGS_TO_INSTALL" ] && [ "$CONNECTED" == "true" ]; then
+	print_msg "Instalando nuevos paquetes..."
 	yay -Sy --noconfirm --needed --asexplicit $PKGS_TO_INSTALL
 fi
 

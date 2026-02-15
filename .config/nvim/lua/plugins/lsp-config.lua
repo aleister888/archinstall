@@ -79,9 +79,16 @@ return {
 			if blink_status_ok then
 				lsp_capabilities = vim.tbl_deep_extend("force", {}, lsp_capabilities, blink.get_lsp_capabilities())
 			end
+
+			-- Configuramos todos los lsp con las capacidades basicas
 			vim.lsp.config("*", {
 				capabilities = lsp_capabilities,
 			})
+			-- Ejecutar bashls en archivos zsh
+			vim.lsp.config("bashls", {
+				filetypes = { "bash", "sh", "zsh" },
+			})
+
 			require("mason-tool-installer").setup({
 				ensure_installed = { "java-debug-adapter", "java-test" },
 				auto_update = true,

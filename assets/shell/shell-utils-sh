@@ -20,7 +20,7 @@ delete_broken_symlinks() {
 #       => logs guardados en $LOG_BASE_DIR/<directorio>
 #
 # o para que la actualización de la variable LOG_DIR sea más explícita:
-#     LOG_DIR=$(ini_tlog <directorio>)
+#     LOG_DIR=$(init_log <directorio>)
 #-------------------------------------------------------------------------------
 
 print_msg() {
@@ -170,12 +170,12 @@ _aur_count_file=$TMP_BASE_DIR/aur_pkg_count
 _nix_count_file=$TMP_BASE_DIR/nix_pkg_count
 
 package_info_update() {
-	_pacman_count="$(yay -Q | wc -l)"
-	_aur_count="$(yay -Qm | wc -l)"
-	_nix_count="$(nix profile list --json 2>/dev/null | jq -c '.elements | to_entries[]' | wc -l)"
-	echo "$_pacman_count" >$_pacman_count_file
-	echo "$_aur_count" >$_aur_count_file
-	echo "$_nix_count" >$_nix_count_file
+	_pacman_count="$(yay -Q | wc -l)" &&
+		echo "$_pacman_count" >$_pacman_count_file
+	_aur_count="$(yay -Qm | wc -l)" &&
+		echo "$_aur_count" >$_aur_count_file
+	_nix_count="$(nix profile list --json 2>/dev/null | jq -c '.elements | to_entries[]' | wc -l)" &&
+		echo "$_nix_count" >$_nix_count_file
 }
 
 package_info_print() {
@@ -184,7 +184,7 @@ package_info_print() {
 	[ ! -e "$_nix_count_file" ] && return 1
 
 	printf "pacman: %s (aur: %s), nix: %s\n" \
-		"$(cat $_pacman_count_file)" \
-		"$(cat $_aur_count_file)" \
-		"$(cat $_nix_count_file)"
+		"$(/usr/bin/cat $_pacman_count_file)" \
+		"$(/usr/bin/cat $_aur_count_file)" \
+		"$(/usr/bin/cat $_nix_count_file)"
 }

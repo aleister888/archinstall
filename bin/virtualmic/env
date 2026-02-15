@@ -4,7 +4,8 @@
 source "$HOME/.dotfiles/assets/shell/shell-utils-sh"
 
 TMP_DIR="$(get_tmp virtualmic)"
-ADDED_LIST=$TMP_DIR/pipewire-virtualmic # Lista con los sinks vinculados (Solo guarda un canal)
+# Lista con los sinks vinculados (Solo guarda uno de los dos canales)
+ADDED_LIST=$TMP_DIR/pipewire-virtualmic
 
 ICON="bridge-constructor"
 NOTIFICATION_TITLE="Micrófono Virtual"
@@ -13,6 +14,19 @@ NOTIFICATION_DURATION=750
 notify() {
 	notify-send -e -t "$NOTIFICATION_DURATION" -i "$1" \
 		"$2" "$3"
+}
+
+is_sink_linked() {
+	local SINK="$1"
+	sink_list_build
+	grep -q "$SINK" <<<"$LINKED_DEVICES"
+}
+
+# shellcheck disable=SC2086
+delete_sink_from_list() {
+	local SINK="$1"
+	grep -Fxv "$SINK" $ADDED_LIST >$ADDED_LIST.tmp
+	mv $ADDED_LIST.tmp $ADDED_LIST
 }
 
 # Función para construir la lista de sinks a añadir y borrar
@@ -25,23 +39,25 @@ sink_list_build() {
 			grep -v "$EXCLUDE_PATTERN" | sort -u
 	)
 
-	DEL_DEVICES=$( # Sinks candidatos a borrar (ya añadidos)
+	LINKED_DEVICES=$( # Sinks candidatos a borrar (ya añadidos)
 		pw-link -l my-combined-sink |
 			pcre2grep -M 'my-combined-sink:playback_F[LR]\n(^ .*\n)*' |
 			grep -oP '\- \K.*'
 	)
 
+	DEL_DEVICES=$LINKED_DEVICES
+
 	# Añadimos a los candidatos para desvinculación los sinks en la lista de sinks añadidos
-	#while IFS= read -r CANDIDATE_SINK; do
-	#	if [ -z "$DEL_DEVICES" ]; then
-	#		DEL_DEVICES="$CANDIDATE_SINK"
-	#	else
-	#		DEL_DEVICES=$(echo -e "$DEL_DEVICES\n$CANDIDATE_SINK")
-	#	fi
-	#done <"$ADDED_LIST"
+	while IFS= read -r CANDIDATE_SINK; do
+		if [ -z "$DEL_DEVICES" ]; then
+			DEL_DEVICES="$CANDIDATE_SINK"
+		else
+			DEL_DEVICES=$(echo -e "$DEL_DEVICES\n$CANDIDATE_SINK")
+		fi
+	done <"$ADDED_LIST"
 
 	# Eliminamos los sinks ya añadidos de la lista con los posibles sinks a añadir
-	for ADDED in $DEL_DEVICES; do
-		DEVICES=$(echo "$DEVICES" | grep -v "$ADDED")
-	done
+	while IFS= read -r ADDED; do
+		DEVICES=$(printf '%s\n' "$DEVICES" | grep -Fvx "$ADDED")
+	done <<<"$DEL_DEVICES"
 }

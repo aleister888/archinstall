@@ -51,7 +51,7 @@
     "firefox",
     "thunderbird"
   ],
-  "tauon": ["python-lynxpresence", "tauon-music-box"],
+  "tauon": ["python-pypresence", "tauon-music-box"],
   "no-foss": ["discord", "telegram-desktop"],
   "oficina": ["libreoffice-fresh", "libreoffice-fresh-es"],
   "lf": ["imagemagick", "inkscape", "lf", "rsync", "trash-cli"]

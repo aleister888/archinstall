@@ -9,7 +9,9 @@ has_bluetooth_device || exit
 rfkill list bluetooth | grep -q "Soft blocked: yes" &&
 	sudo /usr/bin/rfkill unblock bluetooth
 
-if bluetoothctl show | grep -q "Powered: yes"; then
+# Usamos 'echo show | bluetoothctl', por que aveces bluetoothctl show no
+# funciona y no devuelve ningún output
+if echo show | bluetoothctl | grep -q "Powered: yes"; then
 	bluetoothctl power off
 else
 	bluetoothctl power on

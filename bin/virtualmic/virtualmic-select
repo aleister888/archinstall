@@ -11,11 +11,10 @@ DMENU_LINES="-l"
 sink_links_edit() {
 	local DMENU_SELECTED SINKS_LIST FORMATED_SINKS_LIST
 
-	if [ "$1" = "add" ]; then
-		SINKS_LIST=$DEVICES
-	else
-		SINKS_LIST=$DEL_DEVICES
-	fi
+	case "$1" in
+	"add") SINKS_LIST=$DEVICES ;;
+	*) SINKS_LIST=$DEL_DEVICES ;;
+	esac
 
 	FORMATED_SINKS_LIST=$(echo "$SINKS_LIST" | sed 's/:.*//g' | sort -u)
 

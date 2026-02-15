@@ -115,7 +115,9 @@
     "icons": {
       "discord": "discord-tray",
       "easyeffects": "google-music-manager-panel",
-      "redact": "entry-delete"
+      "qBittorrent": "qbittorrent-tray",
+      "redact": "entry-delete",
+      "vlc": "vlc-panel"
     }
   }
 }

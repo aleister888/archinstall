@@ -4,6 +4,7 @@
 source "$HOME/.dotfiles/assets/shell/shell-utils"
 
 TMP_DIR="$(get_tmp plot_macros)"
+LOG_DIR=$(init_log plot_macros)
 CACHE_FILE="$XDG_CACHE_HOME/plot-macros"
 
 # Crear gráficos de barras para cada macro-nutriente
@@ -124,14 +125,23 @@ while IFS=',' read -r DATE _ _ _ CAL FAT CARBS PROT PROT_PERC; do
 	CARBS=${CARBS:-0}
 	PROT=${PROT:-0}
 
-	# shellcheck disable=SC2046
-	read -r NEW_CAL NEW_FAT NEW_CARBS NEW_PROT <<<"$(
-		bc <<<"$OLD_CAL+$CAL
-			$OLD_FAT+$FAT
-			$OLD_CARBS+$CARBS
-			$OLD_PROT+$PROT" | tr '\n' ' '
-	)"
+	ADDITION_RESULT=$(
+		bc 2>&1 <<-EOF
+			$OLD_CAL + $CAL
+			$OLD_FAT + $FAT
+			$OLD_CARBS + $CARBS
+			$OLD_PROT + $PROT
+		EOF
+	)
 
+	# bc devuelve 0 si el fallo es de sintaxis, para poder avisar de una entrada
+	# mal forma debemos capturar el stderr y comprobar que no contenga errores
+	if grep -qi "error" <<<"$ADDITION_RESULT"; then
+		log "[$DATE]=($CAL, $FAT, $CARBS, $PROT)"
+		exit 1
+	fi
+
+	read -r NEW_CAL NEW_FAT NEW_CARBS NEW_PROT <<<"$(tr '\n' ' ' <<<"$ADDITION_RESULT")"
 	DAILY_DATA[$DATE]="$NEW_CAL,$NEW_FAT,$NEW_CARBS,$NEW_PROT"
 done < <(
 	tac ~/Documentos/Gym/diet/comidas.csv | sed '$d'

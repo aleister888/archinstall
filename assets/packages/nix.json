@@ -1,9 +1,5 @@
 {
-  "general": [
-    { "name": "pinta" },
-    { "name": "lrcget" },
-    { "name": "ventoy-full-gtk" }
-  ],
+  "general": [{ "name": "pinta" }, { "name": "ventoy-full-gtk" }],
   "entorno": [
     // drag and drop support for lf file manager
     { "name": "dragon-drop" },

@@ -24,7 +24,7 @@
     "zenity",
     "lact"
   ],
-  "musica": ["atomicparsley", "glyr"],
+  "musica": ["atomicparsley", "glyr", "lrcget-bin"],
   "audio_prod": [
     "suil",
     "reaper",
