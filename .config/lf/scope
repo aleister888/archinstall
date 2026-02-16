@@ -1,8 +1,11 @@
 #!/bin/bash
+# shellcheck disable=SC1091
 
 # Visualizador de archivos para LF.
 
-mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}/lf"
+source "$HOME/.dotfiles/assets/shell/shell-utils-sh"
+
+LF_CACHE_DIR="$(ensure_dir "${XDG_CACHE_HOME:-$HOME/.cache}/lf")"
 
 W="$2"
 H="$3"
@@ -18,7 +21,7 @@ linebreaks() {
 	printf '\n%.0s' $(seq "$COUNT")
 }
 
-draw() {
+display() {
 	if [ -f "$1" ] && [ -n "$WAYLAND_DISPLAY" ] && [ -z "$SSH_CONNECTION" ]; then
 		kitten icat --stdin no --transfer-mode memory --place "${W}x${H}@${X}x${Y}" "$1" </dev/null >/dev/tty
 		return 0
@@ -35,9 +38,9 @@ file_hash() {
 
 # Función para la preview de archivos que se pueden convertir con imagemagick directamente
 magick_convert() {
-	CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/lf/thumb.$HASH"
+	CACHE="$LF_CACHE_DIR/thumb.$HASH"
 	[ ! -f "$CACHE.jpg" ] && magick "$1" "$CACHE.jpg" >/dev/null 2>&1
-	draw "$CACHE.jpg"
+	display "$CACHE.jpg"
 }
 
 thumbnail_resize() {
@@ -80,25 +83,26 @@ text/* | */xml | */x-shellscript | */x-xcursor | */x-theme | */x-desktop | */x-t
 
 # Convertir a .png
 image/svg+xml*)
-	CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/lf/thumb.$HASH"
-	[ ! -f "$CACHE.png" ] && DISPLAY="" inkscape -o "$CACHE.png" --export-overwrite -D --export-width=256 "$1"
-	draw "$CACHE.png"
+	CACHE_FILE="$LF_CACHE_DIR/$HASH.png"
+	[ ! -f "$CACHE_FILE" ] &&
+		DISPLAY="" inkscape -o "$CACHE_FILE" --export-overwrite -D --export-width=256 "$1"
+	display "$CACHE_FILE"
 	;;
 
 # Convertir a JPG
 image/x-eps)
-	CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/lf/thumb.$HASH"
-	[ ! -f "$CACHE.jpg" ] && gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -r300 -dEPSCrop -sOutputFile="$CACHE.jpg" "$1" >/dev/null 2>&1
-	draw "$CACHE.jpg"
+	CACHE_FILE="$LF_CACHE_DIR/$HASH.jpg"
+	[ ! -f "$CACHE_FILE" ] && gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -r300 -dEPSCrop -sOutputFile="$CACHE_FILE" "$1" >/dev/null 2>&1
+	display "$CACHE_FILE"
 	;;
 
 # Mostrar la carátula y metadatos
 audio/flac | audio/mpeg | audio/x-m4a | audio/mp4)
-	CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/lf/$HASH"
+	CACHE_DIR="$LF_CACHE_DIR/$HASH"
 	METADATA="$CACHE_DIR/metadata.txt"
 	COVER="$CACHE_DIR/cover.jpg"
 
-	[ ! -d "$CACHE_DIR" ] && mkdir -p "$CACHE_DIR"
+	ensure_dir "$CACHE_DIR" >/dev/null
 	[ ! -f "$COVER" ] && ffmpeg -nostdin -i "$1" "$COVER" && thumbnail_resize "$COVER"
 	[ ! -f "$METADATA" ] && {
 		TMP="$(mktemp /tmp/lf.XXXX)"
@@ -109,29 +113,27 @@ audio/flac | audio/mpeg | audio/x-m4a | audio/mp4)
 		rm "$TMP"
 	}
 
-	draw "$COVER" && linebreaks "$COVER"
+	display "$COVER" && linebreaks "$COVER"
 	cat "$METADATA"
 	;;
 
 */x-iso9660-image | */vnd.efi.iso)
-	CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/lf/$HASH.txt"
-	[ ! -f "$CACHE" ] && {
+	CACHE_FILE="$LF_CACHE_DIR/$HASH.txt"
+	[ ! -f "$CACHE_FILE" ] && {
 		isoinfo -d -i "$1" |
-			grep "Volume\|Publisher\|Data preparer\|Application" |
-			tee "$CACHE" >/dev/null
+			grep "Volume id\|Publisher\|Data preparer\|Application" |
+			tee "$CACHE_FILE" >/dev/null
 	}
 
-	[ -z "$SSH_CONNECTION" ] &&
-		chafa /usr/share/icons/Papirus-Dark/128x128/devices/media-optical.svg
-	cat "$CACHE"
+	cat "$CACHE_FILE"
 	;;
 
 video/*)
-	CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/lf/$HASH"
-	THUMB="$CACHE_DIR/thumb.jpg"
+	CACHE_DIR="$LF_CACHE_DIR/$HASH"
+	THUMBNAIL="$CACHE_DIR/thumbnail.jpg"
 	METADATA="$CACHE_DIR/metadata.txt"
-	[ ! -d "$CACHE_DIR" ] && mkdir -p "$CACHE_DIR"
-	[ ! -f "$THUMB" ] && ffmpegthumbnailer -i "$1" -o "$THUMB" -s 0 && thumbnail_resize "$THUMB"
+	ensure_dir "$CACHE_DIR" >/dev/null
+	[ ! -f "$THUMBNAIL" ] && ffmpegthumbnailer -i "$1" -o "$THUMBNAIL" -s 0 && thumbnail_resize "$THUMBNAIL"
 	[ ! -f "$METADATA" ] && {
 		TMP="$(mktemp /tmp/lf.XXXX)"
 		mediainfo "$1" | tr '\t' ' ' | tr -s " " | tee "$TMP" >/dev/null
@@ -142,50 +144,50 @@ video/*)
 		rm "$TMP"
 	}
 
-	draw "$THUMB" && linebreaks "$THUMB"
+	display "$THUMBNAIL" && linebreaks "$THUMBNAIL"
 	cat "$METADATA"
 	;;
 
 */pdf)
-	CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/lf/thumb.$HASH"
+	CACHE_FILE="$LF_CACHE_DIR/$HASH.jpg"
 	# Usando -dUseCropBox usamos la parte visible de la página en vez de
 	# mantener el tamaño de página definido en el PDF
-	[ ! -f "$CACHE.jpg" ] &&
-		gs -sDEVICE=jpeg -dUseCropBox -dFirstPage=1 -dLastPage=1 -r300 -o "$CACHE.jpg" "$1" >/dev/null
+	[ ! -f "$CACHE_FILE" ] &&
+		gs -sDEVICE=jpeg -dUseCropBox -dFirstPage=1 -dLastPage=1 -r300 -o "$CACHE_FILE" "$1" >/dev/null
 
-	draw "$CACHE.jpg"
+	display "$CACHE_FILE"
 	;;
 
 # Mostar la primera página del comic
 */vnd.comicbook+zip | */vnd.comicbook-rar | */epub+zip)
-	CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/lf/thumb.$HASH"
-	[ ! -f "$CACHE" ] && {
+	CACHE_FILE="$LF_CACHE_DIR/$HASH"
+	[ ! -f "$CACHE_FILE" ] && {
 		TMP_DIR="$(mktemp -d /tmp/lf.XXXX)"
 		# Obtener y extraer la 1ª imagen
 		FIRST_IMAGE=$(7z l "$1" | grep "jpg\|png" | awk '{print substr($0, index($0,$6))}' | sort | head -n1)
 		if [ -n "$FIRST_IMAGE" ]; then
 			7z e "$1" "$FIRST_IMAGE" -o"$TMP_DIR" >/dev/null 2>&1
-			mv "$TMP_DIR/$(basename "$FIRST_IMAGE")" "$CACHE"
+			mv "$TMP_DIR/$(basename "$FIRST_IMAGE")" "$CACHE_FILE"
 			rm -rf "$TMP_DIR"
 		fi
 	}
 
-	draw "$CACHE"
+	display "$CACHE_FILE"
 	;;
 
 # Listar archivos y ver preview
 */x-krita)
-	CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/lf/$HASH"
+	CACHE_DIR="$LF_CACHE_DIR/$HASH"
 	PREVIEW="$CACHE_DIR/preview.png"
 	FILE_LIST="$CACHE_DIR/filelist.txt"
-	[ ! -d "$CACHE_DIR" ] && mkdir -p "$CACHE_DIR"
+	ensure_dir "$CACHE_DIR"
 	[ ! -f "$FILE_LIST" ] && unzip -l "$1" | tee "$FILE_LIST" >/dev/null
 	[ ! -f "$PREVIEW" ] && {
 		7z e "$1" preview.png -o"$CACHE_DIR" >/dev/null 2>&1 &&
 			thumbnail_resize "$PREVIEW"
 	}
 
-	draw "$PREVIEW" && linebreaks "$PREVIEW"
+	display "$PREVIEW" && linebreaks "$PREVIEW"
 	cat "$FILE_LIST"
 	;;
 
@@ -195,7 +197,7 @@ video/*)
 */vnd.rar | */zip | */vnd.android.package-archive | */x-7z-compressed) 7z l "$1" ;;
 */x-tar | */x-compressed-tar) tar -tf "$1" ;;
 *opendocument*) odt2txt "$1" ;;
-image/*) draw "$1" ;;
+image/*) display "$1" ;;
 *) mediainfo "$1" | tr -s " " ;;
 
 esac
