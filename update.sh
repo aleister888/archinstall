@@ -26,8 +26,8 @@ export DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}"
 export CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
 export ASSETDIR="$REPO_DIR/assets/configs"
 
-export TMP_DIR="$(get_tmp updater)"
-export LOG_DIR="$(init_log updater)"
+export TMP_DIR="$(get_tmp_dir updater)"
+export LOG_DIR="$(get_log_dir updater)"
 
 #-------------------------------------------------------------------------------
 

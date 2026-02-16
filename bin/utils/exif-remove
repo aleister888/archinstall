@@ -6,10 +6,10 @@
 . "$HOME/.dotfiles/assets/shell/shell-utils-sh"
 
 IMAGE_DIR="$1"
-init_log exif_remove >/dev/null
+LOG_DIR="$(get_log_dir exif_remove)"
 
 if [ ! -d "$IMAGE_DIR" ]; then
-	log "El directorio no existe: $IMAGE_DIR"
+	log "el directorio no existe: $IMAGE_DIR"
 	exit 1
 fi
 
@@ -17,6 +17,6 @@ find "$IMAGE_DIR" -type f -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o
 	if exiftool -overwrite_original_in_place -all= "$IMAGE" >/dev/null 2>&1; then
 		print_msg "Metadatos EXIF eliminados con éxito de: $IMAGE"
 	else
-		log "Error al eliminar metadatos EXIF de: $IMAGE" WARN
+		log "error al eliminar metadatos EXIF de: $IMAGE" WARN
 	fi
 done

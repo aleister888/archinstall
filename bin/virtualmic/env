@@ -3,7 +3,7 @@
 
 source "$HOME/.dotfiles/assets/shell/shell-utils-sh"
 
-TMP_DIR="$(get_tmp virtualmic)"
+TMP_DIR="$(get_tmp_dir virtualmic)"
 # Lista con los sinks vinculados (Solo guarda uno de los dos canales)
 ADDED_LIST=$TMP_DIR/pipewire-virtualmic
 

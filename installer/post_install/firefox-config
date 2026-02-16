@@ -12,8 +12,8 @@ set +e
 BROWSER_DIR="$HOME/.config/mozilla/firefox"
 PROFILES_INI="$BROWSER_DIR/profiles.ini"
 
-LOG_DIR=$(init_log firefox-config)
-TMP_DIR=$(get_tmp firefox-config)
+LOG_DIR=$(get_log_dir firefox-config)
+TMP_DIR=$(get_tmp_dir firefox-config)
 
 get_profile() {
 	# Obtiene el perfil predeterminado del archivo

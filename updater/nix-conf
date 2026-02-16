@@ -12,7 +12,7 @@ check_connection || exit 1
 export NIXPKGS_ALLOW_UNFREE=1
 export NIXPKGS_ALLOW_INSECURE=1
 
-init_log nixpkgs >/dev/null
+get_log_dir nixpkgs >/dev/null
 
 LATEST_VERSION=$(
 	curl -s https://api.github.com/repos/NixOS/nixpkgs/tags |

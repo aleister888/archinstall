@@ -7,12 +7,12 @@ source "$HOME/.dotfiles/assets/shell/shell-utils"
 
 OG_DIR="$1" # Directorio a verificar
 
-LOG_DIR=$(init_log flac_corruption)
+LOG_DIR=$(get_log_dir flac_corruption)
 TMP_LOG="$LOG_DIR/tmp.log"         # Archivos con posibles errores
 FINAL_LOG="$LOG_DIR/corrupted.log" # Archivos con corrupción asegurada
 RECODE_LOG="$LOG_DIR/recoded.log"  # Falsos positivos que necesitan recodificarse
 
-TMP_DIR=$(get_tmp flac_corruption)
+TMP_DIR=$(get_tmp_dir flac_corruption)
 RECODE_TMP_DIR="$(ensure_dir "$TMP_DIR/try")"     # Salida recodificados (temporales)
 RECODE_OUT_DIR="$(ensure_dir "$TMP_DIR/recoded")" # Salida recodificados
 OVERWRITE=false                                   # Sobrescribir archivos originales

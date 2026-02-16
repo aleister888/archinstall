@@ -11,7 +11,7 @@ FILENAME="$(date +"%Y-%m-%d_%H-%M-%S").$EXTENSION"
 SCREENSHOTS_DIR="$HOME/Imágenes/Screenshots"
 FILEPATH=${FILEPATH:-$SCREENSHOTS_DIR/$FILENAME}
 SOUND="/usr/share/sounds/freedesktop/stereo/camera-shutter.oga"
-TMP_DIR=$(get_tmp screenshots)
+TMP_DIR=$(get_tmp_dir screenshots)
 TMP="$TMP_DIR/screenshot.$EXTENSION"
 MSG="Captura de Pantalla"
 

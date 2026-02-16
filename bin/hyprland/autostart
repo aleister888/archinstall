@@ -8,7 +8,7 @@ set +e
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
 
 # Cerrar instancias previas del script
-TMP_DIR="$(get_tmp hyprland_autostart)"
+TMP_DIR="$(get_tmp_dir hyprland_autostart)"
 PROCESSLIST=$TMP_DIR/startScript_processes
 
 # shellcheck disable=SC2013,SC2086

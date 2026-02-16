@@ -69,7 +69,7 @@ random_string="$(openssl rand -base64 6 | tr -dc 'a-zA-Z')"
 first_partition="$(get_partition_name "${device}" 1)"
 
 if [ -z "$device" ]; then
-	log "El dispositivo $1 no existe"
+	log "el dispositivo $1 no existe"
 	exit 1
 fi
 

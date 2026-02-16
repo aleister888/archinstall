@@ -9,20 +9,20 @@ set -e
 . "$HOME/.dotfiles/assets/shell/shell-utils-sh"
 
 DRIVER_URL="https://dlcdnets.asus.com/pub/ASUS/wireless/USB-BT400/DR_USB_BT400_1201710_Windows.zip"
-TMP_DIR="$(get_random_tmp)"
+TMP_DIR="$(get_random_tmp_dir)"
 ZIP_PATH="$TMP_DIR/bt400-driver.zip"
 EXTRACT_PATH="$TMP_DIR/windows_driver"
 HEX_FILE="BCM20702A1_001.002.014.1443.1467.hex"
 OUT_FILE="/lib/firmware/brcm/BCM20702A1-0b05-17cb.hcd"
 
 if [ -f "$OUT_FILE" ]; then
-	log "El driver ya está instalado"
+	log "el driver ya está instalado"
 	exit 1
 fi
 
 download "$DRIVER_URL" "$ZIP_PATH" >/dev/null
 
-{ lsusb | grep BCM20702A0 | grep -oE '....:....'; } || log "El dispositivo no está conectado" WARN
+{ lsusb | grep BCM20702A0 | grep -oE '....:....'; } || log "el dispositivo no está conectado" WARN
 
 aunpack "$ZIP_PATH" -X "$EXTRACT_PATH" -f -q
 

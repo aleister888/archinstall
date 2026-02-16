@@ -11,7 +11,7 @@ IN_FILE=$1
 FILENAME="${IN_FILE%.*}"
 BASE_NAME="$(basename "$FILENAME")"
 EXTENSION="${IN_FILE##*.}"
-OUT_FILE=${2:-$(get_tmp video_transform)/${BASE_NAME}_recoded.${EXTENSION}}
+OUT_FILE=${2:-$(get_tmp_dir video_transform)/${BASE_NAME}_recoded.${EXTENSION}}
 ROTATION=$3
 TERM_OUTPUT=$(mktemp)
 
@@ -112,10 +112,7 @@ FFMPEG_CMD=(-hide_banner -y -i "$IN_FILE")
 [ -n "$VF" ] && FFMPEG_CMD+=(-vf "$VF")
 FFMPEG_CMD+=("${VIDEO_CODEC[@]}" -c:a copy "$OUT_FILE")
 
-# Sustituimos los nombres de los archivos para guarar el comando usado en el
-# log sin especificar los archivos reales
-PRIVATE_CMD=$(echo "${FFMPEG_CMD[*]}" | sed -e "s|$IN_FILE|IN_FILE.mp4|" -e "s|$OUT_FILE|OUT_FILE.mp4|")
-log "Ejecutando: ffmpeg $PRIVATE_CMD" INFO
+print_msg "ejecutando: ffmpeg ${FFMPEG_CMD[*]}" INFO
 
 ffmpeg "${FFMPEG_CMD[@]}" 2>"$TERM_OUTPUT"
 detect_error "$(cat "$TERM_OUTPUT")"

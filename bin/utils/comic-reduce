@@ -11,9 +11,8 @@ MAX_JOBS=$(($(nproc) / 4))
 # Segundos de espera entre cada codificación
 WAIT_TIME=$(echo "scale=4; 1/$(((MAX_JOBS + 1) / 2))" | bc)
 
-BASE_EX_DIR="$(get_cache_tmp comic_repack)"
-
-init_log comic_repack >/dev/null
+BASE_EX_DIR="$(get_cache_tmp_dir comic_repack)"
+LOG_DIR="$(get_log_dir comic_repack)"
 
 check_command "unzip"
 check_command "unrar"
@@ -90,7 +89,7 @@ repack() {
 }
 
 [ ! -d "$1" ] && {
-	log "El directorio original no existe."
+	log "el directorio original no existe"
 	exit 1
 }
 

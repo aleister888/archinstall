@@ -50,8 +50,8 @@ for ENTRY in "${ALL_IGNORE[@]}"; do
 		fi
 	# Si la aplicación se eliminó, borramos el archivo desktop sobrante
 	elif [ -e "$MOD_DESKTOP" ]; then
-		sudo /usr/bin/rm "$MOD_DESKTOP" && log "removed leftover desktop file: $ENTRY"
+		sudo /usr/bin/rm "$MOD_DESKTOP" && log "archivo desktop sobrante eliminado: $ENTRY"
 	else
-		log "desktop file not found: $ENTRY" WARN
+		log "archivo desktop no encontrado: $ENTRY" WARN
 	fi
 done

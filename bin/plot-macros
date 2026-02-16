@@ -3,8 +3,8 @@
 
 source "$HOME/.dotfiles/assets/shell/shell-utils"
 
-TMP_DIR="$(get_tmp plot_macros)"
-LOG_DIR=$(init_log plot_macros)
+TMP_DIR="$(get_tmp_dir plot_macros)"
+LOG_DIR=$(get_log_dir plot_macros)
 CACHE_FILE="$XDG_CACHE_HOME/plot-macros"
 
 # Crear gráficos de barras para cada macro-nutriente
@@ -137,7 +137,7 @@ while IFS=',' read -r DATE _ _ _ CAL FAT CARBS PROT PROT_PERC; do
 	# bc devuelve 0 si el fallo es de sintaxis, para poder avisar de una entrada
 	# mal forma debemos capturar el stderr y comprobar que no contenga errores
 	if grep -qi "error" <<<"$ADDITION_RESULT"; then
-		log "[$DATE]=($CAL, $FAT, $CARBS, $PROT)"
+		log "entrada no válida: [$DATE]=($CAL, $FAT, $CARBS, $PROT)"
 		exit 1
 	fi
 

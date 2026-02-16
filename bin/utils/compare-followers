@@ -11,7 +11,7 @@
 source "$HOME/.dotfiles/assets/shell/shell-utils"
 
 IN="$1" # Informe de Instagram comprimido
-EXTRACT_DIR="$(get_random_tmp)"
+EXTRACT_DIR="$(get_random_tmp_dir)"
 LOG_DIR=$(initlog compare_followers)
 
 NOT_FOLLOWING_BACK_TXT="$LOG_DIR/vuelta.txt"

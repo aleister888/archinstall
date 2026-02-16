@@ -118,7 +118,7 @@ rotate_image() {
 btrfs_balance_root() {
 	_disk_usage_perc=${1:-90}
 
-	log "Comenzando un balanceo btrfs en /" INFO
+	log "comenzando balanceo btrfs en /" INFO
 
 	sudo setsid -f btrfs balance start \
 		-dusage="$_disk_usage_perc" -musage="$_disk_usage_perc" /
@@ -128,7 +128,7 @@ btrfs_balance_root() {
 		sleep 5
 	done
 
-	log "Balanceo btrfs en / terminado" INFO
+	log "balanceo btrfs en / terminado" INFO
 }
 
 #-------------------------------------------------------------------------------

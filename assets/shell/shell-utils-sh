@@ -16,26 +16,24 @@ delete_broken_symlinks() {
 # Utilidades para guardar los logs en un solo directorio
 #
 # Podemos guardar los logs en un directorio relativo al base usando:
-#     initlog <directorio>
-#       => logs guardados en $LOG_BASE_DIR/<directorio>
+#     get_log_dir <directorio> => LOG_DIR=$LOG_BASE_DIR/<directorio>
 #
-# o para que la actualización de la variable LOG_DIR sea más explícita:
-#     LOG_DIR=$(init_log <directorio>)
+# para que la actualización de la variable LOG_DIR sea más explícita:
+#     LOG_DIR="$(get_log_dir <directorio>)"
 #-------------------------------------------------------------------------------
 
 print_msg() {
 	_msg="$1"
 	_level="${2:-INFO}"
-	_date="${3:-$(date '+%Y-%m-%d %H:%M:%S')}"
-	_module="${4:-$(basename "$0")}"
+	_module="${3:-$(basename "$0")}"
+	_date="$(date +'%Y-%m-%dT%H:%M:%S%z')"
 
-	printf "%s [%s] (%s) %s\n" "$_date" "$_level" "$_module" "$_msg"
+	printf "[%s] [%s] %s: %s\n" "$_date" "$_module" "$_level" "$_msg"
 }
 
 log() {
 	_msg="$1"
 	_level="${2:-ERROR}"
-	_date="$(date '+%Y-%m-%d %H:%M:%S')"
 	_module="$(basename "$0")"
 
 	# Cuando se ejecuta directamente desde el shell interactivo $0=log
@@ -43,23 +41,38 @@ log() {
 
 	ensure_dir "${LOG_DIR:-$LOG_BASE_DIR}" >/dev/null
 
-	print_msg "$_msg" "$_level" "$_date" "$_module" |
+	print_msg "$_msg" "$_level" "$_module" |
 		tee -a "${LOG_DIR:-$LOG_BASE_DIR}/errors.log"
 }
 
-init_log() {
-	LOG_DIR="$LOG_BASE_DIR/$1"
+get_log_dir() {
+	if [ -z "$1" ]; then
+		LOG_DIR="$LOG_BASE_DIR"
+	else
+		LOG_DIR="$LOG_BASE_DIR/$1"
+	fi
 	ensure_dir "$LOG_DIR"
 }
 
 # Utilidades para guardar los archivos temporales en un solo directorio
+#
+# Podemos depositar los archivos temporales en un directorio relativo al base usando:
+#     get_tmp_dir <directorio> => TMP_DIR=$TMP_BASE_DIR/<directorio>
+#
+# para que la actualización de la variable TMP_DIR sea más explícita:
+#     TMP_DIR="$(get_tmp_dir <directorio>)"
 #-------------------------------------------------------------------------------
 
-get_tmp() {
-	ensure_dir "$TMP_BASE_DIR/$1"
+get_tmp_dir() {
+	if [ -z "$1" ]; then
+		TMP_DIR="$TMP_BASE_DIR"
+	else
+		TMP_DIR="$TMP_BASE_DIR/$1"
+	fi
+	ensure_dir "$TMP_DIR"
 }
 
-get_random_tmp() {
+get_random_tmp_dir() {
 	ensure_dir "$TMP_BASE_DIR" >/dev/null
 	mktemp -d -p "$TMP_BASE_DIR" XXXXXX
 }
@@ -68,7 +81,7 @@ get_random_tmp() {
 # limitaciones de tamaño. Importante tener en cuenta que como el contenido de
 # ~/.cache no se borra solo, se debe borrar explicitamente el directorio
 # $CACHE_DIR al terminar de utilizarlo
-get_cache_tmp() {
+get_cache_tmp_dir() {
 	_cache_dir="$CACHE_BASE_DIR/$1"
 	_tmp_symlink="$TMP_BASE_DIR/$1"
 
@@ -125,7 +138,7 @@ remove_comments() {
 
 check_command() {
 	if ! command -v "$1" >/dev/null 2>&1; then
-		log "El comando $1 no se encontró"
+		log "el comando $1 no se encontró"
 		exit 1
 	fi
 }
