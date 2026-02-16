@@ -56,10 +56,14 @@ arr_packages() {
 
 vim_spell_download() {
 	mkdir -p "$HOME/.local/share/nvim/site/spell/"
-	wget "https://ftp.nluug.nl/pub/vim/runtime/spell/es.utf-8.spl" \
-		-q -O "$HOME/.local/share/nvim/site/spell/es.utf-8.spl"
-	wget "https://ftp.nluug.nl/pub/vim/runtime/spell/es.utf-8.sug" \
-		-q -O "$HOME/.local/share/nvim/site/spell/es.utf-8.sug"
+
+	# No queremos que el script se detenga en caso de que la descarga falle
+	download \
+		"https://ftp.nluug.nl/pub/vim/runtime/spell/es.utf-8.spl" \
+		"$HOME/.local/share/nvim/site/spell/es.utf-8.spl" || true
+	download \
+		"https://ftp.nluug.nl/pub/vim/runtime/spell/es.utf-8.sug" \
+		"$HOME/.local/share/nvim/site/spell/es.utf-8.sug" || true
 }
 
 create_trash_dir() {

@@ -230,7 +230,7 @@ done
 OG_DIR="$1"
 MIRROR_DIR="$2"
 
-ensure_dir "$MIRROR_DIR"
+ensure_dir "$MIRROR_DIR" >/dev/null
 
 # Identificar archivos de audio en el directorio original
 #-------------------------------------------------------------------------------
@@ -285,7 +285,7 @@ while IFS= read -r MIRROR_FILE; do
 
 	MATCHES=$(
 		find "$OG_DIR" -type f -wholename "$OG_DIR/$BASENAME*" |
-			grep -vP ".*(lrc|txt)"
+			grep -vP ".*(lrc|txt)" || true
 	) >/dev/null 2>&1
 
 	[ -z "$MATCHES" ] && rm "$MIRROR_FILE"

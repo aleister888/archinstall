@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC1091
+# shellcheck disable=SC1091,SC2034
 
 source "$HOME/.dotfiles/assets/shell/shell-utils"
 
@@ -14,30 +14,36 @@ SOUND="/usr/share/sounds/freedesktop/stereo/camera-shutter.oga"
 TMP_DIR=$(get_tmp_dir screenshots)
 TMP="$TMP_DIR/screenshot.$EXTENSION"
 MSG="Captura de Pantalla"
+NOTIFY_TIMEOUT=1400
 
 mkdir -p "$SCREENSHOTS_DIR"
+
+throw_error() {
+	setsid -f notify-send -e -i system-error "$MSG" "Error al capturar" -t $NOTIFY_TIMEOUT
+	exit 1
+}
 
 capture() {
 	AREA=$1
 	MODE=$2
 
 	if [ "$AREA" = "all" ]; then
-		grim -t "$EXTENSION" "$TMP"
+		grim -t "$EXTENSION" "$TMP" || throw_error
 	else
-		grim -t "$EXTENSION" -g "$(slurp)" "$TMP"
+		grim -t "$EXTENSION" -g "$(slurp)" "$TMP" || throw_error
 	fi
 
 	if [ -s "$TMP" ]; then
 		if [ "$MODE" = "clipboard" ]; then
 			wl-copy <"$TMP"
-			[ "$QUIET" ] || setsid -f notify-send -e -i "$TMP" "$MSG" "Copiada al Portapapeles"
+			[ "$QUIET" ] || setsid -f notify-send -e -i "$TMP" "$MSG" "Copiada al Portapapeles" -t $NOTIFY_TIMEOUT
 		else
 			mv "$TMP" "$FILEPATH"
-			[ "$QUIET" ] || setsid -f notify-send -e -i "$FILEPATH" "$MSG" "$FILENAME"
+			[ "$QUIET" ] || setsid -f notify-send -e -i "$FILEPATH" "$MSG" "$FILENAME" -t $NOTIFY_TIMEOUT
 		fi
-		setsid -f pw-play "$SOUND"
+		#setsid -f pw-play "$SOUND"
 	else
-		setsid -f notify-send -e -i system-error "$MSG" "Error al capturar"
+		throw_error
 	fi
 }
 
