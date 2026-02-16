@@ -42,15 +42,17 @@ export MOZ_WAYLAND_USE_VAAPI=1
 export EDITOR="nvim"
 export SUDO_EDITOR="nvim"
 export READER="okular"
+export BROWSER="firefox"
+export VIDEO="vlc"
+export PAGER="less"
+export VIEWER="nsxiv"
+
 export TERMINAL="kitty --single-instance"
 export SCRATCH_OPTS="--instance-group=scratchpad"
 export REGULAR_OPTS="--instance-group=kitty"
 export TERMTITLE="-T"
 export TERMEXEC=""
-export BROWSER="firefox"
-export VIDEO="vlc"
-export PAGER="less"
-export VIEWER="nsxiv"
+export TERMHOLD="--hold=yes"
 
 export _JAVA_AWT_WM_NONREPARENTING=1
 

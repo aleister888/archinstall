@@ -43,7 +43,7 @@ set_max_samplerate() {
 
 	MAX_RATE=$(pw-dump | jq ".[] | select(.id == $AUDIO_ID) | .info.params.EnumFormat[0].rate.max")
 	[ -z "$MAX_RATE" ] && MAX_RATE=$(pw-dump | jq ".[] | select(.id == $AUDIO_ID) | .info.params.EnumFormat[0].rate")
-	[ -z "$MAX_RATE" ] && samplerate_error
+	[ -z "$MAX_RATE" ] || [ "$MAX_RATE" = "null" ] && samplerate_error
 
 	pw-metadata -n settings 0 clock.force-rate "$MAX_RATE" &&
 		notify audio-card "$NOTIFICATION_TITLE" "Samplerate establecido a $MAX_RATE"

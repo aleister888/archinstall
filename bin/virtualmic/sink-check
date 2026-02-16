@@ -9,7 +9,7 @@ source "$HOME/.dotfiles/bin/virtualmic/env"
 
 while true; do
 	# Bloqueamos el proceso mientras se este eligiendo un sink
-	while pgrep --quiet -f virtualmic-select; do
+	while is_process_running virtualmic-select; do
 		sleep 0.2
 	done
 

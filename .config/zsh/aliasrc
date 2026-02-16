@@ -188,7 +188,7 @@ push() {
 	# shellcheck disable=SC2086
 	if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
 		git add .
-		eval $TERMINAL $REGULAR_OPTS $TERMEXEC \
+		eval $TERMINAL $REGULAR_OPTS $TERMEXEC $TERMHOLD \
 			"sh -c \"cd $HOME/.dotfiles && git diff --cached\""
 		git commit
 		git push

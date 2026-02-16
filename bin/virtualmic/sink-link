@@ -4,6 +4,7 @@
 source "$HOME/.dotfiles/bin/virtualmic/env"
 
 notify_added() {
+	[[ "$(get_parent_process)" == *"sink-check"* ]] && return 0
 	if is_sink_linked "$SINK"; then
 		notify "$ICON" "$NOTIFICATION_TITLE" "Sink vinculado correctamente"
 	else
@@ -36,8 +37,8 @@ sink_link() {
 	*) CSINK="$SINK" ;;
 	esac
 
-	timeout -k 1s 1s pw-link $FLAG "$SINK" "$SINK_L"
-	timeout -k 1s 1s pw-link $FLAG "$CSINK" "$SINK_R"
+	timeout -k 1s 1s pw-link $FLAG "$SINK" "$SINK_L" || return 1
+	timeout -k 1s 1s pw-link $FLAG "$CSINK" "$SINK_R" || return 1
 
 	# Notificamos y actualizamos la lista
 	case "$1" in

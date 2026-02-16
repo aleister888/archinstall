@@ -135,6 +135,22 @@ check_connection() {
 	curl -s --connect-timeout 3 "$_check_url" >/dev/null
 }
 
+# Comprobar si un script se esta ejecutando, teniendo en cuenta que este
+# puede estar editandose en una terminal
+is_process_running() {
+	_process_name="$1"
+	if [ "$_process_name" = "$EDITOR" ] || [ "$_process_name" = "$BROWSER" ]; then
+		pgrep -f --quiet "$_process_name"
+	else
+		pgrep -f -a "$_process_name" | grep -qv "$EDITOR\|$BROWSER"
+	fi
+}
+
+# Obtener el nombre del proceso padre
+get_parent_process() {
+	ps -p $PPID -o cmd | tail -n1
+}
+
 #-------------------------------------------------------------------------------
 
 get_partition_name() {
