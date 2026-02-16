@@ -39,7 +39,7 @@ MODULE_LIST=$(/usr/bin/ls /usr/lib/modules)
 for KERNEL in "${KERNELS[@]}"; do
 	for MODULE in $(
 		# Listamos todos los módulos del kernel correspondiente
-		echo "$MODULE_LIST" | grep "$KERNEL$" |
+		grep "$KERNEL$" <<<"$MODULE_LIST" |
 			# Excluimos el kernel más reciente y el que se está usando
 			head -n -1 | grep -v "$(uname -r)"
 	); do

@@ -31,7 +31,7 @@ delete_sink_from_list() {
 
 # Función para construir la lista de sinks a añadir y borrar
 sink_list_build() {
-	EXCLUDE_PATTERN="my-combined-sink\|my-virtualmic\|PulseAudio\|Midi\|v4l2\|WEBRTC\|Chromium\|bluez_input\|xdg.*portal\|ee_.*\|easyeffects.*"
+	EXCLUDE_PATTERN="my-combined-sink\|my-virtualmic\|PulseAudio\|Midi\|v4l2\|WEBRTC\|Chromium\|bluez_\|xdg.*portal\|ee_.*\|easyeffects.*"
 
 	DEVICES=$( # Sinks candidadtos a añadir
 		pw-link -o |

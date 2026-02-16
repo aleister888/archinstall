@@ -16,10 +16,10 @@ SUM=0
 # calculamos la suma de los valores
 for ((i = 1; i <= NUM_BATERIAS; i++)); do
 	BATTERY_LEVEL+=(
-		"$(echo "$OUT" | sed "${i}q;d" | grep -oP '\d+%' | tr -d '%')"
+		"$(sed "${i}q;d" <<<"$OUT" | grep -oP '\d+%' | tr -d '%')"
 	)
 	SUM=$((SUM + BATTERY_LEVEL[i - 1]))
-	echo "$OUT" | sed "${i}q;d" | grep -q Charging && CHARGING=true
+	sed "${i}q;d" <<<"$OUT" | grep -q Charging && CHARGING=true
 done
 
 # Definimos el icono en función del estado de la batería

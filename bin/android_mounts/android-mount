@@ -30,7 +30,7 @@ escape_name() {
 CONNECTED_ANDROID=$(simple-mtpfs -l 2>/dev/null)
 MOUNTED_ANDROID="$(grep -oP 'simple-mtpfs-\K[0-9]+' /etc/mtab || true)"
 for NUM in $MOUNTED_ANDROID; do
-	CONNECTED_ANDROID="$(echo "$CONNECTED_ANDROID" | grep -v "^$NUM:")"
+	CONNECTED_ANDROID="$(grep -v "^$NUM:" <<<"$CONNECTED_ANDROID")"
 done
 
 if [ -z "$CONNECTED_ANDROID" ]; then

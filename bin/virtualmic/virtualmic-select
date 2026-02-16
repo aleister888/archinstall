@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2086,SC2181,SC1091
+# shellcheck disable=SC2086,SC2181,SC1091,SC2001
 
 # Vincular (dispositivos de entrada)|(aplicaciones) a un micrófono virtual para compartir audio
 
@@ -16,12 +16,12 @@ sink_links_edit() {
 	*) SINKS_LIST=$DEL_DEVICES ;;
 	esac
 
-	FORMATED_SINKS_LIST=$(echo "$SINKS_LIST" | sed 's/:.*//g' | sort -u)
+	FORMATED_SINKS_LIST=$(sed 's/:[^:]*$//' <<<"$SINKS_LIST" | sort -u)
 
 	DMENU_SELECTED=$(echo "$FORMATED_SINKS_LIST" | $DMENU $DMENU_LINES "$(echo "$FORMATED_SINKS_LIST" | wc -l)")
 	[ -z "$DMENU_SELECTED" ] && exit
 
-	SELECTED=$(echo "$SINKS_LIST" | grep "$DMENU_SELECTED" | sed '1q;d')
+	SELECTED=$(grep "$DMENU_SELECTED" <<<"$SINKS_LIST" | sed '1q;d')
 	[ -z "$SELECTED" ] && exit
 
 	"$HOME"/.dotfiles/bin/virtualmic/sink-link "$1" "$SELECTED"

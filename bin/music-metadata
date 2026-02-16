@@ -87,7 +87,7 @@ help_msg() {
 	EOF
 }
 
-if echo "$@" | grep -q "\-h\|--help"; then
+if grep -q "\-h\|--help" <<<"$@"; then
 	help_msg
 	exit
 fi

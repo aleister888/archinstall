@@ -53,7 +53,7 @@ flac_check() {
 	)
 
 	for PATTERN in "${ERROR_PATTERNS[@]}"; do
-		if [ -n "$(ffmpeg -v error -i "$FILE" -f null - 2>&1)" ] && echo "$FLAC_OUTPUT" | grep -q "$PATTERN"; then
+		if [ -n "$(ffmpeg -v error -i "$FILE" -f null - 2>&1)" ] && grep -q "$PATTERN" <<<"$FLAC_OUTPUT"; then
 			echo "$1" >>"$TMP_LOG"
 			return
 		fi

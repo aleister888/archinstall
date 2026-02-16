@@ -15,7 +15,7 @@ install() {
 			sort | tail -n 1
 	)
 	DOWNLOAD_URL="https://ftp.halifax.rwth-aachen.de/eclipse/$BASE_URL"
-	FILENAME="$(echo "$DOWNLOAD_URL" | grep -o "eclipse-rcp-.*")"
+	FILENAME="$(grep -o "eclipse-rcp-.*" <<<"$DOWNLOAD_URL")"
 
 	if [ -z "$DOWNLOAD_URL" ]; then
 		echo "No se pudo obtener la versión de Eclipse."

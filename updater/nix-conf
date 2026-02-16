@@ -52,7 +52,7 @@ declare -A INSTALLED_MAP
 while IFS= read -r line; do
 	NAME=$(echo "$line" | jq -r '.value.attrPath' | grep -oP 'linux\.\K.*')
 	ORIGINAL_URL=$(echo "$line" | jq -r '.value.originalUrl // empty')
-	VERSION=$(echo "$ORIGINAL_URL" | grep -oP "nixpkgs/\K.*")
+	VERSION=$(grep -oP "nixpkgs/\K.*" <<<"$ORIGINAL_URL")
 	INSTALLED_MAP["$NAME"]="$VERSION"
 done < <(nix profile list --json | jq -c '.elements | to_entries[]')
 
