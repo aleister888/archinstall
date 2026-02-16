@@ -216,8 +216,8 @@ done
 
 sudo /usr/bin/pacman -Fy
 
-rm "$HOME"/.bash* 2>/dev/null
-rm "$HOME"/.wget-hsts 2>/dev/null
+rm -f "$HOME"/.bash* 2>/dev/null
+rm -f "$HOME"/.wget-hsts 2>/dev/null
 
 # Actualizamos al configuracion de GRUB
 # (para iniciar con el núcleo instalado en este script)
