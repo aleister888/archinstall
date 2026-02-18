@@ -45,23 +45,16 @@ help_msg() {
 		     (por defecto solo lo hace para los no días no procesados)
 		  -h Muestra este mensaje
 	EOF
+	exit 1
 }
 
 OVERWRITE="false"
 
 while getopts "oh" OPT; do
 	case $OPT in
-	o)
-		OVERWRITE="true"
-		;;
-	h)
-		help_msg
-		exit 0
-		;;
-	*)
-		help_msg >&2
-		exit 1
-		;;
+	o) OVERWRITE="true" ;;
+	h) help_msg ;;
+	*) help_msg >&2 ;;
 	esac
 done
 shift $((OPTIND - 1))
@@ -77,10 +70,7 @@ else
 	[ -f "$TARGET_MACROS" ] && echo "$TARGET_MACROS" >>"$CACHE_FILE"
 fi
 
-[ ! -f "$INPUT_FILE" ] || [ ! -f "$TARGET_MACROS" ] && {
-	help_msg >&2
-	exit 1
-}
+[ ! -f "$INPUT_FILE" ] || [ ! -f "$TARGET_MACROS" ] && help_msg >&2
 
 DIRECTORY=$(dirname "$INPUT_FILE")
 PROCESSED_MACROS="${DIRECTORY}/processed_macros.csv"
@@ -143,9 +133,7 @@ while IFS=',' read -r DATE _ _ _ CAL FAT CARBS PROT PROT_PERC; do
 
 	read -r NEW_CAL NEW_FAT NEW_CARBS NEW_PROT <<<"$(tr '\n' ' ' <<<"$ADDITION_RESULT")"
 	DAILY_DATA[$DATE]="$NEW_CAL,$NEW_FAT,$NEW_CARBS,$NEW_PROT"
-done < <(
-	tac ~/Documentos/Gym/diet/comidas.csv | sed '$d'
-)
+done < <(tac ~/Documentos/Gym/diet/comidas.csv | sed '$d')
 
 # Tabulamos los datos
 #-------------------------------------------------------------------------------

@@ -74,6 +74,8 @@ for pkg in "${TARGET_PACKAGES[@]}"; do
 	NAME=$(echo "$pkg" | jq -r '.name')
 	TARGET_VERSION=$(echo "$pkg" | jq -r '.version // empty')
 	[ -z "$TARGET_VERSION" ] && TARGET_VERSION="$LATEST_VERSION"
+	PRIORITY=$(echo "$pkg" | jq -r '.priority // empty')
+	[ -n "$PRIORITY" ] && PRIORITY_FLAG="--priority $PRIORITY"
 
 	if [[ -n "$TARGET_VERSION" ]]; then
 		# usar flake con commit si se especifica versión
@@ -84,11 +86,12 @@ for pkg in "${TARGET_PACKAGES[@]}"; do
 
 	INSTALLED_VERSION="${INSTALLED_MAP[$NAME]:-}"
 
+	# shellcheck disable=SC2086
 	if [[ -z "$INSTALLED_VERSION" ]]; then
-		nix profile add --impure "$FLAKE_REF" >/dev/null
+		nix profile add --impure "$FLAKE_REF" $PRIORITY_FLAG >/dev/null
 	elif [[ "$INSTALLED_VERSION" != "$TARGET_VERSION" ]]; then
 		log "cambiando versión $NAME: $INSTALLED_VERSION -> $TARGET_VERSION" WARN
 		nix profile remove "${NAME##*.}" &>/dev/null
-		nix profile add --impure "$FLAKE_REF"
+		nix profile add --impure "$FLAKE_REF" $PRIORITY_FLAG
 	fi
 done

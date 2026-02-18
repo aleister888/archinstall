@@ -7,7 +7,7 @@ source "$HOME/.dotfiles/assets/shell/profile"
 source "$HOME/.dotfiles/assets/shell/shell-utils"
 
 # Número máximo de codificaciones simultaneas
-MAX_JOBS=$(($(nproc) / 4))
+MAX_JOBS=$(($(nproc) / 6 + 1))
 # Segundos de espera entre cada codificación
 WAIT_TIME=$(echo "scale=4; 1/$(((MAX_JOBS + 1) / 2))" | bc)
 

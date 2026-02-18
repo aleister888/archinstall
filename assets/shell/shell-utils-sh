@@ -13,6 +13,11 @@ delete_broken_symlinks() {
 	[ -d "$1" ] && find "$1" -type l ! -exec test -e {} \; -delete
 }
 
+# Función para obtener la fecha en el formato ISO 8601
+get_date() {
+	date +'%Y-%m-%dT%H:%M:%S%z'
+}
+
 # Utilidades para guardar los logs en un solo directorio
 #
 # Podemos guardar los logs en un directorio relativo al base usando:
@@ -26,7 +31,7 @@ print_msg() {
 	_msg="$1"
 	_level="${2:-INFO}"
 	_module="${3:-$(basename "$0")}"
-	_date="$(date +'%Y-%m-%dT%H:%M:%S%z')"
+	_date="$(get_date)"
 
 	printf "[%s] [%s] %s: %s\n" "$_date" "$_module" "$_level" "$_msg"
 }

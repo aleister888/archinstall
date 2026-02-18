@@ -14,7 +14,7 @@ source "$HOME/.dotfiles/assets/shell/shell-utils"
 
 TMP_DIR=$(get_random_tmp_dir)
 
-MAX_JOBS=$(nproc)                                           # n trabajos máximo
+MAX_JOBS=$(($(nproc) / 5 + 1))                              # n trabajos máximo
 WAIT_TIME=$(echo "scale=4; 1/$(((MAX_JOBS + 1) / 2))" | bc) # Espera entre trabajos
 
 check_command "atomicparsley"

@@ -12,62 +12,21 @@ local default_config = {
 
 -- Configuraciones específicas por tipo de archivo
 local filetype_configs = {
-	["*"] = {},
-	kotlin = {
-		expandtab = true,
-		tabstop = 4,
-		shiftwidth = 4,
-	},
-	sql = {
-		expandtab = true,
-		tabstop = 4,
-		shiftwidth = 4,
-	},
-	sh = {
-		tabstop = 4,
-		shiftwidth = 4,
-	},
-	hyprlang = {
-		tabstop = 4,
-		shiftwidth = 4,
-	},
-	json = {
-		smartindent = true,
-		expandtab = true,
-		conceallevel = 2,
-	},
-	fstab = {
-		tabstop = 8,
-		shiftwidth = 8,
-	},
-	conf = {
-		tabstop = 8,
-		shiftwidth = 8,
-	},
-	rasi = {
-		expandtab = true,
-	},
-	["*css"] = {
-		expandtab = true,
-	},
-	tex = {
-		smartindent = true,
-		expandtab = true,
-		tabstop = 6,
-		shiftwidth = 6,
-	},
-	xml = {
-		expandtab = true,
-	},
-	markdown = {
-		expandtab = true,
-		conceallevel = 0,
-	},
-	python = {
-		expandtab = true,
-		tabstop = 4,
-		shiftwidth = 4,
-	},
+	kotlin = { expandtab = true, tabstop = 4, shiftwidth = 4 },
+	sql = { expandtab = true, tabstop = 4, shiftwidth = 4 },
+	sh = { tabstop = 4, shiftwidth = 4 },
+	hyprlang = { tabstop = 4, shiftwidth = 4 },
+	json = { smartindent = true, expandtab = true, conceallevel = 2 },
+	fstab = { tabstop = 8, shiftwidth = 8 },
+	conf = { tabstop = 8, shiftwidth = 8 },
+	["*css"] = { expandtab = true },
+	rasi = { expandtab = true },
+	css = { expandtab = true },
+	tex = { smartindent = true, expandtab = true, tabstop = 6, shiftwidth = 6 },
+	xml = { expandtab = true },
+	markdown = { expandtab = true, conceallevel = 0 },
+	python = { expandtab = true, tabstop = 4, shiftwidth = 4 },
+	toml = { expandtab = true, tabstop = 4, shiftwidth = 4 },
 }
 
 -- Función para aplicar configuración
@@ -78,9 +37,16 @@ local function apply_config(config)
 	end
 end
 
--- Configuraciones específicas por tipo de archivo
+-- Aplicamos la configuración por defecto
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "*",
+	callback = function(args)
+		apply_config(default_config)
+	end,
+})
+
+-- Aplicamos las configuraciones específicas
 for pattern, config in pairs(filetype_configs) do
-	-- Combinar con configuración por defecto
 	local merged_config = vim.tbl_extend("force", {}, default_config, config)
 
 	vim.api.nvim_create_autocmd("FileType", {

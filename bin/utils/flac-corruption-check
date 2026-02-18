@@ -17,6 +17,9 @@ RECODE_TMP_DIR="$(ensure_dir "$TMP_DIR/try")"     # Salida recodificados (tempor
 RECODE_OUT_DIR="$(ensure_dir "$TMP_DIR/recoded")" # Salida recodificados
 OVERWRITE=false                                   # Sobrescribir archivos originales
 
+MAX_JOBS=$(($(nproc) / 6 + 1))                              # n trabajos máximo
+WAIT_TIME=$(echo "scale=4; 1/$(((MAX_JOBS + 1) / 2))" | bc) # Espera entre trabajos
+
 show_help() {
 	cat <<-EOF
 		Uso: $(basename "$0") [opciones] <directorio>
@@ -92,11 +95,17 @@ process_flac() {
 
 # Buscar archivos FLAC y comprobar si es posible que esten corruptos
 find "$OG_DIR" -type f -name "*.flac" | while read -r FILE; do
+	while [ "$(jobs -rp | wc -l)" -ge "$MAX_JOBS" ]; do
+		sleep "${WAIT_TIME}s"
+	done
 	flac_check "$FILE" "$TMP_LOG"
 done
 
 # Comprobamos si hay algún falso positivo recodificando los archivos
 while IFS= read -r FILE_PATH; do
+	while [ "$(jobs -rp | wc -l)" -ge "$MAX_JOBS" ]; do
+		sleep "${WAIT_TIME}s"
+	done
 	process_flac "$FILE_PATH"
 done <"$TMP_LOG"
 
