@@ -64,8 +64,8 @@ done
 
 for pkg in "${!INSTALLED_MAP[@]}"; do
 	if [ -z "${TARGET_MAP[$pkg]:-}" ]; then
-		log "borrando $pkg" WARN
-		nix profile remove "$pkg" &>/dev/null
+		log "borrando ${pkg##*.}" WARN
+		nix profile remove "${pkg##*.}" &>/dev/null
 	fi
 done
 
@@ -74,6 +74,8 @@ for pkg in "${TARGET_PACKAGES[@]}"; do
 	NAME=$(echo "$pkg" | jq -r '.name')
 	TARGET_VERSION=$(echo "$pkg" | jq -r '.version // empty')
 	[ -z "$TARGET_VERSION" ] && TARGET_VERSION="$LATEST_VERSION"
+
+	# Si el paquete tiene una prioridad añadimos un flag al comando especificandola
 	PRIORITY=$(echo "$pkg" | jq -r '.priority // empty')
 	[ -n "$PRIORITY" ] && PRIORITY_FLAG="--priority $PRIORITY"
 
@@ -90,8 +92,9 @@ for pkg in "${TARGET_PACKAGES[@]}"; do
 	if [[ -z "$INSTALLED_VERSION" ]]; then
 		nix profile add --impure "$FLAKE_REF" $PRIORITY_FLAG >/dev/null
 	elif [[ "$INSTALLED_VERSION" != "$TARGET_VERSION" ]]; then
+		NAME="${NAME##*.}"
 		log "cambiando versión $NAME: $INSTALLED_VERSION -> $TARGET_VERSION" WARN
-		nix profile remove "${NAME##*.}" &>/dev/null
+		nix profile remove "$NAME" &>/dev/null
 		nix profile add --impure "$FLAKE_REF" $PRIORITY_FLAG
 	fi
 done

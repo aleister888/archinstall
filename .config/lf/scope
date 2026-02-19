@@ -161,15 +161,16 @@ video/*)
 # Mostar la primera página del comic
 */vnd.comicbook+zip | */vnd.comicbook-rar | */epub+zip)
 	CACHE_FILE="$LF_CACHE_DIR/$HASH"
+	FIRST_IMAGE=$(7z l "$1" | grep "jpg\|png" | awk '{print substr($0, index($0,$6))}' | sort | head -n1)
+	EXTENSION=${FIRST_IMAGE//*./}
+	CACHE_FILE+=".${EXTENSION}"
 	[ ! -f "$CACHE_FILE" ] && {
-		TMP_DIR="$(mktemp -d /tmp/lf.XXXX)"
-		# Obtener y extraer la 1ª imagen
-		FIRST_IMAGE=$(7z l "$1" | grep "jpg\|png" | awk '{print substr($0, index($0,$6))}' | sort | head -n1)
-		if [ -n "$FIRST_IMAGE" ]; then
-			7z e "$1" "$FIRST_IMAGE" -o"$TMP_DIR" >/dev/null 2>&1
-			mv "$TMP_DIR/$(basename "$FIRST_IMAGE")" "$CACHE_FILE"
-			rm -rf "$TMP_DIR"
-		fi
+		[ -z "$FIRST_IMAGE" ] && exit
+		TMP_DIR="$(get_tmp_dir lf)"
+
+		7z e "$1" "$FIRST_IMAGE" -o"$TMP_DIR" >/dev/null 2>&1
+		mv "$TMP_DIR/$(basename "$FIRST_IMAGE")" "$CACHE_FILE"
+		rm -rf "$TMP_DIR"
 	}
 
 	display "$CACHE_FILE"

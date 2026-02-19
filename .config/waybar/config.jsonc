@@ -3,14 +3,12 @@
   "position": "top",
   "height": 0, // Dejamos que el tamaño de los módulos sea el que mande
   "margin": "0 6 0 6",
-  "modules-left": [
-    "hyprland/workspaces"
-    //"hyprland/window"
-  ],
+  "modules-left": ["hyprland/workspaces", "hyprland/window"],
   "modules-center": ["clock", "privacy"],
   "modules-right": [
-    "custom/battery",
-    "custom/disk",
+    "custom/mute-indicator",
+    "custom/battery-info",
+    "custom/disk-info",
     "pulseaudio",
     //"network",
     //"custom/powermenu",
@@ -43,7 +41,8 @@
       "(.*) - Nvim": "$1",
       "(.*) - Obsidian.*": "$1",
       "(.*) — Mozilla Firefox": "$1",
-      "(.*).pdf": "$1"
+      "(.*).pdf": "$1",
+      "● (.*) - VSCodium": "$1 - VSCodium"
     }
   },
   "custom/music-metadata": {
@@ -61,18 +60,23 @@
   "privacy": {
     "icon-size": 20
   },
-  "custom/battery": {
+  "custom/mute-indicator": {
     "tooltip": false,
     "interval": 1,
-    "exec": "~/.dotfiles/bin/sb/sb-bat",
-    "on-click": "~/.dotfiles/bin/sb/sb-bat-info"
+    "exec": "~/.dotfiles/bin/waybar/mute-indicator"
   },
-  "custom/disk": {
+  "custom/battery-info": {
+    "tooltip": false,
+    "interval": 1,
+    "exec": "~/.dotfiles/bin/waybar/battery-info",
+    "on-click": "~/.dotfiles/bin/waybar/battery-info-notify"
+  },
+  "custom/disk-info": {
     "tooltip": false,
     "format": "󰨣 {}",
     "interval": 15,
     "exec": "df -h /home | awk '/[0-9]/ {print $4}'",
-    "on-click": "~/.dotfiles/bin/sb/sb-disks-info"
+    "on-click": "~/.dotfiles/bin/waybar/disks-info-notify"
   },
   "pulseaudio": {
     "tooltip": false,
@@ -106,8 +110,8 @@
   "custom/blue-filter": {
     "tooltip": false,
     "interval": 1,
-    "exec": "~/.dotfiles/bin/sb/blue-status",
-    "on-click": "~/.dotfiles/bin/sb/blue-toggle"
+    "exec": "~/.dotfiles/bin/waybar/blue-filter-status",
+    "on-click": "~/.dotfiles/bin/waybar/blue-filter-toggle"
   },
   "tray": {
     "icon-size": 24,

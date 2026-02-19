@@ -3,11 +3,13 @@
 
 # Activar/Desactivar hyprsunset (Filtro de la luz azul)
 
+. "$HOME/.dotfiles/assets/shell/shell-utils-sh"
+
 NOTIFY="notify-send -e -a hyprsunset -t 1500 -i screensaver"
 
 $HIDE_NOTIFICATIONS
 
-if pgrep --quiet hyprsunset; then
+if is_process_running hyprsunset; then
 	pkill hyprsunset
 	$NOTIFY "hyprsunset 󰌵" "Filtro desactivado"
 else

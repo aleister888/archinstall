@@ -144,11 +144,6 @@ sudo /usr/bin/cp -f \
 	"$REPO_DIR/assets/system/udev/50-org.freedesktop.NetworkManager.rules" \
 	/etc/polkit-1/rules.d/
 
-# Configuramos crond para borrar los módulos del kernel antiguos
-cat <<-EOF | sudo /usr/bin/tee -a /etc/crontab >/dev/null
-	@hourly root cleanup-old-modules
-EOF
-
 cat <<EOF | sudo /usr/bin/tee -a /etc/environment
 CARGO_HOME="$HOME/.local/share/cargo"
 GNUPGHOME="$HOME/.local/share/gnupg"
@@ -160,7 +155,7 @@ ln -s /tmp/ "$HOME/Descargas"
 mkdir -p "$HOME/.config"
 
 # Creamos los directorios básicos del usuario
-for DIR in Documentos Música Imágenes Público Vídeos; do
+for DIR in Documentos Música Imágenes Vídeos; do
 	mkdir -p "$HOME/$DIR"
 done
 

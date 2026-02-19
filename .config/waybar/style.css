@@ -85,11 +85,16 @@
   margin: 0px 7.5px 0px 7.5px;
 }
 
-#custom-battery {
-  margin: 0px 7.5px 0px 7.5px;
+#custom-mute-indicator {
+  color: #7c6f64;
+  margin: 2px 5px 0px 5px;
 }
 
-#custom-disk {
+#custom-battery-info {
+  margin: 0px 7.5px 0px 5px;
+}
+
+#custom-disk-info {
   margin: 0px 7.5px 0px 7.5px;
 }
 

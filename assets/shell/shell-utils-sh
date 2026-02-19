@@ -68,18 +68,18 @@ get_log_dir() {
 #     TMP_DIR="$(get_tmp_dir <directorio>)"
 #-------------------------------------------------------------------------------
 
-get_tmp_dir() {
-	if [ -z "$1" ]; then
-		TMP_DIR="$TMP_BASE_DIR"
-	else
-		TMP_DIR="$TMP_BASE_DIR/$1"
-	fi
-	ensure_dir "$TMP_DIR"
-}
-
 get_random_tmp_dir() {
 	ensure_dir "$TMP_BASE_DIR" >/dev/null
 	mktemp -d -p "$TMP_BASE_DIR" XXXXXX
+}
+
+get_tmp_dir() {
+	if [ -z "$1" ]; then
+		get_random_tmp_dir
+	else
+		TMP_DIR="$TMP_BASE_DIR/$1"
+		ensure_dir "$TMP_DIR"
+	fi
 }
 
 # A veces necesitaremos trabajar sobre el directorio ~/.cache porque tmp tiene

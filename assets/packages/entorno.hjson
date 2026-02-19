@@ -1,6 +1,8 @@
 {
   "general": [
     "chaotic-aur/input-remapper-git",
+    // drag and drop support for lf file manager
+    "chaotic-aur/dragon-drop-git",
     "feh",
     "grim",
     "hyprland",

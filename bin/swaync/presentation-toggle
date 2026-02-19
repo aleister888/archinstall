@@ -1,16 +1,16 @@
-#!/bin/sh
+#!/bin/sh -x
+# shellcheck disable=SC1091
 
-TIMEOUT=30
+TIMEOUT_SCREEN=120
+TIMEOUT_LOCK=60
 
-if pgrep swayidle >/dev/null; then
+. "$HOME/.dotfiles/assets/shell/shell-utils-sh"
+
+if is_process_running swayidle; then
 	pkill swayidle
-
-	notify-send -i preferences-system-notifications \
-		"Modo presentación activado" "La pantalla no se apagará"
 else
-	notify-send -i preferences-system-notifications \
-		"Modo presentación desactivado" "La pantalla se apagará tras ${TIMEOUT}s de inactividad"
+	setsid -f swayidle -w timeout "$TIMEOUT_SCREEN" \
+		'hyprctl dispatch dpms off' resume 'hyprctl dispatch dpms on' >/dev/null 2>&1
 
-	swayidle -w timeout $TIMEOUT \
-		'hyprctl dispatch dpms off' resume 'hyprctl dispatch dpms on'
+	setsid -f swayidle -w timeout "$TIMEOUT_LOCK" 'hyprlock' >/dev/null 2>&1
 fi
