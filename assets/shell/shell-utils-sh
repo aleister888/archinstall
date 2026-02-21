@@ -71,7 +71,7 @@ get_log_dir() {
 
 get_random_tmp_dir() {
 	ensure_dir "$TMP_BASE_DIR" >/dev/null
-	mktemp -d -p "$TMP_BASE_DIR" XXXXXX
+	TMP_DIR="$(mktemp -d -p "$TMP_BASE_DIR" XXXXXX)"
 }
 
 get_tmp_dir() {
@@ -141,6 +141,7 @@ has_wifi_device() { get_devices | grep -qi wireless; }
 get_parent_process() { ps -p $PPID -o cmd | tail -n1; }
 remove_comments() { cat "$1" | grep -v "^[ \t]*//"; }
 is_chroot() { sudo /usr/bin/systemd-detect-virt --chroot >/dev/null 2>&1; }
+is_ssh() { [ -n "$SSH_CONNECTION" ]; }
 check_connection() { curl -s --connect-timeout 3 "${1:-https://dns.google/}" >/dev/null; }
 
 #-------------------------------------------------------------------------------

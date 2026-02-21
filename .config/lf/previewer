@@ -35,13 +35,15 @@ linebreaks() {
 }
 
 display() {
+	[ -f "$1" ] || return 1
+
 	# Si usamos scope fuera de lf simplemente se imprime la ruta de la imagen
 	if ! called_from_lf; then
 		echo "$1"
-	elif [ -f "$1" ] && [ -n "$WAYLAND_DISPLAY" ] && [ -z "$SSH_CONNECTION" ]; then
+	elif ! is_ssh && [ -n "$WAYLAND_DISPLAY" ]; then
 		kitten icat --stdin no --transfer-mode memory --place "${W}x${H}@${X}x${Y}" "$1" </dev/null >/dev/tty
-		return 0
 	else
+		echo "SSH preview unsupported"
 		return 1
 	fi
 }
@@ -233,6 +235,8 @@ text/troff) called_from_lf &&
 
 	called_from_lf && cat "$CACHE_FILE"
 	;;
+
+*/mathematica) called_from_lf && bat -fp -l C "$1" ;;
 
 text/plain)
 	called_from_lf || exit

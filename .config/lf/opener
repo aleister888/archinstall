@@ -126,6 +126,6 @@ video/*)
 		"Formato de archivo no soportado" \
 		"Añade soporte en opener-caller y opener (~/.config/lf)"
 
-	log "$FILETYPE" WARN "unimplemented_openers.log"
+	log "$FILETYPE: $1" WARN "unimplemented_openers.log"
 	;;
 esac

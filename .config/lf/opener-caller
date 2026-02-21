@@ -1,8 +1,13 @@
 #!/bin/bash
+# shellcheck disable=SC1091
 
 # Primero comprobamos la extensión de todos los archivos en $@, agrupamos por
 # tipo de archivo y llamamos a ~/.config/lf/opener para cada grupo de archivos
 # del mismo tipo.
+
+source "$HOME/.dotfiles/assets/shell/shell-utils-sh"
+
+{ is_ssh || [ -z "$WAYLAND_DISPLAY" ]; } && exit
 
 declare -A FILETYPE_FILES
 
