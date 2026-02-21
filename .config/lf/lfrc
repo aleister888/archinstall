@@ -1,15 +1,4 @@
-#  _  __                    __ _
-# | |/ _|   ___ ___  _ __  / _(_) __ _
-# | | |_   / __/ _ \| '_ \| |_| |/ _` |
-# | |  _| | (_| (_) | | | |  _| | (_| |
-# |_|_|    \___\___/|_| |_|_| |_|\__, |
-#                                |___/
-
-# Opciones
-#-------------------------------------------------------------------------------
-
 set shell bash
-set shellopts ''
 set ifs "\n"
 set scrolloff 10
 set icons
@@ -19,300 +8,117 @@ set ratios 2:6:4
 set autoquit true
 set hiddenfiles ".*:*.aux:*.toc:*.sty:*.out:*.bbl:*.blg:*.synctex.gz:_minted:*.bcf:*.nav:*.run.xml:*.snm:*.xwm:*.lrc:*-autosave.kra:*~:*.vpp.bak_*:systemd-private-*"
 
-set cleaner '~/.config/lf/cleaner'
-set previewer '~/.config/lf/scope'
+set cleaner   '~/.config/lf/cleaner'
+set previewer '~/.config/lf/previewer'
 
-# Comandos/Funciones
+# Atajos
 #-------------------------------------------------------------------------------
 
-# Limpiar todas las selecciones
-#-------------------------------------------------------------------------------
-cmd clear_selection ${{
-	lf -remote "send $id clear"
-	lf -remote "send $id unselect"
-	sleep 0.1
-	clear
-	lf -remote "send $id reload"
+map C &lf -remote "send $id source ~/.config/lf/lfrc"
+
+map p paste
+cmd paste $cp-p --lf-paste "$id"
+
+map r rename
+
+map h set hidden!
+
+map <esc> cd ~/
+map z cd ~/
+map t cd /tmp
+map T cd /run/media
+
+map V push :!nvim<space>$f
+
+map <c-z> drag-and-drop
+cmd drag-and-drop $setsid -f dragon-drop -a -x $fx
+
+map <enter> push :open-file-with<space>
+cmd open-file-with %export ; setsid -f "$@" "$fx"
+
+cmd mkdir $mkdir -p "$(echo $* | tr ' ' '\ ')"
+map m push :mkdir<space>
+
+map Y copy-filepath
+cmd copy-filepath ${{
+	eval "$HIDE_NOTIFICATIONS"
+	printf '"%s"' "$(dirname "$fx")" | wl-copy
+	notify-send -t 1200 -e "lf" "Ruta copiada al portapapeles"
 }}
 
-# Limpiar pantalla
+map q quit
+cmd quit ${{
+	# Restaurar el título de la terminal
+	printf '\033]0;\007'
+	/usr/bin/lf -remote "send $id quit"
+}}
+
 #-------------------------------------------------------------------------------
+
+map <backspace2> clear_file_selection
+cmd clear_file_selection ${{
+	lf -remote "send $id unselect"
+	lf -remote "send $id reload"
+	lf -remote "send $id clear"
+}}
+
+map R clear_screen
 cmd clear_screen ${{
 	lf -remote "send $id reload"
-	clear
+	lf -remote "send $id clear"
 }}
 
-# Abrir archivos en función del tipo
 #-------------------------------------------------------------------------------
-cmd open ${{
-	change_title() {
-		printf "\033]0;$*\007" >/dev/tty
-	}
 
-	open_gui(){
-		change_title "lf hidden"
-		#killall -SIGUSR2 waybar
-		"$@" >/dev/null 2>&1
-		change_title "lf"
-		#killall -SIGUSR2 waybar
-	}
-
-	set -- $fx
-
-	FILETYPE="$(file -b --mime-type "$(readlink -f $f)")"
-	case $FILETYPE in
-		*/x-7z-compressed | */*-tar | */gzip)
-			open_gui setsid -f xarchiver "$f" ;;
-
-		*/vnd.rar | */zip | */vnd.comicbook*)
-			if [ "${f##*.}" == "cbr" ] || [ "${f##*.}" == "cbz" ]; then
-				open_gui YACReader "$f"
-			elif [ "${f##*.}" == "kra" ]; then
-				open_gui krita "$f"
-			else
-				open_gui setsid -f xarchiver "$f"
-			fi ;;
-
-		*/pdf | */epub*)
-			open_gui zathura "$f" ;;
-
-		*/vnd.*document*)
-			open_gui setsid -f libreoffice "$f" ;;
-
-		text/* | */xml | */json | inode/x-empty | */x-shellscript | */x-desktop | */yaml | */sql | */x-php | */x-xbel)
-			$EDITOR "$f" ;;
-
-		# Aveces xdg-mime y file detectan los archivos Xresources como x-xcursor
-		image/x-xcursor)
-			$EDITOR "$f" ;;
-
-		image/x-eps)
-			HASH=$(
-				stat --printf '%n\0%i\0%F\0%s\0%W\0%Y' -- "$(readlink -f "$f")" |
-				sha256sum | awk '{print $1}'
-			)
-			CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/lf/thumb.$HASH"
-			[ ! -f "$CACHE.jpg" ] && \
-				gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -r300 -dEPSCrop \
-					-sOutputFile="$CACHE.jpg" "$f"
-			open_gui nsxiv "$CACHE.jpg"
-			;;
-
-		image/*)
-			DIR="$(dirname -- "$f")"
-			BASE="$(basename -- "$f")"
-
-			FORMATS="jpg|jpeg|png|gif|bmp|tiff|ppm|svg|webp|xpm"
-
-			# Listar imágenes en el directorio (ordenadas alfabéticamente)
-			IMAGES=$(printf '%s\n' "$DIR"/* | grep -iE "\.($FORMATS)$" | sort -f)
-
-			# Rotar la lista para que empiece en $BASE
-			ROTATED=$(printf '%s\n' "$IMAGES" | awk -v start="$DIR/$BASE" '
-				BEGIN { hit = 0 }
-				$0 == start { hit = 1; print; next }
-				{ if (hit) print; else buf = buf $0 ORS }
-				END { if (buf != "") printf "%s", buf }
-			')
-
-			# Pasar a nsxiv
-			printf '%s\n' "$ROTATED" | open_gui nsxiv -aio
-			;;
-
-		audio/*)
-			clear
-			IFS=$'\n'
-			mpv --audio-display=no "$@";;
-
-		video/*)
-			IFS=$'\n'
-			open_gui vlc "$@" --no-video-title-show ;;
-
-		*/x-keepass2)
-			open_gui setsid -f keepassxc "$f" ;;
-
-		*/x-reaper-*)
-			open_gui setsid -f reaper "$f" ;;
-
-		*/x-tuxguitar | */gpx+xml | */x-gnuplot | */x-gtp)
-			open_gui setsid -f tuxguitar "$f" ;;
-
-		# Si no tenemos configurada una forma de abrirlo, usamos xdg-open
-		*) for f in $fx; do setsid -f $OPENER $f; done ;;
-	esac
-}}
-
-cmd on-cd &{{
-	source /usr/share/git/completion/git-prompt.sh
-	GIT_PS1_SHOWDIRTYSTATE=auto
-	GIT_PS1_SHOWSTASHSTATE=auto
-	GIT_PS1_SHOWUNTRACKEDFILES=auto
-	GIT_PS1_SHOWUPSTREAM=auto
-	GIT_PS1_COMPRESSSPARSESTATE=auto
-	git="$(__git_ps1 " [GIT BRANCH:> %s]")" || true
-	fmt="\033[32;1m%u@%h\033[0m:\033[34;1m%w\033[0m\033[33;1m$git\033[0m"
-	lf -remote "send $id set promptfmt \"$fmt\""
-}}
-
-# Muestra información del archivo seleccionado con eza
-#-------------------------------------------------------------------------------
-cmd on-select &{{
-	# Añadimos el tamaño en disco y el tamaño real
-	INFO="[$(/usr/bin/du -chs "$(readlink -f "$fx")" | grep total | awk '{print $1}')"
-	TOTAL_BYTES="$(stat -c %s "$fx")"
-	if [ ! -d "$fx" ] && [ "$TOTAL_BYTES" -le 4096 ]; then
-		INFO+=":${TOTAL_BYTES}B] "
-	else
-		INFO+="] "
-	fi
-
-	# Añadimos permisos, dueño, fecha y nombre
-	INFO+=$(
-		eza -dlo --color=always --time-style iso "$(basename "$f")" |
-			awk '{printf "%s %s %s %s %s %s", $1, $4, $5, $6, $7, $8; for (i=9; i<=NF; i++) printf " %s", $i; print ""}' |
-			sed 's/\\/\\\\/g;s/"/\\"/g'
-	)
-
-	# Mostramos la información
-	lf -remote "send $id set statfmt \"$INFO\""
-}}
-
-# Comprimir archivos dentro de un directorio en el formato seleccionado
-#-------------------------------------------------------------------------------
-cmd compress ${{
-	eval "$HIDE_NOTIFICATIONS"
-
-	OUT_DIR="/tmp/00_Compressed"
-	[ ! -e "$OUT_DIR" ] && mkdir -p "$OUT_DIR"
-
-	# Convertir $fx en argumentos para los comandos de compresión
-	SELECTED_FILES=$fx
-	set -- $SELECTED_FILES
-	# Salir si no hay archivos seleccionados
-	[ $# -eq 0 ] && exit 0
-
-	# Determinar si los archivos provienen de directorios diferentes
-	DIRS=$(dirname -z "$@" | tr '\0' '\n' | sort -u)
-	NUM_DIRS=$(echo "$DIRS" | wc -l)
-
-	if [ "$NUM_DIRS" -eq 1 ]; then
-		# Si todos los archivos vienen del mismo directorio, usamos el nombre
-		# del directorio para el archivo comprimido.
-		BASE_NAME=$(basename "$DIRS")
-		COMMON_PATH=$(dirname -z "$1")
-	else
-		# Si están en directorios distintos, le preguntamos al usuario por el
-		# nombre del archivo comprimido
-		BASE_NAME=$(
-			whiptail --title "Nombre del archivo" \
-				--inputbox "Ingrese el nombre del archivo comprimido:" 10 60 3>&1 1>&2 2>&3
-		)
-		[ -z "$BASE_NAME" ] && exit 0
-
-		# Obtenemos la ruta común para todos los archivos
-
-		# Inicializamos la ruta común con el directorio del primer archivo
-		FILES=("$@")
-		COMMON_PATH=$(dirname "${FILES[0]}")
-
-		# Recorremos los demás archivos
-		for f in "${FILES[@]:1}"; do
-			DIR=$(dirname "$f")
-			# Mientras la ruta común no sea un prefijo de DIR, subimos un nivel
-			while [[ "$DIR" != "$COMMON_PATH"* ]]; do
-				COMMON_PATH=$(dirname "$COMMON_PATH")
-			done
-		done
-	fi
-
-	# Construimos una lista con los archivos a comprimir para que el usuario
-	# pueda verificar que todo está correcto
-	if [ "$(printf "%s\n" "$@" | wc -l)" -le 2 ]; then
-		LIST="$@"
-	else
-		# Si tenemos más de 3 archivos, imprimimos el 1o y el último
-		LIST="$(printf "%s\n" "$@" | head -n1)\n"
-		LIST+="$(printf "%s\n" "$@" | tail -n1)"
-	fi
-
-	# Mostramos una lista con los archivos a comprimir
-	whiptail \
-		--title "Archivos seleccionados" \
-		--yesno "$LIST\nComprimir en: $OUT_DIR/${BASE_NAME}.*" 10 60 ||
-	exit 0
-
-	# Preguntamos en que formato quiere comprimir los archivos
-	FORMATO=$(
-		whiptail \
-			--title "Formato" \
-			--menu "¿En qué formato desea comprimirlos?" \
-			10 60 3 \
-			"tar" "" \
-			"zip" "" \
-			"7z" "" \
-			3>&1 1>&2 2>&3
-	)
-
-	# Creamos un array de rutas relativas
-	REL_FILES=()
-	for f in "$@"; do
-		REL_FILES+=("$(realpath --relative-to="$COMMON_PATH" "$f")")
-	done
-
-	# Preguntamos por el formato de compresión y comprimimos
-	case "$FORMATO" in
-		tar)
-			ARCHIVO="$OUT_DIR/${BASE_NAME}.tar.gz"
-			tar -zcvf "$ARCHIVO" -C "$COMMON_PATH" "${REL_FILES[@]}"
-			;;
-		7z)
-			ARCHIVO="$OUT_DIR/${BASE_NAME}.7z"
-			(cd "$COMMON_PATH" && 7z a "$ARCHIVO" "${REL_FILES[@]}")
-			;;
-		zip)
-			ARCHIVO="$OUT_DIR/${BASE_NAME}.zip"
-			(cd "$COMMON_PATH" && zip -r "$ARCHIVO" "${REL_FILES[@]}")
-			;;
-	esac
-
-	# Si los archivos se comprimieron correctamente, informamos al usuario
-	if [ -e "$ARCHIVO" ]; then
-		notify-send -t 1200 -e -a lf -i ark \
-			"lf" "Archivo comprimido en\n<i>$OUT_DIR</i>"
-	else
-		notify-send -t 1200 -e -a lf -i system-error \
-			"lf" "Hubo un error al comprimir los archivos"
-	fi
-
-	unset --
-
-	# Deseleccionamos los archivos originales
-	for file in $SELECTED_FILES; do
-		lf -remote "send $id unselect \"$file\""
-	done
-
-	# Finalmente recargamos la pantalla y enfocamos el archivo creado
-	lf -remote "send $id reload"
-	lf -remote "send $id select \"$ARCHIVO\""
-	clear
-}}
-
-# Abrir un scratchpad en el directorio actual
-#-------------------------------------------------------------------------------
+map s open_scratch_in_cwd
 cmd open_scratch_in_cwd &{{
 	cd "$(dirname $f)"; eval "setsid -f $TERMINAL $SCRATCH_OPTS $TERMTITLE scratchpad"
 }}
 
-# Enviar una notificación con el tamaño del ítem seleccionado
+# Comprimir/descomprimir archivos
 #-------------------------------------------------------------------------------
-cmd notify_filesize &{{
+
+map <c-e> compress
+cmd compress ${{
+	export LF_ID="$id"
+	~/.config/lf/compress-files $fx
+}}
+
+map E extract
+cmd extract ${{
 	eval "$HIDE_NOTIFICATIONS"
-	notify-send -t 1200 -e -a lf -i system-file-manager \
-		"El tamaño es de $(/usr/bin/du -chs $fx | grep total | awk '{print $1}')"
+	if whiptail --title "¿Extraer archivo(s)?" \
+		--yesno "¿Quieres extraer el archivo $f?" 10 60; then
+
+		case "$(file -b --mime-type "$(readlink -f $f)")" in
+		*/x-zstd-compressed-tar)
+			unzstd "$f"
+			aunpack "$(basename -s .zst "$f")"
+			rm "$(basename -s .zst "$f")" ;;
+		*/zip) # Usamos 7z para poder extraer archivos .zip fragmentados
+			OUT_DIR="${f%.*}"
+			mkdir -p "$OUT_DIR"
+			7z x "$f" -o"$OUT_DIR" ;;
+		*) aunpack $f ;;
+		esac
+	fi &&
+		notify-send -t 1200 -e "lf" "Extraído:\n<i>$(basename $f)</i>"
+}}
+
+#-------------------------------------------------------------------------------
+
+map P notify_filesize
+cmd notify_filesize &{{
+	FILE_SIZE="$(/usr/bin/du -chs $(readlink -f $fx) | grep total | awk '{print $1}')"
+
+	eval "$HIDE_NOTIFICATIONS"
+	notify-send -t 1200 -e "lf" "El tamaño es de $FILE_SIZE"
 }}
 
 # Renombrar los contenido del directorio actual con nvim
 #-------------------------------------------------------------------------------
+
+map <c-r> bulk-rename
 cmd bulk-rename ${{
 	old="$(mktemp)"
 	new="$(mktemp)"
@@ -337,19 +143,20 @@ cmd bulk-rename ${{
 	/usr/bin/lf -remote "send $id unselect"
 }}
 
-# Buscar con fzf cadenas entre los archivos
+# Buscar archivos con fzf
 #-------------------------------------------------------------------------------
+
+map <c-_> fzf_grep
 cmd fzf_grep ${{
 	cmd="rg --hidden --glob '!.git/*' --column --line-number --no-heading --color=always --smart-case"
 	fzf --ansi --disabled --layout=reverse --delimiter=: \
 		--bind="start:reload([ -n {q} ] && $cmd -- {q} || true)" \
 		--bind="change:reload([ -n {q} ] && $cmd -- {q} || true)" \
 		--bind='enter:become(lf -remote "send $id select \"$(printf "%s" {1} | sed '\''s/\\/\\\\/g;s/"/\\"/g'\'')\"")' \
-		--preview='bat --color=always --highlight-line={2} -- {1}'
+		--preview='bat --color=always --highlight-line={2} -- {1}' || true
 }}
 
-# Elegir archivo con fzf
-#-------------------------------------------------------------------------------
+map / fzf_search
 cmd fzf_search ${{
 	res="$(find . | fzf --reverse --header='Ir a la localización')"
 	if [ -n "$res" ]; then
@@ -364,45 +171,21 @@ cmd fzf_search ${{
 	lf -remote "send $id reload"
 }}
 
-# Extraer archivo
-#-------------------------------------------------------------------------------
-cmd extract ${{
-	eval "$HIDE_NOTIFICATIONS"
-	whiptail --title "¿Extraer archivo(s)?" \
-	--yesno "¿Quieres extraer el archivo $f?" 10 60 && \
-	{
-		FILETYPE="$(file -b --mime-type "$(readlink -f $f)")"
-		case "$FILETYPE" in
-		*/x-zstd-compressed-tar)
-			unzstd "$f"
-			aunpack "$(basename -s .zst "$f")"
-			rm "$(basename -s .zst "$f")"
-			;;
-		# Extraemos archivos con 7z para poder extraer archivos .zip fragmentados
-		*/zip)
-			OUT_DIR="${f%.*}"
-			mkdir -p "$OUT_DIR"
-			7z x "$f" -o"$OUT_DIR"
-			;;
-		*) aunpack $f ;;
-		esac
-	} && \
-	notify-send -t 1200 -e -a lf -i ark "lf" "Extraído:\n<i>$(basename $f)</i>"
-}}
-
 # Mover a la papelera
 #-------------------------------------------------------------------------------
-cmd trash ${{
-	eval "$HIDE_NOTIFICATIONS"
 
+map S trash
+cmd trash ${{
 	clear; tput bold; set -f
 
 	printf "%s\n\n" "$fx"
 	printf "¿Mover archivo(s) a la papelera? [s/N] "
 	read ans
 
-	[ $ans = "s" ] && trash-put $fx &&
-		notify-send -t 1200 -e -a lf -i user-trash "lf" "Archivo(s) movido(s) a la papelera"
+	if [ $ans = "s" ] && trash-put $fx; then
+		eval "$HIDE_NOTIFICATIONS"
+		notify-send -t 1200 -e "lf" "Archivo(s) movido(s) a la papelera"
+	fi
 
 	lf -remote "send $id reload"
 	clear
@@ -410,14 +193,15 @@ cmd trash ${{
 
 # Vaciar la papelera
 #-------------------------------------------------------------------------------
-cmd clean-trash ${{
-	TRASH_CONTENTS=$(trash-list)
-	if [ -z "$TRASH_CONTENTS" ]; then
-		notify-send -t 1200 -e -a lf -i user-trash "lf" "Papelera vacía"
-		exit 0
-	fi
 
-	eval "$HIDE_NOTIFICATIONS"
+map D empty-trash
+cmd empty-trash ${{
+	TRASH_CONTENTS=$(trash-list)
+
+	if [ -z "$TRASH_CONTENTS" ]; then
+		notify-send -t 1200 -e "lf" "La papelera esta vacía"
+		exit
+	fi
 
 	clear; tput bold; set -f
 
@@ -425,8 +209,10 @@ cmd clean-trash ${{
 	printf "¿Vaciar papelera? [s/N] "
 	read ans
 
-	[ $ans = "s" ] && trash-empty -f &&
-			notify-send -t 1200 -e -a lf -i user-trash "lf" "Archivo(s) borrados"
+	if [ $ans = "s" ] && trash-empty -f; then
+		eval "$HIDE_NOTIFICATIONS"
+		notify-send -t 1200 -e "lf" "Archivo(s) borrados"
+	fi
 
 	lf -remote "send $id reload"
 	clear
@@ -434,92 +220,41 @@ cmd clean-trash ${{
 
 # Restaurar archivos de la papelera
 #-------------------------------------------------------------------------------
+
+map F restore-trash
 cmd restore-trash ${{
 	TRASH_CONTENTS=$(trash-list)
-	if [ -z "$TRASH_CONTENTS" ]; then
-		notify-send -t 1200 -e -a lf -i system-error "lf" "La papelera esta vacía"
-		exit 0
-	fi
 
-	eval "$HIDE_NOTIFICATIONS"
+	if [ -z "$TRASH_CONTENTS" ]; then
+		notify-send -t 1200 -e "lf" "La papelera esta vacía"
+		exit
+	fi
 
 	clear; tput bold; set -f
 
-	echo "$TRASH_CONTENTS" | sed "s|$HOME|~|"
-
+	echo -e "$TRASH_CONTENTS\n" | sed "s|$HOME|~|"
 	printf "¿Restaurar? [s/N] "
 	read ans
 
-	[ $ans = "s" ] && trash-restore && [ "$TRASH_CONTENTS" != "$(trash-list)" ] &&
-			notify-send -t 1200 -e -a lf -i user-trash "lf" "Archivo(s) restaurado(s)"
+	if [ $ans = "s" ] && trash-restore && [ "$TRASH_CONTENTS" != "$(trash-list)" ]; then
+		eval "$HIDE_NOTIFICATIONS"
+		notify-send -t 1200 -e "lf" "Archivo(s) restaurado(s)"
+	fi
 
 	lf -remote "send $id reload"
 	clear
 }}
 
-on-cd
-
-# Atajos
+# Comandos reservados de lf
 #-------------------------------------------------------------------------------
 
-map <backspace2> clear_selection
-
-map R clear_screen
-map C &lf -remote "send $id source ~/.config/lf/lfrc"
-
-cmd paste $cp-p --lf-paste "$id"
-map p paste
-
-map r rename
-map <c-r> bulk-rename
-
-map S trash
-map D clean-trash
-map F restore-trash
-
-map s open_scratch_in_cwd
-
-map P notify_filesize
-
-# Cambiar de directorio
-map <esc> cd ~/
-map z cd ~/
-map t cd /tmp
-map T cd /run/media
-
-# Buscar archivo
-map / :fzf_search
-map <c-_> :fzf_grep
-
-map E extract
-map <c-e> compress
-
-# Mostrar/ocultar los archivos ocultos
-map h set hidden!
-# Abrir/crear archivo con vim
-map V push :!nvim<space>$f
-
-# Crear directorio
-cmd mkdir $mkdir -p "$(echo $* | tr ' ' '\ ')"
-map m push %mkdir<space>
-
-# Permitir arrastrar archivos hacia otra ventana
-map <c-z> $setsid -f dragon-drop -a -x $fx
-
-# Abrir archivos
-cmd open-with %export ; setsid -f "$@" "$fx"
-map <enter> push :open-with<space>
-
-# Copiar el directorio del archivo actual al portapapeles
-map Y ${{
-	eval "$HIDE_NOTIFICATIONS"
-	printf '"%s"' "$(dirname "$fx")" | wl-copy
-	notify-send -t 1200 -e -a lf -i gpaste "lf" "Ruta copiada al portapapeles"
+cmd on-cd &{{
+	source /usr/share/git/completion/git-prompt.sh
+	git="$(__git_ps1 " [branch:> %s]")" || true
+	fmt="\033[32;1m%u@%h\033[0m:\033[34;1m%w\033[0m\033[33;1m$git\033[0m"
+	lf -remote "send $id set promptfmt \"$fmt\""
 }}
 
-# Salir del programa
-map q ${{
-	# Restaurar el título original de la ventana
-	printf '\033]0;\007'
-	/usr/bin/lf -remote "send $id quit"
+cmd open ${{
+	~/.config/lf/opener-caller $fx
 }}

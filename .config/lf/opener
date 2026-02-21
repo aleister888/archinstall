@@ -1,0 +1,131 @@
+#!/bin/bash
+# shellcheck disable=SC2086,SC1091
+
+source "$HOME/.dotfiles/assets/shell/shell-utils"
+
+get_log_dir lf >/dev/null
+
+change_title() {
+	# shellcheck disable=SC2059
+	printf "\033]0;$*\007" >/dev/tty
+}
+
+open_gui() {
+	change_title "lf hidden"
+	#killall -SIGUSR2 waybar
+	"$@" >/dev/null 2>&1
+	change_title "lf"
+	#killall -SIGUSR2 waybar
+}
+
+FILETYPE="$(file -b --mime-type "$(readlink -f "$1")")"
+case $FILETYPE in
+
+# Aplicaciones GUI
+#-------------------------------------------------------------------------------
+
+*/x-7z-compressed | */*-tar | */gzip) open_gui setsid -f xarchiver "$1" ;;
+
+*/vnd.rar | */zip | */vnd.comicbook*)
+	case "${1##*.}" in
+	cbr | cbz) open_gui YACReader "$1" ;;
+	kra) open_gui krita "$1" ;;
+	*) open_gui setsid -f xarchiver "$1" ;;
+	esac
+	;;
+
+*/pdf | */epub*) open_gui \
+	zathura "$1" ;;
+
+*/x-keepass2) open_gui \
+	setsid -f keepassxc "$1" ;;
+
+*/x-reaper-*) open_gui \
+	setsid -f reaper "$1" ;;
+
+*/x-tuxguitar | */gpx+xml | */x-gnuplot | */x-gtp) open_gui \
+	setsid -f tuxguitar "$1" ;;
+
+*/vnd.*document*) open_gui \
+	setsid -f libreoffice "$1" ;;
+
+image/x-eps) open_gui \
+	nsxiv "$($HOME/.config/lf/previewer "$1")" ;;
+
+#-------------------------------------------------------------------------------
+
+image/*)
+	DIR="$(dirname -- "$1")"
+	BASE="$(basename -- "$1")"
+
+	FORMATS="jpg|jpeg|png|gif|bmp|tiff|ppm|svg|webp|xpm"
+
+	# Listar imágenes en el directorio (ordenadas alfabéticamente)
+	IMAGES=$(printf '%s\n' "$DIR"/* | grep -iE "\.($FORMATS)$" | sort -f)
+
+	# Rotar la lista para que empiece en $BASE
+	ROTATED=$(printf '%s\n' "$IMAGES" | awk -v start="$DIR/$BASE" '
+				BEGIN { hit = 0 }
+				$0 == start { hit = 1; print; next }
+				{ if (hit) print; else buf = buf $0 ORS }
+				END { if (buf != "") printf "%s", buf }
+			')
+
+	# Pasar a nsxiv
+	printf '%s\n' "$ROTATED" | open_gui nsxiv -aio
+	;;
+
+# Soporte multiarchivo
+#-------------------------------------------------------------------------------
+
+video/*)
+	IFS=$'\n'
+	if [ "$#" -gt 1 ]; then
+		open_gui vlc "$@" --no-video-title-show -L
+	else
+		# Cuando los subtítulos no están empotrados y tienen soporte para varios
+		# lenguajes estos se suelen encontrar separados en varios archivos en un
+		# mismo directorio, para manejar estos casos especiales vamos a buscar y
+		# añadir manualmente los subtítulos al comando.
+
+		FILENAME="$(basename "$1")"
+		SUB_FILES=$(find "${1%/*}" -wholename "*${FILENAME%.*}*.srt" -printf '%P\n' | sort -r)
+
+		if [ -n "$SUB_FILES" ]; then
+
+			SUBS_ARRAY=()
+			for sub_file in $SUB_FILES; do
+				SUBS_ARRAY+=("$sub_file")
+			done
+
+			if [ "${#SUBS_ARRAY[@]}" -eq 1 ]; then
+				SUB_FILE="${SUB_FILES[0]}"
+			else
+				# Para tomar una decisión más informada vamos a acompañar a cada
+				# entrada con el número de líneas que tiene el archivo
+				SUBS_ARRAY_WITH_INFO=()
+				for sub_file in "${SUBS_ARRAY[@]}"; do
+					SUBS_ARRAY_WITH_INFO+=("($(cat ${1%/*}/$sub_file | wc -l)) $sub_file")
+				done
+
+				SUB_FILE=$(printf "%s\n" "${SUBS_ARRAY_WITH_INFO[@]}" | wofi --prompt "Elige un archivo de subtítulos" --dmenu --hide-scroll)
+				SUB_FILE="$(grep -oP '\([0-9]+\) \K.*' <<<"$SUB_FILE")"
+			fi
+		fi
+
+		if [ -z "$SUB_FILE" ]; then
+			open_gui vlc "$1" --no-video-title-show -L
+		else
+			open_gui vlc "$1" --no-video-title-show -L --sub-file="${1%/*}/$SUB_FILE"
+		fi
+	fi
+	;;
+
+*) # Si no tenemos configurada una forma de abrirlo, notificamos al usuario
+	notify-send -e \
+		"Formato de archivo no soportado" \
+		"Añade soporte en opener-caller y opener (~/.config/lf)"
+
+	log "$FILETYPE" WARN "unimplemented_openers.log"
+	;;
+esac

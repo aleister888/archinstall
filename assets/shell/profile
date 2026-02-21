@@ -16,6 +16,12 @@ fi
 [ -d "$HOME/.local/bin/installers/" ] && PATH="$HOME/.local/bin/installers:$PATH"
 [ -d "$HOME/.nix-profile/bin" ] && PATH="$HOME/.nix-profile/bin:$PATH"
 
+# Eliminamos LF_LEVEL para evitar falsos positivos al detectar si
+# un script está siendo llamado directamente por lf.
+# Si no la eliminamos, cualquier proceso hijo lanzado desde lf
+# heredará la variable y parecerá que también fue invocado por lf.
+unset LF_LEVEL
+
 export XDG_SESSION_TYPE=wayland
 export XDG_CURRENT_DESKTOP=Hyprland
 export XDG_SESSION_DESKTOP=Hyprland

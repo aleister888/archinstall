@@ -7,13 +7,14 @@ return {
 			keywords = {
 				TODO = { icon = "󱒔 ", color = "info" },
 				FIXME = { icon = " ", color = "warning" },
+				WARN = { icon = " ", color = "warning" },
 			},
 			merge_keywords = false,
 			highlight = {
 				-- Resalta comentarios a través de varias lineas
 				multiline = true,
 				-- Patrón para detectar palabras clave
-				pattern = [[(KEYWORDS)\s*]],
+				pattern = [[[#-/\*]+\s?(KEYWORDS)\s*]],
 				keyword = "fg",
 				-- Mostrar no solo en los comentarios
 				comments_only = false,

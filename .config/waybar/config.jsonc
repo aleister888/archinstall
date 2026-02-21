@@ -3,7 +3,10 @@
   "position": "top",
   "height": 0, // Dejamos que el tamaño de los módulos sea el que mande
   "margin": "0 6 0 6",
-  "modules-left": ["hyprland/workspaces", "hyprland/window"],
+  "modules-left": [
+    "hyprland/workspaces"
+    //"hyprland/window"
+  ],
   "modules-center": ["clock", "privacy"],
   "modules-right": [
     "custom/mute-indicator",
@@ -54,7 +57,7 @@
   "clock": {
     "tooltip": false,
     "interval": 1,
-    "format": "{:%I:%M:%S}",
+    "format": "{:%I:%M:%S - %d/%m/%Y}",
     "on-click": "swaync-client -t"
   },
   "privacy": {

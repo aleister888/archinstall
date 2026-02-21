@@ -39,6 +39,7 @@ print_msg() {
 log() {
 	_msg="$1"
 	_level="${2:-ERROR}"
+	_filename="${3:-errors.log}"
 	_module="$(basename "$0")"
 
 	# Cuando se ejecuta directamente desde el shell interactivo $0=log
@@ -47,7 +48,7 @@ log() {
 	ensure_dir "${LOG_DIR:-$LOG_BASE_DIR}" >/dev/null
 
 	print_msg "$_msg" "$_level" "$_module" |
-		tee -a "${LOG_DIR:-$LOG_BASE_DIR}/errors.log"
+		tee -a "${LOG_DIR:-$LOG_BASE_DIR}/$_filename"
 }
 
 get_log_dir() {

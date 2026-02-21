@@ -49,7 +49,7 @@ set_default_mime_types() {
 		while read -r LINE; do
 			{
 				flock -x 200
-				xdg-mime default "$DESKTOP_FILE" "$LINE"
+				xdg-mime default "$DESKTOP_FILE" "$LINE" 2>/dev/null
 			} 200>"$XDG_LOCKFILE" &
 		done
 }

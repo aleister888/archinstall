@@ -105,7 +105,6 @@ fi
 # pacman -D falla si todos los paquetes de la lista ya estában marcados
 sudo /usr/bin/pacman -D --asexplicit $(xargs <<<$REPO_PKGS) >/dev/null 2>&1 || true
 
-# Crear los directorios necesarios
 ensure_dir "$HOME/.local/bin" >/dev/null
 ensure_dir "$HOME/.cache" >/dev/null
 ensure_dir "$CONF_DIR" >/dev/null
