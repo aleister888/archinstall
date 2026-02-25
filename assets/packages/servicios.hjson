@@ -1,5 +1,14 @@
 {
-  "general": ["cups", "cronie", "geoclue", "syncthing", "timeshift"],
+  "general": [
+    "chrony",
+    "cronie",
+    "cups",
+    "earlyoom",
+    "geoclue",
+    "power-profiles-daemon",
+    "syncthing",
+    "timeshift"
+  ],
   "audio": [
     "alsa-firmware",
     "alsa-plugins",
@@ -12,7 +21,6 @@
     "pipewire-v4l2",
     "sof-firmware"
   ],
-  "init": ["earlyoom", "power-profiles-daemon"],
   "syslog-ng": [
     "hiredis",
     "libdbi",

@@ -75,7 +75,10 @@
     "jdk-openjdk",
     "jdk17-openjdk",
     "jdk21-openjdk",
-    "maven"
+    "maven",
+    "openjdk-src",
+    "openjdk17-src",
+    "openjdk21-src"
   ],
   "xephyr": [
     "xorg-server-xephyr",

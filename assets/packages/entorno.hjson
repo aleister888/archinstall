@@ -27,7 +27,7 @@
     "lact"
   ],
   "musica": ["atomicparsley", "glyr", "lrcget-bin"],
-  "audio_prod": [
+  "edicion_audio": [
     "suil",
     "reaper",
     "drumgizmo",
@@ -35,6 +35,7 @@
     "surge-xt-vst3",
     "surge-xt"
   ],
+  "edicion_video": ["kdenlive"],
   "servicios": ["gnome-keyring", "hyprsunset", "swaync"],
   "discos": [
     "gnome-disk-utility",

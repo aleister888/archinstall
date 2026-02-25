@@ -26,6 +26,7 @@ user_service_add() {
 SERVICES=(
 	"NetworkManager"
 	"acpid"
+	"chronyd"
 	"cronie"
 	"cups"
 	"earlyoom"
