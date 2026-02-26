@@ -6,7 +6,7 @@ TIMEOUT_LOCK=60
 
 . "$HOME/.dotfiles/assets/shell/shell-utils-sh"
 
-if is_process_running swayidle; then
+if pgrep -f --quiet swayidle; then
 	pkill swayidle
 else
 	setsid -f swayidle -w timeout "$TIMEOUT_SCREEN" \
