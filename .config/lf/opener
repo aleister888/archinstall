@@ -34,8 +34,13 @@ case $FILETYPE in
 	esac
 	;;
 
-*/pdf | */epub*) open_gui \
-	zathura "$1" ;;
+# Zathura es lento para archivos pesados, si el archivo pesa más de 10mb
+# preguntamos que lector de PDFs usar
+*/pdf | */epub*)
+	[ "$(size_mb "$1")" -lt 10 ] && PDF_VIEWER="zathura"
+	PDF_VIEWER=${PDF_VIEWER:-$(printf "zathura\nokular\n" | wofi --prompt "Elige un lector de PDF" --dmenu --hide-scroll -L 2)}
+	[ -n "$PDF_VIEWER" ] && open_gui $PDF_VIEWER "$1"
+	;;
 
 */x-keepass2) open_gui \
 	setsid -f keepassxc "$1" ;;
