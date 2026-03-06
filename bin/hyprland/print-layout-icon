@@ -1,0 +1,11 @@
+#!/bin/sh
+
+LAYOUT="$(hyprctl -j activeworkspace | jq -r '.tiledLayout')"
+
+case "$LAYOUT" in
+master) ICON="[]=" ;;
+monocle) ICON="[M]" ;;
+scrolling) ICON="|=|" ;;
+esac
+
+echo "$ICON"

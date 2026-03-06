@@ -143,7 +143,6 @@ remove_comments() { cat "$1" | grep -v "^[ \t]*//"; }
 is_chroot() { sudo /usr/bin/systemd-detect-virt --chroot >/dev/null 2>&1; }
 is_ssh() { [ -n "$SSH_CONNECTION" ]; }
 check_connection() { curl -s --connect-timeout 3 "${1:-https://dns.google/}" >/dev/null; }
-size_mb() { echo "$(stat -c%s "$1") / 1024 / 1024" | bc -l | cut -d. -f 1; }
 
 #-------------------------------------------------------------------------------
 
@@ -164,6 +163,11 @@ check_command() {
 		log "el comando $1 no se encontró"
 		exit 1
 	fi
+}
+
+size_mb() {
+	SIZE=$(echo "$(stat -c%s "$1") / 1024 / 1024" | bc -l | cut -d. -f 1)
+	echo "${SIZE:-0}"
 }
 
 # Comprobar si un script se esta ejecutando, teniendo en cuenta que este

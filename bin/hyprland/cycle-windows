@@ -6,6 +6,8 @@
 ARG="$1"
 [ -z "$ARG" ] && exit 1
 
+#-------------------------------------------------------------------------------
+
 # Indexamos la dirección de las ventanas en el espacio "special:scratch"
 # ordenadas en función de la última vez que tuvieron el foco (No usamos el PID
 # porque todas las ventanas de kitty que usan --single-instance tienen el mismo
@@ -30,14 +32,6 @@ focus_from_address() {
 	hyprctl dispatch alterzorder top, "address:$1"
 }
 
-cycle_regular() {
-	if [ "$ARG" = "prev" ]; then
-		hyprctl dispatch layoutmsg cycleprev
-	elif [ "$ARG" = "next" ]; then
-		hyprctl dispatch layoutmsg cyclenext
-	fi
-}
-
 cycle_scratch() {
 	index_scratch_addresses
 	# Última ventana enfocada cronológicamente
@@ -46,7 +40,29 @@ cycle_scratch() {
 	focus_from_address "$ADDRESS"
 }
 
-case "$(hyprctl -j activewindow | jq -r '.workspace.name')" in
-"special:scratch") cycle_scratch ;;
+#-------------------------------------------------------------------------------
+
+cycle_master_monocle() {
+	case "$ARG" in
+	prev) hyprctl dispatch layoutmsg cycleprev ;;
+	next) hyprctl dispatch layoutmsg cyclenext ;;
+	esac
+}
+
+cycle_regular() {
+	LAYOUT="$(hyprctl -j activeworkspace | jq -r '.tiledLayout')"
+	case "$LAYOUT" in
+	master | monocle) cycle_master_monocle ;;
+	esac
+}
+
+#-------------------------------------------------------------------------------
+
+WORKSPACE="$(hyprctl -j activewindow | jq -r '.workspace.name')"
+
+case "$WORKSPACE" in
+"special:scratch")
+	cycle_scratch
+	;;
 *) cycle_regular ;;
 esac

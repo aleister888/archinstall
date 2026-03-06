@@ -1,0 +1,17 @@
+#!/bin/bash
+
+ARG="$1"
+[ -z "$ARG" ] && exit 1
+
+LAYOUT="$(hyprctl -j activeworkspace | jq -r '.tiledLayout')"
+
+resize_master() {
+	case "$ARG" in
+	dec) hyprctl dispatch layoutmsg mfact -0.05 ;;
+	inc) hyprctl dispatch layoutmsg mfact +0.05 ;;
+	esac
+}
+
+case "$LAYOUT" in
+master) resize_master ;;
+esac

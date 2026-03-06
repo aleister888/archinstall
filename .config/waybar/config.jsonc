@@ -4,7 +4,8 @@
   "height": 0, // Dejamos que el tamaño de los módulos sea el que mande
   "margin": "0 6 0 6",
   "modules-left": [
-    "hyprland/workspaces"
+    "hyprland/workspaces",
+    "custom/layout-icon"
     //"hyprland/window"
   ],
   "modules-center": ["clock", "privacy"],
@@ -33,10 +34,14 @@
         "lf hidden",
         "FX: Track .*",
         "xdg-desktop-portal-gtk",
-        "win.*",
         ""
       ]
     }
+  },
+  "custom/layout-icon": {
+    "tooltip": false,
+    "interval": 1,
+    "exec": "~/.dotfiles/bin/hyprland/print-layout-icon"
   },
   "hyprland/window": {
     "rewrite": {

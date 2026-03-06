@@ -27,7 +27,7 @@ if willLatex:
 else:
     BG_COLOR = "#282828"
     GRID_COLOR = "#3c3836"
-    STROKE_COLOR = "#fbf1c7"
+    STROKE_COLOR = "#fdf8e3"
 
 # Canvas
 WINTITLE = "Lienzo en blanco"

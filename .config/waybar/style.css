@@ -73,6 +73,12 @@
   box-shadow: inherit;
 }
 
+#custom-layout-icon {
+  margin: 2.5px 7.5px 0px 7.5px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
 #custom-music-metadata {
   margin: 0px 7.5px 0px 0px;
 }

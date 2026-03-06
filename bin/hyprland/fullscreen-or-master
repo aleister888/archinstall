@@ -1,0 +1,8 @@
+#!/bin/sh
+
+LAYOUT="$(hyprctl -j activeworkspace | jq -r '.tiledLayout')"
+
+case "$LAYOUT" in
+master) hyprctl dispatch fullscreen ;;
+*) hyprctl keyword general:layout master ;;
+esac

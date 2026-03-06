@@ -236,7 +236,7 @@ cmd restore-trash ${{
 	printf "¿Restaurar? [s/N] "
 	read ans
 
-	if [ $ans = "s" ] && trash-restore && [ "$TRASH_CONTENTS" != "$(trash-list)" ]; then
+	if [ $ans = "s" ] && trash-restore / && [ "$TRASH_CONTENTS" != "$(trash-list)" ]; then
 		eval "$HIDE_NOTIFICATIONS"
 		notify-send -t 1200 -e "lf" "Archivo(s) restaurado(s)"
 	fi
