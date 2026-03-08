@@ -96,7 +96,7 @@ return {
 			end, { noremap = true, silent = true })
 
 			-- Ocultar resultados del test
-			vim.keymap.set("n", "<localleader>H", function()
+			vim.keymap.set("n", "<localleader>h", function()
 				-- Cerrramos la terminal
 				for _, buf in ipairs(vim.api.nvim_list_bufs()) do
 					local name = vim.api.nvim_buf_get_name(buf)
