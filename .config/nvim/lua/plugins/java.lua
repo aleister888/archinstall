@@ -4,6 +4,7 @@ return {
 		dependencies = {
 			"mfussenegger/nvim-dap",
 		},
+
 		ft = "java",
 		config = function()
 			local jdtls = require("jdtls")
@@ -42,7 +43,6 @@ return {
 
 			-- Iniciar JDTLS
 			jdtls.start_or_attach(config)
-			-- Configurar DAP para Java
 			jdtls.setup_dap({ hotcodereplace = "auto" })
 
 			-- Tests
@@ -56,23 +56,43 @@ return {
 				dap.repl.open({ height = 7 })
 			end, { noremap = true, silent = true })
 
-			-- Ocultar resultados del test
+			-- Ocultar resultados del test (terminal y reply)
 			vim.keymap.set("n", "<localleader>h", function()
-				-- Cerrramos la terminal
 				for _, buf in ipairs(vim.api.nvim_list_bufs()) do
 					local name = vim.api.nvim_buf_get_name(buf)
 					if name:match("dap%-terminal") then
 						vim.api.nvim_buf_delete(buf, { force = true })
 					end
 				end
-				-- Cerramos el reply
 				dap.repl.close()
 			end, { noremap = true, silent = true })
 
-			-- Variables globales para la terminal persistente
-			_G.java_term_job_id = _G.java_term_job_id or nil
 			_G.java_term_buf = _G.java_term_buf or nil
 			_G.java_term_win = _G.java_term_win or nil
+			_G.java_term_job_id = _G.java_term_job_id or nil
+
+			local function create_terminal()
+				vim.cmd("botright vsplit | vertical resize " .. math.floor(vim.o.columns * 0.40) .. " | terminal")
+				_G.java_term_buf = vim.api.nvim_get_current_buf()
+				_G.java_term_win = vim.api.nvim_get_current_win()
+				_G.java_term_job_id = vim.b.terminal_job_id
+			end
+
+			-- Función toggle
+			function ToggleJavaTerminal()
+				-- Si está visible, cerramos (ocultamos) la ventana
+				if _G.java_term_win and vim.api.nvim_win_is_valid(_G.java_term_win) then
+					vim.api.nvim_win_close(_G.java_term_win, true)
+					_G.java_term_win = nil
+				-- Si existe el búfer pero no la ventana, abrir split y mostrarlo
+				elseif _G.java_term_buf and vim.api.nvim_buf_is_valid(_G.java_term_buf) then
+					vim.cmd("botright vsplit | vertical resize " .. math.floor(vim.o.columns * 0.40))
+					vim.api.nvim_win_set_buf(0, _G.java_term_buf)
+					_G.java_term_win = vim.api.nvim_get_current_win()
+				else
+					create_terminal()
+				end
+			end
 
 			-- Ejecutar la clase actual
 			vim.keymap.set("n", "<localleader>g", function()
@@ -101,12 +121,17 @@ return {
 
 				local exec_flags = "-XX:+ShowCodeDetailsInExceptionMessages -cp"
 
+				local function escape_path(path)
+					return '"' .. path:gsub('"', '\\"') .. '"'
+				end
+				local project_dir_escaped = escape_path(project_dir)
+
 				local compile_cmd, class_dir
 				if vim.fn.filereadable(project_dir .. "/pom.xml") == 1 then -- Maven
-					compile_cmd = string.format("cd %s && mvn compile", project_dir)
+					compile_cmd = string.format("cd %s && mvn compile", project_dir_escaped)
 					class_dir = project_dir .. "/target/classes"
 				elseif vim.fn.filereadable(project_dir .. "/build.gradle") == 1 then -- Gradle
-					compile_cmd = string.format("cd %s && ./gradlew build", project_dir)
+					compile_cmd = string.format("cd %s && ./gradlew build", project_dir_escaped)
 					class_dir = project_dir .. "/build/classes/java/main"
 				else
 					vim.api.nvim_err_writeln("No se detectó pom.xml ni build.gradle en el proyecto")
@@ -118,66 +143,34 @@ return {
 					return
 				end
 
-				local function escape_path(path)
-					return '"' .. path:gsub('"', '\\"') .. '"'
-				end
-
-				local project_dir_escaped = escape_path(project_dir)
 				local class_dir_escaped = escape_path(class_dir)
-
 				local run_cmd = string.format(
-					"cd %s; time java %s %s %s; read; exit",
+					"cd %s; time java %s %s %s",
 					project_dir_escaped,
 					exec_flags,
 					class_dir_escaped,
 					class
 				)
-				local compile_cmd = string.format("cd %s; mvn compile", project_dir_escaped)
 				local term_cmd = string.format("clear; %s; echo '+%s'; %s\n", compile_cmd, run_cmd, run_cmd)
 
-				if
-					_G.java_term_job_id
-					and vim.api.nvim_buf_is_valid(_G.java_term_buf)
-					and vim.api.nvim_win_is_valid(_G.java_term_win)
-				then
-					-- Terminal ya existe: cerrar proceso anterior
-					vim.fn.jobstop(_G.java_term_job_id)
-					-- Cambiar foco a la terminal
-					vim.api.nvim_set_current_win(_G.java_term_win)
-					vim.api.nvim_set_current_buf(_G.java_term_buf)
-					-- Abrir un nuevo job en la misma terminal
-					vim.cmd("terminal")
-					_G.java_term_job_id = vim.b.terminal_job_id
-					vim.api.nvim_chan_send(_G.java_term_job_id, term_cmd)
-				else
-					-- Crear nueva terminal y ventana
-					vim.cmd("botright vsplit | vertical resize " .. math.floor(vim.o.columns * 0.40) .. " | terminal")
-					_G.java_term_buf = vim.api.nvim_get_current_buf()
-					_G.java_term_win = vim.api.nvim_get_current_win()
-					_G.java_term_job_id = vim.b.terminal_job_id
-					vim.api.nvim_chan_send(_G.java_term_job_id, term_cmd)
+				local function close_previous_run()
+					if _G.java_term_win and vim.api.nvim_win_is_valid(_G.java_term_win) then
+						vim.api.nvim_win_close(_G.java_term_win, true)
+					end
+					if _G.java_term_job_id then
+						vim.fn.jobstop(_G.java_term_job_id)
+						_G.java_term_job_id = nil
+					end
 				end
-			end, { noremap = true, silent = false })
 
-			-- Función toggle
-			function ToggleJavaTerminal()
-				if _G.java_term_win and vim.api.nvim_win_is_valid(_G.java_term_win) then
-					-- Si está visible, cerramos (ocultamos) la ventana
-					vim.api.nvim_win_close(_G.java_term_win, true)
-					_G.java_term_win = nil
-				elseif _G.java_term_buf and vim.api.nvim_buf_is_valid(_G.java_term_buf) then
-					-- Si existe el búfer pero la ventana no está, abrir split y mostrarlo
-					vim.cmd("botright vsplit | vertical resize " .. math.floor(vim.o.columns * 0.40))
-					vim.api.nvim_win_set_buf(0, _G.java_term_buf)
-					_G.java_term_win = vim.api.nvim_get_current_win()
-				else
-					-- Si no existe terminal, crear nueva
-					vim.cmd("botright vsplit | vertical resize " .. math.floor(vim.o.columns * 0.40) .. " | terminal")
-					_G.java_term_buf = vim.api.nvim_get_current_buf()
-					_G.java_term_win = vim.api.nvim_get_current_win()
-					_G.java_term_job_id = vim.b.terminal_job_id
+				local function run_in_terminal(cmd)
+					close_previous_run()
+					create_terminal()
+					vim.api.nvim_chan_send(_G.java_term_job_id, cmd)
 				end
-			end
+
+				run_in_terminal(term_cmd)
+			end, { noremap = true, silent = false })
 
 			-- Keymap para togglear
 			vim.keymap.set("n", "<localleader>t", ToggleJavaTerminal, { noremap = true, silent = true })
