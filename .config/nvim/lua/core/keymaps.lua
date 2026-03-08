@@ -48,6 +48,15 @@ vim.keymap.set("n", "<localleader>t", function()
 	vim.fn.execute("!" .. cmd)
 end, { silent = true })
 
+-- Abrir lf en el directorio actual
+vim.keymap.set("n", "<localleader>e", function()
+	local terminal = os.getenv("TERMINAL") or ""
+	local terminal_opts = os.getenv("REGULAR_OPTS") or ""
+	local terminal_exec = os.getenv("TERMEXEC") or ""
+	local cmd = string.format("%s %s %s 'lf' &>/dev/null &", terminal, terminal_opts, terminal_exec)
+	vim.fn.execute("!" .. cmd)
+end, { silent = true })
+
 -- Spawnear scratchpad
 vim.keymap.set("n", "<localleader>T", function()
 	local terminal = os.getenv("TERMINAL") or ""
