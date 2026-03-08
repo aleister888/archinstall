@@ -28,6 +28,10 @@ opt.listchars = { tab = "| ", trail = "·", lead = "·", precedes = "<", extends
 opt.ignorecase = true
 opt.incsearch = true
 
+-- Timeout para las combinaciones de teclas
+vim.o.timeout = true
+vim.o.timeoutlen = 750
+
 -- Permitir el acceso global al porta-papeles
 opt.clipboard = "unnamedplus"
 

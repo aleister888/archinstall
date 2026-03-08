@@ -6,8 +6,6 @@ return {
 		ft = { "csv" },
 		keymaps = {
 			-- Text objects for selecting fields
-			textobject_field_inner = { "if", mode = { "o", "x" } },
-			textobject_field_outer = { "af", mode = { "o", "x" } },
 			jump_next_field_end = { "<Tab>", mode = { "n", "v" } },
 			jump_prev_field_end = { "<S-Tab>", mode = { "n", "v" } },
 			jump_next_row = { "<Enter>", mode = { "n", "v" } },
@@ -20,7 +18,7 @@ return {
 		vim.api.nvim_create_autocmd("FileType", {
 			pattern = "csv",
 			callback = function()
-				vim.keymap.set("n", "<leader>ff", function()
+				vim.keymap.set("n", "<localleader>f", function()
 					vim.cmd("CsvViewToggle display_mode=border")
 				end, { silent = true, buffer = true })
 			end,

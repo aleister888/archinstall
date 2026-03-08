@@ -18,7 +18,7 @@ return {
 			pattern = "tex",
 			callback = function()
 				-- Mostrar errores
-				vim.keymap.set("n", "<leader>j", function()
+				vim.keymap.set("n", "<localleader>j", function()
 					local quickfix_exists = #vim.fn.filter(vim.fn.getwininfo(), "v:val.quickfix") > 0
 					if quickfix_exists then
 						vim.cmd("cclose")
@@ -26,23 +26,23 @@ return {
 						vim.cmd("VimtexErrors")
 					end
 				end, { silent = true })
-				vim.keymap.set("n", "<leader>k", "<plug>(vimtex-clean)", { silent = true })
+				vim.keymap.set("n", "<localleader>k", "<plug>(vimtex-clean)", { silent = true })
 				-- Alternar el índice de contenidos
-				vim.keymap.set("n", "<leader>f", "<plug>(vimtex-toc-toggle)", { silent = true })
+				vim.keymap.set("n", "<localleader>f", "<plug>(vimtex-toc-toggle)", { silent = true })
 				-- Ver el documento
-				vim.keymap.set("n", "<leader>h", ":VimtexView<CR>", { silent = true })
+				vim.keymap.set("n", "<localleader>h", ":VimtexView<CR>", { silent = true })
 				-- Guardar y compilar con Vimtex
-				vim.keymap.set("n", "<leader>g", ":VimtexCompile<CR>", { silent = true, buffer = true })
+				vim.keymap.set("n", "<localleader>g", ":VimtexCompile<CR>", { silent = true, buffer = true })
 				-- Guardar y compilar manualmente con xelatex
-				vim.keymap.set("n", "<leader>G", ':w<CR>:!xelatex "%"<CR>', { silent = true, buffer = true })
+				vim.keymap.set("n", "<localleader>G", ':w<CR>:!xelatex "%"<CR>', { silent = true, buffer = true })
 
 				-- Poner texto entre comillas
 				vim.keymap.set("v", "`", "s`<C-r>\"'", { noremap = true, silent = true })
-				vim.keymap.set("v", "<leader>`", "s``<C-r>\"''", { noremap = true, silent = true })
+				vim.keymap.set("v", "<localleader>`", "s``<C-r>\"''", { noremap = true, silent = true })
 				-- Modos de texto
-				vim.keymap.set("v", "<leader>e", 's\\emph{<C-r>"}', { silent = true })
-				vim.keymap.set("v", "<leader>b", 's\\textbf{<C-r>"}', { silent = true })
-				vim.keymap.set("v", "<leader>i", 's\\textit{<C-r>"}', { silent = true })
+				vim.keymap.set("v", "<localleader>e", 's\\emph{<C-r>"}', { silent = true })
+				vim.keymap.set("v", "<localleader>b", 's\\textbf{<C-r>"}', { silent = true })
+				vim.keymap.set("v", "<localleader>i", 's\\textit{<C-r>"}', { silent = true })
 			end,
 		})
 	end,

@@ -1,23 +1,25 @@
-vim.keymap.set("n", "<leader>wq", ":wq<CR>")
-vim.keymap.set("n", "<leader>qq", ":q!<CR>")
-vim.keymap.set("n", "<leader>qa", ":qa!<CR>")
-vim.keymap.set("n", "<leader>ww", ":w<CR>")
+-- Borrar palabra atrás en insert mode con Ctrl+Backspace
+vim.keymap.set("i", "<C-Backspace>", "<C-w>", { noremap = true, silent = true })
 
+-- Limpiar búsqueda
 vim.keymap.set("n", "<leader><BS>", ":noh<CR>", { silent = true })
 
+-- Salir del modo terminal
+vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]], { noremap = true })
+
+-- Split
 vim.keymap.set("n", "<leader>v", "<C-w>v")
 vim.keymap.set("n", "<leader>V", "<C-w>s")
 
 -- Desplazarse por el texto
 vim.keymap.set("n", "<ScrollWheelUp>", "k", { noremap = true, silent = true })
 vim.keymap.set("n", "<C-ScrollWheelUp>", "5k", { noremap = true, silent = true })
-
 vim.keymap.set("n", "<ScrollWheelDown>", "j", { noremap = true, silent = true })
 vim.keymap.set("n", "<C-ScrollWheelDown>", "5j", { noremap = true, silent = true })
-
 vim.keymap.set("n", "<C-Up>", "5k", { noremap = true, silent = true })
 vim.keymap.set("n", "<C-Down>", "5j", { noremap = true, silent = true })
 
+-- Moverse al final de la línea
 vim.keymap.set("n", "=", "$", { noremap = true, silent = true })
 vim.keymap.set("v", "=", "$h", { noremap = true, silent = true })
 
@@ -39,7 +41,7 @@ vim.keymap.set("v", "?", 's¿<C-r>"?', { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>s", "<C-w>w", { noremap = true, silent = true })
 
 -- Spawnear terminal
-vim.keymap.set("n", "<localleader>T", function()
+vim.keymap.set("n", "<localleader>t", function()
 	local terminal = os.getenv("TERMINAL") or ""
 	local terminal_opts = os.getenv("REGULAR_OPTS") or ""
 	local cmd = string.format("%s %s &>/dev/null &", terminal, terminal_opts)
@@ -47,7 +49,7 @@ vim.keymap.set("n", "<localleader>T", function()
 end, { silent = true })
 
 -- Spawnear scratchpad
-vim.keymap.set("n", "<localleader>t", function()
+vim.keymap.set("n", "<localleader>T", function()
 	local terminal = os.getenv("TERMINAL") or ""
 	local termtitle = os.getenv("TERMTITLE") or ""
 	local terminal_opts = os.getenv("SCRATCH_OPTS") or ""

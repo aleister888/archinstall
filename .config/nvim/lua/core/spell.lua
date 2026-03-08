@@ -1,10 +1,9 @@
--- Alternar corrección ortográfica en español con F4
-vim.keymap.set("n", "<F4>", ":setlocal spell! spelllang=es_es<CR>", { silent = false })
-vim.keymap.set("i", "<F4>", "<C-O>:setlocal spell! spelllang=es_es<CR>", { silent = false })
-
--- Alternar corrección ortográfica en inglés con F5
-vim.keymap.set("n", "<F5>", ":setlocal spell! spelllang=en_us<CR>", { silent = true })
-vim.keymap.set("i", "<F5>", "<C-O>:setlocal spell! spelllang=en_us<CR>", { silent = true })
+-- Alternar corrección ortográfica en español
+vim.keymap.set("n", "<F3>", ":setlocal spell! spelllang=es_es<CR>", { silent = false })
+vim.keymap.set("i", "<F3>", "<C-O>:setlocal spell! spelllang=es_es<CR>", { silent = false })
+-- Alternar corrección ortográfica en inglés
+vim.keymap.set("n", "<F4>", ":setlocal spell! spelllang=en_us<CR>", { silent = true })
+vim.keymap.set("i", "<F4>", "<C-O>:setlocal spell! spelllang=en_us<CR>", { silent = true })
 
 local spell_dir = vim.fn.stdpath("config") .. "/spell"
 local dict_files = {

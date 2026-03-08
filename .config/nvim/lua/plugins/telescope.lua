@@ -21,7 +21,7 @@ return {
 		telescope.load_extension("ui-select")
 
 		-- Búsqueda de archivos con fzf (nombre)
-		vim.keymap.set("n", "<leader>T", builtin.find_files, { noremap = true, silent = true, desc = "Find files" })
-		vim.keymap.set("n", "<leader>fg", builtin.live_grep, { noremap = true, silent = true, desc = "Live grep" })
+		vim.keymap.set("n", "<leader>e", builtin.find_files, { noremap = true, silent = true })
+		vim.keymap.set("n", "<leader>r", builtin.live_grep, { noremap = true, silent = true })
 	end,
 }

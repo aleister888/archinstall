@@ -50,14 +50,53 @@ return {
 			dap.defaults.fallback.focus_terminal = false
 			dap.defaults.fallback.terminal_win_cmd = "5new"
 
+			-- Ejecutar la clase actual
+			vim.keymap.set("n", "<localleader>g", function()
+				local jdtls_setup = require("jdtls.setup")
+				local project_dir = jdtls_setup.find_root({ ".git", "pom.xml", "build.gradle" })
+				local file_path = vim.api.nvim_buf_get_name(0)
+
+				-- Clase y paquete
+				local rel_path = file_path:sub(#project_dir + 1)
+				rel_path = rel_path:gsub("^/src/main/java/", ""):gsub("%.java$", "")
+				local class = rel_path:gsub("/", ".")
+
+				local exec_flags = "-XX:+ShowCodeDetailsInExceptionMessages -cp"
+
+				-- Determinamos como compilar las clases y el directorio de salida
+				if vim.fn.filereadable(project_dir .. "/pom.xml") == 1 then -- Maven
+					compile_cmd = string.format("cd %s && mvn compile", project_dir)
+					class_dir = project_dir .. "/target/classes"
+				elseif vim.fn.filereadable(project_dir .. "/build.gradle") == 1 then -- Gradle
+					compile_cmd = string.format("cd %s && ./gradlew build", project_dir)
+					class_dir = project_dir .. "/build/classes/java/main"
+				else
+					vim.api.nvim_err_writeln("No se detectó pom.xml ni build.gradle en el proyecto")
+					return
+				end
+
+				if vim.fn.isdirectory(class_dir) ~= 1 then
+					vim.api.nvim_err_writeln("No se encontró el directorio con las clases compiladas")
+					return
+				end
+
+				local run_cmd = string.format("cd %s && time java %s %s %s", project_dir, exec_flags, class_dir, class)
+
+				-- Compilar y ejecutar
+				local term_cmd = string.format('%s && echo "+ %s" && %s', compile_cmd, run_cmd, run_cmd)
+				vim.cmd("botright vsplit | vertical resize " .. math.floor(vim.o.columns * 0.40))
+				vim.cmd("terminal " .. term_cmd)
+				--vim.cmd("startinsert")
+			end, { noremap = true, silent = false })
+
 			-- Ejecutar test
-			vim.keymap.set("n", "<leader>tc", function()
+			vim.keymap.set("n", "<localleader>G", function()
 				jdtls.test_class()
 				dap.repl.open({ height = 7 })
 			end, { noremap = true, silent = true })
 
 			-- Ocultar resultados del test
-			vim.keymap.set("n", "<leader>td", function()
+			vim.keymap.set("n", "<localleader>H", function()
 				-- Cerrramos la terminal
 				for _, buf in ipairs(vim.api.nvim_list_bufs()) do
 					local name = vim.api.nvim_buf_get_name(buf)

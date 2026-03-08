@@ -48,17 +48,18 @@ return {
 		opts = function()
 			local opts = { silent = true }
 
-			vim.keymap.set("n", "<leader>A", vim.lsp.buf.code_action, {})
-			-- Mostrar diagnóstico en una ventana flotante
-			keymap.set("n", "<leader>i", vim.diagnostic.open_float)
 			-- Ir al diagnóstico anterior
-			keymap.set("n", "<leader>o", function()
+			keymap.set("n", "<leader>z", function()
 				vim.diagnostic.jump({ count = -1, float = true })
 			end)
 			-- Ir al siguiente diagnóstico
-			keymap.set("n", "<leader>p", function()
+			keymap.set("n", "<leader>x", function()
 				vim.diagnostic.jump({ count = 1, float = true })
 			end)
+			-- Mostrar diagnóstico en una ventana flotante
+			keymap.set("n", "<leader>c", vim.diagnostic.open_float)
+			-- Acciones posibles
+			vim.keymap.set("n", "<leader>C", vim.lsp.buf.code_action, {})
 			return {
 				ensure_installed = servers,
 				automatic_enable = true,

@@ -6,6 +6,6 @@ return {
 		require("nvim-tree").setup()
 
 		-- Abrir/Cerrar nvim-tree
-		vim.keymap.set("n", "<leader>tt", "<Cmd>NvimTreeToggle<CR>", { silent = true })
+		vim.keymap.set("n", "<leader>t", "<Cmd>NvimTreeToggle<CR>", { silent = true })
 	end,
 }
