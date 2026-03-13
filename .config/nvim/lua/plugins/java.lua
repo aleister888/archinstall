@@ -119,7 +119,20 @@ return {
 				rel_path = rel_path:gsub("^/src/main/java/", ""):gsub("%.java$", "")
 				local class = rel_path:gsub("/", ".")
 
-				local exec_flags = "-XX:+ShowCodeDetailsInExceptionMessages -cp"
+				-- Memoria inicial 1G, hasta la mitad del sistema
+				local mem_total_kb
+				for line in io.lines("/proc/meminfo") do
+					mem_total_kb = line:match("^MemTotal:%s+(%d+)")
+					if mem_total_kb then
+						mem_total_kb = tonumber(mem_total_kb)
+						break
+					end
+				end
+				local mem_total_gb = mem_total_kb / 1024 / 1024
+				local mem_half_gb = math.floor(mem_total_gb / 2)
+				local mem_flags = "-Xms1g -Xmx" .. mem_half_gb .. "g"
+
+				local exec_flags = mem_flags .. " -XX:+ShowCodeDetailsInExceptionMessages -cp"
 
 				local function escape_path(path)
 					return '"' .. path:gsub('"', '\\"') .. '"'

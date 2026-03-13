@@ -6,13 +6,11 @@ import os
 import subprocess
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-l", "--latex", action="store_true")
 parser.add_argument("-q", "--quiet", action="store_true")
 args = parser.parse_args()
 tmp_dir = os.environ.get("TMP_BASE_DIR", "/tmp")
 save_path = os.path.join(tmp_dir, "canvas-draw.png")
 
-willLatex = args.latex
 quiet = args.quiet
 
 canvas_width = 1600
@@ -20,14 +18,11 @@ canvas_height = 900
 
 STROKE_WIDTH = 3
 
-if willLatex:
-    BG_COLOR = "#ffffff"
-    GRID_COLOR = "#f4f4f4"
-    STROKE_COLOR = "#000000"
-else:
-    BG_COLOR = "#282828"
-    GRID_COLOR = "#3c3836"
-    STROKE_COLOR = "#fdf8e3"
+BG_COLOR = "#282828"
+GRID_COLOR = "#3c3836"
+STROKE_COLOR = "#fdf8e3"
+
+NOTIFICATION_TIME = 750
 
 # Canvas
 WINTITLE = "Lienzo en blanco"
@@ -39,16 +34,12 @@ last_x, last_y = None, None
 current_stroke = []
 strokes = []
 
-# Modo borrar
 erase_mode = False
 erase_radius = 10
 
-# Historial de acciones
 actions = []
-# Pila para rehacer
 redo_stack = []
 
-# Imagen PIL
 image = Image.new("RGB", (canvas_width, canvas_height), BG_COLOR)
 draw = ImageDraw.Draw(image)
 
@@ -156,14 +147,13 @@ def save_to_tmp(event=None):
             subprocess.run([
                 "notify-send",
                 "-e",
-                "-i",
-                "system-error",
+                "-t", str(NOTIFICATION_TIME),
                 "Canvas",
                 "No se dibujó nada"
             ])
         if os.path.exists(save_path):
             os.remove(save_path)
-    # Si si hay dibujo lo guardamos en disco.
+    # Si sí hay dibujo lo guardamos en disco.
     else:
         gray = image.convert("L")
         bg_gray = int(int(BG_COLOR[1:3], 16) * 0.299 +
@@ -178,14 +168,14 @@ def save_to_tmp(event=None):
         cropped.save(save_path, "PNG")
 
     # Si corresponde, guardamos la imagen en el portapapeles
-    if strokes and not willLatex:
+    if strokes:
         subprocess.run(["wl-copy", "-t", "image/png"], input=open(save_path, "rb").read(), check=True)
         if not quiet:
             subprocess.run([
                 "notify-send",
                 "-e",
-                "-i",
-                "com.github.maoschanz.drawing",
+                "-t", str(NOTIFICATION_TIME * 2),
+                "-i", save_path,
                 "Canvas",
                 "Imagen copiada al portapapeles"
             ])

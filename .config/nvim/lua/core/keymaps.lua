@@ -5,7 +5,7 @@ vim.keymap.set("i", "<C-Backspace>", "<C-w>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader><BS>", ":noh<CR>", { silent = true })
 
 -- Salir del modo terminal
-vim.keymap.set("t", "<Esc>", [[<C-\><C-n>]], { noremap = true })
+vim.keymap.set("t", "<S-Esc>", [[<C-\><C-n>]], { noremap = true })
 
 -- Split
 vim.keymap.set("n", "<leader>v", "<C-w>v")
