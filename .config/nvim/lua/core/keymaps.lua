@@ -65,3 +65,17 @@ vim.keymap.set("n", "<localleader>T", function()
 	local cmd = string.format("%s %s %s scratchpad &>/dev/null &", terminal, terminal_opts, termtitle)
 	vim.fn.execute("!" .. cmd)
 end, { silent = true })
+
+-- Abrir archivo HTML en el navegador Firefox
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "html",
+	callback = function()
+		vim.api.nvim_buf_set_keymap(
+			0,
+			"n",
+			"<localleader>h",
+			":!firefox --new-window %<CR>",
+			{ noremap = true, silent = true }
+		)
+	end,
+})

@@ -22,7 +22,7 @@ local filetype_configs = {
 	["*css"] = { expandtab = true },
 	rasi = { expandtab = true },
 	css = { expandtab = true },
-	tex = { smartindent = true, expandtab = true, tabstop = 6, shiftwidth = 6 },
+	tex = { smartindent = true, expandtab = true, tabstop = 2, shiftwidth = 2 },
 	xml = { expandtab = true },
 	markdown = { expandtab = true, conceallevel = 0 },
 	python = { expandtab = true, tabstop = 4, shiftwidth = 4 },
