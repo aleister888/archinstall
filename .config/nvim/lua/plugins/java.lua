@@ -152,7 +152,9 @@ return {
 				end
 
 				if vim.fn.isdirectory(class_dir) ~= 1 then
-					vim.api.nvim_err_writeln("No se encontró el directorio con las clases compiladas")
+					vim.api.nvim_err_writeln(
+						"No se encontró el directorio con las clases compiladas, compila manualmente primero"
+					)
 					return
 				end
 

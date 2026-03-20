@@ -43,6 +43,12 @@ return {
 				vim.keymap.set("v", "<localleader>e", 's\\emph{<C-r>"}', { silent = true })
 				vim.keymap.set("v", "<localleader>b", 's\\textbf{<C-r>"}', { silent = true })
 				vim.keymap.set("v", "<localleader>i", 's\\textit{<C-r>"}', { silent = true })
+
+				-- Abrir el PDF en Firefox
+				vim.keymap.set("n", "<localleader>H", function()
+					local pdf = vim.fn.expand("%:r") .. ".pdf"
+					vim.fn.jobstart({ "setsid", "-f", "firefox", "--new-window", pdf }, { detach = true })
+				end, { silent = true })
 			end,
 		})
 	end,

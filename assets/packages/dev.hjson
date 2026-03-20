@@ -1,4 +1,5 @@
 {
+  "db": ["dbeaver"],
   "general": [
     "android-tools",
     "bash-language-server",
@@ -16,6 +17,6 @@
   ],
   "kotlin": ["kotlin", "gradle", "ktlint"],
   "python": ["python-pandas", "python-scikit-learn"],
-  "formateadores": ["astyle", "prettier", "sassc", "shfmt", "stylua"],
+  "linters": ["astyle", "prettier", "sassc", "shfmt", "stylua", "sqlfluff"],
   "rust": ["rust", "rust-src", "rust-analyzer"]
 }

@@ -2,7 +2,7 @@
   "layer": "bottom",
   "position": "top",
   "height": 0, // Dejamos que el tamaño de los módulos sea el que mande
-  "margin": "0 6 0 6",
+  "margin": "0 0 0 0",
   "modules-left": [
     "hyprland/workspaces",
     "custom/layout-icon"
