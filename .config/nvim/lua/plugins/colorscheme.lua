@@ -1,40 +1,30 @@
 local M = {}
-
 M.colors = {
-	bg = "#282828",
-	fg = "#ebdbb2",
-	alt_fg = "#f9f5d7",
-	yellow = "#d79921",
-	cyan = "#689d6a",
-	darkblue = "#076678",
-	green = "#98971a",
-	orange = "#fe8019",
-	violet = "#b16286",
-	magenta = "#8f3f71",
-	blue = "#458588",
-	red = "#cc241d",
+	bg = "#30363D",
+	fg = "#adbac7",
+	alt_fg = "#636e7b",
+	yellow = "#daaa3f",
+	cyan = "#56d4dd",
+	darkblue = "#539bf5",
+	green = "#6bc46d",
+	violet = "#dcbdfb",
+	magenta = "#b083f0",
+	blue = "#6cb6ff",
+	red = "#ff938a",
 }
-
-function SetColorscheme()
-	vim.cmd.colorscheme("gruvbox")
-	vim.api.nvim_set_hl(0, "NormalFloat", { bg = M.colors.bg, fg = M.colors.fg })
-	-- Cambiar el color de los números de línea
-	vim.api.nvim_set_hl(0, "LineNr", { bg = nil, fg = M.colors.fg })
-	vim.api.nvim_set_hl(0, "CursorLineNr", { bg = M.colors.bg, fg = M.colors.yellow, bold = true })
-	vim.api.nvim_set_hl(0, "Search", { fg = M.colors.alt_fg, bg = M.colors.blue })
-end
 
 package.loaded["colorscheme"] = M
 
 return {
-	"ellisonleao/gruvbox.nvim",
-	priority = 1000,
+	"projekt0n/github-nvim-theme",
+	name = "github-theme",
+	lazy = false, -- make sure we load this during startup if it is your main colorscheme
+	priority = 1000, -- make sure to load this before all the other start plugins
 	config = function()
-		require("gruvbox").setup({
-			transparent_mode = true,
-			inverse = false,
-			contrast = "hard",
+		require("github-theme").setup({
+			-- ...
 		})
-		SetColorscheme()
+
+		vim.cmd("colorscheme github_dark_dimmed")
 	end,
 }
