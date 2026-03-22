@@ -10,18 +10,13 @@
 }
 
 #waybar > box {
-  background: #1d2021;
+  background: rgba(29, 32, 33, 1);
   border-top-left-radius: 0px;
   border-top-right-radius: 0px;
-  border-bottom-left-radius: 16px;
-  border-bottom-right-radius: 16px;
-
-  border-left: 4px solid #98971a;
-  border-right: 4px solid #98971a;
-  border-bottom: 4px solid #98971a;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
 
   box-shadow: 1px 1px 3px 2px #151515;
-  margin: 0px 8px 8px 8px;
 }
 
 .modules-left {
@@ -57,16 +52,14 @@
   margin: 0px 3px 0px 3px;
   padding: 0px 10px 0px 8px;
   box-shadow: none;
-  background: #282828;
 }
 
 #workspaces button.empty {
   padding: 0px 0px 0px 8px;
-  background: #1d2021;
 }
 
 #workspaces button.active {
-  background: #3c3836;
+  background: rgba(60, 56, 54, 1);
 }
 
 #workspaces button:hover {

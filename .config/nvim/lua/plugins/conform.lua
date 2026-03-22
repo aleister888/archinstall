@@ -14,6 +14,8 @@ return {
 			kotlin = { "ktlint" },
 			lua = { "stylua" },
 			rasi = { "prettier_rasi" },
+			rust = { "rustfmt" },
+			sql = { "sqlfluff_sqlite" },
 			scss = { "prettier" },
 			sh = { "shfmt" },
 			tex = { "latexindent" },
@@ -29,6 +31,11 @@ return {
 				command = "prettier",
 				args = { "--parser", "css" },
 				stdin = true,
+			},
+			sqlfluff_sqlite = {
+				command = "sqlfluff",
+				args = { "fix", "--dialect", "sqlite", "--rules", "LT10,ST05" },
+				stdin = false,
 			},
 			prettier_json = {
 				command = "prettier",

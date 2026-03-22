@@ -1,11 +1,12 @@
 local servers = {
-	"pylsp",
 	"bashls",
 	"clangd",
 	"cssls",
 	"jdtls",
 	"kotlin_language_server",
 	"markdown_oxide",
+	"pylsp",
+	"rust_analyzer",
 	"texlab",
 }
 
@@ -96,5 +97,10 @@ return {
 				run_on_start = true,
 			})
 		end,
+	},
+	{
+		"chrisgrieser/nvim-lsp-endhints",
+		event = "LspAttach",
+		opts = {}, -- required, even if empty
 	},
 }

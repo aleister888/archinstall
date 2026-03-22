@@ -16,11 +16,12 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = ","
 vim.g.maplocalleader = "."
 
-require("core.options")
 require("core.indent")
 require("core.keymaps")
-require("core.spell")
 require("core.misc")
+require("core.options")
+require("core.rust")
+require("core.spell")
 
 require("lazy").setup("plugins", {
 	change_detection = {

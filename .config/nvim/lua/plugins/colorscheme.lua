@@ -19,7 +19,7 @@ function SetColorscheme()
 	vim.cmd.colorscheme("gruvbox")
 	vim.api.nvim_set_hl(0, "NormalFloat", { bg = M.colors.bg, fg = M.colors.fg })
 	-- Cambiar el color de los números de línea
-	vim.api.nvim_set_hl(0, "LineNr", { bg = nil, fg = M.colors.fg })
+	vim.api.nvim_set_hl(0, "LineNr", { bg = M.colors.bg, fg = M.colors.fg })
 	vim.api.nvim_set_hl(0, "CursorLineNr", { bg = M.colors.bg, fg = M.colors.yellow, bold = true })
 	vim.api.nvim_set_hl(0, "Search", { fg = M.colors.alt_fg, bg = M.colors.blue })
 end
@@ -32,8 +32,7 @@ return {
 	config = function()
 		require("gruvbox").setup({
 			transparent_mode = true,
-			inverse = false,
-			contrast = "hard",
+			contrast = "soft",
 		})
 		SetColorscheme()
 	end,

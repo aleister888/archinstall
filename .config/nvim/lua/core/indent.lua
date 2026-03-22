@@ -12,21 +12,22 @@ local default_config = {
 
 -- Configuraciones específicas por tipo de archivo
 local filetype_configs = {
-	kotlin = { expandtab = true, tabstop = 4, shiftwidth = 4 },
-	sql = { expandtab = true, tabstop = 4, shiftwidth = 4 },
-	sh = { tabstop = 4, shiftwidth = 4 },
+	["*css"] = { expandtab = true },
+	conf = { tabstop = 8, shiftwidth = 8 },
+	css = { expandtab = true },
+	fstab = { tabstop = 8, shiftwidth = 8 },
 	hyprlang = { tabstop = 4, shiftwidth = 4 },
 	json = { smartindent = true, expandtab = true, conceallevel = 2 },
-	fstab = { tabstop = 8, shiftwidth = 8 },
-	conf = { tabstop = 8, shiftwidth = 8 },
-	["*css"] = { expandtab = true },
-	rasi = { expandtab = true },
-	css = { expandtab = true },
-	tex = { smartindent = true, expandtab = true, tabstop = 2, shiftwidth = 2 },
-	xml = { expandtab = true },
+	kotlin = { expandtab = true, tabstop = 4, shiftwidth = 4 },
 	markdown = { expandtab = true, conceallevel = 0 },
 	python = { expandtab = true, tabstop = 4, shiftwidth = 4 },
+	rasi = { expandtab = true },
+	rust = { expandtab = true, tabstop = 4, shiftwidth = 4 },
+	sh = { tabstop = 4, shiftwidth = 4 },
+	sql = { expandtab = true, tabstop = 4, shiftwidth = 4 },
+	tex = { smartindent = true, expandtab = true, tabstop = 2, shiftwidth = 2 },
 	toml = { expandtab = true, tabstop = 4, shiftwidth = 4 },
+	xml = { expandtab = true },
 }
 
 -- Función para aplicar configuración
