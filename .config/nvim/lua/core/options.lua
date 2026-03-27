@@ -14,7 +14,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 opt.winborder = "rounded"
 opt.title = true
 opt.encoding = "utf-8"
-opt.scrolloff = 5
+opt.scrolloff = 1
 opt.wrap = true
 -- Opciones del cursor
 opt.number = true

@@ -1,11 +1,13 @@
 {
   "db": ["dbeaver"],
+  "diagrams": ["drawio-desktop"],
   "general": [
     "android-tools",
     "bash-language-server",
     "extra-cmake-modules",
     "extra/github-cli",
     "extra/libgit2",
+    "git-filter-repo",
     "heimdall",
     "lua51",
     "luarocks",

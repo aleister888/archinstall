@@ -75,7 +75,6 @@ return {
 			"WhoIsSethDaniel/mason-tool-installer.nvim",
 		},
 		config = function()
-			require("lspconfig")
 			local lsp_capabilities = vim.lsp.protocol.make_client_capabilities()
 			local blink_status_ok, blink = pcall(require, "blink.cmp")
 			if blink_status_ok then
@@ -86,6 +85,26 @@ return {
 			vim.lsp.config("*", {
 				capabilities = lsp_capabilities,
 			})
+
+			-- Lista de códigos de Rust que quieres ocultar
+			local filtered_codes = {
+				"E0061",
+			}
+
+			-- Intercepta y filtra diagnostics antes de mostrarlos
+			vim.lsp.handlers["textDocument/publishDiagnostics"] = function(_, result, ctx, config)
+				if not result then
+					return
+				end
+				local filtered = vim.tbl_filter(function(d)
+					-- d.code puede ser string o number
+					local code = tostring(d.code or "")
+					return not vim.tbl_contains(filtered_codes, code)
+				end, result.diagnostics)
+				result.diagnostics = filtered
+				vim.lsp.diagnostic.on_publish_diagnostics(nil, result, ctx, config)
+			end
+
 			-- Ejecutar bashls en archivos zsh
 			vim.lsp.config("bashls", {
 				filetypes = { "bash", "sh", "zsh" },

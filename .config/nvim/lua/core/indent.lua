@@ -25,7 +25,7 @@ local filetype_configs = {
 	rust = { expandtab = true, tabstop = 4, shiftwidth = 4 },
 	sh = { tabstop = 4, shiftwidth = 4 },
 	sql = { expandtab = true, tabstop = 4, shiftwidth = 4 },
-	tex = { smartindent = true, expandtab = true, tabstop = 2, shiftwidth = 2 },
+	tex = { smartindent = true, expandtab = true, tabstop = 2, shiftwidth = 2, conceallevel = 0 },
 	toml = { expandtab = true, tabstop = 4, shiftwidth = 4 },
 	xml = { expandtab = true },
 }
