@@ -198,12 +198,13 @@ sudo /usr/bin/rfkill unblock wifi
 has_bluetooth_device && sudo /usr/bin/rfkill unblock bluetooth
 
 GROUPS=(
-	"storage"
+	"docker"
 	"input"
-	"users"
-	"video"
 	"optical"
+	"storage"
+	"users"
 	"uucp"
+	"video"
 )
 for group in "${GROUPS[@]}"; do
 	sudo /usr/bin/usermod -aG "$group" "$USER"

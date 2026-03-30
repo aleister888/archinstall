@@ -4,6 +4,7 @@
   "general": [
     "android-tools",
     "bash-language-server",
+    "docker",
     "extra-cmake-modules",
     "extra/github-cli",
     "extra/libgit2",

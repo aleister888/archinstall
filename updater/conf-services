@@ -29,6 +29,7 @@ SERVICES=(
 	"chronyd"
 	"cronie"
 	"cups"
+	"docker"
 	"earlyoom"
 	"fwupd"
 	"input-remapper"
