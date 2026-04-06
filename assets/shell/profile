@@ -69,6 +69,7 @@ alias wget='wget --hsts-file="$XDG_CONFIG_HOME"/wget-hsts'
 alias gpg2='gpg2 --homedir "$XDG_DATA_HOME"/gnupg'
 
 export PARALLEL_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"/parallel
+export RUSTC_WRAPPER="/usr/bin/sccache"
 export RUSTUP_HOME="$XDG_DATA_HOME"/rustup
 export GOPATH="$XDG_DATA_HOME"/go
 export TEXMFVAR="$XDG_CACHE_HOME"/texlive/texmf-var

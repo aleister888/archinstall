@@ -6,8 +6,8 @@ return {
 		ft = { "csv" },
 		keymaps = {
 			-- Text objects for selecting fields
-			jump_next_field_end = { "<Tab>", mode = { "n", "v" } },
-			jump_prev_field_end = { "<S-Tab>", mode = { "n", "v" } },
+			jump_next_field_end = { "<Tab>", mode = { "i", "v" } },
+			jump_prev_field_end = { "<S-Tab>", mode = { "i", "v" } },
 			jump_next_row = { "<Enter>", mode = { "n", "v" } },
 			jump_prev_row = { "<S-Enter>", mode = { "n", "v" } },
 		},

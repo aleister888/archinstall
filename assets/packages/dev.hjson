@@ -2,6 +2,7 @@
   "db": ["dbeaver"],
   "diagrams": ["drawio-desktop"],
   "general": [
+    "tmux",
     "android-tools",
     "bash-language-server",
     "docker",
@@ -21,5 +22,5 @@
   "kotlin": ["kotlin", "gradle", "ktlint"],
   "python": ["python-pandas", "python-scikit-learn"],
   "linters": ["astyle", "prettier", "sassc", "shfmt", "stylua", "sqlfluff"],
-  "rust": ["rust", "rust-src", "rust-analyzer"]
+  "rust": ["rust", "rust-src", "rust-analyzer", "sccache"]
 }
