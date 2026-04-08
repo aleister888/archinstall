@@ -105,7 +105,45 @@ pacman_conf() {
 		Include = /etc/pacman.d/chaotic-mirrorlist
 	EOF
 
-	pacman -Sy
+	# Añadir repositorios de BlackArch
+	while ! pacman -Q blackarch-mirrorlist >/dev/null 2>&1; do
+		local BLACKARCH_TMP_DIR="/tmp/blackarch_strap"
+		local BLACKARCH_VERSION="20251011"
+
+		mkdir -p "$BLACKARCH_TMP_DIR"
+
+		download \
+			"https://www.blackarch.org/keyring/blackarch-keyring-$BLACKARCH_VERSION.tar.gz" \
+			"$BLACKARCH_TMP_DIR/blackarch-keyring-$BLACKARCH_VERSION.tar.gz"
+
+		download \
+			"https://www.blackarch.org/keyring/blackarch-keyring-$BLACKARCH_VERSION.tar.gz.sig" \
+			"$BLACKARCH_TMP_DIR/blackarch-keyring-$BLACKARCH_VERSION.tar.gz.sig"
+
+		pacman-key --recv-keys 4345771566D76038C7FEB43863EC0ADBEA87E4E3 --keyserver keyserver.ubuntu.com
+
+		tar xfz "$BLACKARCH_TMP_DIR/blackarch-keyring-$BLACKARCH_VERSION.tar.gz" --strip-components=1 \
+			-C /usr/share/pacman/keyrings/
+
+		pacman-key --populate
+
+		curl -s "https://blackarch.org/blackarch-mirrorlist" -o "/etc/pacman.d/blackarch-mirrorlist"
+
+		if ! grep -q "\[blackarch\]" /etc/pacman.conf; then
+			cat <<-EOF >>/etc/pacman.conf
+
+				[blackarch]
+				Include = /etc/pacman.d/blackarch-mirrorlist
+			EOF
+		fi
+
+		pacinstall blackarch-mirrorlist
+
+		if [ -f /etc/pacman.d/blackarch-mirrorlist.pacnew ]; then
+			mv /etc/pacman.d/blackarch-mirrorlist.pacnew \
+				/etc/pacman.d/blackarch-mirrorlist
+		fi
+	done
 }
 
 locale_conf() {
