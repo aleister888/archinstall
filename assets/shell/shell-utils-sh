@@ -152,7 +152,10 @@ download() {
 	[ -f "$_file" ] && return 0
 
 	ensure_dir "$(dirname "$_file")" >/dev/null
-	curl "$_url" -o "$_file" 2>/dev/null && return 0
+	curl -L "$_url" -o "$_file" 2>/dev/null
+
+	# file has size > 0
+	[ -s "$_file" ] && return 0
 
 	log "el archivo no pudo descargarse: $_file"
 	return 1

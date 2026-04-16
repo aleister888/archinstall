@@ -181,12 +181,31 @@ disk_setup() {
 # Lo que podría hacer que la operación falle con conexiones muy lentas.
 #-------------------------------------------------------------------------------
 
+# Si la iso de Arch es antigua al instalar jq este puede estar compilado con una
+# versión de GLIBC distinta y romper toda la instalación. En ese caso descargamos
+# una versión estática
+use_static_jq() {
+	local JQ_BIN_FILE="/tmp/jq_static"
+	download \
+		"https://github.com/jqlang/jq/releases/download/jq-1.8.1/jq-linux-amd64" \
+		"$JQ_BIN_FILE" ||
+		log "Error al descargar una versión estática de jq"
+
+	chmod +x "$JQ_BIN_FILE"
+
+	JQ_BIN="$JQ_BIN_FILE"
+}
+
 basestrap_packages_install() {
 	local BASESTRAP_PACKAGES
 	local MANUFACTURER=$(grep vendor_id /proc/cpuinfo | awk '{print $3}' | head -1)
 
+	JQ_BIN="/usr/bin/jq"
+
+	$JQ_BIN --version || use_static_jq
+
 	mapfile -t BASESTRAP_PACKAGES < <(
-		jq -r '.[] | .[]' < <(remove_comments "$REPO_CLONE_DIR/assets/packages/installer.json")
+		$JQ_BIN -r '.[] | .[]' < <(remove_comments "$REPO_CLONE_DIR/assets/packages/installer.json")
 	)
 
 	if [ "$MANUFACTURER" == "GenuineIntel" ]; then
