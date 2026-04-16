@@ -3,6 +3,8 @@
   "diagrams": ["drawio-desktop"],
   "general": [
     "tmux",
+    "python-setuptools",
+    "tpm2-tools",
     "android-tools",
     "bash-language-server",
     "docker",

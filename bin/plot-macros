@@ -94,6 +94,8 @@ declare -A DAILY_DATA
 # OVERWRITE=false
 while IFS=',' read -r DATE _ _ _ CAL FAT CARBS PROT PROT_PERC; do
 
+	[ -z "$DATE" ] && continue
+
 	# Ajustamos a el porcentaje de proteina completa
 	[[ -n "$PROT_PERC" ]] && {
 		PROT_CALC=$(awk "BEGIN { print $PROT * $PROT_PERC }" 2>/dev/null) &&

@@ -244,6 +244,8 @@ sh -c "
 	git pull
 "
 
+git config --global init.defaultBranch main
+
 touch "$HOME/.system_not_initialized"
 
 clear

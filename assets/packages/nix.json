@@ -10,9 +10,15 @@
   ],
   "dev": [
     { "name": "dmg2img" },
-    // android: para extraer vmbeta.img desde payload.bin
-    { "name": "payload-dumper-go" },
-    { "name": "github-desktop" }
+    {
+      "name": "payload-dumper-go",
+      "desc": "para extraer vmbeta.img desde payload.bin"
+    },
+    { "name": "github-desktop" },
+    {
+      "name": "chipsec",
+      "desc": "framework de auditoría de seguridad de hardware/firmware"
+    }
   ],
   "guitarra": [
     { "name": "gmetronome" },
