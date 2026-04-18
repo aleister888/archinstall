@@ -21,6 +21,14 @@
     "time",
     "yarn"
   ],
+  "forensics": [
+    "blackarch/bulk-extractor", // needs blackarch/openssl-1.1
+    "blackarch/openssl-1.1",
+    "blackarch/reglookup",
+    "extra/python-yara",
+    "extra/sleuthkit",
+    "extra/volatility3"
+  ],
   "kotlin": ["kotlin", "gradle", "ktlint"],
   "python": ["python-pandas", "python-scikit-learn"],
   "linters": ["astyle", "prettier", "sassc", "shfmt", "stylua"],

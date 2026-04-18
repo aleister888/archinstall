@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Aveces el trackpad necesita un dedo extra al reanudar el equipo después de
+# haberse suspendido. Como solución recargamos el modulo hid_multitouch.
+
+lsmod | grep -q "^hid_multitouch" || exit 1
+
+modprobe -r hid_multitouch
+modprobe hid_multitouch

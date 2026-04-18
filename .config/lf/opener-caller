@@ -32,6 +32,15 @@ for file in "$@"; do
 		continue
 		;;
 
+	# suele usarse fallback para muchos tipos de archivos
+	application/octet-stream)
+		# nos fijamos en la extensión
+		case "${file##*.}" in
+		txt) TEXT_FILES+=("$file") ;;
+		esac
+		continue
+		;;
+
 	# file a veces detecta los archivos toml como archivo .ini
 	application/x-wine-extension-ini)
 		TEXT_FILES+=("$file")

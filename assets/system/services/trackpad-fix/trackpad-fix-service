@@ -1,0 +1,10 @@
+[Unit]
+Description=Reiniciar el módulo hid_multitouch
+After=suspend.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/trackpad-fix
+
+[Install]
+WantedBy=suspend.target

@@ -37,6 +37,7 @@ SERVICES=(
 	"nix-daemon"
 	"power-profiles-daemon"
 	"syslog-ng@default.service"
+	"trackpad-fix"
 )
 
 USER_SERVICES=(

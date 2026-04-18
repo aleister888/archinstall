@@ -149,6 +149,14 @@ CARGO_HOME="$HOME/.local/share/cargo"
 GNUPGHOME="$HOME/.local/share/gnupg"
 EOF
 
+# https://github.com/linux-surface/linux-surface/issues/688
+sudo /usr/bin/install -o root -g root -m 0755 \
+	"$REPO_DIR/assets/system/services/trackpad-fix/trackpad-fix" \
+	/usr/local/bin/fix-trackpad
+sudo /usr/bin/install -o root -g root -m 0644 \
+	"$REPO_DIR/assets/system/services/trackpad-fix/trackpad-fix-service" \
+	/etc/systemd/system/trackpad-fix.service
+
 #-------------------------------------------------------------------------------
 
 ln -s /tmp/ "$HOME/Descargas"
