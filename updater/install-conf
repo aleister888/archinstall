@@ -66,7 +66,7 @@ EOF
 
 REAPER_LOCAL_DESKTOP="$HOME/.local/share/applications/cockos-reaper.desktop"
 REAPER_DESKTOP="/usr/share/applications/cockos-reaper.desktop"
-REAPER_WRAPPER="$HOME/.local/bin/utils/reaper-xephyr"
+REAPER_WRAPPER="\"$HOME/.local/bin/utils/xephyr-wrapper /usr/lib/REAPER/reaper\""
 
 if [ -x /usr/bin/reaper ]; then
 	ensure_dir "$(dirname "$REAPER_LOCAL_DESKTOP")" >/dev/null
