@@ -63,6 +63,12 @@ while true; do # Actualizar el fondo de pantalla
 	setsid -f hyprpaper
 done &
 
+while true; do # Actualizar el fondo de pantalla
+	inotifywait -e modify ~/.dotfiles/.config/hypr/hyprpaper.conf &>/dev/null
+	pkill hyprpaper
+	setsid -f hyprpaper
+done &
+
 while true; do # Recargar la configuración de swaync
 	inotifywait -e modify ~/.config/swaync &>/dev/null
 	systemctl --user restart swaync.service
