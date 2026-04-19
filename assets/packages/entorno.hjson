@@ -96,5 +96,5 @@
     "sxiv"
   ],
   "aplicaciones_tui": ["htop"],
-  "gaming/streaming": ["gamescope", "moonlight-qt"]
+  "gaming/streaming": ["moonlight-qt"]
 }
