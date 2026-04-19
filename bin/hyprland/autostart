@@ -28,6 +28,7 @@ ensure_dir /tmp/01_firefox_downloads >/dev/null
 
 [ -x /usr/bin/joycond ] && ! pgrep -x joycond && setsid -f /usr/bin/joycond
 [ -x /usr/bin/joycond-cemuhook ] && ! pgrep -f joycond-cemuhook && setsid -f /usr/bin/joycond-cemuhook
+[ -x /usr/bin/sunshine ] && ! pgrep -f sunshine && setsid -f /usr/bin/sunshine
 
 # Corregir el nivel del micrófono en portátiles
 if [ -e /sys/class/power_supply/BAT0 ]; then
