@@ -1,0 +1,54 @@
+#!/bin/bash -x
+# shellcheck disable=SC2068
+
+# Basado en:
+# https://www.reddit.com/r/hyprland/comments/18ukvln/comment/mm7m0zr/
+
+IFS=$'\n\t'
+
+source "$HOME/.dotfiles/assets/shell/shell-utils"
+
+# Solo ejecutar en portátiles
+ls /sys/class/power_supply/BAT* &>/dev/null || exit 1
+
+INTERNAL_MONITOR="eDP-1"
+MONITOR_CONF="$HOME/.config/hypr/hyprland/monitors_laptop.conf"
+
+apply_monitor_config() {
+	[[ -f "$MONITOR_CONF" ]] || {
+		log "archivo no enontrado: $MONITOR_CONF"
+		return
+	}
+
+	# Aplica la configuración, linea por linea ignorando comentarios
+	while IFS= read -r line; do
+		[[ "$line" =~ ^[[:space:]]*# ]] && continue
+		[[ "$line" =~ ^[[:space:]]*$ ]] && continue
+
+		if [[ "$line" =~ ^monitor[[:space:]]*=[[:space:]]*(.*) ]]; then
+			hyprctl keyword monitor "${BASH_REMATCH[1]}"
+		fi
+	done <"$MONITOR_CONF"
+}
+
+lid_state="open"
+
+# Activa/desactiva la pantalla interna en
+# función de si la tapa esta cerrada o no
+acpi_listen | while read -r event; do
+	case "$event" in
+	*LID\ close*)
+		[[ "$lid_state" == "closed" ]] && continue
+		lid_state="closed"
+		log "tapa cerrada"
+		hyprctl keyword monitor "$INTERNAL_MONITOR,disable"
+		;;
+
+	*LID\ open*)
+		[[ "$lid_state" == "open" ]] && continue
+		lid_state="open"
+		log "tapa abierta"
+		apply_monitor_config
+		;;
+	esac
+done

@@ -44,10 +44,13 @@ if [ -e /sys/class/power_supply/BAT0 ]; then
 	done
 fi &
 
+# Desactivar activar la pantalla en función del estado de la tapa (portátiles)
+setsid -f "$HOME/.dotfiles/bin/hyprland/lid-display-manager"
+
 # Si hay una tarjeta de audio USB y hay VST instalados, abrimos REAPER
 if lsusb | grep -i audio &&
 	[ -e "$WINEPREFIX/drive_c/Program Files/Common Files/VST3" ]; then
-	setsid -f "$HOME/.local/bin/utils/reaper-xephyr"
+	setsid -f "$HOME/.local/bin/utils/xephyr-wrapper" /usr/lib/REAPER/reaper
 fi &
 
 rm -f ~/.cache/wofi*
