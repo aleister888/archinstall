@@ -52,9 +52,11 @@ configure_ufw() {
 	# Configurar UFW
 	ufw allow 80/tcp
 	ufw allow 443/tcp
-	ufw allow 3020          # Redmine
-	ufw allow in on virbr0  # Libvirt (NAT)
-	ufw allow out on virbr0 # Libvirt (NAT)
+	ufw allow 3020                 # Redmine
+	ufw allow in on virbr0         # Libvirt (NAT)
+	ufw allow out on virbr0        # Libvirt (NAT)
+	sudo ufw allow 47984:48010/tcp # Sunshine
+	sudo ufw allow 47998:48010/udp # Sunshine
 	ufw limit ssh
 	ufw default deny incoming
 	ufw default allow outgoing
