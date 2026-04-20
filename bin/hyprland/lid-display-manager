@@ -12,7 +12,7 @@ source "$HOME/.dotfiles/assets/shell/shell-utils"
 ls /sys/class/power_supply/BAT* &>/dev/null || exit 1
 
 INTERNAL_MONITOR="eDP-1"
-MONITOR_CONF="$HOME/.config/hypr/hyprland/monitors_laptop.conf"
+MONITOR_CONF="$HOME/.config/hypr/hyprland/monitors.conf"
 
 apply_monitor_config() {
 	[[ -f "$MONITOR_CONF" ]] || {
@@ -48,19 +48,19 @@ acpi_listen | while read -r event; do
 	*LID\ close*)
 		[[ "$lid_state" == "closed" ]] && continue
 		lid_state="closed"
-		log "tapa cerrada"
+		log "tapa cerrada" INFO
 		if has_external_monitor; then
-			log "monitor externo detectado, desactivando pantalla interna"
+			log "monitor externo detectado, desactivando pantalla interna" INFO
 			hyprctl keyword monitor "$INTERNAL_MONITOR,disable"
 		else
-			log "sin monitor externo, manteniendo pantalla interna activa"
+			log "sin monitor externo, manteniendo pantalla interna activa" INFO
 		fi
 		;;
 
 	*LID\ open*)
 		[[ "$lid_state" == "open" ]] && continue
 		lid_state="open"
-		log "tapa abierta"
+		log "tapa abierta" INFO
 		apply_monitor_config
 		;;
 	esac
