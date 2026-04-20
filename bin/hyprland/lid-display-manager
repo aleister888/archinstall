@@ -31,6 +31,14 @@ apply_monitor_config() {
 	done <"$MONITOR_CONF"
 }
 
+has_external_monitor() {
+	# Obtiene los monitores activos y filtra el interno
+	hyprctl monitors -j |
+		jq -e --arg internal "$INTERNAL_MONITOR" \
+			'[.[] | select(.name != $internal)] | length > 0' \
+			&>/dev/null
+}
+
 lid_state="open"
 
 # Activa/desactiva la pantalla interna en
@@ -41,7 +49,12 @@ acpi_listen | while read -r event; do
 		[[ "$lid_state" == "closed" ]] && continue
 		lid_state="closed"
 		log "tapa cerrada"
-		hyprctl keyword monitor "$INTERNAL_MONITOR,disable"
+		if has_external_monitor; then
+			log "monitor externo detectado, desactivando pantalla interna"
+			hyprctl keyword monitor "$INTERNAL_MONITOR,disable"
+		else
+			log "sin monitor externo, manteniendo pantalla interna activa"
+		fi
 		;;
 
 	*LID\ open*)
