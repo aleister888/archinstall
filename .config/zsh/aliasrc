@@ -100,19 +100,43 @@ rotate_image() {
 	_input_image="$1"
 	_image_rotation="$2"
 	if [ ! -f "$_input_image" ]; then
-		print_msg "El archivo no existe" ERROR
+		print_msg "El archivo no existe: $_input_image" ERROR
 		return 1
 	fi
 	if [ "$_image_rotation" -gt 360 ] || [ "$_image_rotation" -lt -360 ]; then
-		print_msg "La rotación no es válida" ERROR
+		print_msg "La rotación no es válida: $_image_rotation" ERROR
 		return 1
 	fi
 
 	_image_extension=$(printf '%s\n' "$_input_image" | awk -F. 'NF>1 {print $NF}')
 	_tmp_file=$(mktemp "$TMP_BASE_DIR/tmp.XXXXXX.${_image_extension}") || return 1
 	magick "$_input_image" -rotate 90 "$_tmp_file" && {
-		rm "$_input_image" && mv "$_tmp_file" "$_input_image"
+		mv "$_input_image" "${_input_image}.bak" && mv "$_tmp_file" "$_input_image"
 	}
+}
+
+# Wrapper para convertir PDF a PNG/JPG con buena calidad
+convert() {
+	_input_pdf="$1"
+	_out_image="$2"
+	# Delegamos a el binario original si:
+	# - El input no es un pdf
+	# - El output no acaba en jpg/png
+	# - Hay menos/más de 2 argumentos
+	if
+		[ "$#" -ne 2 ] ||
+			[ "$(xdg-mime query filetype "$_input_pdf")" != "application/pdf" ] ||
+			{
+				_ext="${_out_image##*.}"
+				_ext=$(printf '%s' "$_ext" | tr '[:upper:]' '[:lower:]')
+				[ "$_ext" != "jpg" ] && [ "$_ext" != "png" ]
+			}
+	then
+		/usr/bin/convert "$@"
+		return
+	fi
+
+	magick -density 300 "$_input_pdf" -quality 100 "$_out_image"
 }
 
 btrfs_balance_root() {

@@ -1,0 +1,96 @@
+#!/bin/bash
+# shellcheck disable=SC1091
+
+# Script para instalar/desinstalar xyscan
+
+source "$HOME/.dotfiles/assets/shell/shell-utils"
+
+INSTALL_DIR="$HOME/.local/opt/xyscan"
+DESKTOP_FILE="$HOME/.local/share/applications/xyscan.desktop"
+BIN_FILE="$INSTALL_DIR/xyscan"
+
+_LOG_DIR="$(get_log_dir installers/xyscan)"
+
+# shellcheck disable=SC2068
+yay_install() {
+	local NEED_INSTALL=false
+	for package in $@; do
+		if ! yay -Q "$package" >/dev/null 2>&1; then
+			NEED_INSTALL=true
+			break
+		fi
+	done
+
+	if $NEED_INSTALL; then
+		yay -Sy --noconfirm --disable-download-timeout --needed $@ ||
+			log "error al instalar los paquetes $*"
+	fi
+}
+
+install() {
+	local VERSION FILENAME DOWNLOAD_URL TAR_LOCATION EXCTRACTED_LOCATION
+	VERSION="4.7.0"
+	FILENAME="xyscan-$VERSION-src.tgz"
+	DOWNLOAD_URL="https://rhig.physics.yale.edu/~ullrich/software/xyscan/Distributions/$VERSION/$FILENAME"
+	TAR_LOCATION="/tmp/xyscan-$VERSION.tar.gz"
+	EXCTRACTED_LOCATION="/tmp/xyscan"
+
+	[ ! -e "$TAR_LOCATION" ] && {
+		curl -L "$DOWNLOAD_URL" -o "$TAR_LOCATION" || exit
+	}
+
+	[ ! -e "$INSTALL_DIR" ] && {
+		tar -xzf "$TAR_LOCATION" -C /tmp >/dev/null 2>&1 || exit
+		cp -rf "$EXCTRACTED_LOCATION" "$INSTALL_DIR"
+	}
+
+	yay_install qt6-charts qt6-tools-desktop
+
+	if ! (
+		cd "$INSTALL_DIR" &&
+			cmake . &&
+			make all
+	); then
+		log "error al compilar la aplicación"
+	fi
+
+	cat <<-EOF >"$DESKTOP_FILE"
+		[Desktop Entry]
+		Type=Application
+		Name=xyscan
+		GenericName=A Data Thief For Scientist and More
+		Comment=Extract XY data and errors from plot images
+		TryExec=$BIN_FILE
+		Exec=$BIN_FILE %f
+		Icon=$INSTALL_DIR/platforms/unix/icons/xyscanIcon512.png
+		Terminal=false
+		StartupNotify=true
+		Categories=Graphics;Science;Qt;
+		Keywords=xy;digitize;plot;graph;scan;extract;data;
+
+		# Common raster formats (broad coverage without image/* wildcard)
+		MimeType=application/pdf;image/bmp;image/gif;image/jpeg;image/jpg;image/png;image/tiff;image/webp;image/x-xpixmap;image/x-portable-bitmap;image/x-portable-graymap;image/x-portable-pixmap;image/x-xbitmap;
+	EOF
+}
+
+uninstall() {
+	rm -rf "$INSTALL_DIR" "$DESKTOP_FILE"
+}
+
+clean() {
+	rm -f "$HOME/.config/tu/xyscan.conf"
+}
+
+help_msg() {
+	echo "Uso:" >&2
+	echo "  $(basename "$0") [--install/--uninstall/--clean]" >&2
+	exit 1
+}
+
+# Manejo de argumentos
+case "$1" in
+--install) install ;;
+--uninstall) uninstall ;;
+--clean) clean ;;
+*) help_msg ;;
+esac

@@ -10,6 +10,8 @@ GAPS_IN="$(grep -oP "gaps_in = \K.*" "$CONFIG")"
 GAPS_OUT="$(grep -oP "gaps_out = \K.*" "$CONFIG")"
 BORDER_SIZE="$(grep -oP "border_size = \K.*" "$CONFIG")"
 
+NOTIFY_CMD="notify-send -e --expire-time 1500"
+
 for var in "$GAPS_IN" "$GAPS_OUT" "$BORDER_SIZE"; do
 	if ! [[ "$var" =~ ^[0-9]+$ ]]; then
 		log "error al leer $CONFIG"
@@ -24,12 +26,12 @@ if [ -f "$STATE_FILE" ] && [ "$(cat $STATE_FILE)" = "off" ]; then
 	hyprctl keyword general:gaps_out "$GAPS_OUT"
 	hyprctl keyword general:border_size "$BORDER_SIZE"
 	echo "on" >"$STATE_FILE"
-	notify-send "Hyprland" "Bordes y gaps activados" --expire-time=1500
+	$NOTIFY_CMD "Hyprland" "Bordes y gaps activados"
 else
 	# Desactivar bordes y gaps
 	hyprctl keyword general:gaps_in 0
 	hyprctl keyword general:gaps_out 0
 	hyprctl keyword general:border_size 0
 	echo "off" >"$STATE_FILE"
-	notify-send "Hyprland" "Bordes y gaps desactivados" --expire-time=1500
+	$NOTIFY_CMD "Hyprland" "Bordes y gaps desactivados"
 fi

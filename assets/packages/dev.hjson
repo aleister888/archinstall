@@ -29,6 +29,7 @@
     "extra/sleuthkit",
     "extra/volatility3"
   ],
+  "net": ["extra/bind", "extra/openbsd-netcat"],
   "kotlin": ["kotlin", "gradle", "ktlint"],
   "python": ["python-pandas", "python-scikit-learn"],
   "linters": ["astyle", "prettier", "sassc", "shfmt", "stylua"],
