@@ -23,6 +23,7 @@
   ],
   "vlc": [
     "vlc",
+    "vlc-plugin-ass",
     "vlc-plugin-ffmpeg",
     "vlc-plugin-freetype",
     "vlc-plugin-matroska",

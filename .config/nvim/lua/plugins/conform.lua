@@ -41,7 +41,7 @@ return {
 				prepend_args = { "--print-width", "80" },
 			},
 			astyle = {
-				prepend_args = { "--style=java", "--indent=tab=8", "--squeeze-lines=1", "-n" },
+				prepend_args = { "--style=java", "--indent=spaces=4", "--squeeze-lines=1", "-n" },
 			},
 			latexindent = {
 				prepend_args = {

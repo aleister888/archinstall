@@ -1,15 +1,38 @@
 #!/bin/bash
 # shellcheck disable=SC2153
 
-# KeePassXC escala el tamaño del cursos incorrectamente, este script trata de
+# KeePassXC escala el tamaño del cursor incorrectamente, este script trata de
 # corregir dicho comportamiento reduciendo el tamaño del cursor en función del
 # factor de escalado del monitor.
 
-# Calculamos el tamaño del cursor necesario
+VALID_SIZES=(16 24 32 48 64 96)
+
+# Obtenemos el tamaño de cursor ideal que compensaría el escalado perfectamente
 ACTIVE_MONITOR=$(hyprctl monitors -j | jq '.[] | select(.focused == true)')
 SCALE=$(echo "$ACTIVE_MONITOR" | jq -r '.scale')
-SCALE=$(echo "scale=0; (2*$SCALE + 0.5)/1 / 2" | bc) # Aproximamos a un multipo de 0.5
-CURSOR_SIZE=$(echo "($XCURSOR_SIZE / $SCALE + 0.5)/1" | bc)
+IDEAL=$(echo "scale=0; $XCURSOR_SIZE / $SCALE" | bc -l)
 
-# Iniciamos keepassxc
+# Tomamos el cursor de $VALID_SIZES que más se acerca a $IDEAL
+CURSOR_SIZE=${VALID_SIZES[0]}
+
+diff() { # |a - b|
+	local a=$1
+	local b=$2
+	local diff=$((a - b))
+	echo $((diff < 0 ? -diff : diff))
+}
+
+# DIFF = |IDEAL - SIZE|
+BEST_DIFF=$(diff "$IDEAL" "${VALID_SIZES[0]}")
+
+for SIZE in "${VALID_SIZES[@]}"; do
+	DIFF=$(diff "$IDEAL" "$SIZE")
+
+	if [[ $DIFF -lt $BEST_DIFF ]]; then
+		BEST_DIFF=$DIFF
+		CURSOR_SIZE=$SIZE
+	fi
+done
+
+# Ejecutamos con el tamaño del cursor ajustado
 XCURSOR_SIZE=$CURSOR_SIZE /usr/bin/keepassxc

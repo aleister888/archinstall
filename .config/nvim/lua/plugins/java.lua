@@ -159,8 +159,9 @@ return {
 				end
 
 				local class_dir_escaped = escape_path(class_dir)
+				-- Ejecutar con assertions activadas
 				local run_cmd = string.format(
-					"cd %s; time java %s %s %s",
+					"cd %s; time java -ea %s %s %s",
 					project_dir_escaped,
 					exec_flags,
 					class_dir_escaped,

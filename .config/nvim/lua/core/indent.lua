@@ -23,6 +23,7 @@ local filetype_configs = {
 	python = { expandtab = true, tabstop = 4, shiftwidth = 4 },
 	rasi = { expandtab = true },
 	rust = { expandtab = true, tabstop = 4, shiftwidth = 4 },
+	java = { expandtab = true, tabstop = 4, shiftwidth = 4 },
 	sh = { tabstop = 4, shiftwidth = 4 },
 	sql = { expandtab = true, tabstop = 4, shiftwidth = 4 },
 	tex = { smartindent = true, expandtab = true, tabstop = 2, shiftwidth = 2, conceallevel = 0 },
