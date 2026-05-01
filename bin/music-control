@@ -1,6 +1,10 @@
 #!/bin/sh -x
+# shellcheck disable=SC1091
+# Controla la reproducción de la música
 
-# Controlar la reproducción de la música
+. "$HOME/.dotfiles/assets/shell/shell-utils-sh"
+
+TMP_DIR="$(get_tmp_dir music-control)"
 
 [ "$(pgrep "$(basename "$0")" | wc -l)" -ge 3 ] && exit 1
 
@@ -12,7 +16,7 @@ fi
 
 # Reemplazar caracteres conflictivos para pango markup
 escape_markup() {
-	sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g;'
+	sed 's/</\&lt;/g; s/>/\&gt;/g;'
 }
 
 PLAYER="$(music-priority)"
@@ -32,11 +36,30 @@ else
 
 	if [ "$1" != "play-pause" ] && ! $QUIET; then
 		$HIDE_NOTIFICATIONS
-		TITLE="$(music-metadata -S -t | escape_markup)"
-		ARTIST="$(music-metadata -S -a | escape_markup)"
-		ALBUM="<i>$(music-metadata -S -A | escape_markup)</i>"
+		COVER_FILE="${TMP_DIR}/cover"
+		TITLE_FILE="${TMP_DIR}/title"
+		ARTIST_FILE="${TMP_DIR}/artist"
+		ALBUM_FILE="${TMP_DIR}/album"
+		music-metadata -c >"$COVER_FILE" &
+		music-metadata -S -t >"$TITLE_FILE" &
+		music-metadata -S -a >"$ARTIST_FILE" &
+		music-metadata -S -A >"$ALBUM_FILE" &
+		wait
 
-		notify-send -e -i "$(music-metadata -c)" -a "$APP_ICON" \
+		COVER="$(cat "$COVER_FILE")"
+		TITLE="$(cat "$TITLE_FILE" | escape_markup)"
+		ARTIST="$(cat "$ARTIST_FILE" | escape_markup)"
+		ALBUM="$(cat "$ALBUM_FILE" | escape_markup)"
+
+		[ "$TITLE" = "Publicidad" ] && return
+
+		[ -z "$TITLE" ] && TITLE="N/A"
+		[ -z "$ARTIST" ] && ARTIST="N/A"
+		[ -z "$ALBUM" ] && ALBUM="N/A"
+
+		ALBUM="<i>$ALBUM</i>"
+
+		notify-send -e -i "$COVER" -a "$APP_ICON" \
 			"$TITLE" "$ARTIST\n$ALBUM"
 	fi
 fi

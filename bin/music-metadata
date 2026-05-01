@@ -1,4 +1,9 @@
 #!/bin/bash
+# shellcheck disable=SC1091
+
+. "$HOME/.dotfiles/assets/shell/shell-utils-sh"
+
+TMP_DIR="$(get_cache_tmp_dir music-metadata)"
 
 shopt -s extglob
 
@@ -10,6 +15,13 @@ shopt -s extglob
 PLAYER="$(music-priority)"
 # Si la música se está reproduciendo en el navegador, esperamos un tiempo
 [ "$PLAYER" = "$BROWSER" ] && sleep 1
+
+is_image() {
+	case "$(file --dereference --brief --mime-type "$1")" in
+	image/*) return 0 ;;
+	*) return 1 ;;
+	esac
+}
 
 makesafe() {
 	if [ "${#1}" -gt "$FACT" ]; then
@@ -60,11 +72,58 @@ metaprint() {
 		esac
 	fi
 
-	[ -z "$OUT" ] && exit 1
+	[ -z "$OUT" ] && return 1
 
 	[ "$WITHSAFE" == "true" ] && OUT=$(makesafe "$OUT")
 
 	echo "${OUT%%+([[:space:]])}"
+}
+
+# shellcheck disable=SC2155
+get_cover() {
+	local PLACEHOLDER="$HOME/.dotfiles/assets/images/music-control_placeholder.png"
+	local COVER COVER_FILE MBID ARTIST ALBUM
+	COVER=$(playerctl --player="$PLAYER" metadata mpris:artUrl)
+	COVER_FILE="${TMP_DIR}/cover"
+	rm -f "$COVER_FILE"
+
+	if [[ $COVER =~ ^file:// ]]; then
+		echo "${COVER#file://}"
+		return
+	fi
+
+	# Si el archivo no está en local, lo descargamos usando el MBID para tener
+	# una caché global que sirva para todos los servicios
+	ARTIST="$(playerctl metadata --player="$PLAYER" artist)"
+	ALBUM="$(playerctl metadata --player="$PLAYER" album)"
+	if [ -n "$ARTIST" ] && [ -n "$ALBUM" ]; then
+		MBID=$(curl -sG "https://musicbrainz.org/ws/2/release/" \
+			--data-urlencode "query=artist:${ARTIST} release:${ALBUM}" \
+			--data-urlencode "fmt=json" | jq -r '.releases[0].id // empty')
+		if [ -n "$MBID" ]; then
+			COVER_FILE="${TMP_DIR}/$MBID"
+			if [ ! -s "$COVER_FILE" ]; then
+				curl -sL \
+					"https://coverartarchive.org/release/$MBID/front" \
+					-o "$COVER_FILE"
+				if [ -s "$COVER_FILE" ] && ! is_image "$COVER_FILE"; then
+					rm -f "$COVER_FILE"
+				fi
+			fi
+		fi
+	fi
+
+	# Si no se pudo descargar unsando el MBID usamos la URL de playerct
+	if [ ! -s "$COVER_FILE" ] && [[ $COVER =~ ^https:// ]]; then
+		COVER_FILE="${TMP_DIR}/cover"
+		wget -q "$COVER" -O "$COVER_FILE"
+	fi
+
+	if [ -s "$COVER_FILE" ]; then
+		echo "$COVER_FILE"
+	else
+		echo "$PLACEHOLDER"
+	fi
 }
 
 help_msg() {
@@ -118,20 +177,7 @@ while [[ "$#" -gt 0 ]]; do
 		exit
 		;;
 	-c)
-		COVER=$(playerctl --player="$PLAYER" metadata mpris:artUrl)
-		if [ -z "$COVER" ]; then
-			echo "$HOME/.dotfiles/assets/images/music-control_placeholder.png"
-		else
-			if [ "$PLAYER" == "tauon" ]; then
-				echo "${COVER#file://}"
-			elif [[ $COVER =~ ^https:// ]]; then
-				TMP_COVER="/tmp/music-metadata"
-				wget "$COVER" -O "$TMP_COVER"
-				echo "$TMP_COVER"
-			else
-				echo "$COVER"
-			fi
-		fi
+		get_cover
 		exit
 		;;
 	-s)
