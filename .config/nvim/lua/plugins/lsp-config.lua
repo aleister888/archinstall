@@ -6,7 +6,6 @@ local servers = {
 	"kotlin_language_server",
 	"markdown_oxide",
 	"pylsp",
-	"rust_analyzer",
 	"texlab",
 }
 

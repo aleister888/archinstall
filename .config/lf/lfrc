@@ -31,7 +31,7 @@ map T cd /run/media
 map V push :!nvim<space>$f
 
 map <c-z> drag-and-drop
-cmd drag-and-drop $setsid -f dragon-drop -a -x $fx
+cmd drag-and-drop $setsid -f dragon-drop -s 64 -a -x $fx
 
 map <enter> push :open-file-with<space>
 cmd open-file-with %export ; setsid -f "$@" "$fx"

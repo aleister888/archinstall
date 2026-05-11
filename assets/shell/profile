@@ -15,6 +15,7 @@ fi
 [ -d "$HOME/.local/bin/utils" ] && PATH="$HOME/.local/bin/utils:$PATH"
 [ -d "$HOME/.local/bin/installers/" ] && PATH="$HOME/.local/bin/installers:$PATH"
 [ -d "$HOME/.nix-profile/bin" ] && PATH="$HOME/.nix-profile/bin:$PATH"
+[ -d "$HOME/.local/share/cargo/bin" ] && PATH="$HOME/.local/share/cargo/bin:$PATH"
 
 # Eliminamos LF_LEVEL para evitar falsos positivos al detectar si
 # un script está siendo llamado directamente por lf.

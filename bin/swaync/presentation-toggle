@@ -11,6 +11,5 @@ if pgrep -f --quiet swayidle; then
 else
 	setsid -f swayidle -w timeout "$TIMEOUT_SCREEN" \
 		'hyprctl dispatch dpms off' resume 'hyprctl dispatch dpms on' >/dev/null 2>&1
-
-	setsid -f swayidle -w timeout "$TIMEOUT_LOCK" 'hyprlock' >/dev/null 2>&1
+	setsid -f swayidle -w timeout "$TIMEOUT_LOCK" 'pgrep -x hyprlock >/dev/null || hyprlock'
 fi
