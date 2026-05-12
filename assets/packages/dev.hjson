@@ -1,6 +1,7 @@
 {
   "db": ["dbeaver"],
   "diagrams": ["drawio-desktop"],
+  "docs": ["mkdocs"],
   "general": [
     "android-tools",
     "bash-language-server",
