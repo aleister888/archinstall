@@ -26,6 +26,10 @@ trap 'pgrep -f "$0" >"$PROCESSLIST"' EXIT
 # Directorio de descargas (firefox)
 ensure_dir /tmp/01_firefox_downloads >/dev/null
 
+xdg-mime default firefox.desktop x-scheme-handler/http
+xdg-mime default firefox.desktop x-scheme-handler/https
+xdg-mime default firefox.desktop text/html
+
 [ -x /usr/bin/joycond ] && ! pgrep -x joycond && setsid -f /usr/bin/joycond
 [ -x /usr/bin/joycond-cemuhook ] && ! pgrep -f joycond-cemuhook && setsid -f /usr/bin/joycond-cemuhook
 [ -x /usr/bin/sunshine ] && ! pgrep -f sunshine && setsid -f /usr/bin/sunshine

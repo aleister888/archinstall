@@ -13,8 +13,8 @@ Y="$5"
 X="$4"
 
 # WARN: El script genera una imagen de preview para lf e imprime un texto con
-# información sobre el archivo. Queremos que el script también sirva para
-# generar la imagen de preview e imprimir su ruta.
+#       información sobre el archivo. Queremos que el script también sirva para
+#       generar la imagen de preview e imprimir su ruta.
 #
 # Para ello en definimos la siguiente función:
 called_from_lf() { [ -n "$LF_LEVEL" ]; }
@@ -250,7 +250,7 @@ text/plain)
 
 text/* | */xml | */x-shellscript | */x-xcursor | */x-theme | */x-desktop | \
 	*/x-troff-man | */x-ruby | */yaml | */toml | */sql | */x-php | */x-empty | \
-	*/x-xbel | */x-subrip)
+	*/x-xbel | */x-subrip | */msword-template)
 	called_from_lf || exit
 
 	case "$(file --dereference --brief --mime-type -- "$1")" in

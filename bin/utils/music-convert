@@ -59,7 +59,7 @@ convert_file() {
 	local MIRROR_FILE="$2"
 
 	local OPTS
-	[ "$EXTENSION" = "mp3" ] && local OPTS="-codec:a libmp3lame -q:a 0 -b:a 320k"
+	[ "$EXTENSION" = "mp3" ] && local OPTS="-codec:a libmp3lame -q:a 0 -b:a 256k"
 	[ "$EXTENSION" = "m4a" ] && local OPTS="-codec:a aac"
 	[ "$EXTENSION" = "flac" ] && local OPTS="-codec:a flac -compression_level 12"
 

@@ -1,6 +1,7 @@
 {
   "db": ["dbeaver"],
-  "diagrams": ["drawio-desktop"],
+  "stats": ["tokei"],
+  "diagrams": ["drawio-desktop", "extra/python-graphviz"],
   "docs": ["mkdocs"],
   "general": [
     "android-tools",
