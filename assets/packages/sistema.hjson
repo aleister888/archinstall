@@ -24,6 +24,11 @@
     "uwsm",
     "wl-clip-persist"
   ],
+  "vpn-ual": [
+    "openfortivpn",
+    "systemd-resolvconf",
+    "networkmanager-openconnect"
+  ],
   "nix": ["nix"],
   "sys_ficheros": ["exfat-utils", "f2fs-tools", "udftools", "xfsprogs"],
   "kernel": ["linux-lts", "linux-lts-headers"],
