@@ -129,7 +129,8 @@
       "easyeffects": "google-music-manager-panel",
       "qBittorrent": "qbittorrent-tray",
       "redact": "entry-delete",
-      "vlc": "vlc-panel"
+      "vlc": "vlc-panel",
+      "no unread messages": "tray-message" // zulip
     }
   }
 }

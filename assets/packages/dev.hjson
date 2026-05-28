@@ -30,7 +30,8 @@
     "blackarch/reglookup",
     "extra/python-yara",
     "extra/sleuthkit",
-    "extra/volatility3"
+    "extra/volatility3",
+    "extra/wireshark-qt"
   ],
   "net": ["extra/bind", "extra/openbsd-netcat"],
   "kotlin": ["kotlin", "gradle", "ktlint"],

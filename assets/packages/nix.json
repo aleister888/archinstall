@@ -1,5 +1,9 @@
 {
-  "general": [{ "name": "pinta" }, { "name": "ventoy-full-gtk" }],
+  "general": [
+    { "name": "pinta" },
+    { "name": "ventoy-full-gtk" },
+    { "name": "zulip" }
+  ],
   "entorno": [
     { "name": "wl-color-picker" },
     { "name": "eyed3" },

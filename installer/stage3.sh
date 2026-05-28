@@ -144,6 +144,16 @@ sudo /usr/bin/cp -f \
 	"$REPO_DIR/assets/system/udev/50-org.freedesktop.NetworkManager.rules" \
 	/etc/polkit-1/rules.d/
 
+# Configurar mandos de PS4
+sudo /usr/bin/cp -f \
+	"$REPO_DIR/assets/system/udev/99-steam-controller-perms.rules" \
+	/etc/polkit-1/rules.d/
+
+# Permitir al usuario monitorizar los puertos USB
+sudo /usr/bin/cp -f \
+	"$REPO_DIR/assets/system/udev/99-wireshark-usbmon.rules" \
+	/etc/udev/rules.d/
+
 cat <<EOF | sudo /usr/bin/tee -a /etc/environment
 CARGO_HOME="$HOME/.local/share/cargo"
 GNUPGHOME="$HOME/.local/share/gnupg"
@@ -213,6 +223,7 @@ GROUPS=(
 	"users"
 	"uucp"
 	"video"
+	"wireshark"
 )
 for group in "${GROUPS[@]}"; do
 	sudo /usr/bin/usermod -aG "$group" "$USER"
