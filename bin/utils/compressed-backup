@@ -1,14 +1,8 @@
 #!/bin/bash
 # shellcheck disable=SC1091,SC2086,SC2164
-
 # Crear copias de seguridad como archivos comprimidos
 
 source "$HOME/.dotfiles/assets/shell/shell-utils"
-
-DELETE_OLD=false
-OG_DIR="$1"
-BAK_DIR="$2"
-DAYS="${3:-7}"
 
 help_msg() {
 	cat <<-EOF
@@ -22,24 +16,48 @@ help_msg() {
 	exit 1
 }
 
-while getopts "dh" opt; do
+DELETE_OLD=false
+
+while getopts ":dh" opt; do
 	case "$opt" in
-	d) DELETE_OLD="true" ;;
+	d) DELETE_OLD=true ;;
 	h) help_msg ;;
-	*) help_msg ;;
+	\?) help_msg ;;
 	esac
 done
+
+shift $((OPTIND - 1))
+[[ $# -ge 2 ]] || help_msg
+
+OG_DIR=$1
+BAK_DIR=$2
+DAYS=${3:-7}
 
 ensure_dir "$BAK_DIR" >/dev/null
 { [ ! -d "$OG_DIR" ] || [ ! -d "$BAK_DIR" ]; } && help_msg
 
 EXTENSION="tar.gz"
 BAK_NAME="$(date +'%Y-%m-%d_%H-%M-%S').$EXTENSION"
+BAK_PATH="${BAK_DIR}/${BAK_NAME}"
 
-cd "$OG_DIR"
-tar -czf "${BAK_DIR}/${BAK_NAME}" .
+cd "$OG_DIR" || exit 1
 
-print_msg "Copia de seguridad de ${OG_DIR} creada en ${BAK_DIR}/${BAK_NAME}"
+print_msg "Comenzando copia de seguridad"
+tar -czf "$BAK_PATH" .
+TAR_EXIT=$?
 
-[ "$DELETE_OLD" = true ] &&
-	find "$BAK_DIR" -type f -name "*.$EXTENSION" -mtime +$DAYS -exec rm {} \;
+if [ $TAR_EXIT -eq 0 ]; then
+	SIZE=$(du -sh "$BAK_PATH" | cut -f1)
+	print_msg "Copia de seguridad creada: $BAK_PATH ($SIZE)"
+else
+	log "El backup falló (código: $TAR_EXIT)"
+	rm -f $BAK_PATH
+	exit 1
+fi
+
+if [ "$DELETE_OLD" = true ]; then
+	print_msg "Eliminando backups con más de $DAYS días..."
+	find "$BAK_DIR" -type f -name "*.$EXTENSION" -mtime +$DAYS -print -delete >/dev/null 2>&1
+fi
+
+print_msg "¡Backup completado!"

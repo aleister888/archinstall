@@ -1,15 +1,10 @@
 #!/bin/sh -x
 # shellcheck disable=SC1091
 
-TIMEOUT_SCREEN=120
-TIMEOUT_LOCK=60
+#. "$HOME/.dotfiles/assets/shell/shell-utils-sh"
 
-. "$HOME/.dotfiles/assets/shell/shell-utils-sh"
-
-if pgrep -f --quiet swayidle; then
-	pkill swayidle
+if pgrep -f --quiet hypridle; then
+	pkill hypridle
 else
-	setsid -f swayidle -w timeout "$TIMEOUT_SCREEN" \
-		'hyprctl dispatch dpms off' resume 'hyprctl dispatch dpms on' >/dev/null 2>&1
-	setsid -f swayidle -w timeout "$TIMEOUT_LOCK" 'pgrep -x hyprlock >/dev/null || hyprlock'
+	hypridle
 fi

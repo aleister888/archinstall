@@ -67,7 +67,7 @@
           "label": "󰐯",
           "type": "toggle",
           "command": "~/.dotfiles/bin/swaync/presentation-toggle",
-          "update-command": "bash -c 'pgrep swayidle >/dev/null && echo false || echo true'"
+          "update-command": "bash -c 'pgrep hypridle >/dev/null && echo false || echo true'"
         },
         {
           "label": "",

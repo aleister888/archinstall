@@ -13,15 +13,11 @@
     }
   ],
   "dev": [
+    { "name": "jetbrains.rust-rover" },
     { "name": "dmg2img" },
     {
       "name": "payload-dumper-go",
       "desc": "para extraer vmbeta.img desde payload.bin"
-    },
-    { "name": "github-desktop" },
-    {
-      "name": "chipsec",
-      "desc": "framework de auditoría de seguridad de hardware/firmware"
     }
   ],
   "guitarra": [
