@@ -4,13 +4,12 @@
 source "$HOME/.dotfiles/assets/shell/shell-utils"
 
 CONFIG="$HOME/.config/hypr/hyprland/appearance.conf"
-STATE_FILE="/tmp/hypr-decorations-state"
+STATE_FILE="$TMP_BASE_DIR/hypr-decorations-state"
 
 GAPS_IN="$(grep -oP "gaps_in = \K.*" "$CONFIG")"
 GAPS_OUT="$(grep -oP "gaps_out = \K.*" "$CONFIG")"
 BORDER_SIZE="$(grep -oP "border_size = \K.*" "$CONFIG")"
-
-NOTIFY_CMD="notify-send -e --expire-time 1500"
+ROUDING="$(grep -oP "rounding = \K.*" "$CONFIG")"
 
 for var in "$GAPS_IN" "$GAPS_OUT" "$BORDER_SIZE"; do
 	if ! [[ "$var" =~ ^[0-9]+$ ]]; then
@@ -25,13 +24,13 @@ if [ -f "$STATE_FILE" ] && [ "$(cat $STATE_FILE)" = "off" ]; then
 	hyprctl keyword general:gaps_in "$GAPS_IN"
 	hyprctl keyword general:gaps_out "$GAPS_OUT"
 	hyprctl keyword general:border_size "$BORDER_SIZE"
+	hyprctl keyword decoration:rounding "$ROUDING"
 	echo "on" >"$STATE_FILE"
-	$NOTIFY_CMD "Hyprland" "Bordes y gaps activados"
 else
 	# Desactivar bordes y gaps
 	hyprctl keyword general:gaps_in 0
 	hyprctl keyword general:gaps_out 0
 	hyprctl keyword general:border_size 0
+	hyprctl keyword decoration:rounding 0
 	echo "off" >"$STATE_FILE"
-	$NOTIFY_CMD "Hyprland" "Bordes y gaps desactivados"
 fi
