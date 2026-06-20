@@ -167,6 +167,10 @@ sudo /usr/bin/install -o root -g root -m 0644 \
 	"$REPO_DIR/assets/system/services/trackpad-fix/trackpad-fix-service" \
 	/etc/systemd/system/trackpad-fix.service
 
+sudo /usr/bin/install -o root -g root -m 0644 \
+	"$REPO_DIR/assets/system/services/scheduler-service" \
+	/etc/systemd/system/scheduler-service.service
+
 #-------------------------------------------------------------------------------
 
 ln -s /tmp/ "$HOME/Descargas"

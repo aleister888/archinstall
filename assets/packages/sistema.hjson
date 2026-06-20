@@ -24,6 +24,7 @@
     "uwsm",
     "wl-clip-persist"
   ],
+  "scheduler": ["scx-scheds"],
   "vpn-ual": [
     "openfortivpn",
     "systemd-resolvconf",

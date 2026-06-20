@@ -3,9 +3,9 @@ user_pref("browser.download.dir", "/tmp/01_firefox_downloads");
 user_pref("browser.download.useDownloadDir", true);
 user_pref("browser.download.folderList", 2);
 
-// Desactivar cuentas de firefox
-user_pref("identity.fxaccounts.enabled", false);
-user_pref("identity.fxaccounts.toolbar.enabled", false);
+// Activar cuentas de firefox
+user_pref("identity.fxaccounts.enabled", true);
+user_pref("identity.fxaccounts.toolbar.enabled", true);
 
 // Permitir restaurar la sesión
 user_pref("privacy.clearOnShutdown_v2.historyFormDataAndDownloads", false);
