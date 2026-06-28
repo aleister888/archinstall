@@ -143,6 +143,8 @@ EOF
 
 #-------------------------------------------------------------------------------
 
+sudo /usr/bin/archlinux-java set java-21-openjdk
+
 "$HOME"/.dotfiles/updater/conf-services
 "$HOME"/.dotfiles/updater/install-bin &
 "$HOME"/.dotfiles/updater/install-conf

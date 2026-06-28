@@ -16,6 +16,7 @@
     "libjpeg6-turbo",
     "mailcap",
     "man-db",
+    "croc", // easy p2p file transfer
     "net-tools",
     "realtime-privileges",
     "socat",

@@ -123,8 +123,6 @@ done
 
 echo "KEYMAP=es" | sudo /usr/bin/tee -a /etc/vconsole.conf
 
-sudo /usr/bin/archlinux-java set java-21-openjdk
-
 audio-setup
 libvirt-setup
 
