@@ -7,8 +7,8 @@
   "control-center-layer": "top",
   "layer-shell": true,
   "layer-shell-cover-screen": true,
-  "control-center-margin-top": 32,
-  "control-center-margin-bottom": 40,
+  "control-center-margin-top": 128,
+  "control-center-margin-bottom": 0,
   "control-center-margin-right": 40,
   "control-center-margin-left": 0,
   "notification-2fa-action": true,
@@ -25,7 +25,7 @@
   "hide-on-action": false,
   "text-empty": "Sin Notificaciones",
   "script-fail-notify": true,
-  "widgets": ["buttons-grid", "title", "dnd", "mpris", "notifications"],
+  "widgets": ["buttons-grid", "title", "dnd", "notifications", "mpris"],
   "widget-config": {
     "notifications": {
       "vexpand": true
