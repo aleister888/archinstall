@@ -9,6 +9,8 @@ bookmarks
 .config/lf/colors
 .config/lf/icons
 
+.config/herdr/session.json
+
 .config/eww/C*
 .config/eww/dashboard.scss
 
