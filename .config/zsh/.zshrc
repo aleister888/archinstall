@@ -1,4 +1,6 @@
 # Plugins
+# shellcheck disable=SC1094,SC2155,SC1091
+
 source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
@@ -19,6 +21,7 @@ WORDCHARS=${WORDCHARS//\//} # Añadir '/' como delimitador
 
 #-------------------------------------------------------------------------------
 
+# shellcheck disable=SC2164,SC2046
 function fzf_dir() {
 	local SELECTED="$(find . | fzf --reverse --header='Ir a la localización')"
 	[ -d "$SELECTED" ] && cd "$SELECTED"
@@ -41,8 +44,9 @@ printf '\033[?1h\033=' >/dev/tty
 # Historial
 #-------------------------------------------------------------------------------
 
-HISTSIZE=10000            # Líneas de historial en memoria
+# shellcheck disable=2034
 SAVEHIST=10000            # Líneas de historial que se guardan en el archivo
+HISTSIZE=10000            # Líneas de historial en memoria
 setopt hist_ignore_dups   # Ignorar duplicados consecutivos
 setopt hist_reduce_blanks # Quitar espacios extra
 setopt hist_verify        # Verifica antes de ejecutar desde el historial
@@ -61,6 +65,7 @@ function command_not_found_handler() {
 # Prompt
 #-------------------------------------------------------------------------------
 
+# shellcheck disable=SC1094,SC2155,SC2063
 function parse_git_branch() {
 	git branch 2>/dev/null | grep '^*' | colrm 1 2
 }
@@ -70,10 +75,12 @@ function git_prompt_info() {
 	[[ -n $branch ]] && echo "%F{yellow}($branch)%f"
 }
 
-PROMPT='%F{magenta}%~%f $(git_prompt_info)%f$ '
+# shellcheck disable=2034,2016
+PROMPT='%F{blue}%~%f $(git_prompt_info)%f$ '
 setopt promptsubst
 
 . "$HOME/.dotfiles/assets/shell/shell-utils-sh"
 
-echo "$(/usr/bin/date '+%A %d de %B'); $(/usr/bin/uptime -p)"
+pfetch
+/usr/bin/date '+%A %d de %B'
 package_info_print

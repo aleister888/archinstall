@@ -45,22 +45,44 @@ move_hardcoded_dir() {
 	fi
 }
 
-# Mover archivos según la especificación XDG
+remove_if_only_contains() {
+	_dir="$1"
+	_keep="$2"
 
+	[ -z "$(find "$_dir" -mindepth 1 -maxdepth 1 ! -name "$_keep" 2>/dev/null)" ] &&
+		rm -rf "$_dir"
+}
+
+# Mover archivos según la especificación XDG
 [ -d "$HOME/.npm" ] && npm_xdg
 
-merge_delete "$HOME/.pki" "$XDG_DATA_HOME/pki/"
-merge_delete "$HOME/.gnupg" "$XDG_DATA_HOME/gnupg"
-merge_delete "$HOME/.cargo" "$XDG_DATA_HOME/cargo"
-merge_delete "$HOME/go" "$XDG_DATA_HOME/go"
+(
+	merge_delete "$HOME/.pki" "$XDG_DATA_HOME/pki/"
+	merge_delete "$HOME/.gnupg" "$XDG_DATA_HOME/gnupg"
+	merge_delete "$HOME/.cargo" "$XDG_DATA_HOME/cargo"
+	merge_delete "$HOME/go" "$XDG_DATA_HOME/go"
+	merge_delete "$HOME/.sqlite_history" "$XDG_CACHE_HOME/sqlite_history"
+	merge_delete "$HOME/.sonarlint" "$XDG_DATA_HOME/sonarlint"
+	merge_delete "$HOME/.ipython" "$XDG_CONFIG_HOME/ipython"
+	merge_delete "$HOME/.gradle" "$XDG_DATA_HOME/gradle"
+	merge_delete "$HOME/.android" "$XDG_DATA_HOME/android"
+	merge_delete "$HOME/.java" "$XDG_CONFIG_HOME"/java
+	merge_delete "$HOME/.eclipse" "$XDG_CONFIG_HOME"/eclipse
 
-moveto_xdg "$HOME/.pulse-cookie" "$XDG_CONFIG_HOME/pulse/cookie"
-moveto_xdg "$HOME/.gitconfig" "$XDG_CONFIG_HOME/git/config"
+	moveto_xdg "$HOME/.pulse-cookie" "$XDG_CONFIG_HOME/pulse/cookie"
+	moveto_xdg "$HOME/.gitconfig" "$XDG_CONFIG_HOME/git/config"
 
-move_hardcoded_dir "$HOME/.java" "$XDG_CONFIG_HOME/java"
-move_hardcoded_dir "$HOME/.codetogether" "$HOME/.config/codetogether"
-move_hardcoded_dir "$HOME/.webclipse" "$HOME/.config/webclipse"
-move_hardcoded_dir "$HOME/wekafiles" "$XDG_DATA_HOME/weka"
+	move_hardcoded_dir "$HOME/.java" "$XDG_CONFIG_HOME/java"
+	move_hardcoded_dir "$HOME/.codetogether" "$HOME/.config/codetogether"
+	move_hardcoded_dir "$HOME/.webclipse" "$HOME/.config/webclipse"
+	move_hardcoded_dir "$HOME/wekafiles" "$XDG_DATA_HOME/weka"
+
+	merge_delete "$HOME/.nix-channels" "$XDG_STATE_HOME/nix/channels"
+	merge_delete "$HOME/.nix-defexpr" "$XDG_STATE_HOME/nix/defexpr"
+
+	remove_if_only_contains "$HOME/.eclipse" "org.eclipse.oomph.p2"
+	remove_if_only_contains "$HOME/.ssl" "obsidian-local-rest-api.crt"
+) 2>/dev/null
 
 # Borrar archivos
 rm -f "$HOME/.wget-hsts"
@@ -73,4 +95,11 @@ rm -rf \
 	"$HOME/steam.desktop" \
 	"$XDG_CONFIG_HOME/menus" \
 	"$XDG_DATA_HOME/applications/wine"* \
-	"$XDG_DATA_HOME/desktop-directories"
+	"$XDG_DATA_HOME/desktop-directories" \
+	"$HOME/.wget-hsts" \
+	"$HOME/.fltk" \
+	"$HOME/.junie" \
+	"$HOME/.gervill" \
+	"$HOME/.zynaddsubfx-bank-cache.xml" \
+	"$HOME/.mono" \
+	"$HOME/.nix-profile" 2>/dev/null

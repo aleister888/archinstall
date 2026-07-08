@@ -1,7 +1,7 @@
 {
+  "librewolf": ["chaotic-aur/librewolf"],
   "general": [
     "gnome-clocks",
-    "gwenview",
     "handbrake",
     "handbrake-cli",
     "hplip",
@@ -12,7 +12,7 @@
     // lector comics
     "yacreader"
   ],
-  "gimp": ["aur/photogimp", "chaotic-aur/gimp-git"],
+  "gimp": ["aur/photogimp", "extra/gimp"],
   "krita": ["krita", "kseexpr"],
   "music_library": [
     "easytag",
@@ -50,7 +50,6 @@
     "chaotic-aur/arkenfox-user.js-git",
     "ca-certificates",
     "ca-certificates-mozilla",
-    "firefox",
     "thunderbird"
   ],
   "tauon": ["python-pypresence", "tauon-music-box"],

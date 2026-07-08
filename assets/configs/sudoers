@@ -32,7 +32,7 @@ Defaults:%wheel env_keep += "SUDO_USER SUDO_UID SUDO_GID LANG LC_ALL"
 %wheel ALL=(root) NOPASSWD: /usr/bin/sed ^.* /etc/systemd/logind.conf$
 %wheel ALL=(root) NOPASSWD: /usr/bin/cp ^-f .* /usr/lib/udev/rules.d/$
 
-# installer/modules/firefox-config
+# installer/modules/browser-config
 %wheel ALL=(root) NOPASSWD: /usr/bin/chmod 755 /usr/local/lib/arkenfox-auto-update
 
 # update.sh

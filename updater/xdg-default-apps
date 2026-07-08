@@ -64,9 +64,9 @@ set_default_mime_types "^.*/(g)?zip" "xarchiver"
 
 wait
 
-xdg-mime default firefox.desktop text/html
-xdg-mime default firefox.desktop x-scheme-handler/http
-xdg-mime default firefox.desktop x-scheme-handler/https
+xdg-mime default librewolf.desktop text/html
+xdg-mime default librewolf.desktop x-scheme-handler/http
+xdg-mime default librewolf.desktop x-scheme-handler/https
 
 # Establecemos el administrador de archivos predetermiando
 {

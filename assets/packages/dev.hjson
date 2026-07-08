@@ -1,6 +1,5 @@
 {
   "db": ["dbeaver"],
-  "stats": ["tokei"],
   "diagrams": ["drawio-desktop", "extra/python-graphviz"],
   "docs": ["mkdocs"],
   "general": [
@@ -30,12 +29,11 @@
     "blackarch/reglookup",
     "extra/python-yara",
     "extra/sleuthkit",
-    "extra/volatility3",
     "extra/wireshark-qt"
   ],
   "net": ["extra/bind", "extra/openbsd-netcat"],
   "kotlin": ["kotlin", "gradle", "ktlint"],
   "python": ["python-pandas", "python-scikit-learn"],
-  "linters": ["astyle", "prettier", "sassc", "shfmt", "stylua"],
+  "linters": ["astyle", "prettier", "shfmt", "stylua"],
   "rust": ["rust", "rust-src", "rust-analyzer", "sccache"]
 }

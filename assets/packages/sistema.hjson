@@ -1,6 +1,7 @@
 {
   "general": [
     "acpi",
+    "extra/pfetch-rs",
     "android-tools",
     "dash",
     "dashbinsh",

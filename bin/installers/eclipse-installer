@@ -37,6 +37,8 @@ install() {
 	sed -i 's|@user.home/eclipse-workspace|@user.home/.local/share/eclipse-workspace|' \
 		"$INSTALL_DIR/eclipse.ini"
 
+	echo '-Dosgi.configuration.area=@user.home/.config/eclipse' | tee -a "$INSTALL_DIR/eclipse.ini"
+
 	# Crear script de inicio
 	cat <<-EOF >"$RUN_SCRIPT"
 		#!/bin/sh

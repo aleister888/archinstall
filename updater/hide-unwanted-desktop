@@ -51,7 +51,12 @@ for ENTRY in "${ALL_IGNORE[@]}"; do
 	# Si la aplicación se eliminó, borramos el archivo desktop sobrante
 	elif [ -e "$MOD_DESKTOP" ]; then
 		sudo /usr/bin/rm "$MOD_DESKTOP" && log "archivo desktop sobrante eliminado: $ENTRY"
-	else
-		log "archivo desktop no encontrado: $ENTRY" WARN
+	#else
+	#	log "archivo desktop no encontrado: $ENTRY" WARN
 	fi
 done
+
+# Juegos de Steam
+find "$HOME/.local/share/applications" -maxdepth 1 -type f -name '*.desktop' -executable -delete
+
+rm "$HOME/.cache/rofi"*

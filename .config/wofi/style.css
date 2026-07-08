@@ -12,7 +12,7 @@ window {
 /* Caja que contiene a toda la ventana */
 #outer-box {
   padding: 8px;
-  border: 4px solid #98971a;
+  border: 3px solid #b8bb26;
   background-color: #1d2021;
   border-radius: 18px;
 }

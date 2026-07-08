@@ -186,6 +186,9 @@ create_trash_dir
 
 #-------------------------------------------------------------------------------
 
+# Usar xdg-dirs con comandos de nix antiguos
+echo "use-xdg-base-directories = true" | sudo /usr/bin/tee -a /etc/nix/nix.conf
+
 # Añadimos el Xresources
 XRES_FILE="$HOME/.config/Xresources"
 cp "$REPO_DIR/assets/configs/Xresources" "$XRES_FILE"

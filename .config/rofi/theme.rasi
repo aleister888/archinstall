@@ -4,7 +4,7 @@
 * {
   bg0: #1d2021;
   bg1: #282828;
-  bg3: #98971a;
+  bg3: #b8bb26;
   fg0: #ebdbb2;
   fg1: #a89984;
 }
@@ -21,7 +21,7 @@
 }
 
 window {
-  border: 4px;
+  border: 3px;
   border-color: @bg3;
   border-radius: 16px;
 

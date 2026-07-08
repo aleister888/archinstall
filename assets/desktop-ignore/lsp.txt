@@ -2,6 +2,7 @@ Surge-XT
 Surge-XT-FX
 amsynth
 ardour8
+ardour9
 carla
 carla-control
 carla-jack-multi
@@ -200,6 +201,7 @@ in.lsp_plug.lsp_plugins_trigger_midi_mono
 in.lsp_plug.lsp_plugins_trigger_midi_stereo
 in.lsp_plug.lsp_plugins_trigger_mono
 in.lsp_plug.lsp_plugins_trigger_stereo
+lsp-plugins
 patchmatrix
 wolf-spectrum
 zynaddsubfx-alsa
