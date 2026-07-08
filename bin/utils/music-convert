@@ -25,6 +25,8 @@ check_command "ffmpeg"
 check_command "glyrc"
 check_command "eyeD3"
 
+FORCE_RECODE=false
+
 usage() {
 	cat <<-EOF
 		Uso: $(basename "$0") [Flags] [Directorio original] [Directorio copia]
@@ -34,6 +36,10 @@ usage() {
 		       -mp3: Conviertir a mp3 (Default)
 		       -m4a: Conviertir a m4a
 		       -flac: Conviertir a flac
+		       -force: Recodificar siempre
+
+		       No se recodifican los archivos cuyo formato original ya es lossy,
+		       o si es lossless pero con el tamaño ya optimizado
 	EOF
 	exit
 }
@@ -61,7 +67,7 @@ convert_file() {
 	local OPTS
 	[ "$EXTENSION" = "mp3" ] && local OPTS="-codec:a libmp3lame -q:a 0 -b:a 256k"
 	[ "$EXTENSION" = "m4a" ] && local OPTS="-codec:a aac"
-	[ "$EXTENSION" = "flac" ] && local OPTS="-codec:a flac -compression_level 12"
+	[ "$EXTENSION" = "flac" ] && local OPTS="-codec:a flac -compression_level 12 -ar 44100 -sample_fmt s16"
 
 	2UTF8() {
 		iconv -f UTF-8 -t ASCII//TRANSLIT
@@ -122,7 +128,6 @@ add_lyrics() {
 	#
 	# Si no existe, obtenemos la letra de los metadatos del propio archivo.
 	# Si tampoco tiene la letra guardada dentro, la obtenemos de internet
-
 	if [ -f "$LRC_FILE" ]; then
 		cp "$LRC_FILE" "$TMPLYRICS"
 	else
@@ -144,13 +149,12 @@ add_lyrics() {
 		fi
 	fi
 
-	# Aveces si la canción tiene el mismo nombre que el álbum, glyrc puede
-	# devolver el tracklist en vez de la letra de la canción.
-	#
-	# Vamos a comprobar que no haya mas de 3 lineas numeradas para
-	# determinar si glyrc no ha devuelto un tracklist
-
 	if [ -f "$TMPLYRICS" ]; then
+		# Aveces si la canción tiene el mismo nombre que el álbum, glyrc puede
+		# devolver el tracklist en vez de la letra de la canción.
+		#
+		# Vamos a comprobar que no haya mas de 3 lineas numeradas para
+		# determinar si glyrc no ha devuelto un tracklist
 		COUNT_NUMS=$(grep -cP '^[[:space:]]*[0-9]+\.' "$TMPLYRICS")
 		[ "$COUNT_NUMS" -ge 3 ] && {
 			rm -f "$TMPLYRICS"
@@ -164,12 +168,69 @@ add_lyrics() {
 			metaflac --set-tag-from-file=LYRICS="$TMPLYRICS" "$MIRROR_FILE"
 
 		elif [ $EXTENSION = "m4a" ]; then
-			atomicparsley "$MIRROR_FILE" \
-				--lyrics "$(cat "$TMPLYRICS" | 2UTF8)" --overWrite >/dev/null 2>&1
+			atomicparsley "$MIRROR_FILE" --lyrics "$(cat "$TMPLYRICS" | 2UTF8)" --overWrite >/dev/null 2>&1
 		fi
 
 		rm -f "$TMPLYRICS"
 	fi
+}
+
+should_recode() {
+	local OG_FILE="$1"
+
+	$FORCE_RECODE && return 0
+
+	local FILE_EXTENSION
+	FILE_EXTENSION="${OG_FILE##*.}"
+	FILE_EXTENSION="${FILE_EXTENSION,,}"
+
+	# Si el formato objetivo no es flac, evitamos recodificar el archivo si ya
+	# tiene el formato deseado. Para flac nos puede interesar recodificar para
+	# reducir el tamaño del archivo si este tiene poca compresión o un samplerate
+	# o cantidad de bits grande. Pero con formatos lossy perderíamos calidad
+	# en la recodificación sin reducir el tamaño del archivo.
+	[ "$EXTENSION" != "flac" ] && {
+		[ "$FILE_EXTENSION" = "$EXTENSION" ] && return 1
+		return 0
+	}
+
+	# Convertimos si el archivo original esta en un formato sin compresión
+	case "$FILE_EXTENSION" in
+	wav | wave | aiff | aif | pcm)
+		return 0
+		;;
+	esac
+
+	# Si el original es flac obtenemos el samplerate y la cantidad de bits para
+	# decidir si recodificar o no
+	# de bits o frecuencia de muestreo.
+	if [ "$FILE_EXTENSION" = "flac" ]; then
+		local INFO
+		INFO=$(ffprobe -v error \
+			-select_streams a:0 \
+			-show_entries stream=sample_rate,bits_per_raw_sample,bits_per_sample \
+			-of default=noprint_wrappers=1:nokey=0 \
+			"$OG_FILE")
+
+		local SAMPLE_RATE
+		local BITS
+
+		SAMPLE_RATE=$(echo "$INFO" | awk -F= '/sample_rate/ {print $2}')
+		BITS=$(echo "$INFO" | awk -F= '/bits_per_raw_sample/ {print $2}')
+
+		# Algunos FLAC no rellenan bits_per_raw_sample
+		[ -z "$BITS" ] &&
+			BITS=$(echo "$INFO" | awk -F= '/bits_per_sample/ {print $2}')
+
+		[ "${BITS:-16}" -gt 16 ] && return 0
+		[ "${SAMPLE_RATE:-44100}" -gt 44100 ] && return 0
+
+		# Con la calidad del archivo, no merece la pena recodificar
+		return 1
+	fi
+
+	# MP3, AAC, OGG, etc.
+	return 1
 }
 
 process() {
@@ -177,18 +238,15 @@ process() {
 	local MIRROR_FILE="$2"
 	local RELATIVE_FILE="$3"
 
-	local FILE_EXTENSION
-	FILE_EXTENSION="${OG_FILE##*.}"
-	FILE_EXTENSION="${FILE_EXTENSION,,}"
-
 	# Si el archivo ya esta en el formato deseado, simplemente lo copiamos
-	if [ "$FILE_EXTENSION" = "$EXTENSION" ]; then
+	#if [ "$FILE_EXTENSION" = "$EXTENSION" ] && ! $FORCE_RECODE; then
+	if should_recode "$OG_FILE"; then
+		echo "Convirtiendo $RELATIVE_FILE a $EXTENSION..."
+		convert_file "$OG_FILE" "$MIRROR_FILE"
+	else
 		echo "Copiando $RELATIVE_FILE..."
 		mkdir -p "$(dirname "$MIRROR_FILE")"
 		cp -f "$OG_FILE" "$MIRROR_FILE"
-	else
-		echo "Convirtiendo $RELATIVE_FILE a $EXTENSION..."
-		convert_file "$OG_FILE" "$MIRROR_FILE"
 	fi
 
 	[ "$LYRICS" = true ] && add_lyrics "$OG_FILE" "$MIRROR_FILE" "$RELATIVE_FILE"
@@ -212,6 +270,10 @@ while [[ $# -gt 0 ]]; do
 		;;
 	-flac)
 		EXTENSION="flac"
+		shift
+		;;
+	-force)
+		FORCE_RECODE=true
 		shift
 		;;
 	-l)
