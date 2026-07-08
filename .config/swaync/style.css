@@ -231,6 +231,7 @@ progressbar progress {
   border: none;
   border-radius: 12px;
   box-shadow: var(--shadow-opts);
+  border: 4px solid var(--accent-color);
   background: var(--bg);
   margin: 6px;
 }

@@ -12,6 +12,7 @@
     // lector comics
     "yacreader"
   ],
+  "gimp": ["aur/photogimp", "chaotic-aur/gimp-git"],
   "krita": ["krita", "kseexpr"],
   "music_library": [
     "easytag",
