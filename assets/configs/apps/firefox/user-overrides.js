@@ -78,3 +78,6 @@ user_pref("media.eme.enabled", true);
 
 // Desactivar el restaurar sesión (después de un crasheo)
 user_pref("browser.sessionstore.resume_from_crash", false);
+
+// Desactivar las pestañas verticales
+user_pref("sidebar.verticalTabs", false);

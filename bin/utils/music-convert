@@ -245,6 +245,8 @@ process() {
 		convert_file "$OG_FILE" "$MIRROR_FILE"
 	else
 		echo "Copiando $RELATIVE_FILE..."
+
+		MIRROR_FILE="$MIRROR_DIR/$RELATIVE_FILE"
 		mkdir -p "$(dirname "$MIRROR_FILE")"
 		cp -f "$OG_FILE" "$MIRROR_FILE"
 	fi

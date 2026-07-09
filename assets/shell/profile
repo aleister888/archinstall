@@ -89,6 +89,7 @@ export SONARLINT_USER_HOME="$XDG_DATA_HOME/sonarlint"
 export IPYTHONDIR="$XDG_CONFIG_HOME/ipython"
 export GRADLE_USER_HOME="$XDG_DATA_HOME"/gradle
 export ANDROID_USER_HOME="$XDG_DATA_HOME"/android
+export PYTHONSTARTUP="$REPO_DIR"/bin/python/pythonrc
 
 # Iniciar Hyprland desde tty
 #-------------------------------------------------------------------------------

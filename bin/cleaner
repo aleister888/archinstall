@@ -87,19 +87,23 @@ remove_if_only_contains() {
 # Borrar archivos
 rm -f "$HOME/.wget-hsts"
 rm -rf \
+	"$HOME/.debug" \
+	"$HOME/.fltk" \
+	"$HOME/.gervill" \
 	"$HOME/.gtkrc-2.0" \
+	"$HOME/.junie" \
+	"$HOME/.mono" \
+	"$HOME/.nix-profile" \
+	"$HOME/.tor project" \
+	"$HOME/.wget-hsts" \
 	"$HOME/.wine" \
 	"$HOME/.xsession-errors" \
 	"$HOME/.yarnrc" \
+	"$HOME/.zynaddsubfx-bank-cache.xml" \
 	"$HOME/Escritorio" \
 	"$HOME/steam.desktop" \
 	"$XDG_CONFIG_HOME/menus" \
 	"$XDG_DATA_HOME/applications/wine"* \
 	"$XDG_DATA_HOME/desktop-directories" \
-	"$HOME/.wget-hsts" \
-	"$HOME/.fltk" \
-	"$HOME/.junie" \
-	"$HOME/.gervill" \
-	"$HOME/.zynaddsubfx-bank-cache.xml" \
-	"$HOME/.mono" \
-	"$HOME/.nix-profile" 2>/dev/null
+	"$HOME/.python_history" \
+	2>/dev/null
