@@ -98,3 +98,7 @@ for pkg in "${TARGET_PACKAGES[@]}"; do
 		nix profile add --impure "$FLAKE_REF" $PRIORITY_FLAG
 	fi
 done
+
+nix profile wipe-history
+nix store gc
+nix store optimise

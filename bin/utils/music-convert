@@ -177,7 +177,6 @@ add_lyrics() {
 
 should_recode() {
 	local OG_FILE="$1"
-
 	$FORCE_RECODE && return 0
 
 	local FILE_EXTENSION
@@ -189,47 +188,51 @@ should_recode() {
 	# reducir el tamaño del archivo si este tiene poca compresión o un samplerate
 	# o cantidad de bits grande. Pero con formatos lossy perderíamos calidad
 	# en la recodificación sin reducir el tamaño del archivo.
-	[ "$EXTENSION" != "flac" ] && {
-		[ "$FILE_EXTENSION" = "$EXTENSION" ] && return 1
-		return 0
-	}
+	if [ "$FILE_EXTENSION" = "$EXTENSION" ]; then
+		# Si el original es flac obtenemos el samplerate y la cantidad de bits para
+		# decidir si recodificar o no
+		# de bits o frecuencia de muestreo.
+		if [ "$FILE_EXTENSION" = "flac" ]; then
+			local INFO
+			INFO=$(ffprobe -v error \
+				-select_streams a:0 \
+				-show_entries stream=sample_rate,bits_per_raw_sample,bits_per_sample \
+				-of default=noprint_wrappers=1:nokey=0 \
+				"$OG_FILE")
 
-	# Convertimos si el archivo original esta en un formato sin compresión
+			local SAMPLE_RATE BITS
+			SAMPLE_RATE=$(echo "$INFO" | awk -F= '/sample_rate/ {print $2}')
+			BITS=$(echo "$INFO" | awk -F= '/bits_per_raw_sample/ {print $2}')
+
+			# Algunos FLAC no rellenan bits_per_raw_sample
+			[ -z "$BITS" ] &&
+				BITS=$(echo "$INFO" | awk -F= '/bits_per_sample/ {print $2}')
+
+			if [ "${BITS:-16}" -gt 16 ] || [ "${SAMPLE_RATE:-44100}" -gt 44100 ]; then
+				return 0
+			fi
+
+			# Con la calidad del archivo, no merece la pena recodificar
+			return 1
+		else
+			# Si el archivo esta ya esta en el formato deseado y no es un archivo
+			# flac entonces no reconvertimos
+			# TODO: Converitr si es un formato distinto pero lossy y usar un case
+			# para tomar decisiones en función del FILE_EXTENSION
+			return 1
+		fi
+	fi
+
+	# Convertimos si el archivo original esta en un formato lossless
 	case "$FILE_EXTENSION" in
-	wav | wave | aiff | aif | pcm)
+	wav | wave | aiff | aif | pcm | flac)
 		return 0
 		;;
 	esac
 
-	# Si el original es flac obtenemos el samplerate y la cantidad de bits para
-	# decidir si recodificar o no
-	# de bits o frecuencia de muestreo.
-	if [ "$FILE_EXTENSION" = "flac" ]; then
-		local INFO
-		INFO=$(ffprobe -v error \
-			-select_streams a:0 \
-			-show_entries stream=sample_rate,bits_per_raw_sample,bits_per_sample \
-			-of default=noprint_wrappers=1:nokey=0 \
-			"$OG_FILE")
-
-		local SAMPLE_RATE
-		local BITS
-
-		SAMPLE_RATE=$(echo "$INFO" | awk -F= '/sample_rate/ {print $2}')
-		BITS=$(echo "$INFO" | awk -F= '/bits_per_raw_sample/ {print $2}')
-
-		# Algunos FLAC no rellenan bits_per_raw_sample
-		[ -z "$BITS" ] &&
-			BITS=$(echo "$INFO" | awk -F= '/bits_per_sample/ {print $2}')
-
-		[ "${BITS:-16}" -gt 16 ] && return 0
-		[ "${SAMPLE_RATE:-44100}" -gt 44100 ] && return 0
-
-		# Con la calidad del archivo, no merece la pena recodificar
-		return 1
-	fi
-
-	# MP3, AAC, OGG, etc.
+	# No convertimos de lossy a lossy
+	# TODO: Hacer el script más mantenible con variables bandera OG_LOSSY, por
+	# si añadimos más de un formato lossless poder reutilizar lógica
 	return 1
 }
 
@@ -244,11 +247,13 @@ process() {
 		echo "Convirtiendo $RELATIVE_FILE a $EXTENSION..."
 		convert_file "$OG_FILE" "$MIRROR_FILE"
 	else
-		echo "Copiando $RELATIVE_FILE..."
-
 		MIRROR_FILE="$MIRROR_DIR/$RELATIVE_FILE"
-		mkdir -p "$(dirname "$MIRROR_FILE")"
-		cp -f "$OG_FILE" "$MIRROR_FILE"
+
+		if [ ! -f "$MIRROR_FILE" ]; then
+			echo "Copiando $RELATIVE_FILE..."
+			mkdir -p "$(dirname "$MIRROR_FILE")"
+			cp -f "$OG_FILE" "$MIRROR_FILE"
+		fi
 	fi
 
 	[ "$LYRICS" = true ] && add_lyrics "$OG_FILE" "$MIRROR_FILE" "$RELATIVE_FILE"
@@ -360,6 +365,6 @@ done < <(find "$MIRROR_DIR" -type f)
 
 # Borramos los directorios vacíos que pueden haber quedado
 find "$MIRROR_DIR" \
-	-type d -empty -not -path "*/.stfolder" -delete -print 2>/dev/null
+	-type d -empty -not -path "*/.stfolder" -delete -print >/dev/null 2>&1
 
 rm -rf "$TMP_DIR"

@@ -4,6 +4,7 @@
     "gnome-clocks",
     "handbrake",
     "handbrake-cli",
+    "chaotic-aur/czkawka-gui",
     "hplip",
     "keepassxc",
     "okular",
@@ -49,8 +50,7 @@
   "mozilla": [
     "chaotic-aur/arkenfox-user.js-git",
     "ca-certificates",
-    "ca-certificates-mozilla",
-    "thunderbird"
+    "ca-certificates-mozilla"
   ],
   "tauon": ["python-pypresence", "tauon-music-box"],
   "no-foss": ["discord", "telegram-desktop"],

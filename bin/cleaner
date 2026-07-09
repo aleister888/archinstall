@@ -94,6 +94,8 @@ rm -rf \
 	"$HOME/.junie" \
 	"$HOME/.mono" \
 	"$HOME/.nix-profile" \
+	"$HOME/.python_history" \
+	"$HOME/.swt" \
 	"$HOME/.tor project" \
 	"$HOME/.wget-hsts" \
 	"$HOME/.wine" \
@@ -105,5 +107,4 @@ rm -rf \
 	"$XDG_CONFIG_HOME/menus" \
 	"$XDG_DATA_HOME/applications/wine"* \
 	"$XDG_DATA_HOME/desktop-directories" \
-	"$HOME/.python_history" \
 	2>/dev/null
