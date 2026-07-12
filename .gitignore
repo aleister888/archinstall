@@ -9,7 +9,7 @@ bookmarks
 .config/lf/colors
 .config/lf/icons
 
-config/waybar/waybar_box.css
+.config/waybar/waybar_box.css
 
 .config/herdr/session.json
 
