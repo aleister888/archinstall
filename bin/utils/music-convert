@@ -183,22 +183,26 @@ should_recode() {
 	FILE_EXTENSION="${OG_FILE##*.}"
 	FILE_EXTENSION="${FILE_EXTENSION,,}"
 
-	# Si el formato objetivo no es flac, evitamos recodificar el archivo si ya
-	# tiene el formato deseado. Para flac nos puede interesar recodificar para
-	# reducir el tamaño del archivo si este tiene poca compresión o un samplerate
-	# o cantidad de bits grande. Pero con formatos lossy perderíamos calidad
-	# en la recodificación sin reducir el tamaño del archivo.
+	# Si el archivo esta ya en el formato deseado, solo recodificamos si es flac
+	# y bajo ciertas condiciones
 	if [ "$FILE_EXTENSION" = "$EXTENSION" ]; then
-		# Si el original es flac obtenemos el samplerate y la cantidad de bits para
-		# decidir si recodificar o no
-		# de bits o frecuencia de muestreo.
+		# Para flac nos puede interesar recodificar para reducir el tamaño del
+		# archivo si este tiene poca compresión o un samplerate o cantidad de
+		# bits grande.
+		#
+		# Con formatos lossy aumentaríamos el tamaño del archivo. Y si el archivo
+		# flac ya esta optimizado solo perderíamos tiempo reconvirtiendolo.
+		#
+		# TODO: Comprobar nivel de compresión
 		if [ "$FILE_EXTENSION" = "flac" ]; then
 			local INFO
-			INFO=$(ffprobe -v error \
-				-select_streams a:0 \
-				-show_entries stream=sample_rate,bits_per_raw_sample,bits_per_sample \
-				-of default=noprint_wrappers=1:nokey=0 \
-				"$OG_FILE")
+			INFO=$(
+				ffprobe -v error \
+					-select_streams a:0 \
+					-show_entries stream=sample_rate,bits_per_raw_sample,bits_per_sample \
+					-of default=noprint_wrappers=1:nokey=0 \
+					"$OG_FILE"
+			)
 
 			local SAMPLE_RATE BITS
 			SAMPLE_RATE=$(echo "$INFO" | awk -F= '/sample_rate/ {print $2}')
@@ -217,8 +221,9 @@ should_recode() {
 		else
 			# Si el archivo esta ya esta en el formato deseado y no es un archivo
 			# flac entonces no reconvertimos
+			#
 			# TODO: Converitr si es un formato distinto pero lossy y usar un case
-			# para tomar decisiones en función del FILE_EXTENSION
+			#       para tomar decisiones en función del FILE_EXTENSION
 			return 1
 		fi
 	fi
@@ -231,8 +236,9 @@ should_recode() {
 	esac
 
 	# No convertimos de lossy a lossy
+	#
 	# TODO: Hacer el script más mantenible con variables bandera OG_LOSSY, por
-	# si añadimos más de un formato lossless poder reutilizar lógica
+	#       si añadimos más de un formato lossless poder reutilizar lógica
 	return 1
 }
 
@@ -242,7 +248,6 @@ process() {
 	local RELATIVE_FILE="$3"
 
 	# Si el archivo ya esta en el formato deseado, simplemente lo copiamos
-	#if [ "$FILE_EXTENSION" = "$EXTENSION" ] && ! $FORCE_RECODE; then
 	if should_recode "$OG_FILE"; then
 		echo "Convirtiendo $RELATIVE_FILE a $EXTENSION..."
 		convert_file "$OG_FILE" "$MIRROR_FILE"
