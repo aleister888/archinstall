@@ -1,0 +1,14 @@
+#waybar > box {
+  background: #1d2021;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+
+  border-left: 3px solid #b8bb26;
+  border-right: 3px solid #b8bb26;
+  border-bottom: 3px solid #b8bb26;
+
+  box-shadow: 1px 1px 3px 2px #151515;
+  margin: 0px 8px 8px 8px;
+}

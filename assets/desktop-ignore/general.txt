@@ -17,6 +17,7 @@ hdspconf
 hdspmixer
 hp-uiscan
 htop
+btop
 hwmixvolume
 ipython
 jconsole-java-openjdk

@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2068
+#shellcheck disable=SC2068,SC1091
 
 source "$HOME/.dotfiles/assets/shell/shell-utils"
 
@@ -8,29 +8,44 @@ STATE_FILE="$TMP_BASE_DIR/hypr-decorations-state"
 
 GAPS_IN="$(grep -oP "gaps_in = \K.*" "$CONFIG")"
 GAPS_OUT="$(grep -oP "gaps_out = \K.*" "$CONFIG")"
-BORDER_SIZE="$(grep -oP "border_size = \K.*" "$CONFIG")"
-ROUDING="$(grep -oP "rounding = \K.*" "$CONFIG")"
+ROUNDING="$(grep -oP "rounding = \K.*" "$CONFIG")"
+ANIMATIONS_ENABLED="$(
+	grep -A 1 -P '^animations {$' "$CONFIG" |
+		grep -oP 'enabled = \K.*'
+)"
 
-for var in "$GAPS_IN" "$GAPS_OUT" "$BORDER_SIZE"; do
+for var in "$GAPS_IN" "$GAPS_OUT"; do
 	if ! [[ "$var" =~ ^[0-9]+$ ]]; then
 		log "error al leer $CONFIG"
 		exit 1
 	fi
 done
 
-# Leer el estado actual
-if [ -f "$STATE_FILE" ] && [ "$(cat $STATE_FILE)" = "off" ]; then
-	# Activar bordes y gaps
-	hyprctl keyword general:gaps_in "$GAPS_IN"
-	hyprctl keyword general:gaps_out "$GAPS_OUT"
-	hyprctl keyword general:border_size "$BORDER_SIZE"
-	hyprctl keyword decoration:rounding "$ROUDING"
-	echo "on" >"$STATE_FILE"
+if [ -f "$STATE_FILE" ] && [ "$(cat "$STATE_FILE")" = "off" ]; then
+	gaps_in="$GAPS_IN"
+	gaps_out="$GAPS_OUT"
+	rounding="$ROUNDING"
+	animations="$ANIMATIONS_ENABLED"
+	css="box_decorations.css"
+	state="on"
 else
-	# Desactivar bordes y gaps
-	hyprctl keyword general:gaps_in 0
-	hyprctl keyword general:gaps_out 0
-	hyprctl keyword general:border_size 0
-	hyprctl keyword decoration:rounding 0
-	echo "off" >"$STATE_FILE"
+	gaps_in=0
+	gaps_out=0
+	rounding=0
+	animations=no
+	css="box_simple.css"
+	state="off"
 fi
+
+hyprctl keyword general:gaps_in "$gaps_in"
+hyprctl keyword general:gaps_out "$gaps_out"
+hyprctl keyword decoration:rounding "$rounding"
+hyprctl keyword animations:enabled "$animations"
+
+ln -sf \
+	"$REPO_DIR/assets/configs/apps/waybar/$css" \
+	"$REPO_DIR/.config/waybar/waybar_box.css"
+
+killall -SIGUSR2 waybar
+
+echo "$state" >"$STATE_FILE"

@@ -12,31 +12,14 @@ set +e
 LOG_DIR=$(get_log_dir browser-config)
 TMP_DIR=$(get_tmp_dir browser-config)
 
-# Ejecutar Firefox en modo headless para generar un perfil predeterminado
-for ((i = 1; i <= 3; i++)); do
-	export MOZ_LOG_FILE="$LOG_DIR/firefox.log"
-	timeout -k 25s 5s firefox --headless 2>&1 || true
-	[ -d "$BROWSER_DIR" ] && break
-	log "(intento: $i) firefox no pudo iniciarse"
-	sleep 5
-done
-
-# Ejecutar Librewolf en modo headless para generar un perfil predeterminado
-for ((i = 1; i <= 3; i++)); do
-	export MOZ_LOG_FILE="$LOG_DIR/librewolf.log"
-	timeout -k 25s 5s librewolf --headless 2>&1 || true
-	[ -d "$BROWSER_DIR" ] && break
-	log "(intento: $i) librewolf no pudo iniciarse"
-	sleep 5
-done
-
 install() {
-	PROFILES_INI="$BROWSER_DIR/profiles.ini"
+	PROFILES_INI="$BROWSER_DIR/installs.ini"
 
 	get_profile() {
 		# Obtiene el perfil predeterminado del archivo
 		# profiles.ini después de ejecutar Firefox
-		grep -oP "Default=\K.*" "$PROFILES_INI" | head -n1
+		[ -f "$PROFILES_INI" ] &&
+			grep -oP '^Default=\K.*' "$PROFILES_INI" | head -n1
 	}
 
 	makeuserjs() {
@@ -64,18 +47,16 @@ install() {
 			"checkmarks-web-ext"
 			"clearurls"
 			"darkreader"
-			"decentraleyes"
-			"enlight"
 			"istilldontcareaboutcookies"
 			"keepassxc-browser"
 			"sponsorblock"
 			"ublock-origin"
 			"violentmonkey"
-			"xbs"
 		)
 
 		mkdir -p "$PROFILE_DIR/extensions/"
 
+		echo "Descargando extensiones..."
 		# Para cada addon de la lista descargamos la extensión y la movemos
 		# dentro de nuestro perfil de Firefox
 		for ADDON in "${ADDON_LIST[@]}"; do
@@ -88,7 +69,8 @@ install() {
 			FILE="${ADDON_URL##*/}"
 
 			# Descargamos el addon en el directorio temporal
-			wget -q "$ADDON_URL" -O "$TMP_DIR/$FILE"
+			echo "Descargando $ADDON..."
+			wget -q "$ADDON_URL" -O "$TMP_DIR/$FILE" 2>/dev/null
 
 			# Extraemos el id de la extensión desde el archivo manifest.json
 			# (El addon debe guardarse en el perfil como ID.xpi)
@@ -103,9 +85,10 @@ install() {
 
 			# Si se pudo extraer el ID, guardamos el addon en el perfil
 			if [ -n "$ID" ]; then
-				mv "$TMP_DIR/$FILE" "$PROFILE_DIR/extensions/$ID.xpi"
+				mv "$TMP_DIR/$FILE" "$PROFILE_DIR/extensions/$ID.xpi" 2>/dev/null
 			fi
 		done
+		echo "¡Listo! Extensiones descargadas"
 
 		chown -R "$USER:$USER" "$PROFILE_DIR/extensions"
 	}
@@ -115,8 +98,39 @@ install() {
 		ln -fs "$HOME/.dotfiles/assets/configs/apps/firefox/userChrome.css" "$PROFILE_DIR"/chrome/
 	}
 
-	# Nos salimos si no se puedo obtener un perfil de usuario
-	PROFILE=$(get_profile) || return 1
+	# Ejecutar en modo headless para generar un perfil predeterminado
+	[ ! -f "$PROFILES_INI" ] &&
+		for ((i = 1; i <= 3; i++)); do
+			if [ -f /usr/bin/firefox ] && echo "$BROWSER_DIR" | grep -qi "firefox"; then
+				echo "(intento: $i) Ejecutando Firefox"
+				MOZ_LOG_FILE="$LOG_DIR/firefox.log" \
+					timeout -k 2s 10s /usr/bin/firefox --headless >/dev/null 2>&1 || true
+			fi
+
+			if [ -f /usr/bin/librewolf ] && echo "$BROWSER_DIR" | grep -qi "librewolf" &&
+				[ ! -f "$PROFILES_INI" ]; then
+				echo "(intento: $i) Ejecutando LibreWolf"
+				MOZ_LOG_FILE="$LOG_DIR/librewolf.log" \
+					timeout -k 2s 10s /usr/bin/librewolf --headless >/dev/null 2>&1 || true
+			fi
+
+			if [ -f "$PROFILES_INI" ]; then
+				echo "(intento: $i) perfil predeterminado encontrado"
+				break
+			fi
+		done
+
+	if [ ! -f "$PROFILES_INI" ]; then
+		echo "Error al crear el perfil predeterminado en $BROWSER_DIR"
+		return
+	fi
+
+	# Nos salimos si no se puedo obtener un perfil de usuario válido
+	if ! PROFILE=$(get_profile) && [ -n "$PROFILE" ]; then
+		echo "Error al obtener el perfil predeterminado desde $PROFILES_INI"
+		return
+	fi
+
 	PROFILE_DIR="$BROWSER_DIR/$PROFILE"
 
 	makeuserjs
@@ -125,6 +139,8 @@ install() {
 }
 
 BROWSER_DIR="$HOME/.config/mozilla/firefox"
+install
+BROWSER_DIR="$HOME/.mozilla/firefox"
 install
 BROWSER_DIR="$HOME/.config/librewolf/librewolf"
 install

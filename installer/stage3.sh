@@ -273,5 +273,4 @@ git config --global init.defaultBranch main
 touch "$HOME/.system_not_initialized"
 
 clear
-toilet "Instalación terminada"
 echo "La instalación ha terminado. Reinicia tu ordenador cuando estés listx"

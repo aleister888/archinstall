@@ -1,6 +1,5 @@
 {
   "general": [
-    "chaotic-aur/input-remapper-git",
     // drag and drop support for lf file manager
     "chaotic-aur/dragon-drop-git",
     "pkgfile",
@@ -25,8 +24,7 @@
     "xdg-desktop-portal-hyprland",
     "yad",
     "yt-dlp",
-    "zenity",
-    "lact"
+    "zenity"
   ],
   "musica": ["atomicparsley", "glyr", "lrcget-bin"],
   "edicion_audio": [
@@ -60,8 +58,7 @@
     "bc",
     "cdrtools",
     "chafa",
-    "cp-p-git",
-    "csvkit",
+    "aur/cp-p-git",
     "dos2unix",
     "expac",
     "eza",
@@ -72,13 +69,11 @@
     "jpegoptim",
     "odt2txt",
     "pamixer",
-    "parallel",
     "pdftk",
     "playerctl",
     "ripgrep",
     "shellcheck-bin",
     "stow",
-    "toilet",
     "tree"
   ],
   "gnuplot": [
@@ -87,14 +82,7 @@
     "extra/wxwidgets-gtk3"
   ],
   "bandeja_sisteam": ["network-manager-applet"],
-  "aplicaciones_gui": [
-    "hyprpaper",
-    "mpv",
-    "mpv-mpris",
-    "nsxiv",
-    "qalculate-gtk",
-    "sxiv"
-  ],
-  "aplicaciones_tui": ["htop"],
+  "aplicaciones_gui": ["hyprpaper", "mpv", "nsxiv", "qalculate-gtk"],
+  "aplicaciones_tui": ["btop"],
   "gaming/streaming": ["moonlight-qt"]
 }

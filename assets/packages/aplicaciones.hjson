@@ -39,7 +39,7 @@
     "libmupdf",
     "zathura-pdf-poppler"
   ],
-  "efectos_audio": ["easyeffects", "lsp-plugins", "lv2-plugins"],
+  "efectos_audio": ["easyeffects", "lsp-plugins-vst3"],
   "neovim": [
     "neovim",
     "hunspell-en_us",

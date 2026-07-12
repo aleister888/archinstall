@@ -62,6 +62,17 @@ cleaner
 
 has_bluetooth_device && setsid -f blueman-applet &>/dev/null
 
+# Waybar
+#-------------------------------------------------------------------------------
+
+ln -sf \
+	"$REPO_DIR/assets/configs/apps/waybar/box_decorations.css" \
+	"$REPO_DIR/.config/waybar/waybar_box.css"
+
+uwsm app -- waybar &
+uwsm app -- udiskie -t -a &
+uwsm app -- nm-applet &
+
 # Watchers
 #-------------------------------------------------------------------------------
 
