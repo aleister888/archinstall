@@ -68,6 +68,7 @@ remove_if_only_contains() {
 	merge_delete "$HOME/.android" "$XDG_DATA_HOME/android"
 	merge_delete "$HOME/.java" "$XDG_CONFIG_HOME"/java
 	merge_delete "$HOME/.eclipse" "$XDG_CONFIG_HOME"/eclipse
+	merge_delete "$HOME/.m2" "$XDG_CACHE_HOME/maven/repository"
 
 	moveto_xdg "$HOME/.pulse-cookie" "$XDG_CONFIG_HOME/pulse/cookie"
 	moveto_xdg "$HOME/.gitconfig" "$XDG_CONFIG_HOME/git/config"

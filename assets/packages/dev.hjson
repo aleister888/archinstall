@@ -20,6 +20,7 @@
     "smartmontools",
     "time",
     "tpm2-tools",
+    "extra/colordiff",
     "yarn"
   ],
   "forensics": [

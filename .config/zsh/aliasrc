@@ -10,6 +10,8 @@ alias webcam="ffplay /dev/video0"
 alias vi='nvim'
 alias vim='nvim'
 
+alias diff='colordiff'
+
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'

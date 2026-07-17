@@ -1,5 +1,5 @@
 #!/bin/sh
-# shellcheck disable=SC1091,SC2164
+# shellcheck disable=SC1091,SC2164,SC2139
 
 export REPO_DIR="$HOME/.dotfiles"
 
@@ -69,6 +69,7 @@ export _JAVA_AWT_WM_NONREPARENTING=1
 alias wget='wget --hsts-file="$XDG_CONFIG_HOME"/wget-hsts'
 alias gpg2='gpg2 --homedir "$XDG_DATA_HOME"/gnupg'
 alias adb='HOME="$XDG_DATA_HOME"/android adb'
+alias mvn="mvn -gs $XDG_CONFIG_HOME/maven/settings.xml"
 
 export PARALLEL_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"/parallel
 export RUSTC_WRAPPER="/usr/bin/sccache"
