@@ -165,6 +165,13 @@ sudo /usr/bin/install -o root -g root -m 0644 \
 	"$REPO_DIR/assets/system/services/trackpad-fix/trackpad-fix-service" \
 	/etc/systemd/system/trackpad-fix.service
 
+sudo /usr/bin/install -o root -g root -m 0755 \
+	"$REPO_DIR/assets/system/services/bluetooth-fix/bluetooth-fix" \
+	/usr/local/bin/fix-bluetooth
+sudo /usr/bin/install -o root -g root -m 0644 \
+	"$REPO_DIR/assets/system/services/bluetooth-fix/bluetooth-fix-service" \
+	/etc/systemd/system/bluetooth-fix.service
+
 sudo /usr/bin/install -o root -g root -m 0644 \
 	"$REPO_DIR/assets/system/services/scheduler-service" \
 	/etc/systemd/system/scheduler-service.service

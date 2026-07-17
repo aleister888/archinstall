@@ -1,0 +1,10 @@
+[Unit]
+Description=Reiniciar los módulos bluetooth
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/fix-bluetooth
+
+[Install]
+WantedBy=multi-user.target

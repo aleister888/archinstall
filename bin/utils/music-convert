@@ -247,19 +247,15 @@ process() {
 	local MIRROR_FILE="$2"
 	local RELATIVE_FILE="$3"
 
-	# Si el archivo ya esta en el formato deseado, simplemente lo copiamos
-	if should_recode "$OG_FILE"; then
-		echo "Convirtiendo $RELATIVE_FILE a $EXTENSION..."
-		convert_file "$OG_FILE" "$MIRROR_FILE"
-	else
-		MIRROR_FILE="$MIRROR_DIR/$RELATIVE_FILE"
-
-		if [ ! -f "$MIRROR_FILE" ]; then
+	[ ! -f "$MIRROR_FILE" ] &&
+		if should_recode "$OG_FILE"; then
+			echo "Convirtiendo $RELATIVE_FILE a $EXTENSION..."
+			convert_file "$OG_FILE" "$MIRROR_FILE"
+		else
 			echo "Copiando $RELATIVE_FILE..."
 			mkdir -p "$(dirname "$MIRROR_FILE")"
 			cp -f "$OG_FILE" "$MIRROR_FILE"
 		fi
-	fi
 
 	[ "$LYRICS" = true ] && add_lyrics "$OG_FILE" "$MIRROR_FILE" "$RELATIVE_FILE"
 }

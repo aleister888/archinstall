@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Hotfix: El dispositivo bluetooth aveces necsita reiniciarse si es que no
+# se cargo correctamente al iniciar el dispositivo
+
+if lsusb | grep "Intel Corp. AX211 Bluetooth"; then
+	/usr/bin/modprobe -r btusb btintel btrtl btbcm
+	/usr/bin/sleep 2
+	/usr/bin/modprobe btusb btintel btrtl btbcm
+fi

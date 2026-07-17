@@ -2,6 +2,7 @@
 
 # Aveces el trackpad necesita un dedo extra al reanudar el equipo después de
 # haberse suspendido. Como solución recargamos el modulo hid_multitouch.
+# TODO: Ejecuta solo si es un Lenovo Ideapad 1 y con un cierto delay
 
 lsmod | grep -q "^hid_multitouch" || exit 1
 

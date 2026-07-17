@@ -10,6 +10,7 @@
     "inotify-tools",
     "kernel-modules-hook",
     "lib32-gnutls",
+    "extra/bluez-deprecated-tools", // inspect/configure hci bluetooth interfaces
     "lib32-libjpeg-turbo",
     "lib32-libjpeg6-turbo",
     "libappimage",

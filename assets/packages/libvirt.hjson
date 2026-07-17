@@ -1,5 +1,5 @@
 {
-  "libvirt": ["dnsmasq", "edk2-ovmf", "libvirt", "swtpm"],
+  "libvirt": ["dnsmasq", "edk2-ovmf", "libvirt", "swtpm", "dmidecode"],
   "qemu": [
     "qemu-audio-sdl",
     "qemu-audio-spice",

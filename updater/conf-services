@@ -39,6 +39,7 @@ SERVICES=(
 	"syslog-ng@default.service"
 	"systemd-resolved"
 	"trackpad-fix"
+	"bluetooth-fix"
 	"scheduler-service"
 )
 
