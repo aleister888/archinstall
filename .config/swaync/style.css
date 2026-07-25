@@ -12,7 +12,7 @@
   --shadow-opts: 1px 1px 3px 2px #151515;
   --mpris-size: 128px; /* NOTA: Cambiar también en config.json */
   --art-margin: 24px; /* Margen para el módulo de MPRIS */
-  --border-width: 3px;
+  --border-width: 2px;
 }
 
 /********************/

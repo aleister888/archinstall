@@ -262,6 +262,10 @@ sudo /usr/bin/chmod 755 /usr/local/lib/arkenfox-auto-update
 sudo /usr/bin/install -o root -g root -m 644 \
 	"$REPO_DIR/assets/configs/syslog-ng.conf" /etc/syslog-ng/syslog-ng.conf
 
+hyprpm update
+yes y | hyprpm add https://github.com/hyprwm/hyprland-plugins
+hyprpm enable hyprbars
+
 # Configuramos sudo de forma segura
 sudo /usr/bin/install -o root -g root -m 440 \
 	"$REPO_DIR/assets/configs/sudoers" /etc/sudoers
