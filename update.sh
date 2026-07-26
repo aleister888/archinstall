@@ -96,8 +96,35 @@ INSTALLED_PKGS+=$(pacman -Qg | awk '{print $1}' | sort -u)    # Grupos
 PKGS_TO_INSTALL=$(comm -23 <(printf "%s\n" "$REPO_PKGS" | sort -u) \
 	<(printf "%s\n" "$INSTALLED_PKGS" | sort))
 
-if [ -n "$PKGS_TO_INSTALL" ] && [ "$CONNECTED" == "true" ]; then
+get_days_since_last_update() {
+	echo $((($(date +%s) - $(stat -c %Y /var/lib/pacman/local)) / 86400))
+}
+export -f get_days_since_last_update
+
+DAYS_SINCE_LAST_UPDATE=$(get_days_since_last_update)
+
+if [ $DAYS_SINCE_LAST_UPDATE -ge $UPDATE_INTERVAL_DAYS ] && $CONNECTED; then
+	sudo /usr/bin/pacman -Sy
+	PKGS_TO_UPDATE=$(pacman -Qu | awk '{print $1}')
+	PKGS_TO_UPDATE_COUNT=$(echo "$PKGS_TO_UPDATE" | wc -l)
+
+	if [ $PKGS_TO_UPDATE_COUNT -gt 0 ]; then
+		print_msg "Actualizando el sistema..."
+
+		if /usr/bin/sudo pacman -Syu; then
+			if echo "$PKGS_TO_UPDATE" | grep -q hyprland; then
+				add_hyprland_plugins
+				hyprpm update
+			fi
+
+			is_chroot || "$HOME"/.dotfiles/updater/nix-conf
+		fi
+	fi
+fi
+
+if [ -n "$PKGS_TO_INSTALL" ] && $CONNECTED; then
 	print_msg "Instalando nuevos paquetes..."
+
 	yay -Sy --noconfirm --needed --asexplicit $PKGS_TO_INSTALL
 fi
 
@@ -156,8 +183,6 @@ fc-cache -f &
 
 "$HOME"/.dotfiles/updater/xdg-default-apps &
 
-is_chroot || "$HOME"/.dotfiles/updater/nix-conf &
-
 #-------------------------------------------------------------------------------
 
 if [ ! -e "$REPO_DIR/assets/configs/index.theme" ]; then
@@ -207,8 +232,8 @@ cat <<-EOF | tee "$CONF_DIR/qt5ct/qt5ct.conf" "$CONF_DIR/qt6ct/qt6ct.conf" >/dev
 	style=Fusion
 
 	[Fonts]
-	fixed="Fira Sans Condensed Mono,12,0,0,0,0,0,0,0,0,Bold"
-	general="Fira Sans Condensed,12,0,0,0,0,0,0,0,0,Bold"
+	fixed="Fira Sans Compressed Mono,12,0,0,0,0,0,0,0,0,Bold"
+	general="Fira Sans Compressed,12,0,0,0,0,0,0,0,0,Bold"
 EOF
 
 #-------------------------------------------------------------------------------
@@ -219,10 +244,6 @@ download "$LF_ETC/colors.example" "$CONF_DIR/lf/colors" &
 download "$LF_ETC/icons.example" "$CONF_DIR/lf/icons" &
 
 #-------------------------------------------------------------------------------
-
-# Esperamos a que nix-conf termine para que wine este disponible y para
-# gestionar los archivos .desktop de nixpkgs
-wait
 
 "$HOME"/.dotfiles/updater/hide-unwanted-desktop
 
@@ -238,3 +259,5 @@ cp -f "$HOME/.dotfiles/assets/desktop/rdp.desktop" \
 }
 
 is_chroot || arkenfox-auto-update >/dev/null 2>&1
+
+wait

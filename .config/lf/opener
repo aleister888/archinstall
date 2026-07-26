@@ -86,7 +86,7 @@ image/*)
 video/*)
 	IFS=$'\n'
 	if [ "$#" -gt 1 ]; then
-		open_gui vlc "$@" --no-video-title-show -L
+		open_gui vlc "$@" -L
 	else
 		# Cuando los subtítulos no están empotrados y tienen soporte para varios
 		# lenguajes estos se suelen encontrar separados en varios archivos en un
@@ -119,9 +119,9 @@ video/*)
 		fi
 
 		if [ -z "$SUB_FILE" ]; then
-			open_gui vlc "$1" --no-video-title-show -L
+			open_gui vlc "$1" -L
 		else
-			open_gui vlc "$1" --no-video-title-show -L --sub-file="${1%/*}/$SUB_FILE"
+			open_gui vlc "$1" -L --sub-file="${1%/*}/$SUB_FILE"
 		fi
 	fi
 	;;

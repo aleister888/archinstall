@@ -12,7 +12,7 @@ set +e
 
 APP_DIR="$HOME/.local/share/TauonMusicBox"
 CONF="$APP_DIR/tauon.conf"
-BASE_FONT="Fira Sans Condensed"
+BASE_FONT="Fira Sans Compressed"
 
 install_themes() {
 	ensure_dir "$APP_DIR/theme/" >/dev/null

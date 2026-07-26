@@ -72,11 +72,11 @@ function parse_git_branch() {
 
 function git_prompt_info() {
 	local branch=$(parse_git_branch)
-	[[ -n $branch ]] && echo "%F{yellow}($branch)%f"
+	[[ -n $branch ]] && echo "%F{yellow}($branch)%f "
 }
 
 # shellcheck disable=2034,2016
-PROMPT='%F{blue}%~%f $(git_prompt_info)%f$ '
+PROMPT='%F{blue}%~%f $(git_prompt_info)%f'
 setopt promptsubst
 
 . "$HOME/.dotfiles/assets/shell/shell-utils-sh"

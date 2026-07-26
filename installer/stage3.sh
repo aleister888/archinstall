@@ -264,7 +264,6 @@ sudo /usr/bin/install -o root -g root -m 644 \
 
 hyprpm update
 yes y | hyprpm add https://github.com/hyprwm/hyprland-plugins
-hyprpm enable hyprbars
 
 # Configuramos sudo de forma segura
 sudo /usr/bin/install -o root -g root -m 440 \

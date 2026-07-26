@@ -1,5 +1,5 @@
 * {
-  font-family: "Symbols Nerd Font Mono", "Fira Sans Condensed";
+  font-family: "Symbols Nerd Font Mono", "Fira Sans Compressed";
   font-size: 18px;
   font-weight: 400;
   color: #ebdbb2;
@@ -12,7 +12,7 @@ window {
 /* Caja que contiene a toda la ventana */
 #outer-box {
   padding: 8px;
-  border: 2px solid #b8bb26;
+  border: 3px solid #b8bb26;
   background-color: #1d2021;
   border-radius: 18px;
 }

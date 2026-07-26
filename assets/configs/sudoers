@@ -49,3 +49,5 @@ Defaults:%wheel env_keep += "SUDO_USER SUDO_UID SUDO_GID LANG LC_ALL"
 %wheel ALL=(root) NOPASSWD: /usr/bin/cp ^-f .* /usr/local/share/applications/in.lsp_plug.lsp_plugins_[a-zA-Z0-9_-]+.desktop$
 
 %wheel ALL=(root) NOPASSWD: /usr/bin/systemd-detect-virt --chroot
+%wheel ALL=(root) NOPASSWD: /usr/bin/pacman ^-Sy$
+%wheel ALL=(root) NOPASSWD: /usr/bin/pacman ^-Syu$

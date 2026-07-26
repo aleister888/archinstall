@@ -11,6 +11,13 @@ if [ -e "${XDG_CONFIG_HOME:-$HOME/.config}/useralias" ]; then
 	. "${XDG_CONFIG_HOME:-$HOME/.config}/useralias"
 fi
 
+export UPDATE_INTERVAL_DAYS=7
+
+add_hyprland_plugins() {
+	hyprpm enable hyprbars
+	hyprpm enable hyprfocus
+}
+
 [ -d "$HOME/.local/bin" ] && PATH="$HOME/.local/bin:$PATH"
 [ -d "$HOME/.local/bin/utils" ] && PATH="$HOME/.local/bin/utils:$PATH"
 [ -d "$HOME/.local/bin/installers/" ] && PATH="$HOME/.local/bin/installers:$PATH"
@@ -19,7 +26,7 @@ fi
 
 # Eliminamos LF_LEVEL para evitar falsos positivos al detectar si
 # un script está siendo llamado directamente por lf.
-# Si no la eliminamos, cualquier proceso hijo lanzado desde lf
+# Si no la eliminamos, cualquier proceso hijo del shell que ejecuta lf
 # heredará la variable y parecerá que también fue invocado por lf.
 unset LF_LEVEL
 
@@ -102,6 +109,7 @@ if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
 	# para completar las tareas que no pueden realizarse dentro del chroot
 	[ -f "$HOME/.system_not_initialized" ] && check_connection && (
 		echo "Ejecutando tareas post-instalación..."
+		add_hyprland_plugins
 		cd "$REPO_DIR"
 		./update.sh &
 		~/.dotfiles/installer/post_install/tauon-config

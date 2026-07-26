@@ -42,10 +42,9 @@ hyprctl keyword general:gaps_out "$gaps_out"
 hyprctl keyword decoration:rounding "$rounding"
 hyprctl keyword animations:enabled "$animations"
 
-ln -sf \
+rm -f "$REPO_DIR/.config/waybar/waybar_box.css"
+cp -f \
 	"$REPO_DIR/assets/configs/apps/waybar/$css" \
-	"$REPO_DIR/.config/waybar/waybar_box.css"
-
-killall -SIGUSR2 waybar
+	"$HOME/.config/waybar/waybar_box.css"
 
 echo "$state" >"$STATE_FILE"

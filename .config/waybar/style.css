@@ -1,7 +1,7 @@
 * {
   color: #ebdbb2;
   font-family: "Symbols Nerd Font", "Fira Sans Compressed";
-  font-size: 22px;
+  font-size: 24px;
   border-radius: 4px;
 }
 
@@ -27,11 +27,11 @@
 }
 
 #workspaces {
-  font-weight: 600;
   margin: 6px 7.5px 6px 12px;
 }
 
 #workspaces .workspace-label {
+  font-weight: 600;
   margin-right: 8px;
 }
 

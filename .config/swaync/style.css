@@ -12,7 +12,7 @@
   --shadow-opts: 1px 1px 3px 2px #151515;
   --mpris-size: 128px; /* NOTA: Cambiar también en config.json */
   --art-margin: 24px; /* Margen para el módulo de MPRIS */
-  --border-width: 2px;
+  --border-width: 3px;
 }
 
 /********************/
@@ -22,9 +22,9 @@
 * {
   all: unset;
   font-family:
-    "Fira Sans Condensed", "Symbols Nerd Font", "Source Han Sans JP Light";
+    "Fira Sans Compressed", "Symbols Nerd Font", "Source Han Sans JP Light";
   transition: background 0.15s ease-in-out;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
 }
 
 /* Iconos */

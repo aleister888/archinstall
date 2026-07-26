@@ -10,7 +10,7 @@
 }
 
 * {
-  font: "Fira Sans Condensed 14";
+  font: "Fira Sans Compressed 16";
   text-color: @fg0;
 
   background-color: transparent;
@@ -21,7 +21,7 @@
 }
 
 window {
-  border: 2px;
+  border: 3px;
   border-color: @bg3;
   border-radius: 16px;
 
