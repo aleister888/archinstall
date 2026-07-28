@@ -7,17 +7,11 @@
 # Podemos reutilizar la lógica de flac-corruption-check y separarla en otro
 # script con funciones comunes.
 
-# TODO: Si el flag para añadir los lyrics esta activado comprobar si las
-# canciones en el original ya tienen la letra en un .lrc
-
-# TODO: Añadir la siguiente heurística: obtener el género de la canción usando
-# un regex y, en función de este, determinar el mejor proveedor de letras en glyrc.
-
 source "$HOME/.dotfiles/assets/shell/shell-utils"
 
 TMP_DIR=$(get_random_tmp_dir)
 
-MAX_JOBS=$(($(nproc) / 5 + 1))                              # n trabajos máximo
+MAX_JOBS=$(($(nproc) / 5 + 2))                              # n trabajos máximo
 WAIT_TIME=$(echo "scale=4; 1/$(((MAX_JOBS + 1) / 2))" | bc) # Espera entre trabajos
 
 check_command "atomicparsley"
@@ -30,6 +24,7 @@ FORCE_RECODE=false
 usage() {
 	cat <<-EOF
 		Uso: $(basename "$0") [Flags] [Directorio original] [Directorio copia]
+
 		     Flags:
 		       -l: Embeber letras
 		       -h: Mostrar este mensaje
@@ -38,8 +33,8 @@ usage() {
 		       -flac: Conviertir a flac
 		       -force: Recodificar siempre
 
-		       No se recodifican los archivos cuyo formato original ya es lossy,
-		       o si es lossless pero con el tamaño ya optimizado
+		     No se recodifican los archivos cuyo formato original ya es lossy,
+		     o si es lossless pero con el tamaño ya optimizado
 	EOF
 	exit
 }
@@ -87,6 +82,7 @@ convert_file() {
 	local ARTIST=$(echo "$MDATA" | get_meta artist)
 	local ALBUM_ARTIST=$(echo "$MDATA" | get_meta album_artist)
 	local ALBUM=$(echo "$MDATA" | get_meta album)
+	local GENRE=$(echo "$MDATA" | get_meta genre)
 	local TRACK=$(echo "$MDATA" | get_meta track | sed "s|/.*||")
 	local DISC=$(echo "$MDATA" | get_meta disc | sed "s|/.*||")
 	local DATE=$(echo "$MDATA" | get_meta date | sed "s|-.*||")
@@ -110,6 +106,7 @@ convert_file() {
 		-metadata date="$DATE" \
 		-metadata track="$TRACK" \
 		-metadata disc="$DISC" \
+		-metadata genre="$GENRE" \
 		"$MIRROR_FILE" >/dev/null 2>&1
 }
 

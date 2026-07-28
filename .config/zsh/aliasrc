@@ -30,8 +30,7 @@ alias rebuild_detector="checkrebuild -v"
 #-------------------------------------------------------------------------------
 
 update() {
-	yay -Syuu --sudoloop --answerclean --answerdiff --removemake
-	~/.dotfiles/updater/nix-conf -d
+	cd "$REPO_DIR" && ./update.sh
 }
 
 deepcleanup() {
