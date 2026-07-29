@@ -56,7 +56,7 @@ hl.config({
 				fg_color = "rgb(ebdbb2)",
 				size = 15,
 				icon = "",
-				action = "hyprctl dispatch 'hl.dsp.window.kill()'",
+				action = "hyprctl dispatch 'hl.dsp.window.close({ window = activewindow })'",
 			}),
 			hl.plugin.hyprbars.add_button({
 				bg_color = "rgb(d79921)",
