@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 # Cambiamos el foco de las ventanas de forma cíclica en función de si estamos en
 # un espacio normal o en el espacio especial "scratch"
@@ -18,7 +18,7 @@ index_scratch_addresses() {
 			jq -r '.[]
 			| select(.workspace.name=="special:scratch")
 			| select(.floating == true and .fullscreen == 0)
-			| "\(.focusHistoryID):\(.address)"' |
+			| "\(.focushistoryid):\(.address)"' |
 			sort | cut --delimiter=":" --fields="2"
 	)
 }
@@ -28,24 +28,62 @@ get_prop_from_address() {
 }
 
 focus_from_address() {
-	hyprctl dispatch focuswindow "address:$1"
-	hyprctl dispatch alterzorder top, "address:$1"
+	hyprctl dispatch "
+		hl.dsp.focus({
+			window = 'address:$1'
+		})
+	"
+	hyprctl dispatch "
+	hl.dsp.window.alter_zorder({
+		mode = 'top',
+		window = '$1'
+	})
+"
 }
 
 cycle_scratch() {
 	index_scratch_addresses
-	# Última ventana enfocada cronológicamente
-	local ADDRESS="${SCRATCH_ADDRESSES[-1]}"
 
-	focus_from_address "$ADDRESS"
+	if [ "${#SCRATCH_ADDRESSES[@]}" -eq 0 ]; then
+		return
+	fi
+
+	local CURRENT
+	CURRENT="$(hyprctl -j activewindow | jq -r '.address')"
+
+	local INDEX=-1
+
+	for i in "${!SCRATCH_ADDRESSES[@]}"; do
+		if [ "${SCRATCH_ADDRESSES[$i]}" = "$CURRENT" ]; then
+			INDEX=$i
+			break
+		fi
+	done
+
+	# Si no está en la lista, empieza por la última
+	if [ "$INDEX" -eq -1 ]; then
+		focus_from_address "${SCRATCH_ADDRESSES[-1]}"
+		return
+	fi
+
+	case "$ARG" in
+	prev)
+		NEXT=$(((INDEX - 1 + ${#SCRATCH_ADDRESSES[@]}) % ${#SCRATCH_ADDRESSES[@]}))
+		;;
+	next)
+		NEXT=$(((INDEX + 1) % ${#SCRATCH_ADDRESSES[@]}))
+		;;
+	esac
+
+	focus_from_address "${SCRATCH_ADDRESSES[$NEXT]}"
 }
 
 #-------------------------------------------------------------------------------
 
 cycle_master_monocle() {
 	case "$ARG" in
-	prev) hyprctl dispatch layoutmsg cycleprev ;;
-	next) hyprctl dispatch layoutmsg cyclenext ;;
+	prev) hyprctl eval 'hl.dispatch(hl.dsp.layout("cycleprev"))' ;;
+	next) hyprctl eval 'hl.dispatch(hl.dsp.layout("cyclenext"))' ;;
 	esac
 }
 
@@ -61,8 +99,6 @@ cycle_regular() {
 WORKSPACE="$(hyprctl -j activewindow | jq -r '.workspace.name')"
 
 case "$WORKSPACE" in
-"special:scratch")
-	cycle_scratch
-	;;
+"special:scratch") cycle_scratch ;;
 *) cycle_regular ;;
 esac

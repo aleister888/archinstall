@@ -26,6 +26,17 @@ return {
 			ktlint = {
 				prepend_args = { "-F" },
 			},
+			stylua = {
+				command = "stylua",
+				args = {
+					"--column-width",
+					"80",
+					"--stdin-filepath",
+					"$FILENAME",
+					"-",
+				},
+				stdin = true,
+			},
 			prettier_rasi = {
 				command = "prettier",
 				args = { "--parser", "css" },
@@ -34,14 +45,19 @@ return {
 			prettier_json = {
 				command = "prettier",
 				-- Desactivar el wrap para archivos json
-				args = { "--parser", "json", "--print-width", "80" },
+				args = { "--parser", "json", "--print-width", "100" },
 				stdin = true,
 			},
 			prettier = {
 				prepend_args = { "--print-width", "80" },
 			},
 			astyle = {
-				prepend_args = { "--style=java", "--indent=spaces=4", "--squeeze-lines=1", "-n" },
+				prepend_args = {
+					"--style=java",
+					"--indent=spaces=4",
+					"--squeeze-lines=1",
+					"-n",
+				},
 			},
 			latexindent = {
 				prepend_args = {

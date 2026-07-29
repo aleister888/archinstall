@@ -5,6 +5,12 @@ CURRENT_WORKSPACE="$(hyprctl -j activeworkspace | jq -r '.id')"
 SPECIAL_WORKSPACE="special:scratch"
 
 case "$WINDOW_WORKSPACE" in
-"$CURRENT_WORKSPACE") hyprctl dispatch movetoworkspacesilent "$SPECIAL_WORKSPACE" ;;
-"$SPECIAL_WORKSPACE") hyprctl dispatch movetoworkspacesilent "$CURRENT_WORKSPACE" ;;
+"$CURRENT_WORKSPACE")
+	hyprctl dispatch \
+		"hl.dsp.window.move({ workspace = \"$SPECIAL_WORKSPACE\", follow = false })"
+	;;
+"$SPECIAL_WORKSPACE")
+	hyprctl dispatch \
+		"hl.dsp.window.move({ workspace = \"$CURRENT_WORKSPACE\", follow = false })"
+	;;
 esac
