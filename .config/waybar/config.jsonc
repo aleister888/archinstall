@@ -5,6 +5,7 @@
   "margin": "0 0 0 0",
   "modules-left": [
     "hyprland/workspaces",
+    "hyprland/sumbmap",
     "custom/layout-icon"
     //"hyprland/window"
   ],
@@ -29,13 +30,7 @@
       "format": "{icon}",
       "icon-size": 16,
       "icon-theme": "Papirus-Dark",
-      "ignore-list": [
-        "Abrir archivos",
-        "lf hidden",
-        "FX: Track .*",
-        "xdg-desktop-portal-gtk",
-        ""
-      ]
+      "ignore-list": ["Abrir archivos", "lf hidden", "FX: Track .*", "xdg-desktop-portal-gtk", ""]
     }
   },
   "custom/layout-icon": {

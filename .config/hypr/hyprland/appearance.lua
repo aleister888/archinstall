@@ -1,10 +1,12 @@
 hl.env("GTK_THEME", "Gruvbox-Dark")
 hl.env("GDK_BACKEND", "wayland,x11,*")
 
+local config = require("hyprland/config")
+
 hl.config({
 	general = {
-		gaps_in = 12,
-		gaps_out = 24,
+		gaps_in = config.gaps_in,
+		gaps_out = config.gaps_out,
 
 		border_size = 3,
 		resize_on_border = false,
@@ -15,7 +17,7 @@ hl.config({
 	},
 
 	decoration = {
-		rounding = 12,
+		rounding = config.rounding,
 
 		shadow = {
 			enabled = true,
@@ -39,6 +41,8 @@ hl.config({
 
 	plugin = {
 		hyprbars = {
+			enabled = true,
+
 			bar_height = 30,
 
 			["col.text"] = "rgb(ebdbb2)",
@@ -81,6 +85,7 @@ hl.config({
 		},
 
 		hyprfocus = {
+			enable = true,
 			keyboard_focus_animation = "slide",
 			slide_height = 10,
 		},
@@ -133,7 +138,7 @@ hl.config({
 			leaf = "hyprfocusIn",
 			enabled = true,
 			speed = 1,
-			bezier = "easeInQuart",
+			bezier = "easeOutQuart",
 		}),
 		hl.animation({
 			leaf = "hyprfocusOut",

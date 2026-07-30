@@ -4,6 +4,8 @@ assets/pdf/_minted
 *.aux
 *.toc
 
+.luarc.json
+
 bookmarks
 
 .config/lf/colors

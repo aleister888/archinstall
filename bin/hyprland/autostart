@@ -94,13 +94,6 @@ while true; do # Recargar la configuración de swaync
 	notify-send -e -i preferences-system-notifications "swaync" "Configuración actualizada"
 done &
 
-while true; do # Recargar la configuración de waybar
-	inotifywait -e modify ~/.config/waybar &>/dev/null
-	killall -SIGUSR2 waybar
-	notify-send -e -i preferences-system-notifications "waybar" "Configuración actualizada"
-	pgrep waybar || setsid -f waybar >/dev/null 2>&1
-done &
-
 while true; do # Asegurarse de que el polkit agent esta siempre activo
 	POLKIT_STATUS="$(systemctl --user show hyprpolkitagent | grep ActiveState | cut -d'=' -f2)"
 	[ "$POLKIT_STATUS" != "active" ] && systemctl --user restart hyprpolkitagent

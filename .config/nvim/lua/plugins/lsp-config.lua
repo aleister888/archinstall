@@ -7,6 +7,7 @@ local servers = {
 	"markdown_oxide",
 	"pylsp",
 	"texlab",
+	"lua_ls",
 }
 
 -- Configure diagnostic display with custom signs
@@ -83,6 +84,21 @@ return {
 			-- Configuramos todos los lsp con las capacidades basicas
 			vim.lsp.config("*", {
 				capabilities = lsp_capabilities,
+			})
+
+			vim.lsp.config("lua_ls", {
+				capabilities = lsp_capabilities,
+				settings = {
+					Lua = {
+						workspace = {
+							library = {
+								vim.env.VIMRUNTIME,
+								"/usr/share/hypr/stubs",
+							},
+							checkThirdParty = false,
+						},
+					},
+				},
 			})
 
 			-- Lista de códigos de Rust que quieres ocultar

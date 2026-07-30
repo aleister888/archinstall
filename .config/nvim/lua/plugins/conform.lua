@@ -12,7 +12,6 @@ return {
 			json = { "prettier_json" },
 			jsonc = { "prettier_json" },
 			kotlin = { "ktlint" },
-			lua = { "stylua" },
 			rasi = { "prettier_rasi" },
 			rust = { "rustfmt" },
 			scss = { "prettier" },
@@ -25,17 +24,6 @@ return {
 		formatters = {
 			ktlint = {
 				prepend_args = { "-F" },
-			},
-			stylua = {
-				command = "stylua",
-				args = {
-					"--column-width",
-					"80",
-					"--stdin-filepath",
-					"$FILENAME",
-					"-",
-				},
-				stdin = true,
 			},
 			prettier_rasi = {
 				command = "prettier",
