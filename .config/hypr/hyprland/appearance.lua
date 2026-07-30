@@ -42,8 +42,7 @@ hl.config({
 	plugin = {
 		hyprbars = {
 			enabled = true,
-
-			bar_height = 30,
+			bar_height = config.hyprbar_height,
 
 			["col.text"] = "rgb(ebdbb2)",
 			bar_text_align = "center",

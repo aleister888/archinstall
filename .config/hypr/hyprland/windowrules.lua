@@ -1,3 +1,5 @@
+local config = require("hyprland/config")
+
 hl.window_rule({
 	name = "xwayland",
 	match = {
@@ -38,6 +40,13 @@ hl.window_rule({
 	},
 })
 
+hl.window_rule({
+	["hyprbars:no_bar"] = true,
+	match = {
+		workspace = config.scratch_workspace,
+	},
+})
+
 -- Layer rules
 hl.layer_rule({
 	dim_around = true,
@@ -52,7 +61,7 @@ hl.layer_rule({
 hl.window_rule({
 	match = { title = "scratchpad" },
 	tag = "+1/2",
-	workspace = "special:scratch",
+	workspace = config.scratch_workspace,
 })
 
 -- Telegram
@@ -62,7 +71,7 @@ hl.window_rule({
 		class = "^(org.telegram.desktop)$",
 		initial_title = "^(Telegram)$",
 	},
-	workspace = "special:scratch",
+	workspace = config.scratch_workspace,
 	no_screen_share = true,
 	float = true,
 	size = { "(monitor_w*0.2)", "(monitor_h*(1-0.1375))" },
@@ -74,7 +83,7 @@ hl.window_rule({
 		class = "^(org.telegram.desktop)$",
 		initial_title = "^(Media viewer)$",
 	},
-	workspace = "special:scratch",
+	workspace = config.scratch_workspace,
 	no_screen_share = true,
 	float = true,
 	no_initial_focus = false,
@@ -87,7 +96,7 @@ hl.window_rule({
 	match = {
 		class = "^(org.gnome.clocks)$",
 	},
-	workspace = "special:scratch",
+	workspace = config.scratch_workspace,
 	float = true,
 	size = { 700, 730 },
 })
@@ -97,7 +106,7 @@ hl.window_rule({
 	match = {
 		class = "^(qalculate-gtk)$",
 	},
-	workspace = "special:scratch",
+	workspace = config.scratch_workspace,
 	float = true,
 	size = { 750, 550 },
 })
@@ -110,7 +119,7 @@ hl.window_rule({
 	},
 	float = true,
 	center = true,
-	workspace = "special:scratch",
+	workspace = config.scratch_workspace,
 	size = { "(monitor_w*0.6)", "(monitor_h*0.6)" },
 	border_size = 0,
 	rounding = 0,
@@ -123,13 +132,13 @@ hl.window_rule({
 		title = "^(Dispositivos Bluetooth)$",
 	},
 	tag = "+1/2",
-	workspace = "special:scratch",
+	workspace = config.scratch_workspace,
 	no_initial_focus = false,
 })
 hl.window_rule({
 	match = { class = "^(blueman-sendto)$" },
 	float = true,
-	workspace = "special:scratch",
+	workspace = config.scratch_workspace,
 })
 hl.window_rule({
 	match = { title = "^(Select files to send)$" },
@@ -140,7 +149,7 @@ hl.window_rule({
 hl.window_rule({
 	name = "easyeffects",
 	match = { class = "^(com.github.wwmm.easyeffects)$" },
-	workspace = "special:scratch",
+	workspace = config.scratch_workspace,
 	float = true,
 	center = true,
 	size = { "(monitor_w*0.75)", "(monitor_h*0.8)" },
@@ -149,7 +158,7 @@ hl.window_rule({
 hl.window_rule({
 	match = { class = "^(org.kde.gwenview)$" },
 	tag = "+3/4",
-	workspace = "special:scratch",
+	workspace = config.scratch_workspace,
 })
 
 -- LibreOffice
@@ -239,7 +248,7 @@ hl.window_rule({
 hl.window_rule({
 	match = { class = "^(rustdesk)$" },
 	tag = "+1/2",
-	workspace = "special:scratch",
+	workspace = config.scratch_workspace,
 	suppress_event = "maximize",
 })
 hl.window_rule({

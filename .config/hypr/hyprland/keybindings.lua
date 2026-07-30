@@ -14,7 +14,8 @@ local function toggle_decorations()
 			general = { gaps_in = 0, gaps_out = 0 },
 			decoration = { rounding = 0 },
 			plugin = {
-				hyprbars = { enabled = false },
+				-- bug: window top pixels cant be clicked if bar_height is not set to 0
+				hyprbars = { enabled = false, bar_height = 0 },
 				hyprfocus = { enable = false },
 			},
 			animations = { enabled = false },
@@ -28,7 +29,7 @@ local function toggle_decorations()
 			general = { gaps_in = config.gaps_in, gaps_out = config.gaps_out },
 			decoration = { rounding = config.rounding },
 			plugin = {
-				hyprbars = { enabled = true },
+				hyprbars = { enabled = true, bar_height = config.hyprbar_height },
 				hyprfocus = { enable = true },
 			},
 			animations = { enabled = true },
