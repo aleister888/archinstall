@@ -1,7 +1,6 @@
 local servers = {
 	"bashls",
 	"clangd",
-	"cssls",
 	"jdtls",
 	"kotlin_language_server",
 	"markdown_oxide",

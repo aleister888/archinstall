@@ -1,6 +1,8 @@
 #!/bin/bash
 # shellcheck disable=SC2068
 
+#TODO: Fix
+
 # Basado en:
 # https://www.reddit.com/r/hyprland/comments/18ukvln/comment/mm7m0zr/
 

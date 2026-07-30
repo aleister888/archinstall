@@ -16,7 +16,7 @@
     "slurp",
     "hypridle",
     "tk",
-    "waybar",
+    "chaotic-aur/waybar-git",
     "wev",
     "wf-recorder",
     "wl-clipboard",
@@ -27,23 +27,10 @@
     "zenity"
   ],
   "musica": ["atomicparsley", "glyr", "lrcget-bin"],
-  "edicion_audio": [
-    "suil",
-    "reaper",
-    "drumgizmo",
-    "surge-xt-clap",
-    "surge-xt-vst3",
-    "surge-xt"
-  ],
+  "edicion_audio": ["suil", "reaper", "drumgizmo", "surge-xt-clap", "surge-xt-vst3", "surge-xt"],
   "edicion_video": ["kdenlive"],
   "servicios": ["gnome-keyring", "hyprsunset", "swaync"],
-  "discos": [
-    "gnome-disk-utility",
-    "ntfs-3g",
-    "simple-mtpfs",
-    "udiskie",
-    "udisks2-btrfs"
-  ],
+  "discos": ["gnome-disk-utility", "ntfs-3g", "simple-mtpfs", "udiskie", "udisks2-btrfs"],
   "funcionalidades": [
     "desktop-file-utils",
     "libqalculate",
@@ -76,11 +63,7 @@
     "stow",
     "tree"
   ],
-  "gnuplot": [
-    "extra/gnuplot",
-    "extra/wxwidgets-common",
-    "extra/wxwidgets-gtk3"
-  ],
+  "gnuplot": ["extra/gnuplot", "extra/wxwidgets-common", "extra/wxwidgets-gtk3"],
   "bandeja_sisteam": ["network-manager-applet"],
   "aplicaciones_gui": ["hyprpaper", "mpv", "nsxiv", "qalculate-gtk"],
   "aplicaciones_tui": ["btop"],

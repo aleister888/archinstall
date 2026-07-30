@@ -122,7 +122,7 @@ hl.bind(config.mod .. " + U", hl.dsp.layout("mfact -0.05"))
 hl.bind(config.mod .. " + I", hl.dsp.layout("mfact +0.05"))
 
 -- Gestionar ventanas
-hl.bind(config.mod .. " + SHIFT + Q", hl.dsp.exec_cmd("hyprclose"))
+hl.bind(config.mod .. " + SHIFT + Q", hl.dsp.window.close({ window = "activewindow" }))
 hl.bind(config.mod .. " + CONTROL + S", hl.dsp.window.pin())
 hl.bind(config.mod .. " + Q", hl.dsp.focus({ workspace = "e-1" }))
 hl.bind(config.mod .. " + W", hl.dsp.focus({ workspace = "e+1" }))

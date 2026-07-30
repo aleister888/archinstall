@@ -4,6 +4,7 @@
     "lib32-libva-intel-driver",
     "lib32-vulkan-intel",
     "libva-intel-driver",
+    "intel-media-driver",
     "vulkan-intel"
   ],
   "amd": ["mesa", "lib32-mesa", "vulkan-radeon", "lib32-vulkan-radeon"],

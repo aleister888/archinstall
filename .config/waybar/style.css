@@ -1,127 +1,105 @@
+@define-color base      #1d2021;
+@define-color mantle    #282828;
+@define-color crust     #32302f;
+
+@define-color text      #ebdbb2;
+@define-color subtext0  #bdae93;
+@define-color subtext1  #d5c4a1;
+@define-color overlay0  #a89984;
+
+@define-color surface0  #282828;
+@define-color surface1  #3c3836;
+
+@define-color green     #b8bb26;
+@define-color red       #fb4834;
+
 * {
-  color: #ebdbb2;
+  all: unset;
   font-family: "Symbols Nerd Font", "Fira Sans Compressed";
-  font-size: 24px;
-  border-radius: 4px;
+  font-size: 20px;
 }
 
-#waybar {
-  background-color: transparent;
+#waybar > box {
+  background-color: @base;
+  border-bottom: 3px solid #b8bb26;
 }
 
 @import "waybar_box.css";
 
-.modules-left {
-  margin-bottom: 2px;
+tooltip {
+  background-color: @mantle;
+  border: 1px solid @surface0;
+  border-radius: 8px;
+  padding: 6px 10px;
 }
 
-.modules-center {
-  font-weight: 600;
-  margin-bottom: 2px;
+tooltip label {
+  color: @text;
 }
 
-.modules-right {
-  font-weight: 600;
-  margin-right: 15px;
-  margin-bottom: 2px;
+menu {
+  background-color: @mantle;
+  border: 1px solid @surface0;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+menu menuitem {
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: @subtext1;
+}
+
+menu menuitem:hover {
+  background-color: @surface1;
+  color: @subtext0;
+}
+
+#workspaces,
+#custom-layout-icon,
+#custom-music-metadata,
+#clock,
+#privacy,
+#custom-battery-info,
+#custom-disk-info,
+#pulseaudio,
+#custom-blue-filter,
+#tray {
+  color: @text;
+  padding: 8px 8px;
+  margin: 2px 0px;
+  border-radius: 10px;
 }
 
 #workspaces {
-  margin: 6px 7.5px 6px 12px;
-}
-
-#workspaces .workspace-label {
-  font-weight: 600;
-  margin-right: 8px;
-}
-
-#workspaces .taskbar-window image {
-  padding: 0px;
-  margin-top: 1px;
+  padding: 2px 6px;
 }
 
 #workspaces button {
-  margin: 0px 3px 0px 3px;
-  padding: 0px 10px 0px 8px;
-  box-shadow: none;
-  background: #282828;
+  padding: 2px 8px;
+  margin: 2px;
+  border-radius: 8px;
+  color: @subtext1;
+  font-size: 20px;
+  transition: all 0.2s ease-in-out;
 }
 
 #workspaces button.empty {
-  padding: 0px 0px 0px 8px;
-  background: #1d2021;
+  color: @overlay0;
 }
 
 #workspaces button.active {
-  background: #3c3836;
+  background: @green;
+  color: @base;
+  font-weight: bold;
 }
 
-#workspaces button:hover {
-  box-shadow: inherit;
-}
-
-#custom-layout-icon {
-  margin: 2.5px 7.5px 0px 7.5px;
-  font-size: 20px;
-  font-weight: 600;
-}
-
-#custom-music-metadata {
-  margin: 0px 7.5px 0px 0px;
+#workspaces button.urgent {
+  background-color: @red;
+  color: @crust;
 }
 
 #clock {
-  margin: 0px 7.5px 0px 7.5px;
-}
-
-#custom-privacy {
-  margin: 0px 7.5px 0px 7.5px;
-}
-
-#custom-mute-indicator {
-  color: #7c6f64;
-  margin: 2px 5px 0px 5px;
-}
-
-#custom-battery-info {
-  margin: 0px 7.5px 0px 5px;
-}
-
-#custom-disk-info {
-  margin: 0px 7.5px 0px 7.5px;
-}
-
-#pulseaudio {
-  margin: 0px 7.5px 0px 7.5px;
-}
-
-#network {
-  margin: 0px 7.5px 0px 7.5px;
-}
-
-#custom-powermenu {
-  margin: 0px 7.5px 0px 7.5px;
-}
-
-#custom-blue-filter {
-  font-size: 18px;
-  color: #dfdfdf;
-  margin: 0px -2.5px 0px 7.5px;
-  min-width: 18px;
-}
-
-#tray {
-  border-radius: 16px;
-  margin: 0px 0px 0px 7.5px;
-}
-
-tooltip {
-  background-color: transparent;
-  border: none;
-}
-
-/* Desactivamos los tooltips */
-tooltip label {
-  color: transparent;
-  background: transparent;
+  color: @text;
+  font-weight: 500;
 }

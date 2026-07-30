@@ -1,7 +1,0 @@
-#!/bin/sh
-
-MUTED_COUNT=$(pactl list sources | grep -c 'Mute: yes')
-
-[ "$MUTED_COUNT" = 0 ] && exit
-
-echo "󰍭"

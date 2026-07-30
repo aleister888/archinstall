@@ -94,7 +94,7 @@ INSTALLED_PKGS=$(yay -Qq)                                     # Paquetes
 INSTALLED_PKGS+=$(pacman -Qg | awk '{print $1}' | sort -u)    # Grupos
 
 PKGS_TO_INSTALL=$(comm -23 <(printf "%s\n" "$REPO_PKGS" | sort -u) \
-	<(printf "%s\n" "$INSTALLED_PKGS" | sort))
+	<(printf "%s\n" "$INSTALLED_PKGS" | sort -u))
 
 get_days_since_last_update() {
 	echo $((($(date +%s) - $(stat -c %Y /var/lib/pacman/local)) / 86400))

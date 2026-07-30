@@ -1,52 +1,32 @@
 {
-  "layer": "bottom",
+  "layer": "top",
   "position": "top",
   "height": 0, // Dejamos que el tamaño de los módulos sea el que mande
   "margin": "0 0 0 0",
-  "modules-left": [
-    "hyprland/workspaces",
-    "hyprland/sumbmap",
-    "custom/layout-icon"
-    //"hyprland/window"
-  ],
+  "modules-left": ["hyprland/workspaces", "custom/layout-icon", "custom/music-metadata"],
   "modules-center": ["clock", "privacy"],
   "modules-right": [
-    "custom/mute-indicator",
     "custom/battery-info",
     "custom/disk-info",
     "pulseaudio",
-    //"network",
-    //"custom/powermenu",
     "custom/blue-filter",
     "tray"
   ],
   "hyprland/workspaces": {
-    "format": "{name}{windows}",
-    "persistent-workspaces": {
-      "*": 5
-    },
-    "workspace-taskbar": {
-      "enable": true,
-      "format": "{icon}",
-      "icon-size": 16,
-      "icon-theme": "Papirus-Dark",
-      "ignore-list": ["Abrir archivos", "lf hidden", "FX: Track .*", "xdg-desktop-portal-gtk", ""]
-    }
+    "format": "{icon}",
+    "tooltip": false,
+    "all-outputs": false,
+    "sort-by-number": true,
+    "disable-scroll": false,
+    "on-scroll-up": "hyprctl dispatch workspace +1",
+    "on-scroll-down": "hyprctl dispatch workspace -1",
+    "active-only": false,
+    "show-special": false
   },
   "custom/layout-icon": {
     "tooltip": false,
-    "interval": 1,
+    "interval": 0.1,
     "exec": "~/.dotfiles/bin/hyprland/print-layout-icon"
-  },
-  "hyprland/window": {
-    "rewrite": {
-      "(.*) - KeePassXC": "$1",
-      "(.*) - Nvim": "$1",
-      "(.*) - Obsidian.*": "$1",
-      "(.*) — Mozilla Firefox": "$1",
-      "(.*).pdf": "$1",
-      "● (.*) - VSCodium": "$1 - VSCodium"
-    }
   },
   "custom/music-metadata": {
     "tooltip": false,
@@ -61,12 +41,8 @@
     "on-click": "swaync-client -t"
   },
   "privacy": {
+    "interval": 0.2,
     "icon-size": 20
-  },
-  "custom/mute-indicator": {
-    "tooltip": false,
-    "interval": 1,
-    "exec": "~/.dotfiles/bin/waybar/mute-indicator"
   },
   "custom/battery-info": {
     "tooltip": false,
@@ -93,22 +69,6 @@
     "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
     "on-scroll-up": "volinc 5",
     "on-scroll-down": "volinc -5"
-  },
-  "network": {
-    "tooltip": false,
-    "interval": 1,
-    "format": "󰈀 N/A",
-    "format-disconnected": "󰤭 N/A",
-    "format-ethernet": "󰈀 {ifname}",
-    "format-wifi": "{icon} {essid} {frequency}GHz",
-    "format-alt": "󰏔 {bandwidthDownBytes} 󰏕 {bandwidthUpBytes}",
-    "format-icons": ["󰤟", "󰤢", "󰤥", "󰤨"],
-    "max-length": 50
-  },
-  "custom/powermenu": {
-    "tooltip": false,
-    "format": "⏻",
-    "on-click": "~/.dotfiles/bin/powermenu"
   },
   "custom/blue-filter": {
     "tooltip": false,

@@ -74,9 +74,9 @@ hl.window_rule({
 	workspace = config.scratch_workspace,
 	no_screen_share = true,
 	float = true,
-	size = { "(monitor_w*0.2)", "(monitor_h*(1-0.1375))" },
-	move = { "(monitor_w*0.025)", "(monitor_h*0.0875)" },
-}) -- .025 * 2 + .0875 = .1375
+	size = { "(monitor_w*0.2)", "(monitor_h*(1-0.0875*2))" },
+	move = { "(monitor_w*0.05)", "(monitor_h*0.0875)" },
+})
 hl.window_rule({
 	name = "telegram_media",
 	match = {

@@ -10,9 +10,9 @@ else
 	# Si pavucontrol esta abierto y estamos en el espacio del panel, ocultamos
 	# el espacio especial
 	if [ "$ACTIVE_WORKSPACE" = "special:${SPECIAL_W}" ]; then
-		hyprctl dispatch togglespecialworkspace $SPECIAL_W
+		hyprctl dispatch "hl.dsp.workspace.toggle_special(\"$SPECIAL_W\")"
 	# Si no estamos en el espacio especial, lo abrimos enfocando a pavucontrol
 	else
-		hyprctl dispatch focuswindow "class:$PAVUCONTROL_CLASS"
+		hyprctl dispatch "hl.dsp.focus({ window = \"class:$PAVUCONTROL_CLASS\" })"
 	fi
 fi
