@@ -16,7 +16,7 @@
 * {
   all: unset;
   font-family: "Symbols Nerd Font", "Fira Sans Compressed";
-  font-size: 20px;
+  font-size: 22px;
 }
 
 #waybar > box {
@@ -66,22 +66,19 @@ menu menuitem:hover {
 #custom-blue-filter,
 #tray {
   color: @text;
-  padding: 8px 8px;
-  margin: 2px 0px;
+  padding: 4px 4px;
+  margin: 0px 0px;
   border-radius: 10px;
 }
 
 #workspaces {
-  padding: 2px 6px;
+  padding: 0px 6px;
 }
 
 #workspaces button {
-  padding: 2px 8px;
-  margin: 2px;
-  border-radius: 8px;
+  margin: 8px;
+  border-radius: 10px;
   color: @subtext1;
-  font-size: 20px;
-  transition: all 0.2s ease-in-out;
 }
 
 #workspaces button.empty {
@@ -89,9 +86,8 @@ menu menuitem:hover {
 }
 
 #workspaces button.active {
-  background: @green;
-  color: @base;
-  font-weight: bold;
+  color: @green;
+  font-weight: 700;
 }
 
 #workspaces button.urgent {
@@ -99,7 +95,15 @@ menu menuitem:hover {
   color: @crust;
 }
 
+#custom-music-metadata {
+  margin: 0px 0px 0px 10px;
+}
+
 #clock {
   color: @text;
-  font-weight: 500;
+  font-weight: 700;
+}
+
+#tray {
+  margin: 0px 10px 0px 0px;
 }

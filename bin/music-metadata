@@ -8,7 +8,7 @@ TMP_DIR="$(get_cache_tmp_dir music-metadata)"
 shopt -s extglob
 
 # Número máximo de caracteres del output
-[ -z "$FACT" ] && FACT=24
+[ -z "$FACT" ] && FACT=36
 [ -z "$ALTFACT" ] && ALTFACT=12
 
 # Establecemos el reproductor

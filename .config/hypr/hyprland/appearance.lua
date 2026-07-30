@@ -78,6 +78,7 @@ hl.config({
 
 			bar_text_size = 20,
 			bar_text_font = "Fira Sans Compressed",
+			bar_text_weight = 500,
 
 			bar_part_of_window = false,
 			bar_blur = false,
