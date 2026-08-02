@@ -42,6 +42,11 @@ hl.window_rule({
 
 hl.window_rule({
 	["hyprbars:no_bar"] = true,
+	match = { fullscreen_state_client = 2 },
+})
+
+hl.window_rule({
+	["hyprbars:no_bar"] = true,
 	match = {
 		workspace = config.scratch_workspace,
 	},

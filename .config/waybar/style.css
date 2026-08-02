@@ -104,6 +104,12 @@ menu menuitem:hover {
   font-weight: 700;
 }
 
+#custom-blue-filter {
+  margin: 0px 0px 0px 10px;
+  color: #fdfdfd;
+  font-size: 18px;
+}
+
 #tray {
   margin: 0px 10px 0px 0px;
 }

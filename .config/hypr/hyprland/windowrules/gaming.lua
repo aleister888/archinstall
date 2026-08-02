@@ -65,6 +65,7 @@ hl.window_rule({
 	tile = true,
 	idle_inhibit = "focus",
 	nearest_neighbor = true,
+	sync_fullscreen = false,
 	workspace = "15",
 })
 hl.window_rule({
@@ -72,6 +73,7 @@ hl.window_rule({
 	tile = true,
 	idle_inhibit = "focus",
 	nearest_neighbor = true,
+	sync_fullscreen = false,
 	workspace = "15",
 })
 hl.window_rule({
@@ -79,6 +81,7 @@ hl.window_rule({
 	tile = true,
 	idle_inhibit = "focus",
 	nearest_neighbor = true,
+	sync_fullscreen = false,
 	workspace = "15",
 })
 hl.window_rule({
