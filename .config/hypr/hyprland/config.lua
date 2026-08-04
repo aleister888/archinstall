@@ -6,5 +6,6 @@ M.gaps_out = 24
 M.rounding = 12
 M.hyprbar_height = 30
 M.scratch_workspace = "special:scratch"
+M.border_size = 3
 
 return M

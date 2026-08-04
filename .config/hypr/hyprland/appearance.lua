@@ -8,7 +8,7 @@ hl.config({
 		gaps_in = config.gaps_in,
 		gaps_out = config.gaps_out,
 
-		border_size = 3,
+		border_size = config.border_size,
 		resize_on_border = false,
 		["col.active_border"] = "rgb(b8bb26)",
 		["col.inactive_border"] = "rgb(1d2021)",

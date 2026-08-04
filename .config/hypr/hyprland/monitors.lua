@@ -25,6 +25,6 @@ hl.monitor({
 })
 hl.monitor({
 	output = "desc:Samsung Electric Company SAMSUNG 0x01000E00",
-	mode = "1920x1080@60.00Hz",
-	scale = 1.2,
+	mode = "3840x2160@60.00Hz",
+	scale = 2,
 })

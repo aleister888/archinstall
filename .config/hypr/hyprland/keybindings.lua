@@ -11,8 +11,8 @@ local waybar_css_dst     = os.getenv("HOME") .. "/.config/waybar/waybar_box.css"
 local function toggle_decorations()
 	if decorations_enabled then -- ocultando
 		hl.config({
-			general = { gaps_in = 0, gaps_out = 0 },
-			decoration = { rounding = 0 },
+			general = { gaps_in = 0, gaps_out = 0, border_size = 4 },
+			decoration = { rounding = 0, shadow = { enabled = false } },
 			plugin = {
 				-- bug: window top pixels cant be clicked if bar_height is not set to 0
 				hyprbars = { enabled = false, bar_height = 0 },
@@ -26,8 +26,8 @@ local function toggle_decorations()
 		)
 	else -- mostrando
 		hl.config({
-			general = { gaps_in = config.gaps_in, gaps_out = config.gaps_out },
-			decoration = { rounding = config.rounding },
+			general = { gaps_in = config.gaps_in, gaps_out = config.gaps_out, border_size = config.border_size },
+			decoration = { rounding = config.rounding, shadow = { enabled = true } },
 			plugin = {
 				hyprbars = { enabled = true, bar_height = config.hyprbar_height },
 				hyprfocus = { enable = true },

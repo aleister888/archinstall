@@ -21,7 +21,6 @@
 
 #waybar > box {
   background-color: @base;
-  border-bottom: 3px solid #b8bb26;
 }
 
 @import "waybar_box.css";
@@ -91,8 +90,7 @@ menu menuitem:hover {
 }
 
 #workspaces button.urgent {
-  background-color: @red;
-  color: @crust;
+  color: @red;
 }
 
 #custom-music-metadata {
