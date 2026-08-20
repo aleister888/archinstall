@@ -305,29 +305,23 @@ carouselindicatordots {
   background: transparent;
 }
 
-/* Botón */
+/* Botón sin estado */
 .widget-buttons-grid > flowbox > flowboxchild > button {
   margin: 4px;
   padding: 6px 16px;
-  background: var(--bg);
-  color: var(--fg-disabled);
+  background: var(--bg-light);
+  color: var(--fg);
   border-radius: 8px;
   min-width: 40px;
   min-height: 26px;
 }
 
-/* Botón (Animación activar) */
-.widget-buttons-grid > flowbox > flowboxchild > button:active {
-  background: var(--bg-lighter);
-  transition: background 0.15s ease-in-out;
+/* Botón con estado */
+.widget-buttons-grid > flowbox > flowboxchild > button.toggle {
+  background: var(--bg);
 }
 
-/* Botón activado (Cuerpo) */
+/* Botón con estado (activado) */
 .widget-buttons-grid > flowbox > flowboxchild > button.toggle:checked {
   background: var(--bg-light);
-}
-
-/* Botón activado (Texto) */
-.widget-buttons-grid > flowbox > flowboxchild > button.toggle:checked label {
-  color: var(--fg);
 }

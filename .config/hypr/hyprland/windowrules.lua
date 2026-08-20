@@ -64,6 +64,12 @@ hl.layer_rule({
 
 -- Scratchpads
 hl.window_rule({
+	match = { class = "pcmanfm" },
+	tag = "+1/2",
+})
+
+-- Scratchpads
+hl.window_rule({
 	match = { title = "scratchpad" },
 	tag = "+1/2",
 	workspace = config.scratch_workspace,
@@ -435,6 +441,7 @@ hl.window_rule({
 -- Ajustes Generales
 hl.window_rule({
 	match = { class = "^(hyprpolkitagent)$" },
+	["hyprbars:no_bar"] = true,
 	dim_around = true,
 })
 hl.window_rule({

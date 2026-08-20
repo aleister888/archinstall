@@ -43,7 +43,7 @@
       "image-size": 128
     },
     "buttons-grid": {
-      "buttons-per-row": 5,
+      "buttons-per-row": 3,
       "actions": [
         {
           "label": "",
@@ -58,16 +58,20 @@
           "update-command": "~/.dotfiles/bin/swaync/wifi-update"
         },
         {
-          "label": "󰓅",
-          "type": "toggle",
-          "command": "bash -c '[[ $(powerprofilesctl get) == \"power-saver\" ]] && powerprofilesctl set performance || powerprofilesctl set power-saver'",
-          "update-command": "bash -c '[[ $(powerprofilesctl get) == \"power-saver\" ]] && echo false || echo true'"
+          "label": "󰍭",
+          "update-command": "~/.dotfiles/bin/swaync/mic-mute-status",
+          "command": "pactl set-source-mute @DEFAULT_SOURCE@ toggle",
+          "type": "toggle"
         },
         {
           "label": "󰐯",
           "type": "toggle",
           "command": "~/.dotfiles/bin/swaync/presentation-toggle",
           "update-command": "bash -c 'pgrep hypridle >/dev/null && echo false || echo true'"
+        },
+        {
+          "label": "󰓅",
+          "command": "~/.dotfiles/bin/swaync/select-power-profile"
         },
         {
           "label": "",

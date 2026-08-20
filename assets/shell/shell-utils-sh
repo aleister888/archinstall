@@ -137,7 +137,7 @@ get_devices() {
 }
 
 has_bluetooth_device() { get_devices | grep -qi bluetooth; }
-has_wifi_device() { get_devices | grep -qi wireless; }
+has_wifi_device() { get_devices | grep -qi "wireless\|wifi"; }
 get_parent_process() { ps -p $PPID -o cmd | tail -n1; }
 remove_comments() { cat "$1" | grep -v "^[ \t]*//"; }
 is_chroot() { sudo /usr/bin/systemd-detect-virt --chroot >/dev/null 2>&1; }

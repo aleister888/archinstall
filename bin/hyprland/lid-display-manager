@@ -1,7 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2068
-
-#TODO: Fix
+# shellcheck disable=SC2068,SC1091
 
 # Basado en:
 # https://www.reddit.com/r/hyprland/comments/18ukvln/comment/mm7m0zr/
@@ -14,7 +12,7 @@ source "$HOME/.dotfiles/assets/shell/shell-utils"
 ls /sys/class/power_supply/BAT* &>/dev/null || exit 1
 
 INTERNAL_MONITOR="eDP-1"
-MONITOR_CONF="$HOME/.config/hypr/hyprland/monitors.conf"
+MONITOR_CONF="$HOME/.config/hypr/hyprland/monitors.lua"
 
 apply_monitor_config() {
 	[[ -f "$MONITOR_CONF" ]] || {
@@ -24,15 +22,28 @@ apply_monitor_config() {
 
 	# Aplica la configuración, linea por linea ignorando comentarios
 	while IFS= read -r line; do
-		[[ "$line" =~ ^[[:space:]]*# ]] && continue
-		[[ "$line" =~ ^[[:space:]]*$ ]] && continue
-
-		if [[ "$line" =~ ^monitor[[:space:]]*=[[:space:]]*(.*) ]]; then
-			hyprctl keyword monitor "${BASH_REMATCH[1]}"
+		if ! echo "$line" | grep -qF -- '--'; then
+			hyprctl eval "$line"
 		fi
-	done <"$MONITOR_CONF"
+	done < <(
+		awk '
+		/^hl\.monitor\(\{/ {
+		    if (buf != "") print buf
+		    buf = $0
+		    next
+		}
+		{
+		    gsub(/^[[:space:]]+|[[:space:]]+$/, "")
+		    buf = buf " " $0
+		}
+		END {
+		    if (buf != "") print buf
+		}' "$MONITOR_CONF"
+	)
+
 }
 
+# WORKS
 has_external_monitor() {
 	# Obtiene los monitores activos y filtra el interno
 	hyprctl monitors -j |
@@ -53,7 +64,7 @@ acpi_listen | while read -r event; do
 		log "tapa cerrada" INFO
 		if has_external_monitor; then
 			log "monitor externo detectado, desactivando pantalla interna" INFO
-			hyprctl keyword monitor "$INTERNAL_MONITOR,disable"
+			hyprctl dispatch "hl.monitor({ output = \"$INTERNAL_MONITOR\", disabled = true })" &>/dev/null
 		else
 			log "sin monitor externo, manteniendo pantalla interna activa" INFO
 		fi
@@ -63,7 +74,11 @@ acpi_listen | while read -r event; do
 		[[ "$lid_state" == "open" ]] && continue
 		lid_state="open"
 		log "tapa abierta" INFO
-		apply_monitor_config
+		if has_external_monitor; then
+			hyprctl dispatch \
+				"hl.monitor({ output = \"$INTERNAL_MONITOR\", disabled = false })" &>/dev/null
+			apply_monitor_config &>/dev/null
+		fi
 		;;
 	esac
 done

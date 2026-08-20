@@ -61,27 +61,29 @@ hl.window_rule({
 	float = true,
 })
 hl.window_rule({
+	match = { class = "^io-github-gaming32-modloadingscreen-ActualLoadingScreen$" },
+	workspace = "15",
+	["hyprbars:no_bar"] = true,
+})
+hl.window_rule({
 	match = { title = "^(Minecraft.*)$" },
 	tile = true,
 	idle_inhibit = "focus",
-	nearest_neighbor = true,
-	sync_fullscreen = false,
+	["hyprbars:no_bar"] = true,
 	workspace = "15",
 })
 hl.window_rule({
 	match = { title = "^(Minecraft .*)$" },
 	tile = true,
 	idle_inhibit = "focus",
-	nearest_neighbor = true,
-	sync_fullscreen = false,
+	["hyprbars:no_bar"] = true,
 	workspace = "15",
 })
 hl.window_rule({
 	match = { title = "^(Minecraft* .*)$" },
 	tile = true,
 	idle_inhibit = "focus",
-	nearest_neighbor = true,
-	sync_fullscreen = false,
+	["hyprbars:no_bar"] = true,
 	workspace = "15",
 })
 hl.window_rule({
@@ -143,7 +145,7 @@ hl.window_rule({
 
 -- PrismLauncher
 hl.window_rule({
-	name = "prismlauncher_general",
+	name = "PrismLauncher General",
 	match = { class = "^(org.prismlauncher.PrismLauncher)$" },
 	float = true,
 	center = true,
@@ -152,7 +154,7 @@ hl.window_rule({
 	size = { 450, 400 },
 })
 hl.window_rule({
-	name = "prismlauncher_waiting",
+	name = "PrismLauncher waiting",
 	match = {
 		class = "^(org.prismlauncher.PrismLauncher)$",
 		title = "^(Por favor espera... — Prism Launcher .*)$",
@@ -163,12 +165,20 @@ hl.window_rule({
 	size = { "(monitor_w*0.35)", "(monitor_h*0.2)" },
 })
 hl.window_rule({
-	name = "prismlauncher_main",
+	name = "PrismLauncher main",
 	match = {
 		class = "^(org.prismlauncher.PrismLauncher)$",
 		title = "^(Prism Launcher (.[0-9])*)$",
 	},
 	size = { "(monitor_w*0.4)", "(monitor_h*0.5)" },
+})
+hl.window_rule({
+	name = "PrismLauncher mod download",
+	match = {
+		class = "^(org.prismlauncher.PrismLauncher)$",
+		title = "^(.*mods — Prism Launcher.*)$",
+	},
+	size = { "(monitor_w*0.75)", "(monitor_h*0.75)" },
 })
 
 -- Misc

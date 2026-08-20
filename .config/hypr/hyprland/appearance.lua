@@ -10,8 +10,8 @@ hl.config({
 
 		border_size = config.border_size,
 		resize_on_border = false,
-		["col.active_border"] = "rgb(b8bb26)",
-		["col.inactive_border"] = "rgb(1d2021)",
+		["col.active_border"] = "rgba(B8BB26FF)",
+		["col.inactive_border"] = "rgba(1D2021FF)",
 
 		layout = "master",
 	},
@@ -44,10 +44,10 @@ hl.config({
 			enabled = true,
 			bar_height = config.hyprbar_height,
 
-			["col.text"] = "rgb(ebdbb2)",
+			["col.text"] = "rgba(EBDBB2FF)",
 			bar_text_align = "center",
 
-			bar_color = "rgb(1D2021)",
+			bar_color = "rgba(1D2021FF)",
 			bar_precedence_over_border = true,
 
 			bar_buttons_alignment = "left",
@@ -55,22 +55,22 @@ hl.config({
 			bar_button_padding = 6,
 
 			hl.plugin.hyprbars.add_button({
-				bg_color = "rgb(cc241d)",
-				fg_color = "rgb(ebdbb2)",
+				bg_color = "rgba(CC241DFF)",
+				fg_color = "rgba(EBDBB2FF)",
 				size = 15,
 				icon = "",
 				action = "hyprctl dispatch 'hl.dsp.window.close({ window = activewindow })'",
 			}),
 			hl.plugin.hyprbars.add_button({
-				bg_color = "rgb(d79921)",
-				fg_color = "rgb(ebdbb2)",
+				bg_color = "rgba(D79921FF)",
+				fg_color = "rgba(EBDBB2FF)",
 				size = 15,
 				icon = "",
 				action = "hyprctl dispatch 'hl.dsp.window.fullscreen({mode = 1})'",
 			}),
 			hl.plugin.hyprbars.add_button({
-				bg_color = "rgb(98971a)",
-				fg_color = "rgb(ebdbb2)",
+				bg_color = "rgba(98971AFF)",
+				fg_color = "rgba(EBDBB2FF)",
 				size = 15,
 				icon = "",
 				action = "~/.dotfiles/bin/hyprland/switch-scratchpad",
@@ -80,7 +80,7 @@ hl.config({
 			bar_text_font = "Fira Sans Compressed",
 			bar_text_weight = 500,
 
-			bar_part_of_window = false,
+			bar_part_of_window = true,
 			bar_blur = false,
 		},
 

@@ -12,6 +12,8 @@ hl.config({
 		disable_hyprland_logo = true,
 		enable_anr_dialog = false,
 		enable_swallow = true,
+		close_special_on_empty = false,
+		allow_session_lock_restore = true,
 		swallow_regex = "^kitty$",
 	},
 })
@@ -29,7 +31,7 @@ hl.config({
 		repeat_rate = 50,
 		repeat_delay = 300,
 		accel_profile = "flat",
-		sensitivity = 0.6,
+		sensitivity = 0.5,
 
 		touchpad = {
 			natural_scroll = false,
@@ -67,7 +69,6 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd("uwsm app -- /usr/lib/geoclue-2.0/demos/agent")
 	hl.exec_cmd("uwsm app -- gnome-keyring-daemon --start --foreground --components=secrets")
 	hl.exec_cmd("nwg-look -a")
-	-- hl.exec_cmd("uwsm app -- wl-clip-persist --clipboard regular")
 	hl.exec_cmd("uwsm app -- hyprpaper")
 	hl.exec_cmd("uwsm app -- file-handler")
 	hl.exec_cmd("uwsm app -- $HYPRSUNSET_CMD")
@@ -80,7 +81,6 @@ hl.on("hyprland.start", function()
 	hl.dispatch(hl.dsp.focus({ workspace = os.getenv("INITIAL_WORKSPACE") }))
 	hl.exec_cmd("setsid -f hyprpm reload")
 	hl.exec_cmd("rm -f ~/.cache/wofi*")
-
 	-- Debe ejecutarse siempre al final
 	hl.exec_cmd("dbus-update-activation-environment --systemd --all")
 end)

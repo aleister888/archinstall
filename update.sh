@@ -96,8 +96,24 @@ INSTALLED_PKGS+=$(pacman -Qg | awk '{print $1}' | sort -u)    # Grupos
 PKGS_TO_INSTALL=$(comm -23 <(printf "%s\n" "$REPO_PKGS" | sort -u) \
 	<(printf "%s\n" "$INSTALLED_PKGS" | sort -u))
 
+# This might not be accurante but pacman/local is worse as it updates when
+# installing a new package, not only when updating
 get_days_since_last_update() {
-	echo $((($(date +%s) - $(stat -c %Y /var/lib/pacman/local)) / 86400))
+	get_age_days() {
+		echo $((($(date +%s) - $(stat -c %Y $1)) / 86400))
+	}
+
+	_core=$(get_age_days /var/lib/pacman/sync/core.db)
+	_extra=$(get_age_days /var/lib/pacman/sync/extra.db)
+	_multilib=$(get_age_days /var/lib/pacman/sync/multilib.db)
+
+	_min=$_core
+
+	for n in "$_extra" "$_multilib"; do
+		((n < _min)) && _min=$n
+	done
+
+	echo $_min
 }
 export -f get_days_since_last_update
 

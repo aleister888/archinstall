@@ -52,7 +52,7 @@ statusbar() {
 	fi
 	#INDICATOR="<b>$INDICATOR</b>"
 
-	echo "$INDICATOR <i>$TITLE</i>"
+	echo "$INDICATOR $TITLE"
 }
 
 metaprint() {

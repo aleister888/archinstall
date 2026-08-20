@@ -1,0 +1,8 @@
+#!/bin/sh
+# shellcheck disable=SC1091
+
+. "$HOME/.dotfiles/assets/shell/shell-utils-sh"
+
+if ! pgrep -f -x --quiet hypridle; then
+	echo "󰑊"
+fi

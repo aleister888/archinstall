@@ -2,6 +2,7 @@
   "general": [
     // drag and drop support for lf file manager
     "chaotic-aur/dragon-drop-git",
+    "extra/pcmanfm",
     "pkgfile",
     "feh",
     "grim",

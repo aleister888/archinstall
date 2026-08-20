@@ -4,7 +4,7 @@
   "height": 0, // Dejamos que el tamaño de los módulos sea el que mande
   "margin": "0 0 0 0",
   "modules-left": ["hyprland/workspaces", "custom/layout-icon", "custom/music-metadata"],
-  "modules-center": ["clock", "privacy"],
+  "modules-center": ["clock", "custom/presentation-mode-icon", "privacy"],
   "modules-right": [
     "custom/battery-info",
     "custom/disk-info",
@@ -37,8 +37,13 @@
   "clock": {
     "tooltip": false,
     "interval": 1,
-    "format": "{:%I:%M:%S - %d/%m/%Y}",
+    "format": "{:%I:%M:%S · %d/%m/%Y}",
     "on-click": "swaync-client -t"
+  },
+  "custom/presentation-mode-icon": {
+    "tooltip": false,
+    "interval": 0.2,
+    "exec": "~/.dotfiles/bin/waybar/presentation-mode-icon"
   },
   "privacy": {
     "interval": 1,

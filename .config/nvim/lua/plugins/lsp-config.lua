@@ -7,6 +7,7 @@ local servers = {
 	"pylsp",
 	"texlab",
 	"lua_ls",
+	"bacon_ls",
 }
 
 -- Configure diagnostic display with custom signs

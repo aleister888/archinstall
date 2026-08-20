@@ -1,9 +1,11 @@
-#!/bin/sh -x
+#!/bin/sh
 # shellcheck disable=SC1091
 
 . "$HOME/.dotfiles/assets/shell/shell-utils-sh"
 
 if pgrep -f --quiet hypridle; then
+	swaync-client -dn
+	pkill hypridle
 	pkill hypridle
 else
 	hypridle

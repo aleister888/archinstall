@@ -1,4 +1,8 @@
-hl.monitor({ -- HP EliteBook 830
+-- NOTE: Keep comments on separate lines for correct parsing with
+-- lid-display-manager script
+
+-- HP EliteBook 830
+hl.monitor({
 	output = "desc:AU Optronics 0x859A",
 	mode = "1920x1200@60.03Hz",
 	scale = 1.2,
@@ -26,5 +30,5 @@ hl.monitor({
 hl.monitor({
 	output = "desc:Samsung Electric Company SAMSUNG 0x01000E00",
 	mode = "3840x2160@60.00Hz",
-	scale = 2,
+	scale = 2.4,
 })

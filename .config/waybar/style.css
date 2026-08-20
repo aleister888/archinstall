@@ -7,9 +7,6 @@
 @define-color subtext1  #d5c4a1;
 @define-color overlay0  #a89984;
 
-@define-color surface0  #282828;
-@define-color surface1  #3c3836;
-
 @define-color green     #b8bb26;
 @define-color red       #fb4834;
 
@@ -59,6 +56,7 @@ menu menuitem:hover {
 #custom-music-metadata,
 #clock,
 #privacy,
+#custom-presentation-mode-icon,
 #custom-battery-info,
 #custom-disk-info,
 #pulseaudio,
@@ -86,20 +84,33 @@ menu menuitem:hover {
 
 #workspaces button.active {
   color: @green;
-  font-weight: 700;
+  font-weight: 900;
 }
 
 #workspaces button.urgent {
   color: @red;
+  font-weight: 500;
 }
 
 #custom-music-metadata {
-  margin: 0px 0px 0px 10px;
+  margin: 0px 0px 0px 6px;
 }
 
 #clock {
   color: @text;
-  font-weight: 700;
+  font-weight: 500;
+}
+
+#custom-presentation-mode-icon {
+  padding: 4px 0px;
+  margin: 0px 4px 0px 4px;
+  font-size: 24px;
+  color: @overlay0;
+  font-weight: bold;
+}
+
+#privacy-item {
+  color: @overlay0;
 }
 
 #custom-blue-filter {
