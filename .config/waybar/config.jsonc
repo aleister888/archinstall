@@ -30,7 +30,7 @@
   },
   "custom/music-metadata": {
     "tooltip": false,
-    "interval": 1,
+    "interval": 0.2,
     "exec": "music-metadata -d",
     "on-click": "music-control play-pause"
   },

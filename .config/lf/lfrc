@@ -58,6 +58,7 @@ cmd quit ${{
 
 #-------------------------------------------------------------------------------
 
+map <backspace> clear_file_selection
 map <backspace2> clear_file_selection
 cmd clear_file_selection ${{
 	lf -remote "send $id unselect"

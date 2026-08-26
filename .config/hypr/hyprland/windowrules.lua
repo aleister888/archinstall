@@ -136,6 +136,20 @@ hl.window_rule({
 	rounding = 0,
 })
 
+hl.window_rule({
+	match = { class = "^(md.obsidian.Obsidian)$" },
+	workspace = "3",
+})
+hl.window_rule({
+	match = {
+		class = "^(md.obsidian.Obsidian)$",
+		title = "^(Settings.*)$",
+	},
+	tag = "+3/4"
+})
+
+
+
 -- Bluetooth
 hl.window_rule({
 	match = {

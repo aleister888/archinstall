@@ -40,7 +40,7 @@ hl.window_rule({
 	name = "whatsapp_firefox",
 	match = {
 		class = "^(firefox)$",
-		title = "^(WhatsApp — Mozilla Firefox)$",
+		title = "^(.*WhatsApp — Mozilla Firefox)$",
 	},
 	no_screen_share = true,
 })
@@ -48,7 +48,7 @@ hl.window_rule({
 	name = "whatsapp_librewolf",
 	match = {
 		class = "^(librewolf)$",
-		title = "^(WhatsApp — LibreWolf)$",
+		title = "^(.*WhatsApp — LibreWolf)$",
 	},
 	no_screen_share = true,
 })

@@ -4,11 +4,6 @@ hl.window_rule({
 })
 
 hl.window_rule({
-	match = { class = "^(obsidian)$" },
-	workspace = "3",
-})
-
-hl.window_rule({
 	match = { class = "^(Picard)$" },
 	workspace = "7",
 })

@@ -53,6 +53,7 @@ configure_ufw() {
 	ufw allow 80/tcp
 	ufw allow 443/tcp
 	ufw allow 3020                 # Redmine
+	ufw allow 25565                # Minecraft
 	ufw allow in on virbr0         # Libvirt (NAT)
 	ufw allow out on virbr0        # Libvirt (NAT)
 	sudo ufw allow 47984:48010/tcp # Sunshine

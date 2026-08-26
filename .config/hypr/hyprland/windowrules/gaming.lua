@@ -66,21 +66,7 @@ hl.window_rule({
 	["hyprbars:no_bar"] = true,
 })
 hl.window_rule({
-	match = { title = "^(Minecraft.*)$" },
-	tile = true,
-	idle_inhibit = "focus",
-	["hyprbars:no_bar"] = true,
-	workspace = "15",
-})
-hl.window_rule({
-	match = { title = "^(Minecraft .*)$" },
-	tile = true,
-	idle_inhibit = "focus",
-	["hyprbars:no_bar"] = true,
-	workspace = "15",
-})
-hl.window_rule({
-	match = { title = "^(Minecraft* .*)$" },
+	match = { class = "^(Minecraft.*)$" },
 	tile = true,
 	idle_inhibit = "focus",
 	["hyprbars:no_bar"] = true,

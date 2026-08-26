@@ -14,6 +14,8 @@ fi
 export UPDATE_INTERVAL_DAYS=5
 
 add_hyprland_plugins() {
+	hyprpm update
+	yes y | hyprpm add https://github.com/hyprwm/hyprland-plugins
 	hyprpm enable hyprbars
 	hyprpm enable hyprfocus
 }

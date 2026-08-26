@@ -9,20 +9,14 @@
     "keepassxc",
     "okular",
     "qbittorrent",
+    "chaotic-aur/ventoy-bin",
     "seahorse",
     // lector comics
     "yacreader"
   ],
   "gimp": ["aur/photogimp", "extra/gimp"],
   "krita": ["krita", "kseexpr"],
-  "music_library": [
-    "easytag",
-    "picard",
-    "sox",
-    "flacon",
-    "cuetools",
-    "python-tqdm"
-  ],
+  "music_library": ["easytag", "picard", "sox", "flacon", "cuetools", "python-tqdm"],
   "vlc": [
     "vlc",
     "vlc-plugin-ass",
@@ -32,26 +26,10 @@
     "vlc-plugin-x264",
     "vlc-plugin-x265"
   ],
-  "zathura": [
-    "tesseract-data-spa",
-    "zathura",
-    "zathura-cb",
-    "libmupdf",
-    "zathura-pdf-poppler"
-  ],
+  "zathura": ["tesseract-data-spa", "zathura", "zathura-cb", "libmupdf", "zathura-pdf-poppler"],
   "efectos_audio": ["easyeffects", "lsp-plugins-vst3"],
-  "neovim": [
-    "neovim",
-    "hunspell-en_us",
-    "hunspell-es_es",
-    "python-pynvim",
-    "tree-sitter-cli"
-  ],
-  "mozilla": [
-    "chaotic-aur/arkenfox-user.js-git",
-    "ca-certificates",
-    "ca-certificates-mozilla"
-  ],
+  "neovim": ["neovim", "hunspell-en_us", "hunspell-es_es", "python-pynvim", "tree-sitter-cli"],
+  "mozilla": ["chaotic-aur/arkenfox-user.js-git", "ca-certificates", "ca-certificates-mozilla"],
   "tauon": ["python-pypresence", "tauon-music-box"],
   "no-foss": ["discord", "telegram-desktop"],
   "oficina": ["libreoffice-fresh", "libreoffice-fresh-es"],

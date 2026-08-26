@@ -19,8 +19,8 @@ hl.monitor({
 })
 hl.monitor({
 	output = "desc:Lenovo Group Limited LEN L28u-30 U1B3NG2P",
-	mode = "3840x2160@60.00Hz",
-	scale = 2.0,
+	mode = "2560x1440@59.95Hz",
+	scale = 1.33,
 })
 hl.monitor({
 	output = "desc:Samsung Electric Company SAMSUNG 0x01000000",

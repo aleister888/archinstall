@@ -28,26 +28,19 @@
     "wl-clip-persist"
   ],
   "scheduler": ["scx-scheds"],
-  "vpn-ual": [
-    "openfortivpn",
-    "systemd-resolvconf",
-    "networkmanager-openconnect"
-  ],
+  "vpn-ual": ["openfortivpn", "systemd-resolvconf", "networkmanager-openconnect"],
   "nix": ["nix"],
-  "sys_ficheros": ["exfat-utils", "f2fs-tools", "udftools", "xfsprogs"],
+  "sys_ficheros/discos": ["exfat-utils", "f2fs-tools", "udftools", "xfsprogs", "extra/nvme-cli"],
   "pacman": ["downgrade", "lostfiles", "pacman-contrib", "rebuild-detector"],
   "mesa_video": ["lib32-mesa", "mesa", "mesa-utils"],
-  "zsh": [
-    "zsh",
-    "zsh-autosuggestions",
-    "zsh-history-substring-search",
-    "zsh-syntax-highlighting"
-  ],
+  "zsh": ["zsh", "zsh-autosuggestions", "zsh-history-substring-search", "zsh-syntax-highlighting"],
   "vnc": ["freerdp", "gtk-vnc", "libvncserver", "remmina"],
   "fuentes": [
     "adobe-source-han-sans-jp-fonts",
     "cantarell-fonts",
     "gnu-free-fonts",
+    "extra/ttf-montserrat",
+    "extra/ttf-googlesanscode-nerd",
     "noto-fonts-cjk",
     "noto-fonts-emoji",
     "ttf-dejavu",

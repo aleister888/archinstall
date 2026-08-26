@@ -94,7 +94,7 @@ video/*)
 		# añadir manualmente los subtítulos al comando.
 
 		FILENAME="$(basename "$1")"
-		SUB_FILES=$(find "${1%/*}" -wholename "*${FILENAME%.*}*.srt" -printf '%P\n' | sort -r)
+		SUB_FILES=$(find "${1%/*}" -maxdepth 4 -wholename "*${FILENAME%.*}*.srt" -printf '%P\n' | sort -r)
 
 		if [ -n "$SUB_FILES" ]; then
 
