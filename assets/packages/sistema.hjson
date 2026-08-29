@@ -27,6 +27,12 @@
     "uwsm",
     "wl-clip-persist"
   ],
+  "waydroid": [
+    "extra/python-pyperclip",
+    "chaotic-aur/binder_linux-dkms",
+    "extra/waydroid",
+    "chaotic-aur/waydroid-image-gapps"
+  ],
   "scheduler": ["scx-scheds"],
   "vpn-ual": ["openfortivpn", "systemd-resolvconf", "networkmanager-openconnect"],
   "nix": ["nix"],

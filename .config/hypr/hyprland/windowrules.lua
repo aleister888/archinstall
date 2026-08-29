@@ -208,6 +208,18 @@ hl.window_rule({
 	no_initial_focus = true,
 })
 
+-- Clip Studio (Waydroid)
+hl.window_rule({
+	match = { class = "^(waydroid\\.jp\\.co\\.celsys\\.clipstudiopaint\\.googleplay)$" },
+	fullscreen_state = "2",
+	["hyprbars:no_bar"] = true,
+})
+hl.window_rule({
+	match = { class = "^(Waydroid)$" },
+	fullscreen_state = "2",
+	["hyprbars:no_bar"] = true,
+})
+
 -- LibreLift
 hl.window_rule({
 	match = { title = "^(LibreLift)$" },

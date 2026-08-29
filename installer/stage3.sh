@@ -266,6 +266,14 @@ sudo /usr/bin/install -o root -g root -m 644 \
 sudo /usr/bin/install -o root -g root -m 440 \
 	"$REPO_DIR/assets/configs/sudoers" /etc/sudoers
 
+# Waydroid (https://wiki.archlinux.org/title/Waydroid#DKMS_modules)
+cat <<EOF | sudo /usr/bin/tee /etc/modules-load.d/binder_linux.conf
+binder_linux
+EOF
+cat <<EOF | sudo /usr/bin/tee /etc/modprobe.d/binder_linux.conf
+options binder_linux devices=binder,hwbinder,vndbinder
+EOF
+
 # Hacemos que el repositorio local siga los cambios en
 # caso de que se usase el instalador en un tag concreto
 sh -c "

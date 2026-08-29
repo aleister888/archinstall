@@ -47,6 +47,7 @@ install_grub() {
 	GRUB_BOOT_OPTIONS+=" net.ifnames=0"
 	GRUB_BOOT_OPTIONS+=" snd_usb_audio.lowlatency=0"
 	GRUB_BOOT_OPTIONS+=" snd_usb_audio.implicit_fb=1"
+	GRUB_BOOT_OPTIONS+=" ibt=off"
 
 	sed -i "s/\(^GRUB_CMDLINE_LINUX_DEFAULT=\".*\)\"/\1$GRUB_BOOT_OPTIONS\"/" /etc/default/grub
 
