@@ -32,23 +32,10 @@ require("hyprland.windowrules.gaming")
 require("hyprland.windowrules.multimedia")
 
 hl.window_rule({
-	["hyprbars:no_bar"] = true,
 	rounding = 16,
 	no_shadow = true,
 	match = {
 		class = "^(dragon-drop)$",
-	},
-})
-
-hl.window_rule({
-	["hyprbars:no_bar"] = true,
-	match = { fullscreen_state_client = 2 },
-})
-
-hl.window_rule({
-	["hyprbars:no_bar"] = true,
-	match = {
-		workspace = config.scratch_workspace,
 	},
 })
 
@@ -212,12 +199,10 @@ hl.window_rule({
 hl.window_rule({
 	match = { class = "^(waydroid\\.jp\\.co\\.celsys\\.clipstudiopaint\\.googleplay)$" },
 	fullscreen_state = "2",
-	["hyprbars:no_bar"] = true,
 })
 hl.window_rule({
 	match = { class = "^(Waydroid)$" },
 	fullscreen_state = "2",
-	["hyprbars:no_bar"] = true,
 })
 
 -- LibreLift
@@ -467,7 +452,6 @@ hl.window_rule({
 -- Ajustes Generales
 hl.window_rule({
 	match = { class = "^(hyprpolkitagent)$" },
-	["hyprbars:no_bar"] = true,
 	dim_around = true,
 })
 hl.window_rule({

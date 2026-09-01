@@ -6,6 +6,7 @@ require("hyprland.keybindings")
 require("hyprland.appearance")
 require("hyprland.monitors")
 require("hyprland.windowrules")
+require("hyprland.plugins")
 
 hl.config({
 	misc = {

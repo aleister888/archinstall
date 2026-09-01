@@ -63,13 +63,11 @@ hl.window_rule({
 hl.window_rule({
 	match = { class = "^io-github-gaming32-modloadingscreen-ActualLoadingScreen$" },
 	workspace = "15",
-	["hyprbars:no_bar"] = true,
 })
 hl.window_rule({
 	match = { class = "^(Minecraft.*)$" },
 	tile = true,
 	idle_inhibit = "focus",
-	["hyprbars:no_bar"] = true,
 	workspace = "15",
 })
 hl.window_rule({

@@ -129,7 +129,6 @@ if [ $DAYS_SINCE_LAST_UPDATE -ge $UPDATE_INTERVAL_DAYS ] && $CONNECTED; then
 
 		if /usr/bin/sudo pacman -Syu; then
 			if echo "$PKGS_TO_UPDATE" | grep -q hyprland; then
-				add_hyprland_plugins
 				hyprpm update
 			fi
 

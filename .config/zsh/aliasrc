@@ -224,3 +224,24 @@ push() {
 		echo "No estás dentro de ningún repositorio" >&2
 	fi
 }
+
+toggle_hyprland_plugins() {
+	# shellcheck disable=SC3043
+	local MARKER_FILE="$REPO_DIR/.hyprland_plugins_enabled"
+
+	if [ -f "$MARKER_FILE" ]; then
+		hyprpm disable hyprbars
+		hyprpm disable hyprfocus
+
+		rm "$MARKER_FILE"
+	else
+		yes y | hyprpm add https://github.com/hyprwm/hyprland-plugins
+		hyprpm update
+		hyprpm enable hyprbars
+		hyprpm enable hyprfocus
+
+		touch "$MARKER_FILE"
+	fi
+
+	hyprctl reload
+}

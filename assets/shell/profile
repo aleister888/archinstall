@@ -13,13 +13,6 @@ fi
 
 export UPDATE_INTERVAL_DAYS=5
 
-add_hyprland_plugins() {
-	yes y | hyprpm add https://github.com/hyprwm/hyprland-plugins
-	hyprpm update
-	hyprpm enable hyprbars
-	hyprpm enable hyprfocus
-}
-
 [ -d "$HOME/.local/bin" ] && PATH="$HOME/.local/bin:$PATH"
 [ -d "$HOME/.local/bin/utils" ] && PATH="$HOME/.local/bin/utils:$PATH"
 [ -d "$HOME/.local/bin/installers/" ] && PATH="$HOME/.local/bin/installers:$PATH"
@@ -111,7 +104,6 @@ if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
 	# para completar las tareas que no pueden realizarse dentro del chroot
 	[ -f "$HOME/.system_not_initialized" ] && check_connection && (
 		echo "Ejecutando tareas post-instalación..."
-		add_hyprland_plugins
 		cd "$REPO_DIR"
 		./update.sh &
 		~/.dotfiles/installer/post_install/tauon-config

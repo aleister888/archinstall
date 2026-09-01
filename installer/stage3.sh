@@ -262,9 +262,7 @@ sudo /usr/bin/chmod 755 /usr/local/lib/arkenfox-auto-update
 sudo /usr/bin/install -o root -g root -m 644 \
 	"$REPO_DIR/assets/configs/syslog-ng.conf" /etc/syslog-ng/syslog-ng.conf
 
-# Configuramos sudo de forma segura
-sudo /usr/bin/install -o root -g root -m 440 \
-	"$REPO_DIR/assets/configs/sudoers" /etc/sudoers
+yes y | hyprpm add https://github.com/hyprwm/hyprland-plugins
 
 # Waydroid (https://wiki.archlinux.org/title/Waydroid#DKMS_modules)
 cat <<EOF | sudo /usr/bin/tee /etc/modules-load.d/binder_linux.conf
@@ -273,6 +271,10 @@ EOF
 cat <<EOF | sudo /usr/bin/tee /etc/modprobe.d/binder_linux.conf
 options binder_linux devices=binder,hwbinder,vndbinder
 EOF
+
+# Configuramos sudo de forma segura
+sudo /usr/bin/install -o root -g root -m 440 \
+	"$REPO_DIR/assets/configs/sudoers" /etc/sudoers
 
 # Hacemos que el repositorio local siga los cambios en
 # caso de que se usase el instalador en un tag concreto

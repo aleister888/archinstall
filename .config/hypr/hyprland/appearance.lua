@@ -39,58 +39,6 @@ hl.config({
 		},
 	},
 
-	plugin = {
-		hyprbars = {
-			enabled = true,
-			bar_height = config.hyprbar_height,
-
-			["col.text"] = "rgba(EBDBB2FF)",
-			bar_text_align = "center",
-
-			bar_color = "rgba(1D2021FF)",
-			bar_precedence_over_border = true,
-
-			bar_buttons_alignment = "left",
-			bar_padding = 9,
-			bar_button_padding = 6,
-
-			hl.plugin.hyprbars.add_button({
-				bg_color = "rgba(CC241DFF)",
-				fg_color = "rgba(EBDBB2FF)",
-				size = 15,
-				icon = "",
-				action = "hyprctl dispatch 'hl.dsp.window.close({ window = activewindow })'",
-			}),
-			hl.plugin.hyprbars.add_button({
-				bg_color = "rgba(D79921FF)",
-				fg_color = "rgba(EBDBB2FF)",
-				size = 15,
-				icon = "",
-				action = "hyprctl dispatch 'hl.dsp.window.fullscreen({mode = 1})'",
-			}),
-			hl.plugin.hyprbars.add_button({
-				bg_color = "rgba(98971AFF)",
-				fg_color = "rgba(EBDBB2FF)",
-				size = 15,
-				icon = "",
-				action = "~/.dotfiles/bin/hyprland/switch-scratchpad",
-			}),
-
-			bar_text_size = 20,
-			bar_text_font = "Fira Sans Compressed",
-			bar_text_weight = 500,
-
-			bar_part_of_window = true,
-			bar_blur = false,
-		},
-
-		hyprfocus = {
-			enable = true,
-			keyboard_focus_animation = "slide",
-			slide_height = 10,
-		},
-	},
-
 	animations = {
 		enabled = true,
 		hl.curve(
@@ -133,18 +81,6 @@ hl.config({
 			speed = 1.5,
 			bezier = "easeOutQuart",
 			style = "slidevert 20%",
-		}),
-		hl.animation({
-			leaf = "hyprfocusIn",
-			enabled = true,
-			speed = 1,
-			bezier = "easeOutQuart",
-		}),
-		hl.animation({
-			leaf = "hyprfocusOut",
-			enabled = true,
-			speed = 1,
-			bezier = "easeOutQuart",
 		}),
 	},
 })

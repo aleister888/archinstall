@@ -4,6 +4,8 @@ assets/pdf/_minted
 *.aux
 *.toc
 
+.hyprland_plugins_enabled
+
 .luarc.json
 
 bookmarks

@@ -16,6 +16,13 @@ hl.window_rule({
 	no_initial_focus = true,
 	size = { 0, 0 }, -- Dejamos que tome el tamaño mínimo
 })
+hl.window_rule({
+	match = {
+		class = "^(DBeaver)$",
+		title = "^(Product Configuration )$"
+	},
+	tag = "+1/2"
+})
 
 hl.window_rule({
 	match = { class = "^(GitHub Desktop)$" },
