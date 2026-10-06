@@ -66,12 +66,21 @@ end)
 hl.bind(config.mod .. " + E", hl.dsp.window.fullscreen({ mode = 0 }))
 
 -- Master/Stack
-hl.bind(config.mod .. " + SHIFT + minus", hl.dsp.layout("swapwithmaster master"))
-hl.bind(config.mod .. " + minus", hl.dsp.layout("focusmaster"))
-hl.bind(config.mod .. " + J", hl.dsp.layout("addmaster"))
-hl.bind(config.mod .. " + K", hl.dsp.layout("removemaster"))
-hl.bind(config.mod .. " + U", hl.dsp.layout("mfact -0.05"))
-hl.bind(config.mod .. " + I", hl.dsp.layout("mfact +0.05"))
+local function master_only(dispatcher)
+	return function()
+		local layout = hl.get_active_workspace().tiled_layout
+
+		if layout == "master" then
+			hl.dispatch(dispatcher)
+		end
+	end
+end
+hl.bind(config.mod .. " + SHIFT + minus", master_only(hl.dsp.layout("swapwithmaster master")))
+hl.bind(config.mod .. " + minus",         master_only(hl.dsp.layout("focusmaster")))
+hl.bind(config.mod .. " + J",             master_only(hl.dsp.layout("addmaster")))
+hl.bind(config.mod .. " + K",             master_only(hl.dsp.layout("removemaster")))
+hl.bind(config.mod .. " + U",             master_only(hl.dsp.layout("mfact -0.05")))
+hl.bind(config.mod .. " + I",             master_only(hl.dsp.layout("mfact +0.05")))
 
 -- Gestionar ventanas
 hl.bind(config.mod .. " + SHIFT + Q", hl.dsp.window.close({ window = "activewindow" }))

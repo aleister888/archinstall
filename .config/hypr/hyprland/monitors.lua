@@ -5,7 +5,7 @@
 hl.monitor({
 	output = "desc:AU Optronics 0x859A",
 	mode = "1920x1200@60.03Hz",
-	scale = 1.2,
+	scale = 1.33,
 })
 hl.monitor({
 	output = "desc:AU Optronics 0x4A99",

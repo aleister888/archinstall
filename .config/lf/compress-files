@@ -5,15 +5,36 @@ source "$HOME/.dotfiles/assets/shell/shell-utils-sh"
 
 eval "$HIDE_NOTIFICATIONS"
 
-OUT_DIR="/tmp/00_Compressed"
-ensure_dir "$OUT_DIR" >/dev/null
-
 notify() { notify-send -t 1200 -e -a lf -i "${ICON:-ark}" "lf" "$1"; }
 called_from_lf() { [ -n "$LF_LEVEL" ]; }
 
 [ $# -eq 0 ] && exit 0
 
 FILES=("$@")
+
+# Determinamos la ruta en la que guardaremos el archivo (/tmp podría llenarse)
+#-------------------------------------------------------------------------------
+
+available_space() {
+	df --output=avail -B1 "$1" | tail -n1
+}
+
+OUT_DIR="/tmp/00_Compressed"
+ensure_dir "$OUT_DIR" >/dev/null
+
+TOTAL_SIZE=0
+
+for f in "${FILES[@]}"; do
+	TOTAL_SIZE=$((TOTAL_SIZE + $(du -sb "$f" | cut -f1)))
+done
+
+REQUIRED_SPACE=$((TOTAL_SIZE + TOTAL_SIZE / 10)) # Añadimos un pequeño margen
+AVAILABLE_SPACE=$(available_space "$OUT_DIR")
+
+if ((REQUIRED_SPACE > AVAILABLE_SPACE)); then
+	OUT_DIR="$HOME/.compressed"
+	ensure_dir "$OUT_DIR" >/dev/null
+fi
 
 # Determinar si los archivos provienen de directorios diferentes
 #-------------------------------------------------------------------------------

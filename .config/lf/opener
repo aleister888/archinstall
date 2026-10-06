@@ -30,6 +30,7 @@ case $FILETYPE in
 	case "${1##*.}" in
 	cbr | cbz) open_gui YACReader "$1" ;;
 	kra) open_gui krita "$1" ;;
+	pptx) open_gui libreoffice "$1" ;;
 	*) open_gui setsid -f xarchiver "$1" ;;
 	esac
 	;;

@@ -27,6 +27,11 @@ capture() {
 	AREA=$1
 	MODE=$2
 
+	local animations_enabled
+	animations_enabled=$(hyprctl getoption animations:enabled | awk 'NR==1 {print $2}')
+
+	hyprctl eval 'hl.config({ animations = { enabled = false } })'
+
 	if [ "$AREA" = "all" ]; then
 		grim -t "$EXTENSION" "$TMP" || throw_error
 	else
@@ -45,6 +50,8 @@ capture() {
 	else
 		throw_error
 	fi
+
+	$animations_enabled && hyprctl eval 'hl.config({ animations = { enabled = true } })'
 }
 
 [ "$2" = "-q" ] && QUIET=true

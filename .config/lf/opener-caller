@@ -89,6 +89,4 @@ done
 
 [ "${#AUDIO_FILES[@]}" -ge 1 ] && mpv --audio-display=no "${AUDIO_FILES[@]}"
 
-for text_file in "${TEXT_FILES[@]}"; do
-	$EDITOR "$text_file"
-done
+((${#TEXT_FILES[@]} > 0)) && $EDITOR "${TEXT_FILES[@]}"
