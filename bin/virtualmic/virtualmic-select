@@ -5,7 +5,7 @@
 
 source "$HOME/.dotfiles/bin/virtualmic/env"
 
-DMENU="rofi -dmenu"
+DMENU="fuzzel --dmenu"
 DMENU_LINES="-l"
 
 sink_links_edit() {

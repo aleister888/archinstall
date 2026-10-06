@@ -3,7 +3,7 @@
 
 source "$HOME/.dotfiles/assets/shell/shell-utils"
 
-DMENU="wofi --show dmenu -L 5"
+DMENU="fuzzel --dmenu --lines 5 --width 50"
 LOG_DIR="$(get_log_dir android_mount)"
 MOUNT_LOG="$LOG_DIR/mount.log"
 UNMOUNT_LOG="$LOG_DIR/unmount.log"

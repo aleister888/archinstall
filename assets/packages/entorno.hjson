@@ -14,7 +14,7 @@
     "kitty",
     "mediainfo",
     "nwg-look",
-    "rofi",
+    "fuzzel", // dmenu
     "slurp",
     "hypridle",
     "tk",
@@ -22,7 +22,6 @@
     "wev",
     "wf-recorder",
     "wl-clipboard",
-    "wofi",
     "xdg-desktop-portal-hyprland",
     "yad",
     "yt-dlp",

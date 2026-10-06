@@ -1,18 +1,16 @@
 #!/bin/bash
 
-DMENU="wofi --dmenu --hide-scroll --hide-search --allow-markup --width 142 -L 3"
-
 OPTIONS=(
-	"<span size='x-large'>󰟧</span>	Performance"
-	"<span size='x-large'>󰚀</span>	Balanced"
-	"<span size='x-large'>󰎏</span>	Power-saver"
+	"󰟧   Performance"
+	"󰚀   Balanced"
+	"󰎏   Power-saver"
 )
 
 swaync-client -cp
 
 sleep 0.2
 
-CHOSEN=$(printf "%s\n" "${OPTIONS[@]}" | $DMENU)
+CHOSEN=$(printf "%s\n" "${OPTIONS[@]}" | fuzzel --dmenu --lines 3 --width 13)
 
 case $CHOSEN in
 "${OPTIONS[0]}") powerprofilesctl set performance ;;

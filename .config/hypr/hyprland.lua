@@ -81,7 +81,6 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd('eval "$(ssh-agent -s)"')
 	hl.dispatch(hl.dsp.focus({ workspace = os.getenv("INITIAL_WORKSPACE") }))
 	hl.exec_cmd("setsid -f hyprpm reload")
-	hl.exec_cmd("rm -f ~/.cache/wofi*")
 	-- Debe ejecutarse siempre al final
 	hl.exec_cmd("dbus-update-activation-environment --systemd --all")
 end)

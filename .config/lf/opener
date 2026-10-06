@@ -39,7 +39,7 @@ case $FILETYPE in
 # preguntamos que lector de PDFs usar
 */pdf | */epub*)
 	[ "$(size_mb "$1")" -lt 10 ] && PDF_VIEWER="zathura"
-	PDF_VIEWER=${PDF_VIEWER:-$(printf "zathura\nokular\n" | wofi --prompt "Elige un lector de PDF" --dmenu --hide-scroll -L 2)}
+	PDF_VIEWER=${PDF_VIEWER:-$(printf "zathura\nokular\n" | fuzzel --dmenu --prompt "Elige un lector de PDF" --lines 2)}
 	[ -n "$PDF_VIEWER" ] && open_gui $PDF_VIEWER "$1"
 	;;
 
@@ -114,7 +114,7 @@ video/*)
 					SUBS_ARRAY_WITH_INFO+=("($(cat ${1%/*}/$sub_file | wc -l)) $sub_file")
 				done
 
-				SUB_FILE=$(printf "%s\n" "${SUBS_ARRAY_WITH_INFO[@]}" | wofi --prompt "Elige un archivo de subtítulos" --dmenu --hide-scroll)
+				SUB_FILE=$(printf "%s\n" "${SUBS_ARRAY_WITH_INFO[@]}" | fuzzel --dmenu --prompt "Elige un archivo de subtítulos")
 				SUB_FILE="$(grep -oP '\([0-9]+\) \K.*' <<<"$SUB_FILE")"
 			fi
 		fi
