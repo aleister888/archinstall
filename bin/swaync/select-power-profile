@@ -10,7 +10,7 @@ swaync-client -cp
 
 sleep 0.2
 
-CHOSEN=$(printf "%s\n" "${OPTIONS[@]}" | fuzzel --dmenu --lines 3 --width 13)
+CHOSEN=$(printf "%s\n" "${OPTIONS[@]}" | fuzzel --dmenu --lines 3 --width 16)
 
 case $CHOSEN in
 "${OPTIONS[0]}") powerprofilesctl set performance ;;

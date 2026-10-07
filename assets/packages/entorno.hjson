@@ -15,6 +15,7 @@
     "mediainfo",
     "nwg-look",
     "fuzzel", // dmenu
+    "rofi", // app launcher
     "slurp",
     "hypridle",
     "tk",

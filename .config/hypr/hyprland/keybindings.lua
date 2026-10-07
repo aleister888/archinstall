@@ -12,7 +12,8 @@ hl.bind(config.mod .. " + B", hl.dsp.exec_cmd("pkill waybar || setsid -f waybar"
 hl.bind(config.mod .. " + SHIFT + B", hl.dsp.exec_cmd("killall -SIGUSR2 waybar"))
 
 -- Lanzador de aplicaciones
-hl.bind(config.mod .. " + P", hl.dsp.exec_cmd("uwsm app -- fuzzel --list-executables --lines 4"))
+hl.bind(config.mod .. " + P", hl.dsp.exec_cmd("uwsm app -- rofi -show run -theme-str 'listview {lines: 10;}'"))
+hl.bind(config.mod .. " + SHIFT + P", hl.dsp.exec_cmd("uwsm app -- rofi -show drun -show-icons -theme-str 'listview {lines: 10;}'"))
 
 -- Montar/desmontar dispositivos android
 hl.bind(config.mod .. " + F5", hl.dsp.exec_cmd("~/.dotfiles/bin/android_mounts/android-mount"))
