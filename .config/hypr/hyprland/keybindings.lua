@@ -162,7 +162,9 @@ hl.bind(config.mod .. " + O", hl.dsp.exec_cmd("screenshot all_clip"))
 hl.bind(config.mod .. " + SHIFT + O", hl.dsp.exec_cmd("screenshot selection_clip"))
 hl.bind(config.mod .. " + CONTROL + O", hl.dsp.exec_cmd("screenshot all_save"))
 hl.bind(config.mod .. " + SHIFT + CONTROL + O", hl.dsp.exec_cmd("screenshot selection_save"))
-hl.bind(config.mod .. " + SHIFT + I", hl.dsp.exec_cmd("hyprshot --clipboard-only -m window"))
+
+-- Apps like pavucontrol in a custom special workout make hyprshot crash
+hl.bind(config.mod .. " + SHIFT + I", hl.dsp.exec_cmd("pkill pavucontrol; hyprshot --clipboard-only -m window"))
 hl.bind(config.mod .. " + SHIFT + CONTROL + I", hl.dsp.exec_cmd("hyprshot -m window"))
 
 -- Workspaces
