@@ -6,6 +6,7 @@
 # Aquí se establece la prioridad de los reproductores:
 PRIORITY=(
 	"$BROWSER"
+	"de.wagnermartin.Plattenalbum"
 	"tauon"
 	"spotify"
 )

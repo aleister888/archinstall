@@ -30,7 +30,7 @@
   "waydroid": [
     "extra/python-pyperclip",
     "chaotic-aur/binder_linux-dkms",
-    "extra/waydroid",
+    "chaotic-aur/waydroid-alt",
     "chaotic-aur/waydroid-image-gapps"
   ],
   "scheduler": ["scx-scheds"],

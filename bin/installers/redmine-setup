@@ -217,14 +217,46 @@ update() {
 
 	sudo /usr/bin/rm -rf vendor/bundle
 	sudo /usr/bin/chown -R http:http /usr/share/webapps/redmine
-	sudo -u http -g http /usr/bin/bundle config set frozen false
-	sudo -u http -g http /usr/bin/bundle install
-	sudo -u http -g http /usr/bin/bundle update
-	sudo -u http -g http /usr/bin/bundle config set frozen true
-	sudo -u http -g http RAILS_ENV=production /usr/bin/bundle exec rake db:migrate
 
+	# writable HOME for compiling rustup/cargo gems
+	local RUST_BUILD_HOME="/tmp/redmine-build-home"
+	sudo /usr/bin/mkdir -p "$RUST_BUILD_HOME"
+	sudo /usr/bin/chown http:http "$RUST_BUILD_HOME"
+
+	local RUST_TOOLCHAIN="stable-x86_64-unknown-linux-gnu"
+
+	sudo -u http -g http env \
+		HOME="$RUST_BUILD_HOME" \
+		RUSTUP_TOOLCHAIN="${RUST_TOOLCHAIN}" \
+		/usr/bin/bundle config set frozen false
+
+	sudo -u http -g http env \
+		HOME="$RUST_BUILD_HOME" \
+		RUSTUP_TOOLCHAIN="${RUST_TOOLCHAIN}" \
+		/usr/bin/bundle install
+
+	sudo -u http -g http env \
+		HOME="$RUST_BUILD_HOME" \
+		RUSTUP_TOOLCHAIN="${RUST_TOOLCHAIN}" \
+		/usr/bin/bundle update
+
+	sudo -u http -g http env \
+		HOME="$RUST_BUILD_HOME" \
+		RUSTUP_TOOLCHAIN="${RUST_TOOLCHAIN}" \
+		/usr/bin/bundle config set frozen true
+
+	sudo -u http -g http env \
+		HOME="$RUST_BUILD_HOME" \
+		RUSTUP_TOOLCHAIN="${RUST_TOOLCHAIN}" \
+		RAILS_ENV=production \
+		/usr/bin/bundle exec rake db:migrate
+
+	sudo /usr/bin/rm -rf /tmp/redmine-build-home
+
+	# Permitimos el acceso remoto
 	sudo /usr/bin/sed -i "s/127.0.0.1/0.0.0.0/" \
-		/usr/lib/systemd/system/redmine.service # Permitimos el acceso remoto
+		/usr/lib/systemd/system/redmine.service
+
 	sudo /usr/bin/systemctl daemon-reload
 	sudo /usr/bin/systemctl start redmine.service
 }

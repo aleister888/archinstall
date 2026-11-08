@@ -134,8 +134,13 @@ hl.window_rule({
 	},
 	tag = "+3/4"
 })
-
-
+hl.window_rule({
+	match = {
+		class = "^(md.obsidian.Obsidian)$",
+		title = "^(Community plugins.*)$",
+	},
+	tag = "+3/4"
+})
 
 -- Bluetooth
 hl.window_rule({
@@ -357,10 +362,9 @@ hl.window_rule({
 		class = "^(org.keepassxc.KeePassXC)$",
 		title = "^(Desbloquear base de datos - KeePassXC)",
 	},
-	pin = true,
 	center = true,
-	no_initial_focus = true,
-	dim_around = true,
+	no_initial_focus = true, -- Unlocking can now be done through keyring
+	dim_around = false,
 })
 hl.window_rule({
 	name = "nm_password",

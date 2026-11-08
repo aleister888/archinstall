@@ -47,8 +47,6 @@ return {
 	{
 		"williamboman/mason-lspconfig.nvim",
 		opts = function()
-			local opts = { silent = true }
-
 			-- Ir al diagnóstico anterior
 			keymap.set("n", "<leader>z", function()
 				vim.diagnostic.jump({ count = -1, float = true })

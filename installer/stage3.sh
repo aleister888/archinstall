@@ -276,6 +276,13 @@ EOF
 sudo /usr/bin/install -o root -g root -m 440 \
 	"$REPO_DIR/assets/configs/sudoers" /etc/sudoers
 
+# Instalamos rust con todos sus targets
+rustup toolchain install stable
+rustup default stable
+rustup target add x86_64-pc-windows-gnu # Windows
+rustup target add x86_64-apple-darwin   # macOS Intel
+rustup target add aarch64-apple-darwin  # macOS ARM
+
 # Hacemos que el repositorio local siga los cambios en
 # caso de que se usase el instalador en un tag concreto
 sh -c "

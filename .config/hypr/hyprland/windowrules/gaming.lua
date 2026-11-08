@@ -75,6 +75,35 @@ hl.window_rule({
 	workspace = "10",
 })
 
+-- Battle.net (Lutris)
+hl.window_rule({
+	match = {
+		class = "steam_app_default",
+		title = "(Configuración de Battle.net)|(Battle.net Setup)",
+	},
+	workspace = "10",
+	border_size = 0,
+	no_shadow = true,
+})
+hl.window_rule({
+	match = {
+		class = "steam_app_default",
+		title = "(Instalar Battle.net)|(Installation de Battle.net)",
+	},
+	workspace = "10",
+	border_size = 0,
+	no_shadow = true,
+})
+hl.window_rule({
+	match = {
+		class = "steam_app_default",
+		title = "Diablo III",
+	},
+	workspace = "15",
+	border_size = 0,
+	no_shadow = true,
+})
+
 -- Steam
 hl.window_rule({
 	match = { class = "^(steam)$" },

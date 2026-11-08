@@ -30,7 +30,7 @@
   "efectos_audio": ["easyeffects", "lsp-plugins-vst3"],
   "neovim": ["neovim", "hunspell-en_us", "hunspell-es_es", "python-pynvim", "tree-sitter-cli"],
   "mozilla": ["chaotic-aur/arkenfox-user.js-git", "ca-certificates", "ca-certificates-mozilla"],
-  "tauon": ["python-pypresence", "tauon-music-box"],
+  "music-players": ["python-pypresence", "tauon-music-box", "aur/plattenalbum"],
   "no-foss": ["discord", "telegram-desktop"],
   "oficina": ["libreoffice-fresh", "libreoffice-fresh-es"],
   "lf": ["imagemagick", "inkscape", "lf", "rsync", "trash-cli"]

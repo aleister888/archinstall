@@ -17,7 +17,16 @@ set previewer '~/.config/lf/previewer'
 map C &lf -remote "send $id source ~/.config/lf/lfrc"
 
 map p paste
-cmd paste $cp-p --lf-paste "$id"
+#cmd paste $cp-p --lf-paste "$id"
+cmd paste &{{
+    if [ ! -s ~/.local/share/lf/files ] ||
+       [ "$(wc -l < ~/.local/share/lf/files)" -le 1 ]; then
+        lf -remote "send $id echoerr 'Nothing to paste'"
+        exit
+    fi
+
+    cp-p --lf-paste "$id"
+}}
 
 map r rename
 

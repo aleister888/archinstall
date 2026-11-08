@@ -125,6 +125,13 @@ hl.bind(config.mod .. " + SHIFT + X", hl.dsp.exec_cmd("music-control play-pause"
 hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("music-control previous"))
 hl.bind("XF86AudioNext", hl.dsp.exec_cmd("music-control next"))
 hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("music-control play-pause"))
+--hl.bind(config.mod .. " + Z", hl.dsp.exec_cmd("playerctl previous"))
+--hl.bind(config.mod .. " + X", hl.dsp.exec_cmd("playerctl next"))
+--hl.bind(config.mod .. " + SHIFT + Z", hl.dsp.exec_cmd("playerctl play-pause"))
+--hl.bind(config.mod .. " + SHIFT + X", hl.dsp.exec_cmd("playerctl play-pause"))
+--hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"))
+--hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"))
+--hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"))
 
 -- Audio
 hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("volinc -n -5"))

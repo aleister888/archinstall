@@ -34,5 +34,5 @@
   "net": ["extra/bind", "extra/openbsd-netcat"],
   "python": ["python-pandas", "python-scikit-learn"],
   "linters": ["astyle", "prettier", "shfmt", "stylua"],
-  "rust": ["rust", "rust-src", "rust-analyzer", "sccache"]
+  "rust": ["rustup", "rust-src", "rust-analyzer", "sccache"]
 }

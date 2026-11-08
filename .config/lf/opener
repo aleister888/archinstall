@@ -114,7 +114,7 @@ video/*)
 					SUBS_ARRAY_WITH_INFO+=("($(cat ${1%/*}/$sub_file | wc -l)) $sub_file")
 				done
 
-				SUB_FILE=$(printf "%s\n" "${SUBS_ARRAY_WITH_INFO[@]}" | fuzzel --dmenu --prompt "Elige un archivo de subtítulos")
+				SUB_FILE=$(printf "%s\n" "${SUBS_ARRAY_WITH_INFO[@]}" | fuzzel --dmenu --prompt "Elige un archivo de subtítulos" -w 80)
 				SUB_FILE="$(grep -oP '\([0-9]+\) \K.*' <<<"$SUB_FILE")"
 			fi
 		fi
